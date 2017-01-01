@@ -1,0 +1,119 @@
+{
+    "name": "markdown-all-in-one",
+    "displayName": "Markdown All in One",
+    "description": "All you need to write markdown",
+    "version": "0.0.1",
+    "publisher": "yzhang",
+    "engines": {
+        "vscode": "^1.5.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:markdown"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.markdown.editing.toggleBold",
+                "title": "Markdown: Toggle Bold"
+            },
+            {
+                "command": "extension.markdown.editing.toggleItalic",
+                "title": "Markdown: Toggle Italic"
+            },
+            {
+                "command": "extension.markdown.editing.toggleCodeSpan",
+                "title": "Markdown: Toggle Code Span"
+            },
+            {
+                "command": "extension.markdown.toc.create",
+                "title": "Markdown: Create Table of Contents"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "extension.markdown.editing.toggleBold",
+                "key": "ctrl+b",
+                "mac": "cmd+b",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "extension.markdown.editing.toggleItalic",
+                "key": "ctrl+i",
+                "mac": "cmd+i",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "extension.markdown.editing.toggleCodeSpan",
+                "key": "ctrl+m ctrl+c",
+                "mac": "cmd+m cmd+c",
+                "when": "editorTextFocus && editorLangId == markdown"
+            }
+        ]
+    },
+    "configuration": {
+        "type": "object",
+        "title": "Markdown All in One",
+        "properties": {
+            "markdown.toc.depthFrom": {
+                "type": "number",
+                "default": 1,
+                "description": "Depth control [1-6]."
+            },
+            "markdown.toc.depthTo": {
+                "type": "number",
+                "default": 6,
+                "description": "Depth control [1-6]."
+            },
+            "markdown.toc.insertAnchor": {
+                "type": "boolean",
+                "default": false,
+                "description": "Auto insert anchor for link."
+            },
+            "markdown.toc.withLinks": {
+                "type": "boolean",
+                "default": true,
+                "description": "Auto insert link."
+            },
+            "markdown.toc.orderedList": {
+                "type": "boolean",
+                "default": false,
+                "description": "Use ordered list (1. ..., 2. ...)."
+            },
+            "markdown.toc.updateOnSave": {
+                "type": "boolean",
+                "default": true,
+                "description": "Auto update on save."
+            },
+            "markdown.toc.anchorMode": {
+                "type": "string",
+                "default": "github.com",
+                "description": "anchor mode.",
+                "enum": [
+                    "github.com",
+                    "nodejs.org",
+                    "bitbucket.org",
+                    "ghost.org",
+                    "gitlab.com"
+                ]
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "tsc -p ./",
+        "compile": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install"
+    },
+    "dependencies": {
+    },
+    "devDependencies": {
+        "typescript": "^2.0.3",
+        "vscode": "^1.0.0",
+        "mocha": "^2.3.3",
+        "@types/node": "^6.0.40",
+        "@types/mocha": "^2.2.32"
+    }
+}
