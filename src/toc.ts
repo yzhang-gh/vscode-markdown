@@ -11,11 +11,14 @@ const prefix = 'markdown.extension.toc.';
 const REGEXP_HEADING = /^\#{1,6}/;
 const REGEXP_CODE_BLOCK = /^```/;
 
-let config = { depth: 6 };
+/**
+ * Workspace config
+ */
+let wsConfig = { tab: '    ', eol: '\r\n' };
+let tocConfig = { depth: 6 };
 
 export function activate(context: ExtensionContext) {
     loadConfig();
-    console.log(config.depth);
 
     const cmds: Command[] = [
         { command: 'create', callback: createToc },
@@ -37,28 +40,19 @@ function createToc() {
 
 function updateToc() {
     let editor = window.activeTextEditor;
-    let selection = editor.selection;
 
-    let lineEnding = <string>workspace.getConfiguration("files").get("eol");
-    let tabSize = <number>workspace.getConfiguration("editor").get("tabSize");
-    let insertSpaces = <boolean>workspace.getConfiguration("editor").get("insertSpaces");
-
-    let tab = '\t';
-    if (insertSpaces && tabSize > 0) {
-        tab = " ".repeat(tabSize);
-    }
-
+    // Generate TOC
     let toc = [];
     let headingList = getHeadingList();
-    let startDepth = 6;
+    let startDepth = 6; // In case that there is no heading in level 1.
     headingList.forEach(heading => {
         if (heading.level < startDepth) startDepth = heading.level;
     });
     headingList.forEach(heading => {
-        if (heading.level <= config.depth) {
-            let length = heading.level - startDepth;
+        if (heading.level <= tocConfig.depth) {
+            let indentation = heading.level - startDepth;
             let row = [
-                tab.repeat(length),
+                wsConfig.tab.repeat(indentation),
                 '- ',
                 heading.title
             ];
@@ -67,7 +61,7 @@ function updateToc() {
     });
 
     editor.edit(function (editBuilder) {
-        editBuilder.insert(selection.active, toc.join(lineEnding));
+        editBuilder.insert(editor.selection.active, toc.join(wsConfig.eol));
     });
 }
 
@@ -81,19 +75,19 @@ function getHeadingList() {
     let headingList: Heading[] = [];
     let isInCode = false;
     for (let i = 0; i < doc.lineCount; i++) {
-        let line = doc.lineAt(i).text;
+        let lineText = doc.lineAt(i).text;
 
-        let codeResult = line.match(REGEXP_CODE_BLOCK); // Code block
+        let codeResult = lineText.match(REGEXP_CODE_BLOCK); // Code block
         if (codeResult != null) isInCode = !isInCode;
         if (isInCode) continue;
 
-        let headingResult = line.match(REGEXP_HEADING); // Heading pattern
+        let headingResult = lineText.match(REGEXP_HEADING); // Heading pattern
         if (headingResult == null) continue;
 
-        let level = headingResult[0].length;
-        if (level > config.depth) continue;
+        let level = headingResult[0].length; // Get heading level
+        if (level > tocConfig.depth) continue;
 
-        let title = line.substr(level).trim().replace(/\#*$/, "").trim();
+        let title = lineText.substr(level).trim().replace(/\#*$/, "").trim(); // Get heading title
 
         headingList.push({
             level: level,
@@ -104,5 +98,16 @@ function getHeadingList() {
 }
 
 function loadConfig() {
-    config.depth = <number>workspace.getConfiguration(prefix.slice(0, prefix.length - 1)).get('depth');
+    // Workspace config
+    wsConfig.eol = <string>workspace.getConfiguration("files").get("eol");
+    let tabSize = <number>workspace.getConfiguration("editor").get("tabSize");
+    let insertSpaces = <boolean>workspace.getConfiguration("editor").get("insertSpaces");
+
+    wsConfig.tab = '\t';
+    if (insertSpaces && tabSize > 0) {
+        wsConfig.tab = " ".repeat(tabSize);
+    }
+
+    // TOC config
+    tocConfig.depth = <number>workspace.getConfiguration('markdown.extension.toc').get('depth');
 }

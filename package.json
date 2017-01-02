@@ -67,18 +67,8 @@
             "properties": {
                 "markdown.extension.toc.depth": {
                     "type": "number",
-                    "default": 1,
+                    "default": 6,
                     "description": "Depth control [1-6]."
-                },
-                "markdown.extension.toc.insertAnchor": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Auto insert anchor for link."
-                },
-                "markdown.extension.toc.withLinks": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Auto insert link."
                 },
                 "markdown.extension.toc.orderedList": {
                     "type": "boolean",
@@ -89,18 +79,6 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Auto update on save."
-                },
-                "markdown.extension.toc.anchorMode": {
-                    "type": "string",
-                    "default": "github.com",
-                    "description": "anchor mode.",
-                    "enum": [
-                        "github.com",
-                        "nodejs.org",
-                        "bitbucket.org",
-                        "ghost.org",
-                        "gitlab.com"
-                    ]
                 }
             }
         }

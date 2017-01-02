@@ -4,7 +4,7 @@
  * Modified from <https://github.com/mdickin/vscode-markdown-shortcuts>
  */
 
-import { commands, window, ExtensionContext, Position, Selection } from 'vscode';
+import { commands, window, ExtensionContext, Position, Range, Selection } from 'vscode';
 
 const prefix = 'markdown.extension.editing.';
 
@@ -59,10 +59,10 @@ function toggleHeadingDown() {
 
     editor.edit((editBuilder) => {
         if (lineText.startsWith('# ')) { // Heading level 1
-            editBuilder.delete(new Selection(new Position(lineIndex, 0), new Position(lineIndex, 2)));
+            editBuilder.delete(new Range(new Position(lineIndex, 0), new Position(lineIndex, 2)));
         }
         else if (lineText.startsWith('#')) { // Heading (but not level 1)
-            editBuilder.delete(new Selection(new Position(lineIndex, 0), new Position(lineIndex, 1)));
+            editBuilder.delete(new Range(new Position(lineIndex, 0), new Position(lineIndex, 1)));
         }
     });
 }
