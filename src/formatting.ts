@@ -4,7 +4,7 @@
  * Modified from <https://github.com/mdickin/vscode-markdown-shortcuts>
  */
 
-import { commands, window, ExtensionContext, Selection } from 'vscode';
+import { commands, window, ExtensionContext, Position, Selection } from 'vscode';
 
 const prefix = 'extension.markdown.editing.';
 
@@ -12,7 +12,9 @@ export function activate(context: ExtensionContext) {
     const cmds: Command[] = [
         { command: 'toggleBold', callback: toggleBold },
         { command: 'toggleItalic', callback: toggleItalic },
-        { command: 'toggleCodeSpan', callback: toggleCodeSpan }
+        { command: 'toggleCodeSpan', callback: toggleCodeSpan },
+        { command: 'toggleHeadingUp', callback: toggleHeadingUp },
+        { command: 'toggleHeadingDown', callback: toggleHeadingDown }
     ].map(cmd => {
         cmd.command = prefix + cmd.command;
         return cmd;
@@ -35,6 +37,36 @@ function toggleCodeSpan() {
     wrapSelection('`');
 }
 
+function toggleHeadingUp() {
+    let editor = window.activeTextEditor;
+    let lineIndex = editor.selection.active.line;
+    let lineText = editor.document.lineAt(lineIndex).text;
+
+    editor.edit((editBuilder) => {
+        if (!lineText.startsWith('#')) { // Not a heading
+            editBuilder.insert(new Position(lineIndex, 0), '# ');
+        }
+        else if (!lineText.startsWith('######')) { // Already a heading (but not level 6)
+            editBuilder.insert(new Position(lineIndex, 0), '#');
+        }
+    });
+}
+
+function toggleHeadingDown() {
+    let editor = window.activeTextEditor;
+    let lineIndex = editor.selection.active.line;
+    let lineText = editor.document.lineAt(lineIndex).text;
+
+    editor.edit((editBuilder) => {
+        if (lineText.startsWith('# ')) { // Heading level 1
+            editBuilder.delete(new Selection(new Position(lineIndex, 0), new Position(lineIndex, 2)));
+        }
+        else if (lineText.startsWith('#')) { // Heading (but not level 1)
+            editBuilder.delete(new Selection(new Position(lineIndex, 0), new Position(lineIndex, 1)));
+        }
+    });
+}
+
 function wrapSelection(startPattern, endPattern?) {
     if (endPattern == undefined || endPattern == null) {
         endPattern = startPattern;
@@ -46,8 +78,8 @@ function wrapSelection(startPattern, endPattern?) {
     if (selection.isEmpty) { // No selected text
         let position = selection.active;
         let newPosition = position.with(position.line, position.character + startPattern.length);
-        editor.edit((edit) => {
-            edit.insert(selection.start, startPattern + endPattern);
+        editor.edit((editBuilder) => {
+            editBuilder.insert(selection.start, startPattern + endPattern);
         }).then(() => {
             editor.selection = new Selection(newPosition, newPosition);
         });

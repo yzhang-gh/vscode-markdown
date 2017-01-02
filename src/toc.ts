@@ -35,34 +35,35 @@ function createToc() {
 function updateToc() {
     let editor = window.activeTextEditor;
     let selection = editor.selection;
+    
+    let lineEnding = <string>workspace.getConfiguration("files").get("eol");
+    let tabSize = <number>workspace.getConfiguration("editor").get("tabSize");
+    let insertSpaces = <boolean>workspace.getConfiguration("editor").get("insertSpaces");
+
+    let tab = '\t';
+    if (insertSpaces && tabSize > 0) {
+        tab = " ".repeat(tabSize);
+    }
+
+    let toc = [];
+    let headingList = getHeadingList();
+    let startDepth = 6;
+    headingList.forEach(heading => {
+        if (heading.level < startDepth) startDepth = heading.level;
+    });
+    headingList.forEach(heading => {
+        if (heading.level <= options.depth) {
+            let length = heading.level - startDepth;
+            let row = [
+                tab.repeat(length),
+                '- ',
+                heading.title
+            ];
+            toc.push(row.join(''));
+        }
+    });
 
     editor.edit(function (editBuilder) {
-        let lineEnding = <string>workspace.getConfiguration("files").get("eol");
-        let tabSize = <number>workspace.getConfiguration("editor").get("tabSize");
-        let insertSpaces = <boolean>workspace.getConfiguration("editor").get("insertSpaces");
-
-        let tab = '\t';
-        if (insertSpaces && tabSize > 0) {
-            tab = " ".repeat(tabSize);
-        }
-
-        let toc = [];
-        let headingList = getHeadingList();
-        let startDepth = 6;
-        headingList.forEach(heading => {
-            if (heading.level < startDepth) startDepth = heading.level;
-        });
-        headingList.forEach(heading => {
-            if (heading.level <= options.depth) {
-                let length = heading.level - startDepth;
-                let row = [
-                    tab.repeat(length),
-                    '- ',
-                    heading.title
-                ];
-                toc.push(row.join(''));
-            }
-        });
         editBuilder.insert(selection.active, toc.join(lineEnding));
     });
 }

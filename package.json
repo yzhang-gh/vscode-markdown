@@ -29,6 +29,14 @@
                 "title": "Markdown: Toggle Code Span"
             },
             {
+                "command": "extension.markdown.editing.toggleHeadingUp",
+                "title": "Markdown: Toggle Heading Uplevel"
+            },
+            {
+                "command": "extension.markdown.editing.toggleHeadingDown",
+                "title": "Markdown: Toggle Heading Downlevel"
+            },
+            {
                 "command": "extension.markdown.toc.create",
                 "title": "Markdown: Create Table of Contents"
             }
@@ -50,6 +58,18 @@
                 "command": "extension.markdown.editing.toggleCodeSpan",
                 "key": "ctrl+m ctrl+c",
                 "mac": "cmd+m cmd+c",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "extension.markdown.editing.toggleHeadingUp",
+                "key": "ctrl+shift+]",
+                "mac": "cmd+shift+]",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "extension.markdown.editing.toggleHeadingDown",
+                "key": "ctrl+shift+[",
+                "mac": "cmd+shift+[",
                 "when": "editorTextFocus && editorLangId == markdown"
             }
         ]
