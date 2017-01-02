@@ -15,11 +15,9 @@ const REGEXP_CODE_BLOCK = /^```/;
  * Workspace config
  */
 let wsConfig = { tab: '    ', eol: '\r\n' };
-let tocConfig = { depth: 6 };
+let tocConfig = { depth: 6, orderedList: false };
 
 export function activate(context: ExtensionContext) {
-    loadConfig();
-
     const cmds: Command[] = [
         { command: 'create', callback: createToc },
         { command: 'update', callback: updateToc },
@@ -41,6 +39,8 @@ function createToc() {
 function updateToc() {
     let editor = window.activeTextEditor;
 
+    loadConfig();
+
     // Generate TOC
     let toc = [];
     let headingList = getHeadingList();
@@ -48,15 +48,17 @@ function updateToc() {
     headingList.forEach(heading => {
         if (heading.level < startDepth) startDepth = heading.level;
     });
+    let order = new Array(tocConfig.depth - startDepth + 1).fill(0); // Ordered list
     headingList.forEach(heading => {
         if (heading.level <= tocConfig.depth) {
             let indentation = heading.level - startDepth;
             let row = [
                 wsConfig.tab.repeat(indentation),
-                '- ',
+                tocConfig.orderedList ? ++order[indentation] + '. ' : '- ',
                 heading.title
             ];
             toc.push(row.join(''));
+            if (tocConfig.orderedList) order.fill(0, indentation + 1);
         }
     });
 
@@ -110,4 +112,5 @@ function loadConfig() {
 
     // TOC config
     tocConfig.depth = <number>workspace.getConfiguration('markdown.extension.toc').get('depth');
+    tocConfig.orderedList = <boolean>workspace.getConfiguration('markdown.extension.toc').get('orderedList');
 }
