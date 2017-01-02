@@ -4,9 +4,16 @@ All you need for markdown.
 
 ## Features
 
-- Keyboard shortcuts (toggle bold, italic)
+- Keyboard shortcuts (toggle bold, italic, heading)
 
 ### Shortcuts
+
+| Key | Command |
+| --- | --- |
+| `ctrl` + `b` | Toggle bold |
+| `ctrl` + `i` | Toggle italic |
+| `ctrl` + `shift` + `]` | Toggle heading (uplevel) |
+| `ctrl` + `shift` + `[` | Toggle heading (downlevel) |
 
 ### Table of Contents
 
