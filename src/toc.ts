@@ -6,7 +6,7 @@
 
 import { commands, window, workspace, ExtensionContext } from 'vscode';
 
-const prefix = 'extension.markdown.toc.';
+const prefix = 'markdown.extension.toc.';
 
 const REGEXP_HEADING = /^\#{1,6}/;
 const REGEXP_CODE_BLOCK = /^```/;

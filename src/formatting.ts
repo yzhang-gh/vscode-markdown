@@ -6,7 +6,7 @@
 
 import { commands, window, ExtensionContext, Position, Selection } from 'vscode';
 
-const prefix = 'extension.markdown.editing.';
+const prefix = 'markdown.extension.editing.';
 
 export function activate(context: ExtensionContext) {
     const cmds: Command[] = [

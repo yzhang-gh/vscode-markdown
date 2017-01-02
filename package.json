@@ -18,57 +18,57 @@
     "contributes": {
         "commands": [
             {
-                "command": "extension.markdown.editing.toggleBold",
+                "command": "markdown.extension.editing.toggleBold",
                 "title": "Markdown: Toggle Bold"
             },
             {
-                "command": "extension.markdown.editing.toggleItalic",
+                "command": "markdown.extension.editing.toggleItalic",
                 "title": "Markdown: Toggle Italic"
             },
             {
-                "command": "extension.markdown.editing.toggleCodeSpan",
+                "command": "markdown.extension.editing.toggleCodeSpan",
                 "title": "Markdown: Toggle Code Span"
             },
             {
-                "command": "extension.markdown.editing.toggleHeadingUp",
+                "command": "markdown.extension.editing.toggleHeadingUp",
                 "title": "Markdown: Toggle Heading Uplevel"
             },
             {
-                "command": "extension.markdown.editing.toggleHeadingDown",
+                "command": "markdown.extension.editing.toggleHeadingDown",
                 "title": "Markdown: Toggle Heading Downlevel"
             },
             {
-                "command": "extension.markdown.toc.create",
+                "command": "markdown.extension.toc.create",
                 "title": "Markdown: Create Table of Contents"
             }
         ],
         "keybindings": [
             {
-                "command": "extension.markdown.editing.toggleBold",
+                "command": "markdown.extension.editing.toggleBold",
                 "key": "ctrl+b",
                 "mac": "cmd+b",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
-                "command": "extension.markdown.editing.toggleItalic",
+                "command": "markdown.extension.editing.toggleItalic",
                 "key": "ctrl+i",
                 "mac": "cmd+i",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
-                "command": "extension.markdown.editing.toggleCodeSpan",
+                "command": "markdown.extension.editing.toggleCodeSpan",
                 "key": "ctrl+m ctrl+c",
                 "mac": "cmd+m cmd+c",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
-                "command": "extension.markdown.editing.toggleHeadingUp",
+                "command": "markdown.extension.editing.toggleHeadingUp",
                 "key": "ctrl+shift+]",
                 "mac": "cmd+shift+]",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
-                "command": "extension.markdown.editing.toggleHeadingDown",
+                "command": "markdown.extension.editing.toggleHeadingDown",
                 "key": "ctrl+shift+[",
                 "mac": "cmd+shift+[",
                 "when": "editorTextFocus && editorLangId == markdown"
