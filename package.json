@@ -2,7 +2,7 @@
     "name": "markdown-all-in-one",
     "displayName": "Markdown All in One",
     "description": "All you need to write markdown",
-	"icon": "images/Markdown-mark.svg",
+    "icon": "images/Markdown-mark.svg",
     "version": "0.0.1",
     "publisher": "yzhang",
     "engines": {
@@ -16,110 +16,92 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
-        "commands": [
-            {
-                "command": "markdown.extension.editing.toggleBold",
-                "title": "Markdown: Toggle Bold"
-            },
-            {
-                "command": "markdown.extension.editing.toggleItalic",
-                "title": "Markdown: Toggle Italic"
-            },
-            {
-                "command": "markdown.extension.editing.toggleCodeSpan",
-                "title": "Markdown: Toggle Code Span"
-            },
-            {
-                "command": "markdown.extension.editing.toggleHeadingUp",
-                "title": "Markdown: Toggle Heading Uplevel"
-            },
-            {
-                "command": "markdown.extension.editing.toggleHeadingDown",
-                "title": "Markdown: Toggle Heading Downlevel"
-            },
-            {
-                "command": "markdown.extension.toc.create",
-                "title": "Markdown: Create Table of Contents"
-            }
-        ],
-        "keybindings": [
-            {
-                "command": "markdown.extension.editing.toggleBold",
-                "key": "ctrl+b",
-                "mac": "cmd+b",
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.editing.toggleItalic",
-                "key": "ctrl+i",
-                "mac": "cmd+i",
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.editing.toggleCodeSpan",
-                "key": "ctrl+m ctrl+c",
-                "mac": "cmd+m cmd+c",
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.editing.toggleHeadingUp",
-                "key": "ctrl+shift+]",
-                "mac": "cmd+shift+]",
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.editing.toggleHeadingDown",
-                "key": "ctrl+shift+[",
-                "mac": "cmd+shift+[",
-                "when": "editorTextFocus && editorLangId == markdown"
-            }
-        ]
-    },
-    "configuration": {
-        "type": "object",
-        "title": "Markdown All in One",
-        "properties": {
-            "markdown.toc.depthFrom": {
-                "type": "number",
-                "default": 1,
-                "description": "Depth control [1-6]."
-            },
-            "markdown.toc.depthTo": {
-                "type": "number",
-                "default": 6,
-                "description": "Depth control [1-6]."
-            },
-            "markdown.toc.insertAnchor": {
-                "type": "boolean",
-                "default": false,
-                "description": "Auto insert anchor for link."
-            },
-            "markdown.toc.withLinks": {
-                "type": "boolean",
-                "default": true,
-                "description": "Auto insert link."
-            },
-            "markdown.toc.orderedList": {
-                "type": "boolean",
-                "default": false,
-                "description": "Use ordered list (1. ..., 2. ...)."
-            },
-            "markdown.toc.updateOnSave": {
-                "type": "boolean",
-                "default": true,
-                "description": "Auto update on save."
-            },
-            "markdown.toc.anchorMode": {
-                "type": "string",
-                "default": "github.com",
-                "description": "anchor mode.",
-                "enum": [
-                    "github.com",
-                    "nodejs.org",
-                    "bitbucket.org",
-                    "ghost.org",
-                    "gitlab.com"
-                ]
+        "commands": [{
+            "command": "markdown.extension.editing.toggleBold",
+            "title": "Markdown: Toggle Bold"
+        }, {
+            "command": "markdown.extension.editing.toggleItalic",
+            "title": "Markdown: Toggle Italic"
+        }, {
+            "command": "markdown.extension.editing.toggleCodeSpan",
+            "title": "Markdown: Toggle Code Span"
+        }, {
+            "command": "markdown.extension.editing.toggleHeadingUp",
+            "title": "Markdown: Toggle Heading Uplevel"
+        }, {
+            "command": "markdown.extension.editing.toggleHeadingDown",
+            "title": "Markdown: Toggle Heading Downlevel"
+        }, {
+            "command": "markdown.extension.toc.create",
+            "title": "Markdown: Create Table of Contents"
+        }],
+        "keybindings": [{
+            "command": "markdown.extension.editing.toggleBold",
+            "key": "ctrl+b",
+            "mac": "cmd+b",
+            "when": "editorTextFocus && editorLangId == markdown"
+        }, {
+            "command": "markdown.extension.editing.toggleItalic",
+            "key": "ctrl+i",
+            "mac": "cmd+i",
+            "when": "editorTextFocus && editorLangId == markdown"
+        }, {
+            "command": "markdown.extension.editing.toggleCodeSpan",
+            "key": "ctrl+m ctrl+c",
+            "mac": "cmd+m cmd+c",
+            "when": "editorTextFocus && editorLangId == markdown"
+        }, {
+            "command": "markdown.extension.editing.toggleHeadingUp",
+            "key": "ctrl+shift+]",
+            "mac": "cmd+shift+]",
+            "when": "editorTextFocus && editorLangId == markdown"
+        }, {
+            "command": "markdown.extension.editing.toggleHeadingDown",
+            "key": "ctrl+shift+[",
+            "mac": "cmd+shift+[",
+            "when": "editorTextFocus && editorLangId == markdown"
+        }],
+        "configuration": {
+            "type": "object",
+            "title": "Markdown All in One",
+            "properties": {
+                "markdown.extension.toc.depth": {
+                    "type": "number",
+                    "default": 1,
+                    "description": "Depth control [1-6]."
+                },
+                "markdown.extension.toc.insertAnchor": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Auto insert anchor for link."
+                },
+                "markdown.extension.toc.withLinks": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Auto insert link."
+                },
+                "markdown.extension.toc.orderedList": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use ordered list (1. ..., 2. ...)."
+                },
+                "markdown.extension.toc.updateOnSave": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Auto update on save."
+                },
+                "markdown.extension.toc.anchorMode": {
+                    "type": "string",
+                    "default": "github.com",
+                    "description": "anchor mode.",
+                    "enum": [
+                        "github.com",
+                        "nodejs.org",
+                        "bitbucket.org",
+                        "ghost.org",
+                        "gitlab.com"
+                    ]
+                }
             }
         }
     },

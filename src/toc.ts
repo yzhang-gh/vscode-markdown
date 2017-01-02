@@ -11,9 +11,12 @@ const prefix = 'markdown.extension.toc.';
 const REGEXP_HEADING = /^\#{1,6}/;
 const REGEXP_CODE_BLOCK = /^```/;
 
-let options = { depth: 6 };
+let config = { depth: 6 };
 
 export function activate(context: ExtensionContext) {
+    loadConfig();
+    console.log(config.depth);
+
     const cmds: Command[] = [
         { command: 'create', callback: createToc },
         { command: 'update', callback: updateToc },
@@ -35,7 +38,7 @@ function createToc() {
 function updateToc() {
     let editor = window.activeTextEditor;
     let selection = editor.selection;
-    
+
     let lineEnding = <string>workspace.getConfiguration("files").get("eol");
     let tabSize = <number>workspace.getConfiguration("editor").get("tabSize");
     let insertSpaces = <boolean>workspace.getConfiguration("editor").get("insertSpaces");
@@ -52,7 +55,7 @@ function updateToc() {
         if (heading.level < startDepth) startDepth = heading.level;
     });
     headingList.forEach(heading => {
-        if (heading.level <= options.depth) {
+        if (heading.level <= config.depth) {
             let length = heading.level - startDepth;
             let row = [
                 tab.repeat(length),
@@ -88,7 +91,7 @@ function getHeadingList() {
         if (headingResult == null) continue;
 
         let level = headingResult[0].length;
-        if (level > options.depth) continue;
+        if (level > config.depth) continue;
 
         let title = line.substr(level).trim().replace(/\#*$/, "").trim();
 
@@ -98,4 +101,8 @@ function getHeadingList() {
         });
     }
     return headingList;
+}
+
+function loadConfig() {
+    config.depth = <number>workspace.getConfiguration(prefix.slice(0, prefix.length - 1)).get('depth');
 }
