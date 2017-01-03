@@ -34,6 +34,9 @@
         }, {
             "command": "markdown.extension.toc.create",
             "title": "Markdown: Create Table of Contents"
+        }, {
+            "command": "markdown.extension.toc.update",
+            "title": "Markdown: Update Table of Contents"
         }],
         "keybindings": [{
             "command": "markdown.extension.editing.toggleBold",
