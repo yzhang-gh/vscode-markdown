@@ -8,7 +8,11 @@ All you need for markdown.
 - Table of contents
   - **No additional annoying tags like `<!-- TOC -->`**
 
+### Keyboard Shortcuts
+
 ![shortcuts](images/gifs/shortcuts.gif)
+
+### Table of Contents
 
 ![toc](images/gifs/toc.gif)
 
@@ -53,8 +57,15 @@ See [CHANGELOG](CHANGELOG.md) for more information.
 - Automatically show preview side-by-side when openning a markdown file
 - ...
 
-They will depend on the feedback and requests.
+These depend on the feedback and requests.
+
+# Feedback
+
+Bugs, feature requests, ..., in [GitHub Issues](https://github.com/neilsustc/vscode-markdown/issues).
 
 # Known Issues
 
-## 
+- To avoid distractive HTML comments, this extension will 'guess' where the TOC is. Currently, a TOC will be recognized if
+  - It's a list block in markdown syntax
+  - Its first list item tiile matches the first heading in the file
+- CJK in TOC anchors (Needing a complex slugify function)
