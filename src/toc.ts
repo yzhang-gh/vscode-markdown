@@ -42,6 +42,7 @@ function createToc() {
 
     let editor = window.activeTextEditor;
     editor.edit(function (editBuilder) {
+        editBuilder.delete(editor.selection);
         editBuilder.insert(editor.selection.active, generateTocText());
     });
 }
@@ -79,7 +80,7 @@ function generateTocText(): string {
             let row = [
                 wsConfig.tab.repeat(indentation),
                 tocConfig.orderedList ? ++order[indentation] + '. ' : '- ',
-                heading.title
+                `[${heading.title}](#${slugify(heading.title)})`
             ];
             toc.push(row.join(''));
             if (tocConfig.orderedList) order.fill(0, indentation + 1);
@@ -100,16 +101,17 @@ function detectTocRange(): Range {
     for (let index = 0; index < doc.lineCount; index++) {
         let lineText = doc.lineAt(index).text;
         if (start == null) { // No line matched with start yet
-            if (lineText.startsWith('- ') || lineText.startsWith('1. ')) {
-                lineText = lineText.replace(/^- /, '').replace(/^\d\. /, '');
-                if (lineText.startsWith(headings[0].title)) {
+            let regResult = lineText.match(/^[\-1]\.? \[?([^\]]+)/); // Match list block and get list item
+            if (regResult != null) {
+                let listItem = regResult[1];
+                if (listItem.startsWith(headings[0].title)) {
                     start = new Position(index, 0);
                     console.log(`Start: Ln ${start.line + 1}, Col ${start.character + 1}`);
                 }
             }
         } else { // Start line already found
             lineText = lineText.trim();
-            if (!(lineText.startsWith('- ') || lineText.match(/^\d\. /))) { // End of a list block
+            if (lineText.match(/^[\-\d]\.? /) == null) { // End of a list block
                 end = new Position(index - 1, doc.lineAt(index - 1).text.length);
                 console.log(`End:   Ln ${end.line + 1}, Col ${end.character + 1}`);
                 break;
@@ -182,6 +184,10 @@ function loadConfig() {
 
 function getText(range: Range): string {
     return window.activeTextEditor.document.getText(range);
+}
+
+function slugify(text: string): string {
+    return text.toLocaleLowerCase().replace(/[\s\W\-]+/g, '-').replace(/^\-/, '').replace(/\-$/, '');
 }
 
 class TocCodeLensProvider implements CodeLensProvider {
