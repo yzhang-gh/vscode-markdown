@@ -23,9 +23,6 @@
             "command": "markdown.extension.editing.toggleItalic",
             "title": "Markdown: Toggle Italic"
         }, {
-            "command": "markdown.extension.editing.toggleCodeSpan",
-            "title": "Markdown: Toggle Code Span"
-        }, {
             "command": "markdown.extension.editing.toggleHeadingUp",
             "title": "Markdown: Toggle Heading Uplevel"
         }, {
