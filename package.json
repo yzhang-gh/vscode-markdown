@@ -4,13 +4,25 @@
     "description": "All you need to write markdown",
     "icon": "images/Markdown-mark.svg",
     "version": "0.0.1",
-    "publisher": "yzhang",
+    "publisher": "Yu Zhang",
     "engines": {
         "vscode": "^1.5.0"
     },
     "categories": [
         "Other"
     ],
+    "keywords": [
+        "markdown"
+    ],
+    "preview": true,
+    "bugs": {
+        "url": "https://github.com/neilsustc/vscode-markdown/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/neilsustc/vscode-markdown"
+    },
+    "license": "MIT",
     "activationEvents": [
         "onLanguage:markdown"
     ],
