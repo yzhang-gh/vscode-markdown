@@ -49,7 +49,7 @@ function createToc() {
 function updateToc() {
     let range = detectTocRange();
     if (range != null) {
-        let oldToc = window.activeTextEditor.document.getText(range);
+        let oldToc = getText(range);
         let newToc = generateTocText();
         if (oldToc == newToc) return;
 
@@ -152,6 +152,7 @@ function getHeadingList(): Heading[] {
 }
 
 function onSave(doc: TextDocument) {
+    if (!tocConfig.updateOnSave) return;
     if (alreadyUpdated) {
         alreadyUpdated = false;
         return;
@@ -179,13 +180,19 @@ function loadConfig() {
     tocConfig.updateOnSave = <boolean>workspace.getConfiguration('markdown.extension.toc').get('updateOnSave');
 }
 
+function getText(range: Range): string {
+    return window.activeTextEditor.document.getText(range);
+}
+
 class TocCodeLensProvider implements CodeLensProvider {
     public provideCodeLenses(document: TextDocument, token: CancellationToken):
         CodeLens[] | Thenable<CodeLens[]> {
         let lenses: CodeLens[] = [];
-        lenses.push(new CodeLens(detectTocRange(), {
+        let range = detectTocRange();
+        let status = getText(range) == generateTocText() ? 'up to date' : 'out of date';
+        lenses.push(new CodeLens(range, {
             arguments: [],
-            title: 'Table of Contents',
+            title: `Table of Contents (${status})`,
             command: ''
         }));
         console.log('executed.');
