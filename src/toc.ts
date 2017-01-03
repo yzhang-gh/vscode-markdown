@@ -49,10 +49,14 @@ function createToc() {
 function updateToc() {
     let range = detectTocRange();
     if (range != null) {
+        let oldToc = window.activeTextEditor.document.getText(range);
+        let newToc = generateTocText();
+        if (oldToc == newToc) return;
+
         let anchor = range.start;
         window.activeTextEditor.edit(editBuilder => {
             editBuilder.delete(range);
-            editBuilder.insert(anchor, generateTocText());
+            editBuilder.insert(anchor, newToc);
         });
     }
 }
