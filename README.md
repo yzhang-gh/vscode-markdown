@@ -1,12 +1,18 @@
-# markdown-all-in-one README
+# Markdown Support for Visual Studio Code
 
 All you need for markdown.
 
-## Features
+# Features
 
 - Keyboard shortcuts (toggle bold, italic, heading)
+- Table of contents
+  - **No additional annoying tags like `<!-- TOC -->`**
 
-### Shortcuts
+![shortcuts](images/gifs/shortcuts.gif)
+
+![toc](images/gifs/toc.gif)
+
+# Shortcuts
 
 | Key | Command |
 | --- | --- |
@@ -15,23 +21,40 @@ All you need for markdown.
 | `ctrl` + `shift` + `]` | Toggle heading (uplevel) |
 | `ctrl` + `shift` + `[` | Toggle heading (downlevel) |
 
-### Table of Contents
+# Available Commands
 
-## Requirements
+- Markdown: Toggle Bold
+- Markdown: Toggle Italic
+- Markdown: Toggle Heading Uplevel
+- Markdown: Toggle Heading Downlevel
+- Markdown: Create Table of Contents
+- Markdown: Update Table of Contents
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+# Supported Settings
 
-## Extension Settings
+| Name | Default | Description |
+| --- | --- | --- |
+| `markdown.extension.toc.depth` | `6` | Control the heading level to show in the table of contents. |
+| `markdown.extension.toc.orderedList` | `false` | Use ordered list in the table of contents. |
+| `markdown.extension.toc.updateOnSave` | `false` | Automatically update the table of contents on save. |
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+# Changelog
 
-For example:
+## Latest 0.1.0
 
-This extension contributes the following settings:
+- Keyboard shortcuts (toggle bold, italic, heading)
+- Table of contents (create, update)
+  - Options (depth, orderedList, updateOnSave)
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+See [CHANGELOG](CHANGELOG.md) for more information.
 
-## Known Issues
+# Roadmap
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- Automatically show preview side-by-side when openning a markdown file
+- ...
+
+They will depend on the feedback and requests.
+
+# Known Issues
+
+## 

@@ -2,4 +2,6 @@
 
 ## 0.1.0
 
-Preview
+- Keyboard shortcuts (toggle bold, italic, heading)
+- Table of contents (create, update)
+  - Options (depth, orderedList, updateOnSave)
