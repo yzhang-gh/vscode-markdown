@@ -17,7 +17,7 @@ const REGEXP_CODE_BLOCK = /^```/;
 let wsConfig = { tab: '    ', eol: '\r\n' };
 let tocConfig = { depth: 6, orderedList: false, updateOnSave: false };
 
-let alreadyUpdated = false; // Prevent update TOC again after manually calling `doc.save()`
+let alreadyUpdated = false; // Prevent updating TOC again after manually calling `doc.save()`
 
 export function activate(context: ExtensionContext) {
     const cmds: Command[] = [
@@ -38,8 +38,6 @@ export function activate(context: ExtensionContext) {
 }
 
 function createToc() {
-    loadConfig();
-
     let editor = window.activeTextEditor;
     editor.edit(function (editBuilder) {
         editBuilder.delete(editor.selection);
@@ -48,17 +46,43 @@ function createToc() {
 }
 
 function updateToc() {
-    let range = detectTocRange();
-    if (range != null) {
-        let oldToc = getText(range);
+    let tocRange = detectTocRange();
+    if (tocRange != null) {
+        let oldToc = getText(tocRange);
         let newToc = generateTocText();
-        if (oldToc == newToc) return;
+        if (oldToc != newToc) {
+            // Keep the unchanged lines. (to prevent codeLens from re-emergence in UI)
+            let oldTocArr = oldToc.split(wsConfig.eol);
+            let newTocArr = newToc.split(wsConfig.eol);
+            let firstChangedLine = 0;
+            for (let i = 0; i < newTocArr.length; i++) {
+                if (newTocArr[i] != oldTocArr[i]) {
+                    firstChangedLine = i;
+                    break;
+                }
+            }
 
-        let anchor = range.start;
-        window.activeTextEditor.edit(editBuilder => {
-            editBuilder.delete(range);
-            editBuilder.insert(anchor, newToc);
-        });
+            let text = newTocArr.slice(firstChangedLine).join(wsConfig.eol);
+            let justAppending = false;
+            let rangeToBeDel;
+            let location;
+            if (firstChangedLine + 1 > oldTocArr.length) { // Append to old TOC, no deletion
+                justAppending = true;
+                location = tocRange.end;
+                text = wsConfig.eol + text;
+            } else { // Delete and then append
+                let delPosition = new Position(tocRange.start.line + firstChangedLine, tocRange.start.character);
+                rangeToBeDel = new Range(delPosition, tocRange.end);
+                location = rangeToBeDel.start;
+            }
+
+            window.activeTextEditor.edit(editBuilder => {
+                if (!justAppending) {
+                    editBuilder.delete(rangeToBeDel);
+                }
+                editBuilder.insert(location, text);
+            });
+        }
     }
 }
 
@@ -67,6 +91,8 @@ function deleteToc() {
 }
 
 function generateTocText(): string {
+    loadConfig();
+
     let toc = [];
     let headingList = getHeadingList();
     let startDepth = 6; // In case that there is no heading in level 1.
@@ -74,6 +100,7 @@ function generateTocText(): string {
         if (heading.level < startDepth) startDepth = heading.level;
     });
     let order = new Array(tocConfig.depth - startDepth + 1).fill(0); // Used for ordered list
+
     headingList.forEach(heading => {
         if (heading.level <= tocConfig.depth) {
             let indentation = heading.level - startDepth;
@@ -90,7 +117,7 @@ function generateTocText(): string {
 }
 
 function detectTocRange(): Range {
-    console.log('Detecting TOC ...');
+    log('Detecting TOC ...');
 
     let doc = window.activeTextEditor.document;
     let start, end: Position;
@@ -115,6 +142,9 @@ function detectTocRange(): Range {
                 end = new Position(index - 1, doc.lineAt(index - 1).text.length);
                 console.log(`End:   Ln ${end.line + 1}, Col ${end.character + 1}`);
                 break;
+            } else if (index == doc.lineCount - 1) { // End of file
+                end = new Position(index, doc.lineAt(index).text.length);
+                console.log(`End:   Ln ${end.line + 1}, Col ${end.character + 1}`);
             }
         }
     }
@@ -188,6 +218,19 @@ function getText(range: Range): string {
 
 function slugify(text: string): string {
     return text.toLocaleLowerCase().replace(/[\s\W\-]+/g, '-').replace(/^\-/, '').replace(/\-$/, '');
+}
+
+function log(msg: string, obj?) {
+    console.log(msg);
+    if (obj) {
+        if (obj instanceof Range) {
+            console.log(`Start: Ln ${obj.start.line + 1}, Col ${obj.start.character + 1}`);
+            console.log(`End:   Ln ${obj.end.line + 1}, Col ${obj.end.character + 1}`);
+        } else {
+            console.log(obj);
+        }
+    }
+    console.log();
 }
 
 class TocCodeLensProvider implements CodeLensProvider {
