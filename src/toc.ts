@@ -4,7 +4,7 @@
  * Modified from <https://github.com/AlanWalk/Markdown-TOC>
  */
 
-import { commands, window, workspace, ExtensionContext, Position, Range, TextDocument } from 'vscode';
+import { commands, languages, window, workspace, CancellationToken, CodeLens, CodeLensProvider, ExtensionContext, Position, Range, TextDocument } from 'vscode';
 
 const prefix = 'markdown.extension.toc.';
 
@@ -34,6 +34,7 @@ export function activate(context: ExtensionContext) {
     });
 
     context.subscriptions.push(workspace.onDidSaveTextDocument(onSave));
+    context.subscriptions.push(languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider()));
 }
 
 function createToc() {
@@ -60,7 +61,7 @@ function deleteToc() {
     // Pass
 }
 
-function generateTocText() {
+function generateTocText(): string {
     let toc = [];
     let headingList = getHeadingList();
     let startDepth = 6; // In case that there is no heading in level 1.
@@ -83,7 +84,7 @@ function generateTocText() {
     return toc.join(wsConfig.eol);
 }
 
-function detectTocRange() {
+function detectTocRange(): Range {
     console.log('Detecting TOC ...');
 
     let doc = window.activeTextEditor.document;
@@ -118,7 +119,7 @@ function detectTocRange() {
     return null;
 }
 
-function getHeadingList() {
+function getHeadingList(): Heading[] {
     let doc = window.activeTextEditor.document;
 
     let headingList: Heading[] = [];
@@ -172,4 +173,23 @@ function loadConfig() {
     tocConfig.depth = <number>workspace.getConfiguration('markdown.extension.toc').get('depth');
     tocConfig.orderedList = <boolean>workspace.getConfiguration('markdown.extension.toc').get('orderedList');
     tocConfig.updateOnSave = <boolean>workspace.getConfiguration('markdown.extension.toc').get('updateOnSave');
+}
+
+class TocCodeLensProvider implements CodeLensProvider {
+    public provideCodeLenses(document: TextDocument, token: CancellationToken):
+        CodeLens[] | Thenable<CodeLens[]> {
+        let lenses: CodeLens[] = [];
+        lenses.push(new CodeLens(detectTocRange(), {
+            arguments: [],
+            title: 'Table of Contents',
+            command: ''
+        }));
+        console.log('executed.');
+        return Promise.resolve(lenses);
+    }
+
+    // public resolveCodeLens?(codeLens: CodeLens, token: CancellationToken):
+    //     CodeLens | Thenable<CodeLens> {
+
+    // }
 }

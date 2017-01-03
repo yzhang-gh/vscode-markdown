@@ -95,7 +95,7 @@ function wrapSelection(startPattern, endPattern?) {
     }
 }
 
-function isMatch(text, startPattern, endPattern?) {
+function isMatch(text, startPattern, endPattern?): boolean {
     // if (startPattern.constructor === RegExp) {
     //     return startPattern.test(text);
     // }
