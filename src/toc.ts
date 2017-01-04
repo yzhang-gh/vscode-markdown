@@ -5,6 +5,7 @@
  */
 
 import { commands, languages, window, workspace, CancellationToken, CodeLens, CodeLensProvider, ExtensionContext, Position, Range, TextDocument } from 'vscode';
+import { log } from './util';
 
 const prefix = 'markdown.extension.toc.';
 
@@ -144,25 +145,25 @@ function detectTocRange(): Range {
                 let listItem = regResult[1];
                 if (listItem.startsWith(headings[0].title)) {
                     start = new Position(index, 0);
-                    console.log(`Start: Ln ${start.line + 1}, Col ${start.character + 1}`);
+                    log('Start', start);
                 }
             }
         } else { // Start line already found
             lineText = lineText.trim();
             if (lineText.match(/^[\-\d]\.? /) == null) { // End of a list block
                 end = new Position(index - 1, doc.lineAt(index - 1).text.length);
-                console.log(`End:   Ln ${end.line + 1}, Col ${end.character + 1}`);
+                log('End', end);
                 break;
             } else if (index == doc.lineCount - 1) { // End of file
                 end = new Position(index, doc.lineAt(index).text.length);
-                console.log(`End:   Ln ${end.line + 1}, Col ${end.character + 1}`);
+                log('End', end);
             }
         }
     }
     if ((start != null) && (end != null)) {
         return new Range(start, end);
     }
-    console.log('No TOC detected.')
+    log('No TOC detected.')
     return null;
 }
 
@@ -220,19 +221,6 @@ function slugify(text: string): string {
     return text.toLocaleLowerCase().replace(/[\s\W\-]+/g, '-').replace(/^\-/, '').replace(/\-$/, '');
 }
 
-function log(msg: string, obj?) {
-    console.log(msg);
-    if (obj) {
-        if (obj instanceof Range) {
-            console.log(`Start: Ln ${obj.start.line + 1}, Col ${obj.start.character + 1}`);
-            console.log(`End:   Ln ${obj.end.line + 1}, Col ${obj.end.character + 1}`);
-        } else {
-            console.log(obj);
-        }
-    }
-    console.log();
-}
-
 class TocCodeLensProvider implements CodeLensProvider {
     public provideCodeLenses(document: TextDocument, token: CancellationToken):
         CodeLens[] | Thenable<CodeLens[]> {
@@ -245,7 +233,6 @@ class TocCodeLensProvider implements CodeLensProvider {
             title: `Table of Contents (${status})`,
             command: ''
         }));
-        console.log('executed.');
         return Promise.resolve(lenses);
     }
 
