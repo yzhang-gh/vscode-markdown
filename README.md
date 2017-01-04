@@ -7,6 +7,7 @@ All you need for markdown.
 - Keyboard shortcuts (toggle bold, italic, heading)
 - Table of contents
   - **No additional annoying tags like `<!-- TOC -->`**
+- ...
 
 ### Keyboard Shortcuts
 
@@ -57,7 +58,7 @@ See [CHANGELOG](CHANGELOG.md) for more information.
 - Automatically show preview side-by-side when openning a markdown file
 - ...
 
-These depend on the feedback and requests.
+These depend on the feedback and user requests.
 
 # Feedback
 
@@ -68,4 +69,13 @@ Bugs, feature requests, ..., in [GitHub Issues](https://github.com/neilsustc/vsc
 - To avoid distractive HTML comments, this extension will 'guess' where the TOC is. Currently, a TOC will be recognized if
   - It's a list block in markdown syntax
   - Its first list item tiile matches the first heading in the file
-- CJK in TOC anchors (Needing a complex slugify function)
+- CJK in TOC anchors (Needing a more complex slugify function)
+
+# Acknowledgement
+
+- [mdickin/vscode-markdown-shortcuts](https://github.com/mdickin/vscode-markdown-shortcuts)
+- [AlanWalk/Markdown-TOC](https://github.com/AlanWalk/Markdown-TOC)
+
+# Others
+
+- [CommonMark](http://commonmark.org/): A strongly defined, highly compatible specification of Markdown

@@ -238,6 +238,7 @@ class TocCodeLensProvider implements CodeLensProvider {
         CodeLens[] | Thenable<CodeLens[]> {
         let lenses: CodeLens[] = [];
         let range = detectTocRange();
+        if (range == null) return lenses; // No TOC
         let status = getText(range) == generateTocText() ? 'up to date' : 'out of date';
         lenses.push(new CodeLens(range, {
             arguments: [],
