@@ -2,7 +2,7 @@
 
 All you need for markdown.
 
-# Features
+## Features
 
 - Keyboard shortcuts (toggle bold, italic, heading)
 - Table of contents
@@ -17,7 +17,7 @@ All you need for markdown.
 
 ![toc](images/gifs/toc.gif)
 
-# Shortcuts
+## Shortcuts
 
 | Key | Command |
 | --- | --- |
@@ -26,7 +26,7 @@ All you need for markdown.
 | `ctrl` + `shift` + `]` | Toggle heading (uplevel) |
 | `ctrl` + `shift` + `[` | Toggle heading (downlevel) |
 
-# Available Commands
+## Available Commands
 
 - Markdown: Toggle Bold
 - Markdown: Toggle Italic
@@ -35,7 +35,7 @@ All you need for markdown.
 - Markdown: Create Table of Contents
 - Markdown: Update Table of Contents
 
-# Supported Settings
+## Supported Settings
 
 | Name | Default | Description |
 | --- | --- | --- |
@@ -43,9 +43,9 @@ All you need for markdown.
 | `markdown.extension.toc.orderedList` | `false` | Use ordered list in the table of contents. |
 | `markdown.extension.toc.updateOnSave` | `false` | Automatically update the table of contents on save. |
 
-# Changelog
+## Changelog
 
-## Latest 0.1.0
+### Latest 0.1.0
 
 - Keyboard shortcuts (toggle bold, italic, heading)
 - Table of contents (create, update)
@@ -53,29 +53,29 @@ All you need for markdown.
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
-# Roadmap
+## Roadmap
 
 - Automatically show preview side-by-side when openning a markdown file
 - ...
 
 These depend on the feedback and user requests.
 
-# Feedback
+## Contributing
 
 Bugs, feature requests, ..., in [GitHub Issues](https://github.com/neilsustc/vscode-markdown/issues).
 
-# Known Issues
+## Known Issues
 
 - To avoid distractive HTML comments, this extension will 'guess' where the TOC is. Currently, a TOC will be recognized if
   - It's a list block in markdown syntax
   - Its first list item title matches the first heading in the file
 - CJK in TOC anchors (Needing a more complex slugify function)
 
-# Acknowledgement
+## Acknowledgement
 
 - [mdickin/vscode-markdown-shortcuts](https://github.com/mdickin/vscode-markdown-shortcuts)
 - [AlanWalk/Markdown-TOC](https://github.com/AlanWalk/Markdown-TOC)
 
-# Others
+## Useful Links
 
 - [CommonMark](http://commonmark.org/): A strongly defined, highly compatible specification of Markdown
