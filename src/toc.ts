@@ -123,7 +123,8 @@ function detectTocRange(): Range {
     let start, end: Position;
     let headings = getHeadingList();
 
-    if (headings.length == 0) return;
+    if (headings.length == 0) return null;
+    if (headings[0].title.length == 0) return null;
 
     for (let index = 0; index < doc.lineCount; index++) {
         let lineText = doc.lineAt(index).text;
@@ -237,10 +238,10 @@ class TocCodeLensProvider implements CodeLensProvider {
     public provideCodeLenses(document: TextDocument, token: CancellationToken):
         CodeLens[] | Thenable<CodeLens[]> {
         let lenses: CodeLens[] = [];
-        let range = detectTocRange();
-        if (range == null) return lenses; // No TOC
-        let status = getText(range) == generateTocText() ? 'up to date' : 'out of date';
-        lenses.push(new CodeLens(range, {
+        let tocRange = detectTocRange();
+        if (tocRange == null) return lenses; // No TOC
+        let status = getText(tocRange) == generateTocText() ? 'up to date' : 'out of date';
+        lenses.push(new CodeLens(tocRange, {
             arguments: [],
             title: `Table of Contents (${status})`,
             command: ''
