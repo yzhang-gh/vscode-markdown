@@ -35,6 +35,16 @@ export function activate(context: ExtensionContext) {
 
     context.subscriptions.push(workspace.onDidSaveTextDocument(onSave));
     context.subscriptions.push(languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider()));
+
+    // Load workspace config
+    wsConfig.eol = <string>workspace.getConfiguration("files").get("eol");
+    let tabSize = <number>workspace.getConfiguration("editor").get("tabSize");
+    let insertSpaces = <boolean>workspace.getConfiguration("editor").get("insertSpaces");
+
+    wsConfig.tab = '\t';
+    if (insertSpaces && tabSize > 0) {
+        wsConfig.tab = " ".repeat(tabSize);
+    }
 }
 
 function createToc() {
@@ -91,7 +101,7 @@ function deleteToc() {
 }
 
 function generateTocText(): string {
-    loadConfig();
+    loadTocConfig();
 
     let toc = [];
     let headingList = getHeadingList();
@@ -196,18 +206,7 @@ function onSave(doc: TextDocument) {
     }
 }
 
-function loadConfig() {
-    // Workspace config
-    wsConfig.eol = <string>workspace.getConfiguration("files").get("eol");
-    let tabSize = <number>workspace.getConfiguration("editor").get("tabSize");
-    let insertSpaces = <boolean>workspace.getConfiguration("editor").get("insertSpaces");
-
-    wsConfig.tab = '\t';
-    if (insertSpaces && tabSize > 0) {
-        wsConfig.tab = " ".repeat(tabSize);
-    }
-
-    // TOC config
+function loadTocConfig() {
     tocConfig.depth = <number>workspace.getConfiguration('markdown.extension.toc').get('depth');
     tocConfig.orderedList = <boolean>workspace.getConfiguration('markdown.extension.toc').get('orderedList');
     tocConfig.updateOnSave = <boolean>workspace.getConfiguration('markdown.extension.toc').get('updateOnSave');
