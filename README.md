@@ -68,7 +68,7 @@ Bugs, feature requests, ..., in [GitHub Issues](https://github.com/neilsustc/vsc
 
 - To avoid distractive HTML comments, this extension will 'guess' where the TOC is. Currently, a TOC will be recognized if
   - It's a list block in markdown syntax
-  - Its first list item tiile matches the first heading in the file
+  - Its first list item title matches the first heading in the file
 - CJK in TOC anchors (Needing a more complex slugify function)
 
 # Acknowledgement
