@@ -135,37 +135,42 @@ function detectTocRange(): Range {
     let start, end: Position;
     let headings = getHeadingList();
 
-    if (headings.length == 0) return null;
-    if (headings[0].title.length == 0) return null;
-
-    for (let index = 0; index < doc.lineCount; index++) {
-        let lineText = doc.lineAt(index).text;
-        if (start == null) { // No line matched with start yet
-            let regResult = lineText.match(/^[\-1]\.? \[?([^\]]+)/); // Match list block and get list item
-            if (regResult != null) {
-                let listItem = regResult[1];
-                if (listItem.startsWith(headings[0].title)) {
-                    start = new Position(index, 0);
-                    log('Start', start);
+    if (headings.length == 0) {
+        log('No headings');
+        return null;
+    } else if (headings[0].title.length == 0) {
+        log('The first heading is empty');
+        return null;
+    } else {
+        for (let index = 0; index < doc.lineCount; index++) {
+            let lineText = doc.lineAt(index).text;
+            if (start == null) { // No line matched with start yet
+                let regResult = lineText.match(/^[\-1]\.? \[?([^\]]+)/); // Match list block and get list item
+                if (regResult != null) {
+                    let listItem = regResult[1];
+                    if (listItem.startsWith(headings[0].title)) {
+                        start = new Position(index, 0);
+                        log('Start', start);
+                    }
+                }
+            } else { // Start line already found
+                lineText = lineText.trim();
+                if (lineText.match(/^[\-\d]\.? /) == null) { // End of a list block
+                    end = new Position(index - 1, doc.lineAt(index - 1).text.length);
+                    log('End', end);
+                    break;
+                } else if (index == doc.lineCount - 1) { // End of file
+                    end = new Position(index, doc.lineAt(index).text.length);
+                    log('End', end);
                 }
             }
-        } else { // Start line already found
-            lineText = lineText.trim();
-            if (lineText.match(/^[\-\d]\.? /) == null) { // End of a list block
-                end = new Position(index - 1, doc.lineAt(index - 1).text.length);
-                log('End', end);
-                break;
-            } else if (index == doc.lineCount - 1) { // End of file
-                end = new Position(index, doc.lineAt(index).text.length);
-                log('End', end);
-            }
         }
+        if ((start != null) && (end != null)) {
+            return new Range(start, end);
+        }
+        log('No TOC detected.');
+        return null;
     }
-    if ((start != null) && (end != null)) {
-        return new Range(start, end);
-    }
-    log('No TOC detected.')
-    return null;
 }
 
 function getHeadingList(): Heading[] {
