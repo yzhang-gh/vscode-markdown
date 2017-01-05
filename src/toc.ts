@@ -17,7 +17,7 @@ const tocSectionCfg = workspace.getConfiguration('markdown.extension.toc');
  * Workspace config
  */
 let wsConfig = { tab: '    ', eol: '\r\n' };
-let tocConfig = { depth: 6, orderedList: false, updateOnSave: false };
+let tocConfig = { depth: 6, orderedList: false, updateOnSave: false, plaintext: false };
 
 let alreadyUpdated = false; // Prevent updating TOC again after manually calling `doc.save()`
 
@@ -119,7 +119,7 @@ function generateTocText(): string {
             let row = [
                 wsConfig.tab.repeat(indentation),
                 tocConfig.orderedList ? ++order[indentation] + '. ' : '- ',
-                `[${heading.title}](#${slugify(heading.title)})`
+                tocConfig.plaintext ? heading.title : `[${heading.title}](#${slugify(heading.title)})`
             ];
             toc.push(row.join(''));
             if (tocConfig.orderedList) order.fill(0, indentation + 1);
@@ -216,6 +216,7 @@ function onSave(doc: TextDocument) {
 function loadTocConfig() {
     tocConfig.depth = tocSectionCfg.get<number>('depth');
     tocConfig.orderedList = tocSectionCfg.get<boolean>('orderedList');
+    tocConfig.plaintext = tocSectionCfg.get<boolean>('plaintext');
     tocConfig.updateOnSave = tocSectionCfg.get<boolean>('updateOnSave');
 }
 

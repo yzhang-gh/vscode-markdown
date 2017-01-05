@@ -87,6 +87,11 @@
                     "default": false,
                     "description": "Use ordered list (1. ..., 2. ...)"
                 },
+                "markdown.extension.toc.plaintext": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Just plain text"
+                },
                 "markdown.extension.toc.updateOnSave": {
                     "type": "boolean",
                     "default": true,

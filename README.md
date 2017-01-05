@@ -41,6 +41,7 @@ All you need for Markdown.
 | --- | --- | --- |
 | `markdown.extension.toc.depth` | `6` | Control the heading level to show in the table of contents. |
 | `markdown.extension.toc.orderedList` | `false` | Use ordered list in the table of contents. |
+| `markdown.extension.toc.plaintext` | `false` | Just plain text. |
 | `markdown.extension.toc.updateOnSave` | `false` | Automatically update the table of contents on save. |
 | `markdown.extension.preview.autoShowPreviewToSide` | `false` | Automatically show preview when openning a Markdown file. |
 
