@@ -23,10 +23,11 @@ export function activate(context: ExtensionContext) {
 
 function previewDoc(doc: TextDocument) {
     if (doc != currentDoc) {
-        commands.executeCommand('markdown.showPreviewToSide');
+        commands.executeCommand('markdown.showPreviewToSide').then(() => {
+            commands.executeCommand('workbench.action.navigateBack');
+        });
         currentDoc = doc;
     }
 }
 
-// 1. Active status transfered by closing other editor will not fire 'onDidChangeActiveTextEditor'
-// 2. How to reuse preview editor (i.e. do not open new tab for each md file)
+// How to reuse preview editor (i.e. do not open new tab for each md file)

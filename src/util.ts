@@ -14,7 +14,11 @@ export function log(msg: string, obj?) {
         } else if (obj.document !== undefined) { // TextEditor
             toStr = `TextEditor {doc: {fileName: ${obj.document.fileName}, languageId: ${obj.document.languageId}}}`;
         } else {
-            toStr = obj;
+            for (var key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    toStr += `${key}: ${obj[key]} `;
+                }
+            }
         }
         console.log(`${msg}: ${toStr}`);
     } else {
