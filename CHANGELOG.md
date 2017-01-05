@@ -1,9 +1,10 @@
-## 0.2.0
+## 0.2.0 (2017.01.05)
 
-- Automatically show preview to side when opening a Markdown file
+- NEW: Automatically show preview to side when opening a Markdown file
+- NEW: Option for plain text TOC
 
 ## 0.1.0
 
-- Keyboard shortcuts (toggle bold, italic, heading)
-- Table of contents (create, update)
+- NEW: Keyboard shortcuts (toggle bold, italic, heading)
+- NEW: Table of contents (create, update)
   - Options (depth, orderedList, updateOnSave)
