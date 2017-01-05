@@ -1,7 +1,7 @@
 {
     "name": "markdown-all-in-one",
     "displayName": "Markdown All in One",
-    "description": "All you need to write markdown",
+    "description": "All you need to write Markdown",
     "icon": "images/Markdown-mark.svg",
     "version": "0.1.0",
     "publisher": "yzhang",
@@ -80,17 +80,22 @@
                 "markdown.extension.toc.depth": {
                     "type": "number",
                     "default": 6,
-                    "description": "Depth control [1-6]."
+                    "description": "Depth control [1-6]"
                 },
                 "markdown.extension.toc.orderedList": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Use ordered list (1. ..., 2. ...)."
+                    "description": "Use ordered list (1. ..., 2. ...)"
                 },
                 "markdown.extension.toc.updateOnSave": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Auto update on save."
+                    "description": "Auto update on save"
+                },
+                "markdown.extension.preview.autoShowPreviewToSide": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Auto show preview to side"
                 }
             }
         }

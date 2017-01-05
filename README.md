@@ -1,13 +1,13 @@
 # Markdown Support for Visual Studio Code
 
-All you need for markdown.
+All you need for Markdown.
 
 ## Features
 
 - Keyboard shortcuts (toggle bold, italic, heading)
 - Table of contents
   - **No additional annoying tags like `<!-- TOC -->`**
-- ...
+- Automatically show preview when openning a Markdown file
 
 ### Keyboard Shortcuts
 
@@ -42,6 +42,7 @@ All you need for markdown.
 | `markdown.extension.toc.depth` | `6` | Control the heading level to show in the table of contents. |
 | `markdown.extension.toc.orderedList` | `false` | Use ordered list in the table of contents. |
 | `markdown.extension.toc.updateOnSave` | `false` | Automatically update the table of contents on save. |
+| `markdown.extension.preview.autoShowPreviewToSide` | `false` | Automatically show preview when openning a Markdown file. |
 
 ## Changelog
 
@@ -55,26 +56,24 @@ See [CHANGELOG](CHANGELOG.md) for more information.
 
 ## Roadmap
 
-- Automatically show preview side-by-side when openning a markdown file
-- ...
-
 These depend on the feedback and user requests.
 
 ## Contributing
 
-Bugs, feature requests, ..., in [GitHub Issues](https://github.com/neilsustc/vscode-markdown/issues).
+Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc/vscode-markdown/issues).
 
 ## Known Issues
 
 - To avoid distractive HTML comments, this extension will 'guess' where the TOC is. Currently, a TOC will be recognized if
-  - It's a list block in markdown syntax
+  - It's a list block in Markdown syntax
   - Its first list item title matches the first heading in the file
-- CJK in TOC anchors (Needing a more complex slugify function)
+- CJK in TOC anchors (A more complex slugify function is needed)
 
 ## Acknowledgement
 
 - [mdickin/vscode-markdown-shortcuts](https://github.com/mdickin/vscode-markdown-shortcuts)
 - [AlanWalk/Markdown-TOC](https://github.com/AlanWalk/Markdown-TOC)
+- [hnw/vscode-auto-open-markdown-preview](https://github.com/hnw/vscode-auto-open-markdown-preview)
 
 ## Useful Links
 
