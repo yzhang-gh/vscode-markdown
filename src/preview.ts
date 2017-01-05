@@ -6,20 +6,26 @@
 import { commands, window, workspace, ExtensionContext, TextDocument, TextEditor } from 'vscode';
 import { log } from './util';
 
-let currentDoc;
+let currentDoc: TextDocument;
 
 export function activate(context: ExtensionContext) {
     window.onDidChangeActiveTextEditor(editor => {
         log('EditorChanged', editor);
         if (editor && editor.document.languageId === 'markdown') {
-            if (editor.document != currentDoc) {
-                // commands.executeCommand('workbench.action.closeEditorsInOtherGroups').then(() => {
-                commands.executeCommand('markdown.showPreviewToSide');
-                currentDoc = editor.document;
-                // });
-            }
+            previewDoc(editor.document);
         }
     });
+
+    log('activated');
+    // The first time
+    previewDoc(window.activeTextEditor.document);
+}
+
+function previewDoc(doc: TextDocument) {
+    if (doc != currentDoc) {
+        commands.executeCommand('markdown.showPreviewToSide');
+        currentDoc = doc;
+    }
 }
 
 // 1. Active status transfered by closing other editor will not fire 'onDidChangeActiveTextEditor'

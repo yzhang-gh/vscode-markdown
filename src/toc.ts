@@ -12,6 +12,7 @@ const prefix = 'markdown.extension.toc.';
 const REGEXP_HEADING = /^\#{1,6}/;
 const REGEXP_CODE_BLOCK = /^```/;
 
+const tocSectionCfg = workspace.getConfiguration('markdown.extension.toc');
 /**
  * Workspace config
  */
@@ -208,9 +209,9 @@ function onSave(doc: TextDocument) {
 }
 
 function loadTocConfig() {
-    tocConfig.depth = <number>workspace.getConfiguration('markdown.extension.toc').get('depth');
-    tocConfig.orderedList = <boolean>workspace.getConfiguration('markdown.extension.toc').get('orderedList');
-    tocConfig.updateOnSave = <boolean>workspace.getConfiguration('markdown.extension.toc').get('updateOnSave');
+    tocConfig.depth = tocSectionCfg.get<number>('depth');
+    tocConfig.orderedList = tocSectionCfg.get<boolean>('orderedList');
+    tocConfig.updateOnSave = tocSectionCfg.get<boolean>('updateOnSave');
 }
 
 function getText(range: Range): string {
