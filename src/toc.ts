@@ -4,7 +4,7 @@
  * Modified from <https://github.com/AlanWalk/Markdown-TOC>
  */
 
-import { commands, languages, window, workspace, CancellationToken, CodeLens, CodeLensProvider, ExtensionContext, Position, Range, TextDocument } from 'vscode';
+import { commands, languages, window, workspace, CancellationToken, CodeLens, CodeLensProvider, ExtensionContext, Position, Range, TextDocument, TextDocumentWillSaveEvent } from 'vscode';
 import { log } from './util';
 
 const prefix = 'markdown.extension.toc.';
@@ -34,7 +34,7 @@ export function activate(context: ExtensionContext) {
         context.subscriptions.push(commands.registerCommand(cmd.command, cmd.callback));
     });
 
-    context.subscriptions.push(workspace.onDidSaveTextDocument(onSave));
+    context.subscriptions.push(workspace.onWillSaveTextDocument(onWillSave));
     context.subscriptions.push(languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider()));
 
     // Load workspace config
@@ -200,15 +200,10 @@ function getHeadingList(): Heading[] {
     return headingList;
 }
 
-function onSave(doc: TextDocument) {
+function onWillSave(e: TextDocumentWillSaveEvent) {
     if (!tocConfig.updateOnSave) return;
-    if (alreadyUpdated) {
-        alreadyUpdated = false;
-        return;
-    } else if (doc.languageId == 'markdown') {
+    if (e.document.languageId == 'markdown') {
         updateToc();
-        alreadyUpdated = true;
-        doc.save();
     }
 }
 
