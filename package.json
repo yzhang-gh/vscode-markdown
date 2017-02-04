@@ -6,7 +6,7 @@
     "version": "0.2.0",
     "publisher": "yzhang",
     "engines": {
-        "vscode": "^1.6.0"
+        "vscode": "^1.9.0"
     },
     "categories": [
         "Other"
@@ -28,51 +28,68 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
-        "commands": [{
-            "command": "markdown.extension.editing.toggleBold",
-            "title": "Markdown: Toggle Bold"
-        }, {
-            "command": "markdown.extension.editing.toggleItalic",
-            "title": "Markdown: Toggle Italic"
-        }, {
-            "command": "markdown.extension.editing.toggleHeadingUp",
-            "title": "Markdown: Toggle Heading Uplevel"
-        }, {
-            "command": "markdown.extension.editing.toggleHeadingDown",
-            "title": "Markdown: Toggle Heading Downlevel"
-        }, {
-            "command": "markdown.extension.toc.create",
-            "title": "Markdown: Create Table of Contents"
-        }, {
-            "command": "markdown.extension.toc.update",
-            "title": "Markdown: Update Table of Contents"
-        }],
-        "keybindings": [{
-            "command": "markdown.extension.editing.toggleBold",
-            "key": "ctrl+b",
-            "mac": "cmd+b",
-            "when": "editorTextFocus && editorLangId == markdown"
-        }, {
-            "command": "markdown.extension.editing.toggleItalic",
-            "key": "ctrl+i",
-            "mac": "cmd+i",
-            "when": "editorTextFocus && editorLangId == markdown"
-        }, {
-            "command": "markdown.extension.editing.toggleCodeSpan",
-            "key": "ctrl+m ctrl+c",
-            "mac": "cmd+m cmd+c",
-            "when": "editorTextFocus && editorLangId == markdown"
-        }, {
-            "command": "markdown.extension.editing.toggleHeadingUp",
-            "key": "ctrl+shift+]",
-            "mac": "cmd+shift+]",
-            "when": "editorTextFocus && editorLangId == markdown"
-        }, {
-            "command": "markdown.extension.editing.toggleHeadingDown",
-            "key": "ctrl+shift+[",
-            "mac": "cmd+shift+[",
-            "when": "editorTextFocus && editorLangId == markdown"
-        }],
+        "commands": [
+            {
+                "command": "markdown.extension.editing.toggleBold",
+                "title": "Markdown: Toggle Bold"
+            },
+            {
+                "command": "markdown.extension.editing.toggleItalic",
+                "title": "Markdown: Toggle Italic"
+            },
+            {
+                "command": "markdown.extension.editing.toggleHeadingUp",
+                "title": "Markdown: Toggle Heading Uplevel"
+            },
+            {
+                "command": "markdown.extension.editing.toggleHeadingDown",
+                "title": "Markdown: Toggle Heading Downlevel"
+            },
+            {
+                "command": "markdown.extension.toc.create",
+                "title": "Markdown: Create Table of Contents"
+            },
+            {
+                "command": "markdown.extension.toc.update",
+                "title": "Markdown: Update Table of Contents"
+            },
+            {
+                "command": "markdown.extension.print",
+                "title": "Markdown: Print to PDF"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "markdown.extension.editing.toggleBold",
+                "key": "ctrl+b",
+                "mac": "cmd+b",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "markdown.extension.editing.toggleItalic",
+                "key": "ctrl+i",
+                "mac": "cmd+i",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "markdown.extension.editing.toggleCodeSpan",
+                "key": "ctrl+m ctrl+c",
+                "mac": "cmd+m cmd+c",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "markdown.extension.editing.toggleHeadingUp",
+                "key": "ctrl+shift+]",
+                "mac": "cmd+shift+]",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "markdown.extension.editing.toggleHeadingDown",
+                "key": "ctrl+shift+[",
+                "mac": "cmd+shift+[",
+                "when": "editorTextFocus && editorLangId == markdown"
+            }
+        ],
         "configuration": {
             "type": "object",
             "title": "Markdown All in One",
@@ -110,11 +127,19 @@
         "compile": "tsc -watch -p ./",
         "postinstall": "node ./node_modules/vscode/bin/install"
     },
+    "dependencies": {
+        "markdown-it": "^8.2.2",
+        "highlight.js": "^9.9.0",
+        "html-pdf": "^2.1.0"
+    },
     "devDependencies": {
         "typescript": "^2.0.3",
         "vscode": "^1.0.0",
         "mocha": "^2.3.3",
         "@types/node": "^6.0.40",
-        "@types/mocha": "^2.2.32"
+        "@types/mocha": "^2.2.32",
+        "markdown-it": "^8.2.2",
+        "highlight.js": "^9.9.0",
+        "html-pdf": "^2.1.0"
     }
 }
