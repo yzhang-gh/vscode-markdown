@@ -9,11 +9,10 @@ import { log } from './util';
 let currentDoc: TextDocument;
 
 export function activate(context: ExtensionContext) {
-    if (!workspace.getConfiguration('markdown.extension.preview').get<boolean>('autoShowPreviewToSide'))
-        return;
-
     window.onDidChangeActiveTextEditor(editor => {
-        preview(editor);
+        if (editor && editor.document.languageId === 'markdown') {
+            preview(editor);
+        }
     });
 
     // The first time
@@ -21,14 +20,15 @@ export function activate(context: ExtensionContext) {
 }
 
 function preview(editor: TextEditor) {
-    if (editor && editor.document.languageId === 'markdown') {
-        let doc = editor.document;
-        if (doc != currentDoc) {
-            commands.executeCommand('markdown.showPreviewToSide').then(() => {
-                commands.executeCommand('workbench.action.navigateBack');
-            });
-            currentDoc = doc;
-        }
+    if (!workspace.getConfiguration('markdown.extension.preview').get<boolean>('autoShowPreviewToSide'))
+        return;
+
+    let doc = editor.document;
+    if (doc != currentDoc) {
+        commands.executeCommand('markdown.showPreviewToSide').then(() => {
+            commands.executeCommand('workbench.action.navigateBack');
+        });
+        currentDoc = doc;
     }
 }
 
