@@ -13,6 +13,7 @@ export function activate(context: ExtensionContext) {
     toc.activate(context);
     // Auto show preview to side
     preview.activate(context);
+    // Print to PDF
     print.activate(context);
 }
 
