@@ -1,5 +1,7 @@
 'use strict';
 
+// See https://github.com/Microsoft/vscode/tree/master/extensions/markdown/src
+
 import { commands, window, workspace, ExtensionContext, Uri } from 'vscode';
 import * as path from 'path';
 
@@ -38,29 +40,46 @@ export function activate(context: ExtensionContext) {
 
 function print() {
     let editor = window.activeTextEditor;
-    let uri = editor.document.uri;
+    let doc = editor.document;
+    let uri = doc.uri;
 
-    let body = render(editor.document.getText());
+    if (!editor || doc.languageId != 'markdown') {
+        window.showWarningMessage('No valid Markdown file');
+    }
+
+    if (doc.isUntitled) {
+        doc.save();
+    }
+
+    let outPath = uri.fsPath.replace(/\.md$/, '.pdf');
+
+    let body = render(doc.getText());
     let html = `<!DOCTYPE html>
         <html>
         <head>
             <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-            <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('markdown.css')).toString()}">
+            <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('github.css')).toString()}">
             <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('tomorrow.css')).toString()}">
+            <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('fix.css')).toString()}">
             ${computeCustomStyleSheetIncludes(uri)}
+            ${getSettingsOverrideStyles()}
         </head>
         <body>
             ${body}
         </body>
         </html>`;
-    console.log(html);
-    pdf.create(html, options).toFile('D:/test.pdf', function (err, res) {
+    // Print HTML to debug
+    // require('fs').writeFile('D:/test.html', html, 'utf-8', function (err) {
+    //     if (err) {
+    //         console.log(err);
+    //     }
+    // });
+    pdf.create(html, options).toFile(outPath, function (err, res) {
         if (err) {
             console.log(err);
         }
-        console.log(res);
+        // console.log(res);
     });
-    console.log('done');
 }
 
 function render(text: string) {
@@ -105,4 +124,17 @@ function fixHref(resource: Uri, href: string): string {
     return href;
 }
 
-// See https://github.com/Microsoft/vscode/tree/master/extensions/markdown/src
+function getSettingsOverrideStyles(): string {
+    const previewSettings = workspace.getConfiguration('markdown')['preview'];
+    if (!previewSettings) {
+        return '';
+    }
+    const {fontFamily, fontSize, lineHeight} = previewSettings;
+    return `<style>
+            body {
+                ${fontFamily ? `font-family: ${fontFamily};` : ''}
+                ${+fontSize > 0 ? `font-size: ${fontSize}px;` : ''}
+                ${+lineHeight > 0 ? `line-height: ${lineHeight};` : ''}
+            }
+        </style>`;
+}

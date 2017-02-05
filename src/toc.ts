@@ -18,8 +18,6 @@ const REGEXP_CODE_BLOCK = /^```/;
 let wsConfig = { tab: '    ', eol: '\r\n' };
 let tocConfig = { depth: 6, orderedList: false, updateOnSave: false, plaintext: false };
 
-let alreadyUpdated = false; // Prevent updating TOC again after manually calling `doc.save()`
-
 export function activate(context: ExtensionContext) {
     const cmds: Command[] = [
         { command: 'create', callback: createToc },
