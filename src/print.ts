@@ -25,9 +25,9 @@ let options = {
     "orientation": "portrait",
     "border": {
         "top": "1in",
-        "right": "1in",
+        "right": "0.8in",
         "bottom": "1in",
-        "left": "1in"
+        "left": "0.8in"
     }
 };
 
@@ -54,6 +54,9 @@ function print() {
     let outPath = uri.fsPath.replace(/\.md$/, '.pdf');
 
     let body = render(doc.getText());
+    body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
+        return `${p1}${fixHref(uri, p2)}${p3}`;
+    });
     let html = `<!DOCTYPE html>
         <html>
         <head>
@@ -69,11 +72,11 @@ function print() {
         </body>
         </html>`;
     // Print HTML to debug
-    // require('fs').writeFile('D:/test.html', html, 'utf-8', function (err) {
-    //     if (err) {
-    //         console.log(err);
-    //     }
-    // });
+    require('fs').writeFile(outPath.replace(/.pdf$/, '.html'), html, 'utf-8', function (err) {
+        if (err) {
+            console.log(err);
+        }
+    });
     pdf.create(html, options).toFile(outPath, function (err, res) {
         if (err) {
             console.log(err);
@@ -108,7 +111,7 @@ function fixHref(resource: Uri, href: string): string {
         }
 
         // Use href as file URI if it is absolute
-        if (this.isAbsolute(href)) {
+        if (isAbsolute(href)) {
             return Uri.file(href).toString();
         }
 
@@ -122,6 +125,10 @@ function fixHref(resource: Uri, href: string): string {
         return Uri.file(path.join(path.dirname(resource.fsPath), href)).toString();
     }
     return href;
+}
+
+function isAbsolute(p: string): boolean {
+    return path.normalize(p + '/') === path.normalize(path.resolve(p) + '/');
 }
 
 function getSettingsOverrideStyles(): string {
