@@ -116,10 +116,10 @@ function fixHref(resource: Uri, href: string): string {
         }
 
         // use a workspace relative path if there is a workspace
-        let rootPath = workspace.rootPath;
-        if (rootPath) {
-            return Uri.file(path.join(rootPath, href)).toString();
-        }
+        // let rootPath = workspace.rootPath;
+        // if (rootPath) {
+        //     return Uri.file(path.join(rootPath, href)).toString();
+        // }
 
         // otherwise look relative to the markdown file
         return Uri.file(path.join(path.dirname(resource.fsPath), href)).toString();
