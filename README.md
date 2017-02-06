@@ -56,6 +56,9 @@ All you need for Markdown.
 ### Latest 0.3.0 (2017.02.06)
 
 - NEW: Print your Markdown to PDF
+- NEW: At the end of a list item, pressing <kbd>Enter</kbd> will automatically insert the new list item bullet
+  - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it)
+- FIX: LF and CRLF in TOC
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
