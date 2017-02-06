@@ -45,10 +45,11 @@ function print() {
     let uri = doc.uri;
 
     if (!editor || doc.languageId != 'markdown') {
-        window.showWarningMessage('No valid Markdown file');
+        window.showErrorMessage('No valid Markdown file');
+        return;
     }
 
-    if (doc.isUntitled) {
+    if (doc.isDirty || doc.isUntitled) {
         doc.save();
     }
 
