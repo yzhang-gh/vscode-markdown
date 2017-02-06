@@ -1,6 +1,7 @@
 ## 0.3.0 (2017.02.06)
 
 - NEW: Print your Markdown to PDF
+- FIX: LF and CRLF in TOC
 
 ## 0.2.0 (2017.01.05)
 

@@ -1,6 +1,6 @@
 'use strict';
 
-import { commands, workspace, ExtensionContext, TextDocument } from 'vscode';
+import { languages, ExtensionContext, IndentAction } from 'vscode';
 import * as formatting from './formatting';
 import * as toc from './toc';
 import * as preview from './preview';
@@ -15,6 +15,23 @@ export function activate(context: ExtensionContext) {
     preview.activate(context);
     // Print to PDF
     print.activate(context);
+
+    languages.setLanguageConfiguration('markdown', {
+        onEnterRules: [
+            {
+                beforeText: /^[\s]*\* .*/,
+                action: {indentAction: IndentAction.None, appendText: '* '}
+            },
+            {
+                beforeText: /^[\s]*\+ .*/,
+                action: {indentAction: IndentAction.None, appendText: '+ '}
+            },
+            {
+                beforeText: /^[\s]*- .*/,
+                action: {indentAction: IndentAction.None, appendText: '- '}
+            }
+        ]
+    });
 }
 
 export function deactivate() {
