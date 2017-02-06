@@ -57,7 +57,7 @@ function createToc() {
 function updateToc() {
     let tocRange = detectTocRange();
     if (tocRange != null) {
-        let oldToc = getText(tocRange);
+        let oldToc = getText(tocRange).replace(/\r?\n|\r/g, wsConfig.eol);
         let newToc = generateTocText();
         if (oldToc != newToc) {
             // Keep the unchanged lines. (to prevent codeLens from re-emergence in UI)
@@ -227,7 +227,7 @@ class TocCodeLensProvider implements CodeLensProvider {
         let lenses: CodeLens[] = [];
         let tocRange = detectTocRange();
         if (tocRange == null) return lenses; // No TOC
-        let status = getText(tocRange) == generateTocText() ? 'up to date' : 'out of date';
+        let status = getText(tocRange).replace(/\r?\n|\r/g, wsConfig.eol) == generateTocText() ? 'up to date' : 'out of date';
         lenses.push(new CodeLens(tocRange, {
             arguments: [],
             title: `Table of Contents (${status})`,
