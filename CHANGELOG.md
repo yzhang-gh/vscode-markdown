@@ -1,3 +1,7 @@
+## 0.3.0 (2017.02.06)
+
+- NEW: Print your Markdown to PDF
+
 ## 0.2.0 (2017.01.05)
 
 - NEW: Automatically show preview to side when opening a Markdown file

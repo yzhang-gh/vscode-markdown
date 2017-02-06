@@ -7,7 +7,8 @@ All you need for Markdown.
 - Keyboard shortcuts (toggle bold, italic, heading)
 - Table of contents
   - **No additional annoying tags like `<!-- TOC -->`**
-- Automatically show preview when openning a Markdown file
+- Automatically show preview when openning a Markdown file (Disabled by default)
+- Print your Markdown to PDF
 
 ### Keyboard Shortcuts
 
@@ -16,6 +17,10 @@ All you need for Markdown.
 ### Table of Contents
 
 ![toc](images/gifs/toc.gif)
+
+### Print to PDF
+
+![print to pdf](images/gifs/pdf.gif)
 
 ## Shortcuts
 
@@ -34,6 +39,7 @@ All you need for Markdown.
 - Markdown: Toggle Heading Downlevel
 - Markdown: Create Table of Contents
 - Markdown: Update Table of Contents
+- Markdown: Print to PDF
 
 ## Supported Settings
 
@@ -47,10 +53,9 @@ All you need for Markdown.
 
 ## Changelog
 
-### Latest 0.2.0 (2017.01.05)
+### Latest 0.3.0 (2017.02.06)
 
-- NEW: Automatically show preview to side when opening a Markdown file
-- NEW: Option for plain text TOC
+- NEW: Print your Markdown to PDF
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
@@ -74,6 +79,7 @@ Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc
 - [mdickin/vscode-markdown-shortcuts](https://github.com/mdickin/vscode-markdown-shortcuts)
 - [AlanWalk/Markdown-TOC](https://github.com/AlanWalk/Markdown-TOC)
 - [hnw/vscode-auto-open-markdown-preview](https://github.com/hnw/vscode-auto-open-markdown-preview)
+- [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-markdown-pdf)
 
 ## Useful Links
 
