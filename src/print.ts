@@ -18,7 +18,8 @@ const md = require('markdown-it')({
         return str;
     }
 });
-const pdf = require('html-pdf');
+const htmlPdf = require('html-pdf');
+const fs = require('fs');
 
 let options = {
     "format": "A4",
@@ -51,7 +52,12 @@ function print() {
         doc.save();
     }
 
-    let outPath = uri.fsPath.replace(/\.md$/, '.pdf');
+    window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`);
+
+    let outPath = doc.fileName.replace(/\.md$/, '.pdf');
+    outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
+        return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
+    });
 
     let body = render(doc.getText());
     body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
@@ -72,16 +78,23 @@ function print() {
         </body>
         </html>`;
     // Print HTML to debug
-    require('fs').writeFile(outPath.replace(/.pdf$/, '.html'), html, 'utf-8', function (err) {
+    fs.writeFile(outPath.replace(/.pdf$/, '.html'), html, 'utf-8', function (err) {
         if (err) {
             console.log(err);
         }
     });
-    pdf.create(html, options).toFile(outPath, function (err, res) {
-        if (err) {
-            console.log(err);
-        }
-        // console.log(res);
+    htmlPdf.create(html, options).toBuffer(function (err, buffer) {
+        fs.writeFile(outPath, buffer, function (err) {
+            if (err) {
+                window.showErrorMessage(err.message);
+                window.setStatusBarMessage('');
+            } else {
+                window.setStatusBarMessage(`Output written on '${outPath}'`);
+                setTimeout(function () {
+                    window.setStatusBarMessage('');
+                }, 5000);
+            }
+        });
     });
 }
 
