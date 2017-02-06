@@ -2,7 +2,7 @@
 
 // See https://github.com/Microsoft/vscode/tree/master/extensions/markdown/src
 
-import { commands, window, workspace, ExtensionContext, Uri } from 'vscode';
+import { commands, window, workspace, Disposable, ExtensionContext, Uri } from 'vscode';
 import * as path from 'path';
 
 const hljs = require('highlight.js');
@@ -33,10 +33,17 @@ let options = {
 };
 
 let thisContext;
+let disposables: Disposable[] = [];
 
 export function activate(context: ExtensionContext) {
     thisContext = context;
     context.subscriptions.push(commands.registerCommand('markdown.extension.print', print));
+}
+
+export function deactivate() {
+    disposables.forEach(d => {
+        d.dispose();
+    });
 }
 
 function print() {
@@ -53,7 +60,7 @@ function print() {
         doc.save();
     }
 
-    window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`);
+    disposables.push(window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`));
 
     let outPath = doc.fileName.replace(/\.md$/, '.pdf');
     outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
@@ -88,11 +95,11 @@ function print() {
         fs.writeFile(outPath, buffer, function (err) {
             if (err) {
                 window.showErrorMessage(err.message);
-                window.setStatusBarMessage('');
+                disposables.push(window.setStatusBarMessage(''));
             } else {
-                window.setStatusBarMessage(`Output written on '${outPath}'`);
+                disposables.push(window.setStatusBarMessage(`Output written on '${outPath}'`));
                 setTimeout(function () {
-                    window.setStatusBarMessage('');
+                    disposables.push(window.setStatusBarMessage(''));
                 }, 5000);
             }
         });

@@ -35,4 +35,5 @@ export function activate(context: ExtensionContext) {
 }
 
 export function deactivate() {
+    print.deactivate();
 }
