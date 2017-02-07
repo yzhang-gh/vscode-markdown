@@ -17,18 +17,19 @@ export function activate(context: ExtensionContext) {
     print.activate(context);
 
     languages.setLanguageConfiguration('markdown', {
+        comments: { blockComment: ["<!-- ", " -->"] },
         onEnterRules: [
             {
-                beforeText: /^[\s]*\* .*/,
-                action: {indentAction: IndentAction.None, appendText: '* '}
+                beforeText: /^[\s]*\* .+/,
+                action: { indentAction: IndentAction.None, appendText: '* ' }
             },
             {
-                beforeText: /^[\s]*\+ .*/,
-                action: {indentAction: IndentAction.None, appendText: '+ '}
+                beforeText: /^[\s]*\+ .+/,
+                action: { indentAction: IndentAction.None, appendText: '+ ' }
             },
             {
-                beforeText: /^[\s]*- .*/,
-                action: {indentAction: IndentAction.None, appendText: '- '}
+                beforeText: /^[\s]*- .+/,
+                action: { indentAction: IndentAction.None, appendText: '- ' }
             }
         ]
     });
