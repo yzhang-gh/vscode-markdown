@@ -26,10 +26,10 @@ All you need for Markdown.
 
 | Key | Command |
 | --- | --- |
-| `ctrl` + `b` | Toggle bold |
-| `ctrl` + `i` | Toggle italic |
-| `ctrl` + `shift` + `]` | Toggle heading (uplevel) |
-| `ctrl` + `shift` + `[` | Toggle heading (downlevel) |
+| <kbd>ctrl</kbd> + <kbd>b</kbd> | Toggle bold |
+| <kbd>ctrl</kbd> + <kbd>i</kbd> | Toggle italic |
+| <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel) |
+| <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel) |
 
 ## Available Commands
 
