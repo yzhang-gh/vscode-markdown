@@ -91,18 +91,18 @@ function printToPdf(doc: TextDocument, resolve, reject) {
         </body>
         </html>`;
     // Print HTML to debug
-    fs.writeFile(outPath.replace(/.pdf$/, '.html'), html, 'utf-8', function (err) {
-        if (err) {
-            console.log(err);
-        }
-    });
+    // fs.writeFile(outPath.replace(/.pdf$/, '.html'), html, 'utf-8', function (err) {
+    //     if (err) {
+    //         console.log(err);
+    //     }
+    // });
     htmlPdf.create(html, options).toBuffer(function (err, buffer) {
         fs.writeFile(outPath, buffer, function (err) {
             if (err) {
                 window.showErrorMessage(err.message);
                 reject();
             } else {
-                window.setStatusBarMessage(`Output written on '${outPath}'`, 5000);
+                window.setStatusBarMessage(`Output written on '${outPath}'`, 3000);
                 resolve();
             }
         });
