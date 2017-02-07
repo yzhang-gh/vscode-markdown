@@ -33,7 +33,7 @@ let options = {
 };
 
 let thisContext;
-let disposables: Disposable[] = [];
+// let disposables: Disposable[] = [];
 
 export function activate(context: ExtensionContext) {
     thisContext = context;
@@ -41,9 +41,9 @@ export function activate(context: ExtensionContext) {
 }
 
 export function deactivate() {
-    disposables.forEach(d => {
-        d.dispose();
-    });
+    // disposables.forEach(d => {
+    //     d.dispose();
+    // });
 }
 
 function print() {
@@ -60,7 +60,7 @@ function print() {
         doc.save();
     }
 
-    disposables.push(window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`));
+    window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`, 5000);
 
     let outPath = doc.fileName.replace(/\.md$/, '.pdf');
     outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
@@ -95,12 +95,8 @@ function print() {
         fs.writeFile(outPath, buffer, function (err) {
             if (err) {
                 window.showErrorMessage(err.message);
-                disposables.push(window.setStatusBarMessage(''));
             } else {
-                disposables.push(window.setStatusBarMessage(`Output written on '${outPath}'`));
-                setTimeout(function () {
-                    disposables.push(window.setStatusBarMessage(''));
-                }, 5000);
+                window.setStatusBarMessage(`Output written on '${outPath}'`, 5000);
             }
         });
     });
