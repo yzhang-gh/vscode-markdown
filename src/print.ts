@@ -6,6 +6,7 @@ import { commands, window, workspace, Disposable, ExtensionContext, Uri } from '
 import * as path from 'path';
 
 const hljs = require('highlight.js');
+const mdnh = require('markdown-it-named-headers');
 const md = require('markdown-it')({
     html: true,
     highlight: (str: string, lang: string) => {
@@ -17,7 +18,7 @@ const md = require('markdown-it')({
         // return `<pre class="hljs"><code><div>${this.engine.utils.escapeHtml(str)}</div></code></pre>`;
         return str;
     }
-});
+}).use(mdnh, {});
 const htmlPdf = require('html-pdf');
 const fs = require('fs');
 
