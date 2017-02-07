@@ -2,7 +2,7 @@
 
 // See https://github.com/Microsoft/vscode/tree/master/extensions/markdown/src
 
-import { commands, window, workspace, Disposable, ExtensionContext, Uri } from 'vscode';
+import { commands, window, workspace, Disposable, ExtensionContext, TextDocument, Uri } from 'vscode';
 import * as path from 'path';
 
 const hljs = require('highlight.js');
@@ -61,8 +61,12 @@ function print() {
         doc.save();
     }
 
-    window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`, 5000);
+    window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`, new Promise((resolve, reject) => {
+        printToPdf(doc, resolve, reject);
+    }));
+}
 
+function printToPdf(doc: TextDocument, resolve, reject) {
     let outPath = doc.fileName.replace(/\.md$/, '.pdf');
     outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
         return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
@@ -70,7 +74,7 @@ function print() {
 
     let body = render(doc.getText());
     body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
-        return `${p1}${fixHref(uri, p2)}${p3}`;
+        return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
     });
     let html = `<!DOCTYPE html>
         <html>
@@ -79,7 +83,7 @@ function print() {
             <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('github.css')).toString()}">
             <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('tomorrow.css')).toString()}">
             <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('fix.css')).toString()}">
-            ${computeCustomStyleSheetIncludes(uri)}
+            ${computeCustomStyleSheetIncludes(doc.fileName)}
             ${getSettingsOverrideStyles()}
         </head>
         <body>
@@ -96,8 +100,10 @@ function print() {
         fs.writeFile(outPath, buffer, function (err) {
             if (err) {
                 window.showErrorMessage(err.message);
+                reject();
             } else {
                 window.setStatusBarMessage(`Output written on '${outPath}'`, 5000);
+                resolve();
             }
         });
     });
@@ -111,17 +117,17 @@ function getMediaPath(mediaFile: string): string {
     return thisContext.asAbsolutePath(path.join('media', mediaFile));
 }
 
-function computeCustomStyleSheetIncludes(uri: Uri): string {
+function computeCustomStyleSheetIncludes(fileName: string): string {
     const styles = workspace.getConfiguration('markdown')['styles'];
     if (styles && Array.isArray(styles) && styles.length > 0) {
         return styles.map((style) => {
-            return `<link rel="stylesheet" href="${fixHref(uri, style)}" type="text/css" media="screen">`;
+            return `<link rel="stylesheet" href="${fixHref(fileName, style)}" type="text/css" media="screen">`;
         }).join('\n');
     }
     return '';
 }
 
-function fixHref(resource: Uri, href: string): string {
+function fixHref(activeFileName: string, href: string): string {
     if (href) {
         // Use href if it is already an URL
         if (Uri.parse(href).scheme) {
@@ -140,7 +146,7 @@ function fixHref(resource: Uri, href: string): string {
         // }
 
         // otherwise look relative to the markdown file
-        return Uri.file(path.join(path.dirname(resource.fsPath), href)).toString();
+        return Uri.file(path.join(path.dirname(activeFileName), href)).toString();
     }
     return href;
 }

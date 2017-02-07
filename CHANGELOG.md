@@ -4,8 +4,8 @@
 - NEW: At the end of a list item, pressing <kbd>Enter</kbd> will automatically insert the new list item bullet
   - Blank list item won't be continued
   - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it) (Help wanted)
-- NEW: Override `blockComment` (`<!--`, `-->` to `<!-- `, ` -->`)
 - FIX: LF and CRLF in TOC
+- OTHER: Override `blockComment` (`<!--`, `-->` to <code>&lt;!--&nbsp;</code>, <code>&nbsp;--&gt;</code>)
 
 ## 0.2.0 (2017.01.05)
 
