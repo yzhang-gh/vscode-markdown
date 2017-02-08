@@ -24,7 +24,8 @@
     },
     "license": "MIT",
     "activationEvents": [
-        "onLanguage:markdown"
+        "onLanguage:markdown",
+        "workspaceContains:README.md"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -128,7 +129,7 @@
         "postinstall": "node ./node_modules/vscode/bin/install"
     },
     "dependencies": {
-		"markdown-it-named-headers": "^0.0.4",
+        "markdown-it-named-headers": "^0.0.4",
         "markdown-it": "^8.2.2",
         "highlight.js": "^9.9.0",
         "html-pdf": "^2.1.0"
