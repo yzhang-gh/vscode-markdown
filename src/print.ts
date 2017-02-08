@@ -61,22 +61,21 @@ function print() {
         doc.save();
     }
 
-    window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`, new Promise((resolve, reject) => {
-        printToPdf(doc, resolve, reject);
-    }));
+    window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`, printToPdf(doc));
 }
 
-function printToPdf(doc: TextDocument, resolve, reject) {
-    let outPath = doc.fileName.replace(/\.md$/, '.pdf');
-    outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
-        return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
-    });
+function printToPdf(doc: TextDocument) {
+    return new Promise((resolve, reject) => {
+        let outPath = doc.fileName.replace(/\.md$/, '.pdf');
+        outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
+            return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
+        });
 
-    let body = render(doc.getText());
-    body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
-        return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
-    });
-    let html = `<!DOCTYPE html>
+        let body = render(doc.getText());
+        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
+            return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
+        });
+        let html = `<!DOCTYPE html>
         <html>
         <head>
             <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
@@ -90,21 +89,22 @@ function printToPdf(doc: TextDocument, resolve, reject) {
             ${body}
         </body>
         </html>`;
-    // Print HTML to debug
-    // fs.writeFile(outPath.replace(/.pdf$/, '.html'), html, 'utf-8', function (err) {
-    //     if (err) {
-    //         console.log(err);
-    //     }
-    // });
-    htmlPdf.create(html, options).toBuffer(function (err, buffer) {
-        fs.writeFile(outPath, buffer, function (err) {
-            if (err) {
-                window.showErrorMessage(err.message);
-                reject();
-            } else {
-                window.setStatusBarMessage(`Output written on '${outPath}'`, 3000);
-                resolve();
-            }
+        // Print HTML to debug
+        // fs.writeFile(outPath.replace(/.pdf$/, '.html'), html, 'utf-8', function (err) {
+        //     if (err) {
+        //         console.log(err);
+        //     }
+        // });
+        htmlPdf.create(html, options).toBuffer(function (err, buffer) {
+            fs.writeFile(outPath, buffer, function (err) {
+                if (err) {
+                    window.showErrorMessage(err.message);
+                    reject();
+                } else {
+                    window.setStatusBarMessage(`Output written on '${outPath}'`, 3000);
+                    resolve();
+                }
+            });
         });
     });
 }
