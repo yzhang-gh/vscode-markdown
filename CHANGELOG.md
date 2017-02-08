@@ -1,6 +1,6 @@
-## 0.3.0 (2017.02.06)
+## 0.3.0 (2017.02.08)
 
-- NEW: Print your Markdown to PDF
+- ~~NEW: Print your Markdown to PDF~~ (Need more tests for the installation of required library)
 - NEW: At the end of a list item, pressing <kbd>Enter</kbd> will automatically insert the new list item bullet
   - Blank list item won't be continued
   - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it) (Help wanted)

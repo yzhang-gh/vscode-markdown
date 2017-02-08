@@ -8,7 +8,10 @@ All you need for Markdown.
 - Table of contents
   - **No additional annoying tags like `<!-- TOC -->`**
 - Automatically show preview when openning a Markdown file (Disabled by default)
-- Print your Markdown to PDF
+- ~~Print your Markdown to PDF~~ (coming soon)
+- Continue list item (when pressing <kbd>Enter</kbd> at the end of a list item)
+  - Blank list item won't be continued
+  - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it) (**Help wanted**)
 
 ### Keyboard Shortcuts
 
@@ -53,12 +56,14 @@ All you need for Markdown.
 
 ## Changelog
 
-### Latest 0.3.0 (2017.02.06)
+### Latest 0.3.0 (2017.02.08)
 
-- NEW: Print your Markdown to PDF
+- ~~NEW: Print your Markdown to PDF~~ (Need more tests for the installation of required library)
 - NEW: At the end of a list item, pressing <kbd>Enter</kbd> will automatically insert the new list item bullet
-  - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it)
+  - Blank list item won't be continued
+  - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it) (Help wanted)
 - FIX: LF and CRLF in TOC
+- OTHER: Override `blockComment` (`<!--`, `-->` to <code>&lt;!--&nbsp;</code>, <code>&nbsp;--&gt;</code>)
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
@@ -76,8 +81,13 @@ Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc
   - It's a list block in Markdown syntax
   - Its first list item title matches the first heading in the file
 - CJK in TOC anchors (A more complex slugify function is needed)
+- (**Help wanted**) Because of the using of `html-pdf` package,
+  - Anchors within PDF won't work
+  - No bookmarks generated
 
 ## Acknowledgement
+
+Inspired by and part of codes from,
 
 - [mdickin/vscode-markdown-shortcuts](https://github.com/mdickin/vscode-markdown-shortcuts)
 - [AlanWalk/Markdown-TOC](https://github.com/AlanWalk/Markdown-TOC)

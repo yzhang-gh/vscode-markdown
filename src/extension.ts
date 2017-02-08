@@ -14,7 +14,7 @@ export function activate(context: ExtensionContext) {
     // Auto show preview to side
     preview.activate(context);
     // Print to PDF
-    print.activate(context);
+    // print.activate(context);
 
     languages.setLanguageConfiguration('markdown', {
         comments: { blockComment: ["<!-- ", " -->"] },

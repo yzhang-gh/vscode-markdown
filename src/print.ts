@@ -33,7 +33,7 @@ let options = {
     }
 };
 
-let thisContext;
+let thisContext: ExtensionContext;
 // let disposables: Disposable[] = [];
 
 export function activate(context: ExtensionContext) {
