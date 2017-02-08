@@ -131,8 +131,7 @@
     "dependencies": {
         "markdown-it-named-headers": "^0.0.4",
         "markdown-it": "^8.2.2",
-        "highlight.js": "^9.9.0",
-        "html-pdf": "^2.1.0"
+        "highlight.js": "^9.9.0"
     },
     "devDependencies": {
         "typescript": "^2.0.3",
