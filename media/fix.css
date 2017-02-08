@@ -17,7 +17,8 @@ code {
     padding: 0;
 }
 
-code > div {
+pre:not(.hljs),
+pre.hljs code > div {
     padding: 1em;
     border-radius: 3px;
     overflow: auto;
