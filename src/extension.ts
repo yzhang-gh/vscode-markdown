@@ -5,6 +5,7 @@ import * as formatting from './formatting';
 import * as toc from './toc';
 import * as preview from './preview';
 import * as print from './print';
+import * as completion from './completion';
 
 export function activate(context: ExtensionContext) {
     // Shortcuts
@@ -15,6 +16,8 @@ export function activate(context: ExtensionContext) {
     preview.activate(context);
     // Print to PDF
     // print.activate(context);
+    // Completion items
+    completion.activate(context);
 
     languages.setLanguageConfiguration('markdown', {
         comments: { blockComment: ["<!-- ", " -->"] },
