@@ -16,6 +16,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 class MarkdownCompletionItemProvider implements vscode.CompletionItemProvider {
     public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Thenable<vscode.CompletionItem[]> {
-        return new Promise((resolve, reject) => { resolve(items); });
+        if (vscode.workspace.getConfiguration('markdown.extension.completion').get<boolean>('enabled')) {
+            return new Promise((resolve, reject) => { resolve(items); });
+        } else {
+            return new Promise((resolve, reject) => { reject(); });
+        }
     }
 }

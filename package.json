@@ -119,6 +119,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Auto show preview to side"
+                },
+                "markdown.extension.completion.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show word completion or not"
                 }
             }
         }

@@ -1,3 +1,8 @@
+## 0.4.0 (2017.02.23)
+
+- NEW: Word completion for frequently used words
+- NEW: Continue comment block `>`
+
 ## 0.3.0 (2017.02.08)
 
 - ~~NEW: Print your Markdown to PDF~~ (Need more tests for the installation of required library)
