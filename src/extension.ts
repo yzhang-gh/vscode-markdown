@@ -33,6 +33,10 @@ export function activate(context: ExtensionContext) {
             {
                 beforeText: /^[\s]*- .+/,
                 action: { indentAction: IndentAction.None, appendText: '- ' }
+            },
+            {
+                beforeText: /^> .+/,
+                action: { indentAction: IndentAction.None, appendText: '> ' }
             }
         ]
     });
