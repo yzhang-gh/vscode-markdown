@@ -9,9 +9,10 @@ All you need for Markdown.
   - **No additional annoying tags like `<!-- TOC -->`**
 - Automatically show preview when openning a Markdown file (Disabled by default)
 - ~~Print your Markdown to PDF~~ (coming soon)
-- Continue list item (when pressing <kbd>Enter</kbd> at the end of a list item)
+- Continue list item (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for comment block)
   - Blank list item won't be continued
   - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it) (**Help wanted**)
+- Word completion (for words that are long but frequently used)
 
 ### Keyboard Shortcuts
 
@@ -21,9 +22,9 @@ All you need for Markdown.
 
 ![toc](images/gifs/toc.gif)
 
-### Print to PDF
+<!-- ### Print to PDF
 
-![print to pdf](images/gifs/pdf.gif)
+![print to pdf](images/gifs/pdf.gif) -->
 
 ## Shortcuts
 
@@ -53,10 +54,16 @@ All you need for Markdown.
 | `markdown.extension.toc.plaintext` | `false` | Just plain text. |
 | `markdown.extension.toc.updateOnSave` | `false` | Automatically update the table of contents on save. |
 | `markdown.extension.preview.autoShowPreviewToSide` | `false` | Automatically show preview when openning a Markdown file. |
+| `markdown.extension.completion.enabled` | `true` | Show word suggestions or not. |
 
 ## Changelog
 
-### Latest 0.3.0 (2017.02.08)
+### Latest 0.4.0 (2017.02.23)
+
+- NEW: Word completion (for words that are long but frequently used)
+- NEW: Continue comment block `>`
+
+### 0.3.0 (2017.02.08)
 
 - ~~NEW: Print your Markdown to PDF~~ (Need more tests for the installation of required library)
 - NEW: At the end of a list item, pressing <kbd>Enter</kbd> will automatically insert the new list item bullet
