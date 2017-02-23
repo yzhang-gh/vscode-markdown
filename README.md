@@ -9,7 +9,7 @@ All you need for Markdown.
   - **No additional annoying tags like `<!-- TOC -->`**
 - Automatically show preview when openning a Markdown file (Disabled by default)
 - ~~Print your Markdown to PDF~~ (coming soon)
-- Continue list item (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for comment block)
+- Continue list item (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
   - Blank list item won't be continued
   - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it) (**Help wanted**)
 - Word completion (for words that are long but frequently used)
@@ -61,7 +61,7 @@ All you need for Markdown.
 ### Latest 0.4.0 (2017.02.23)
 
 - NEW: Word completion (for words that are long but frequently used)
-- NEW: Continue comment block `>`
+- NEW: Continue quote block `>`
 
 ### 0.3.0 (2017.02.08)
 

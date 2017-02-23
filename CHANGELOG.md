@@ -1,7 +1,7 @@
 ## 0.4.0 (2017.02.23)
 
 - NEW: Word completion for frequently used words
-- NEW: Continue comment block `>`
+- NEW: Continue quote block `>`
 
 ## 0.3.0 (2017.02.08)
 
