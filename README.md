@@ -12,7 +12,7 @@ All you need for Markdown.
 - Continue list item (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
   - Blank list item won't be continued
   - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it) (**Help wanted**)
-- Word completion (for words that are long but frequently used)
+- Word completion
 
 Note: After version 1.10.0, the language specific default setting for Markdown disables quick suggestions. To enable this, put
 ```
@@ -68,7 +68,7 @@ into `settings.json`.
 
 ### Latest 0.4.0 (2017.02.23)
 
-- NEW: Word completion (for words that are long but frequently used)
+- NEW: Word completion
 - NEW: Continue quote block `>`
 
 ### 0.3.0 (2017.02.08)

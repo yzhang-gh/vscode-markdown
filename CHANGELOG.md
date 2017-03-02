@@ -1,3 +1,7 @@
+## 0.4.2
+
+- OTHER: Word completion, more words, more accurate
+
 ## 0.4.1
 
 - FIX: Typo
