@@ -3,7 +3,7 @@
     "displayName": "Markdown All in One",
     "description": "All you need to write Markdown",
     "icon": "images/Markdown-mark.svg",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.6.0"

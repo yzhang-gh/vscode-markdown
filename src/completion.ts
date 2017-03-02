@@ -28,7 +28,8 @@ class MarkdownCompletionItemProvider implements vscode.CompletionItemProvider {
     public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Thenable<vscode.CompletionItem[]> {
         if (vscode.workspace.getConfiguration('markdown.extension.completion').get<boolean>('enabled')) {
             let textBefore = document.lineAt(position.line).text.substring(0, position.character);
-            let firstLetter = textBefore.split(' ').pop().charAt(0).toLowerCase();
+            textBefore = textBefore.replace(/\W/g, ' ');
+            let firstLetter = textBefore.split(/[\s]+/).pop().charAt(0).toLowerCase();
             return new Promise((resolve, reject) => { resolve(indexedItems[firstLetter]); });
         } else {
             return new Promise((resolve, reject) => { reject(); });

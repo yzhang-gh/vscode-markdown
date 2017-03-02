@@ -20,7 +20,7 @@ Note: After version 1.10.0, the language specific default setting for Markdown d
     "editor.quickSuggestions": true
 }
 ```
-into `settings.json`.
+into your `settings.json`.
 
 ### Keyboard Shortcuts
 

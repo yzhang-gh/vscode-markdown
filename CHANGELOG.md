@@ -1,3 +1,7 @@
+## 0.4.3
+
+- FIX: Word completion, handle `,`, `.`, ...
+
 ## 0.4.2
 
 - OTHER: Word completion, more words, more accurate
