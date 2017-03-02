@@ -14,6 +14,14 @@ All you need for Markdown.
   - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it) (**Help wanted**)
 - Word completion (for words that are long but frequently used)
 
+Note: After version 1.10.0, the language specific default setting for Markdown disables quick suggestions. To enable this, put
+```
+"[markdown]": {
+    "editor.quickSuggestions": true
+}
+```
+into `settings.json`.
+
 ### Keyboard Shortcuts
 
 ![shortcuts](images/gifs/shortcuts.gif)

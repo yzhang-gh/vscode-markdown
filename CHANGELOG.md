@@ -1,3 +1,7 @@
+## 0.4.1
+
+- FIX: Typo
+
 ## 0.4.0 (2017.02.23)
 
 - NEW: Word completion for frequently used words
