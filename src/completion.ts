@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
         indexes.forEach(i => {
             indexedItems[i] = [];
         });
-        let words = data.toString().split('\n');
+        let words = data.toString().split(/\r?\n/);
         words.forEach(word => {
             let firstLetter = word.charAt(0).toLowerCase();
             indexedItems[firstLetter].push(new vscode.CompletionItem(word, vscode.CompletionItemKind.Text));
