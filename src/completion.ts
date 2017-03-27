@@ -29,8 +29,23 @@ class MarkdownCompletionItemProvider implements vscode.CompletionItemProvider {
         if (vscode.workspace.getConfiguration('markdown.extension.completion').get<boolean>('enabled')) {
             let textBefore = document.lineAt(position.line).text.substring(0, position.character);
             textBefore = textBefore.replace(/\W/g, ' ');
-            let firstLetter = textBefore.split(/[\s]+/).pop().charAt(0).toLowerCase();
-            return new Promise((resolve, reject) => { resolve(indexedItems[firstLetter]); });
+            let currentWord = textBefore.split(/[\s]+/).pop();
+            let firstLetter = currentWord.charAt(0);
+            // [2017.03.24] Found that this function is only invoked when you begin a new word. It means that currentWord.length == 1 when invoked.
+            console.log('currentWord', currentWord, '\n');
+            console.log('firstLetter', firstLetter, '\n');
+            if (firstLetter.toLowerCase() == firstLetter) { /* Not capital */
+                return new Promise((resolve, reject) => { resolve(indexedItems[firstLetter]); });
+            } else {
+                let completions = indexedItems[firstLetter.toLowerCase()]
+                    // .filter(w => { return w.label.startsWith(currentWord) }) // Since currentWord == firstLetter, this line will do nothing
+                    .map(w => {
+                        let newLabel = w.label.charAt(0).toUpperCase() + w.label.slice(1);
+                        return new vscode.CompletionItem(newLabel, vscode.CompletionItemKind.Text)
+                    });
+                console.log('completions', completions);
+                return new Promise((resolve, reject) => { resolve(completions) })
+            }
         } else {
             return new Promise((resolve, reject) => { reject(); });
         }
