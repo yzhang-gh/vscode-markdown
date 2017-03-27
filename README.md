@@ -66,19 +66,10 @@ into your `settings.json`.
 
 ## Changelog
 
-### Latest 0.4.0 (2017.02.23)
+### Latest 0.4.4 (2017.03.27)
 
-- NEW: Word completion
-- NEW: Continue quote block `>`
-
-### 0.3.0 (2017.02.08)
-
-- ~~NEW: Print your Markdown to PDF~~ (Need more tests for the installation of required library)
-- NEW: At the end of a list item, pressing <kbd>Enter</kbd> will automatically insert the new list item bullet
-  - Blank list item won't be continued
-  - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it) (Help wanted)
-- FIX: LF and CRLF in TOC
-- OTHER: Override `blockComment` (`<!--`, `-->` to <code>&lt;!--&nbsp;</code>, <code>&nbsp;--&gt;</code>)
+- NEW: Suggest capitalized words
+- OTHER: More words
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 

@@ -1,3 +1,8 @@
+## 0.4.4 (2017.03.27)
+
+- NEW: Suggest capitalized words
+- OTHER: More words
+
 ## 0.4.3
 
 - FIX: Word completion, handle `,`, `.`, ...
