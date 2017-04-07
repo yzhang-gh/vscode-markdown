@@ -86,7 +86,7 @@ function wrapSelection(startPattern, endPattern?) {
             });
         }
         else {
-            let newPosition = new Position(editor.selection.active.line, editor.selection.active.character + 2)
+            let newPosition = new Position(editor.selection.active.line, editor.selection.active.character + endPattern.length)
             editor.selection = new Selection(newPosition, newPosition);
         }
     }
