@@ -121,10 +121,18 @@ function atEndOfWrappedWord(startPattern, endPattern): boolean {
     if (selection.isEmpty) {
         let position = selection.active;
         
-        selection = new Selection(new Position(position.line, position.character - startPattern.length), position);
+        let startPositionCharacter = position.character - startPattern.length;
+        let endPositionCharacter = position.character + endPattern.length;
+        
+        // If cursor on empty line:
+        if (startPositionCharacter < 0) {
+            startPositionCharacter = 0;
+        }
+        
+        selection = new Selection(new Position(position.line, startPositionCharacter), position);
         let leftText = editor.document.getText(selection);
         
-        selection = new Selection(new Position(position.line, position.character + endPattern.length), position);
+        selection = new Selection(new Position(position.line, endPositionCharacter), position);
         let rightText = editor.document.getText(selection);
         
         if (leftText != startPattern && rightText == endPattern) {
