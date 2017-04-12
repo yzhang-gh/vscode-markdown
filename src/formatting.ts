@@ -76,17 +76,23 @@ function wrapSelection(startPattern, endPattern?) {
     let selection = editor.selection;
 
     if (selection.isEmpty) { // No selected text
-        let position = selection.active;
-        let newPosition = position.with(position.line, position.character + startPattern.length);
-        editor.edit((editBuilder) => {
-            editBuilder.insert(selection.start, startPattern + endPattern);
-        }).then(() => {
+        if (!atEndOfWrappedWord(startPattern, endPattern)) {
+            let position = selection.active;
+            let newPosition = position.with(position.line, position.character + startPattern.length);
+            editor.edit((editBuilder) => {
+                editBuilder.insert(selection.start, startPattern + endPattern);
+            }).then(() => {
+                editor.selection = new Selection(newPosition, newPosition);
+            });
+        }
+        else {
+            let newPosition = new Position(editor.selection.active.line, editor.selection.active.character + endPattern.length)
             editor.selection = new Selection(newPosition, newPosition);
-        });
+        }
     }
     else { // Text selected
         let text = editor.document.getText(selection);
-        if (isMatch(text, startPattern, endPattern)) {
+        if (isWrapped(text, startPattern, endPattern)) {
             replaceWith(selection, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
         }
         else {
@@ -95,7 +101,7 @@ function wrapSelection(startPattern, endPattern?) {
     }
 }
 
-function isMatch(text, startPattern, endPattern?): boolean {
+function isWrapped(text, startPattern, endPattern?): boolean {
     // if (startPattern.constructor === RegExp) {
     //     return startPattern.test(text);
     // }
@@ -107,4 +113,31 @@ function replaceWith(selection, newText) {
     editor.edit((edit) => {
         edit.replace(selection, newText);
     });
+}
+
+function atEndOfWrappedWord(startPattern, endPattern): boolean {
+    let editor = window.activeTextEditor;
+    let selection = editor.selection;
+    if (selection.isEmpty) {
+        let position = selection.active;
+        
+        let startPositionCharacter = position.character - startPattern.length;
+        let endPositionCharacter = position.character + endPattern.length;
+        
+        // If cursor on empty line:
+        if (startPositionCharacter < 0) {
+            startPositionCharacter = 0;
+        }
+        
+        selection = new Selection(new Position(position.line, startPositionCharacter), position);
+        let leftText = editor.document.getText(selection);
+        
+        selection = new Selection(new Position(position.line, endPositionCharacter), position);
+        let rightText = editor.document.getText(selection);
+        
+        if (leftText != startPattern && rightText == endPattern) {
+            return true;
+        }
+    }
+    return false;
 }
