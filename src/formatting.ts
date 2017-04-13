@@ -26,11 +26,11 @@ export function activate(context: ExtensionContext) {
 }
 
 function toggleBold() {
-    wrapSelection('**');
+    styleByWrapping('**')
 }
 
 function toggleItalic() {
-    wrapSelection('*');
+    styleByWrapping('*');
 }
 
 // function toggleCodeSpan() {
@@ -67,8 +67,8 @@ function toggleHeadingDown() {
     });
 }
 
-function wrapSelection(startPattern, endPattern?) {
-    if (endPattern == undefined || endPattern == null) {
+function styleByWrapping(startPattern, endPattern?) {
+    if (endPattern == undefined) {
         endPattern = startPattern;
     }
 
@@ -76,35 +76,52 @@ function wrapSelection(startPattern, endPattern?) {
     let selection = editor.selection;
 
     if (selection.isEmpty) { // No selected text
-        if (!atEndOfWrappedWord(startPattern, endPattern)) {
-            let position = selection.active;
-            let newPosition = position.with(position.line, position.character + startPattern.length);
-            editor.edit((editBuilder) => {
-                editBuilder.insert(selection.start, startPattern + endPattern);
-            }).then(() => {
-                editor.selection = new Selection(newPosition, newPosition);
-            });
+        let position = selection.active;
+        let newPosition = position;
+        switch (getContext(startPattern)) {
+            case `${startPattern}|${endPattern}`:
+                newPosition = position.with(position.line, position.character - startPattern.length);
+                editor.edit((editBuilder) => {
+                    editBuilder.delete(new Range(newPosition, position.with({ character: position.character + endPattern.length })));
+                });
+                break;
+            case `${startPattern}some text|${endPattern}`:
+                newPosition = position.with({ character: position.character + endPattern.length });
+                break;
+            case '|':
+                editor.edit((editBuilder) => {
+                    editBuilder.insert(selection.start, startPattern + endPattern);
+                });
+                newPosition = position.with({ character: position.character + startPattern.length });
+                break;
         }
-        else {
-            let newPosition = new Position(editor.selection.active.line, editor.selection.active.character + endPattern.length)
-            editor.selection = new Selection(newPosition, newPosition);
-        }
+        editor.selection = new Selection(newPosition, newPosition);
     }
     else { // Text selected
-        let text = editor.document.getText(selection);
-        if (isWrapped(text, startPattern, endPattern)) {
-            replaceWith(selection, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
-        }
-        else {
-            replaceWith(selection, startPattern + text + endPattern);
-        }
+        wrapSelection(startPattern);
+    }
+}
+
+function wrapSelection(startPattern, endPattern?) {
+    if (endPattern == undefined) {
+        endPattern = startPattern;
+    }
+
+    let editor = window.activeTextEditor;
+    let selection = editor.selection;
+    let text = editor.document.getText(selection);
+    if (isWrapped(text, startPattern)) {
+        replaceWith(selection, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
+    }
+    else {
+        replaceWith(selection, startPattern + text + endPattern);
     }
 }
 
 function isWrapped(text, startPattern, endPattern?): boolean {
-    // if (startPattern.constructor === RegExp) {
-    //     return startPattern.test(text);
-    // }
+    if (endPattern == undefined) {
+        endPattern = startPattern;
+    }
     return text.startsWith(startPattern) && text.endsWith(endPattern);
 }
 
@@ -115,29 +132,31 @@ function replaceWith(selection, newText) {
     });
 }
 
-function atEndOfWrappedWord(startPattern, endPattern): boolean {
+function getContext(startPattern, endPattern?): string {
+    if (endPattern == undefined) {
+        endPattern = startPattern;
+    }
+
     let editor = window.activeTextEditor;
     let selection = editor.selection;
-    if (selection.isEmpty) {
-        let position = selection.active;
-        
-        let startPositionCharacter = position.character - startPattern.length;
-        let endPositionCharacter = position.character + endPattern.length;
-        
-        // If cursor on empty line:
-        if (startPositionCharacter < 0) {
-            startPositionCharacter = 0;
-        }
-        
-        selection = new Selection(new Position(position.line, startPositionCharacter), position);
-        let leftText = editor.document.getText(selection);
-        
-        selection = new Selection(new Position(position.line, endPositionCharacter), position);
-        let rightText = editor.document.getText(selection);
-        
-        if (leftText != startPattern && rightText == endPattern) {
-            return true;
+    let position = selection.active;
+
+    let startPositionCharacter = position.character - startPattern.length;
+    let endPositionCharacter = position.character + endPattern.length;
+
+    if (startPositionCharacter < 0) {
+        startPositionCharacter = 0;
+    }
+
+    let leftText = editor.document.getText(selection.with({ start: position.with({ character: startPositionCharacter }) }));
+    let rightText = editor.document.getText(selection.with({ end: position.with({ character: endPositionCharacter }) }));
+
+    if (rightText == endPattern) {
+        if (leftText == startPattern) {
+            return `${startPattern}|${endPattern}`
+        } else {
+            return `${startPattern}some text|${endPattern}`
         }
     }
-    return false;
+    return '|';
 }
