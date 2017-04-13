@@ -32,8 +32,8 @@ class MarkdownCompletionItemProvider implements vscode.CompletionItemProvider {
             let currentWord = textBefore.split(/[\s]+/).pop();
             let firstLetter = currentWord.charAt(0);
             // [2017.03.24] Found that this function is only invoked when you begin a new word. It means that currentWord.length == 1 when invoked.
-            console.log('currentWord', currentWord, '\n');
-            console.log('firstLetter', firstLetter, '\n');
+            // console.log('currentWord', currentWord);
+            // console.log('firstLetter', firstLetter);
             if (firstLetter.toLowerCase() == firstLetter) { /* Not capital */
                 return new Promise((resolve, reject) => { resolve(indexedItems[firstLetter]); });
             } else {
