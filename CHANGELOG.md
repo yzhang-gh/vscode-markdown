@@ -1,3 +1,9 @@
+## 0.5.0 (2017.04.13)
+
+- NEW: New shortcut behavior to let cursor jump out of **bold** or *italic* block
+
+Thanks, [Zach Kirkland (@zkirkland)](https://github.com/zkirkland)
+
 ## 0.4.4 (2017.03.27)
 
 - NEW: Suggest capitalized words
