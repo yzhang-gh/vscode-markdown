@@ -1,17 +1,17 @@
 # Markdown Support for Visual Studio Code
 
-All you need for Markdown.
+All you need for Markdown (keyboard shortcuts, table of contents, auto preview and more).
 
 ## Features
 
 - Keyboard shortcuts (toggle bold, italic, heading)
-- Table of contents
-  - **No additional annoying tags like `<!-- TOC -->`**
+  - Different behaviors depending on the context (see introduction below)
+- Table of contents (**No additional annoying tags like `<!-- TOC -->`**)
 - Automatically show preview when openning a Markdown file (Disabled by default)
-- ~~Print your Markdown to PDF~~ (coming soon)
+- ~~Print your Markdown to PDF~~ (not satisfied with the current solution)
 - Continue list item (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
   - Blank list item won't be continued
-  - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it) (**Help wanted**)
+  - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it)
 - Word completion
 
 Note: After version 1.10.0, the language specific default setting for Markdown disables quick suggestions. To enable this, put
@@ -24,11 +24,25 @@ into your `settings.json`.
 
 ### Keyboard Shortcuts
 
+- When toggling bold or italic,
+  - If there is NO selection, pressing the hotkey will **turn on** or **off** the style
+    - `|` becomes `**|**` or `*|*` (turn on the style)
+    - `**|**` or `*|*` becomes `|` (turn off the style)
+    - `**bold|**` or `*italic|*` becomes `**bold**|` or `*italic*|` (turn off the style, if the cursor is at the end of a **bold** or *italic* block)
+  - If there is a selection, pressing the hotkey will add or remove asterisk (`*`) depending on the selected text
+- When toggling heading,
+  - the same logic with indenting/unindenting one line (<kbd>ctrl</kbd> + <kbd>]</kbd>/<kbd>[</kbd>)
+  - easily adjusting the heading level without moving cursor to the beginning of the line (<kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>]</kbd>/<kbd>[</kbd>)
+
 ![shortcuts](images/gifs/shortcuts.gif)
 
 ### Table of Contents
 
 ![toc](images/gifs/toc.gif)
+
+### Word Completion
+
+![word completion](images/gifs/word-completion.gif)
 
 <!-- ### Print to PDF
 
@@ -66,7 +80,13 @@ into your `settings.json`.
 
 ## Changelog
 
-### Latest 0.4.4 (2017.03.27)
+### Latest 0.5.0 (2017.04.13)
+
+- NEW: New shortcut behavior to let cursor jump out of **bold** or *italic* block
+
+Thanks, [Zach Kirkland (@zkirkland)](https://github.com/zkirkland)
+
+### 0.4.4 (2017.03.27)
 
 - NEW: Suggest capitalized words
 - OTHER: More words
