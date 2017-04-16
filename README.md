@@ -8,6 +8,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   - Different behaviors depending on the context (see introduction below)
 - Table of contents (**No additional annoying tags like `<!-- TOC -->`**)
 - Automatically show preview when openning a Markdown file (Disabled by default)
+  - Automatically close preview when changing editor
 - ~~Print your Markdown to PDF~~ (not satisfied with the current solution)
 - Continue list item (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
   - Blank list item won't be continued
@@ -80,16 +81,15 @@ into your `settings.json`.
 
 ## Changelog
 
-### Latest 0.5.0 (2017.04.13)
+### Latest 0.5.1 (2017.04.16)
+
+- NEW: Automatically close Markdown preview when changing editor
+
+### 0.5.0 (2017.04.13)
 
 - NEW: New shortcut behavior to let cursor jump out of **bold** or *italic* block
 
 Thanks, [Zach Kirkland (@zkirkland)](https://github.com/zkirkland)
-
-### 0.4.4 (2017.03.27)
-
-- NEW: Suggest capitalized words
-- OTHER: More words
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
