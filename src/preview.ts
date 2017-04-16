@@ -12,6 +12,9 @@ export function activate(context: ExtensionContext) {
     window.onDidChangeActiveTextEditor(editor => {
         if (editor && editor.document.languageId === 'markdown') {
             preview(editor);
+        } else {
+            commands.executeCommand('workbench.action.closeEditorsInOtherGroups');
+            currentDoc = null;
         }
     });
 
@@ -26,7 +29,7 @@ function preview(editor: TextEditor) {
     let doc = editor.document;
     if (doc != currentDoc) {
         commands.executeCommand('markdown.showPreviewToSide').then(() => {
-            commands.executeCommand('workbench.action.navigateBack');
+            commands.executeCommand('markdown.showSource');
         });
         currentDoc = doc;
     }
