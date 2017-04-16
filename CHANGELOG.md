@@ -1,3 +1,7 @@
+## 0.5.1 (2017.04.16)
+
+- NEW: Automatic close Markdown preview when change editor
+
 ## 0.5.0 (2017.04.13)
 
 - NEW: New shortcut behavior to let cursor jump out of **bold** or *italic* block
