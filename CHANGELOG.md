@@ -1,3 +1,7 @@
+## 0.5.2 (2017.04.17)
+
+- Rollback
+
 ## 0.5.1 (2017.04.16)
 
 - NEW: Automatic close Markdown preview when change editor
