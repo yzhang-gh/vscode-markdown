@@ -37,6 +37,10 @@ export function activate(context: ExtensionContext) {
             {
                 beforeText: /^> .+/,
                 action: { indentAction: IndentAction.None, appendText: '> ' }
+            },
+            {
+                beforeText: /^[0-9][.] .+/,
+                action: { indentAction: IndentAction.None, appendText: '1. ' }
             }
         ]
     });
