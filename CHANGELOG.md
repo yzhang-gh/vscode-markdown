@@ -1,10 +1,14 @@
+## 0.6.0 (2017.05.15)
+
+- NEW: Edit lists with <kbd>Enter</kbd>, <kbd>Tab</kbd> and <kbd>Backspace</kbd>
+
 ## 0.5.2 (2017.04.17)
 
 - Rollback
 
 ## 0.5.1 (2017.04.16)
 
-- NEW: Automatic close Markdown preview when change editor
+- ~~NEW: Automatic close Markdown preview when change editor~~
 
 ## 0.5.0 (2017.04.13)
 

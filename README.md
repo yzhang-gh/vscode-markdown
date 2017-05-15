@@ -7,12 +7,13 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - Keyboard shortcuts (toggle bold, italic, heading)
   - Different behaviors depending on the context (see introduction below)
 - Table of contents (**No additional annoying tags like `<!-- TOC -->`**)
-- Automatically show preview when openning a Markdown file (Disabled by default)
+- Automatically show preview when opening a Markdown file (Disabled by default)
   - ~~Automatically close preview when changing editor~~
 - ~~Print your Markdown to PDF~~ (not satisfied with the current solution)
 - Continue list item (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
+  - Pressing <kbd>Tab</kbd> at the beginning of a list item will indent it
+  - Pressing <kbd>Backspace</kbd> at the beginning of a list item will unindent it (or delete the list marker)
   - Blank list item won't be continued
-  - (Planed: Pressing <kbd>Tab</kbd> on the blank list item will indent it)
 - Word completion
 
 Note: After version 1.10.0, the language specific default setting for Markdown disables quick suggestions. To enable this, put
@@ -66,7 +67,7 @@ into your `settings.json`.
 - Markdown: Toggle Heading Downlevel
 - Markdown: Create Table of Contents
 - Markdown: Update Table of Contents
-- Markdown: Print to PDF
+- ~~Markdown: Print to PDF~~
 
 ## Supported Settings
 
@@ -76,20 +77,15 @@ into your `settings.json`.
 | `markdown.extension.toc.orderedList` | `false` | Use ordered list in the table of contents. |
 | `markdown.extension.toc.plaintext` | `false` | Just plain text. |
 | `markdown.extension.toc.updateOnSave` | `false` | Automatically update the table of contents on save. |
-| `markdown.extension.preview.autoShowPreviewToSide` | `false` | Automatically show preview when openning a Markdown file. |
+| `markdown.extension.preview.autoShowPreviewToSide` | `false` | Automatically show preview when opening a Markdown file. |
 | `markdown.extension.completion.enabled` | `true` | Show word suggestions or not. |
+| `markdown.extension.orderedList.marker` | `one` | Start a list item always with '1.' or in increasing numerical order (using option `ordered`) |
 
 ## Changelog
 
-### Latest 0.5.1 (2017.04.16)
+### Latest 0.6.0 (2017.05.15)
 
-- NEW: Automatically close Markdown preview when changing editor
-
-### 0.5.0 (2017.04.13)
-
-- NEW: New shortcut behavior to let cursor jump out of **bold** or *italic* block
-
-Thanks, [Zach Kirkland (@zkirkland)](https://github.com/zkirkland)
+- NEW: Edit lists with <kbd>Enter</kbd>, <kbd>Tab</kbd> and <kbd>Backspace</kbd>
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 

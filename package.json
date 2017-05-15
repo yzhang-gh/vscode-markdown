@@ -3,7 +3,7 @@
     "displayName": "Markdown All in One",
     "description": "All you need to write Markdown (keyboard shortcuts, table of contents, auto preview and more)",
     "icon": "images/Markdown-mark.svg",
-    "version": "0.5.2",
+    "version": "0.6.0",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.6.0"
@@ -29,7 +29,8 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
-        "commands": [{
+        "commands": [
+            {
                 "command": "markdown.extension.editing.toggleBold",
                 "title": "Markdown: Toggle Bold"
             },
@@ -58,7 +59,8 @@
                 "title": "Markdown: Print to PDF"
             }
         ],
-        "keybindings": [{
+        "keybindings": [
+            {
                 "command": "markdown.extension.editing.toggleBold",
                 "key": "ctrl+b",
                 "mac": "cmd+b",
@@ -147,8 +149,11 @@
                 "markdown.extension.orderedList.marker": {
                     "type": "string",
                     "default": "one",
-                    "description": "Start a list item with '1.' or in increasing numerical order",
-                    "enum": ["one", "ordered"]
+                    "description": "Start a list item always with '1.' or in increasing numerical order",
+                    "enum": [
+                        "one",
+                        "ordered"
+                    ]
                 }
             }
         }
