@@ -167,6 +167,7 @@ arrival
 arrive
 art
 article
+artificial
 artist
 artistic
 as
@@ -687,6 +688,7 @@ dare
 dark
 darkness
 data
+dataset
 date
 daughter
 day
@@ -945,7 +947,7 @@ establish
 establishment
 estate
 estimate
-etc
+etc.
 ethics
 ethnic
 European
@@ -1153,6 +1155,7 @@ funding
 funeral
 funny
 furniture
+further
 furthermore
 future
 gain
@@ -1333,7 +1336,7 @@ ideal
 identification
 identify
 identity
-ie
+i.e.
 if
 ignore
 ill
@@ -1681,7 +1684,7 @@ minority
 minute
 miracle
 mirror
-misc
+misc.
 miss
 missile
 mission
@@ -1720,9 +1723,9 @@ mouth
 move
 movement
 movie
-Mr
-Mrs
-Ms
+Mr.
+Mrs.
+Ms.
 much
 multiple
 murder
@@ -2195,7 +2198,7 @@ recruit
 red
 reduce
 reduction
-redundance
+redundancy
 redundant
 refer
 reference
@@ -2602,6 +2605,7 @@ style
 subject
 submit
 subsequent
+subset
 substance
 substantial
 succeed
@@ -2863,11 +2867,16 @@ us
 use
 used
 useful
+useless
 user
 usual
 usually
 utility
 vacation
+valid
+validate
+validation
+validity
 valley
 valuable
 value

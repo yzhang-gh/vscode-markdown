@@ -6,6 +6,7 @@ import * as toc from './toc';
 import * as preview from './preview';
 import * as print from './print';
 import * as completion from './completion';
+import * as listEditing from './listEditing'
 
 export function activate(context: ExtensionContext) {
     // Shortcuts
@@ -19,26 +20,10 @@ export function activate(context: ExtensionContext) {
     // Completion items
     completion.activate(context);
 
+    listEditing.activate(context);
+
     languages.setLanguageConfiguration('markdown', {
-        comments: { blockComment: ["<!-- ", " -->"] },
-        onEnterRules: [
-            {
-                beforeText: /^[\s]*\* .+/,
-                action: { indentAction: IndentAction.None, appendText: '* ' }
-            },
-            {
-                beforeText: /^[\s]*\+ .+/,
-                action: { indentAction: IndentAction.None, appendText: '+ ' }
-            },
-            {
-                beforeText: /^[\s]*- .+/,
-                action: { indentAction: IndentAction.None, appendText: '- ' }
-            },
-            {
-                beforeText: /^> .+/,
-                action: { indentAction: IndentAction.None, appendText: '> ' }
-            }
-        ]
+        comments: { blockComment: ["<!-- ", " -->"] }
     });
 }
 

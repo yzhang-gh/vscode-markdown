@@ -26,7 +26,7 @@ export function activate(context: ExtensionContext) {
 }
 
 function toggleBold() {
-    styleByWrapping('**')
+    styleByWrapping('**');
 }
 
 function toggleItalic() {

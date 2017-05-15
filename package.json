@@ -29,8 +29,7 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
-        "commands": [
-            {
+        "commands": [{
                 "command": "markdown.extension.editing.toggleBold",
                 "title": "Markdown: Toggle Bold"
             },
@@ -59,8 +58,7 @@
                 "title": "Markdown: Print to PDF"
             }
         ],
-        "keybindings": [
-            {
+        "keybindings": [{
                 "command": "markdown.extension.editing.toggleBold",
                 "key": "ctrl+b",
                 "mac": "cmd+b",
@@ -89,6 +87,27 @@
                 "key": "ctrl+shift+[",
                 "mac": "cmd+shift+[",
                 "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "markdown.extension.onEnterKey",
+                "key": "enter",
+                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.onEnterKey",
+                "key": "ctrl+enter",
+                "mac": "cmd+enter",
+                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.onTabKey",
+                "key": "tab",
+                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.onBackspaceKey",
+                "key": "backspace",
+                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
             }
         ],
         "configuration": {
@@ -124,6 +143,12 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Show word completion or not"
+                },
+                "markdown.extension.orderedList.marker": {
+                    "type": "string",
+                    "default": "one",
+                    "description": "Start a list item with '1.' or in increasing numerical order",
+                    "enum": ["one", "ordered"]
                 }
             }
         }
