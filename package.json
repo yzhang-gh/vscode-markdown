@@ -29,8 +29,7 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
-        "commands": [
-            {
+        "commands": [{
                 "command": "markdown.extension.editing.toggleBold",
                 "title": "Markdown: Toggle Bold"
             },
@@ -59,8 +58,7 @@
                 "title": "Markdown: Print to PDF"
             }
         ],
-        "keybindings": [
-            {
+        "keybindings": [{
                 "command": "markdown.extension.editing.toggleBold",
                 "key": "ctrl+b",
                 "mac": "cmd+b",
@@ -96,7 +94,7 @@
                 "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
             },
             {
-                "command": "markdown.extension.onEnterKey",
+                "command": "markdown.extension.onCtrlEnterKey",
                 "key": "ctrl+enter",
                 "mac": "cmd+enter",
                 "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
