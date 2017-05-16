@@ -5,7 +5,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 ## Features
 
 - Keyboard shortcuts (toggle bold, italic, heading)
-  - Different behaviors depending on the context (see introduction below)
+  - Different behaviors depending on the context (see instruction below)
 - Table of contents (**No additional annoying tags like `<!-- TOC -->`**)
 - Automatically show preview when opening a Markdown file (Disabled by default)
   - ~~Automatically close preview when changing editor~~
@@ -14,6 +14,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   - Pressing <kbd>Tab</kbd> at the beginning of a list item will indent it
   - Pressing <kbd>Backspace</kbd> at the beginning of a list item will unindent it (or delete the list marker)
   - Blank list item won't be continued
+  - **Note**: there is an option for ordered list (to choose list marker: always `1.` or ordered number)
 - Word completion
 
 Note: After version 1.10.0, the language specific default setting for Markdown disables quick suggestions. To enable this, put
