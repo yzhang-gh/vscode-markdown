@@ -4,26 +4,18 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Features
 
-- Keyboard shortcuts (toggle bold, italic, heading)
+- **Keyboard shortcuts** (toggle bold, italic, heading)
   - Different behaviors depending on the context (see instruction below)
-- Table of contents (**No additional annoying tags like `<!-- TOC -->`**)
-- Automatically show preview when opening a Markdown file (Disabled by default)
+- **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
+- **Automatically show preview** when opening a Markdown file (Disabled by default)
   - ~~Automatically close preview when changing editor~~
 - ~~Print your Markdown to PDF~~ (not satisfied with the current solution)
-- Continue list item (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
+- **Continue list item** (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
   - Pressing <kbd>Tab</kbd> at the beginning of a list item will indent it
   - Pressing <kbd>Backspace</kbd> at the beginning of a list item will unindent it (or delete the list marker)
   - Blank list item won't be continued
-  - **Note**: there is an option for ordered list (to choose list marker: always `1.` or ordered number)
-- Word completion
-
-Note: After version 1.10.0, the language specific default setting for Markdown disables quick suggestions. To enable this, put
-```
-"[markdown]": {
-    "editor.quickSuggestions": true
-}
-```
-into your `settings.json`.
+  - *Note*: there is an option to choose ordered list marker: always `1.` or ordered number.
+- **Word completion** (moved to an standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion))
 
 ### Keyboard Shortcuts
 
@@ -43,9 +35,9 @@ into your `settings.json`.
 
 ![toc](images/gifs/toc.gif)
 
-### Word Completion
+### List Editing
 
-![word completion](images/gifs/word-completion.gif)
+![list editing](images/gifs/list-editing.gif)
 
 <!-- ### Print to PDF
 
@@ -79,12 +71,16 @@ into your `settings.json`.
 | `markdown.extension.toc.plaintext` | `false` | Just plain text. |
 | `markdown.extension.toc.updateOnSave` | `false` | Automatically update the table of contents on save. |
 | `markdown.extension.preview.autoShowPreviewToSide` | `false` | Automatically show preview when opening a Markdown file. |
-| `markdown.extension.completion.enabled` | `true` | Show word suggestions or not. |
 | `markdown.extension.orderedList.marker` | `one` | Start a list item always with '1.' or in increasing numerical order (using option `ordered`) |
 
 ## Changelog
 
-### Latest 0.6.0 (2017.05.15)
+### Latest 0.6.1 (2017.05.23)
+
+- FIX: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> won't break current line now
+- OTHER: Move word completion feature to standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion)
+
+### 0.6.0 (2017.05.15)
 
 - NEW: Edit lists with <kbd>Enter</kbd>, <kbd>Tab</kbd> and <kbd>Backspace</kbd>
 
