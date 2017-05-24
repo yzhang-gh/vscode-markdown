@@ -10,12 +10,12 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
   - ~~Automatically close preview when changing editor~~
 - ~~Print your Markdown to PDF~~ (not satisfied with the current solution)
-- **Continue list item** (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
+- **List editing** (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
   - Pressing <kbd>Tab</kbd> at the beginning of a list item will indent it
   - Pressing <kbd>Backspace</kbd> at the beginning of a list item will unindent it (or delete the list marker)
   - Blank list item won't be continued
   - *Note*: there is an option to choose ordered list marker: always `1.` or ordered number.
-- **Word completion** (moved to an standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion))
+- **Word completion** (moved to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion))
 
 ### Keyboard Shortcuts
 
@@ -78,7 +78,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 ### Latest 0.6.1 (2017.05.23)
 
 - FIX: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> won't break current line now
-- OTHER: Move word completion feature to standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion)
+- OTHER: Move word completion feature to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion)
 
 ### 0.6.0 (2017.05.15)
 

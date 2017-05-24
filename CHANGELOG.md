@@ -1,7 +1,7 @@
 ## 0.6.1 (2017.05.23)
 
 - FIX: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> won't break current line now
-- OTHER: Move word completion feature to standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion)
+- OTHER: Move word completion feature to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion)
 
 ## 0.6.0 (2017.05.15)
 
