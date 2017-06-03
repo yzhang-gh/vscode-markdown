@@ -1,7 +1,6 @@
 # Markdown Support for Visual Studio Code
 
-[![version](https://vsmarketplacebadge.apphb.com/version/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
-
+[![version](https://vsmarketplacebadge.apphb.com/version/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)  
 [![installs](https://vsmarketplacebadge.apphb.com/installs/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
 
 All you need for Markdown (keyboard shortcuts, table of contents, auto preview and more).
