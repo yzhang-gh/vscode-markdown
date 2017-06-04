@@ -80,12 +80,12 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ### Latest 0.6.1 (2017.05.23)
 
-- FIX: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> won't break current line now
-- OTHER: Move word completion feature to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion)
+- **Fix**: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> won't break current line now
+- **Other**: Move word completion feature to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion)
 
 ### 0.6.0 (2017.05.15)
 
-- NEW: Edit lists with <kbd>Enter</kbd>, <kbd>Tab</kbd> and <kbd>Backspace</kbd>
+- **New**: Edit lists with <kbd>Enter</kbd>, <kbd>Tab</kbd> and <kbd>Backspace</kbd>
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
