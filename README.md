@@ -89,10 +89,6 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
-## Roadmap
-
-These depend on the feedback and user requests.
-
 ## Contributing
 
 Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc/vscode-markdown/issues).
@@ -103,19 +99,14 @@ Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc
   - It's a list block in Markdown syntax
   - Its first list item title matches the first heading in the file
 - CJK in TOC anchors (A more complex slugify function is needed)
-- (**Help wanted**) Because of the using of `html-pdf` package,
+<!-- - (**Help wanted**) Because of the using of `html-pdf` package,
   - Anchors within PDF won't work
-  - No bookmarks generated
+  - No bookmarks generated -->
 
-## Acknowledgement
+## And More ...
 
-Inspired by and part of codes from,
+Vote for prospective vscode features (Add 👍 to GitHub issues):
 
-- [mdickin/vscode-markdown-shortcuts](https://github.com/mdickin/vscode-markdown-shortcuts)
-- [AlanWalk/Markdown-TOC](https://github.com/AlanWalk/Markdown-TOC)
-- [hnw/vscode-auto-open-markdown-preview](https://github.com/hnw/vscode-auto-open-markdown-preview)
-- [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-markdown-pdf)
-
-## Useful Links
-
-- [CommonMark](http://commonmark.org/): A strongly defined, highly compatible specification of Markdown
+- Open `.pdf`, `.xlsx` etc. in vscode [#12176](https://github.com/Microsoft/vscode/issues/12176)
+- Print Markdown to PDF using electron `printToPdf` [#20869](https://github.com/Microsoft/vscode/issues/20869)
+- Support setting font-size in Decoration [#9078](https://github.com/Microsoft/vscode/issues/9078)
