@@ -16,6 +16,15 @@ function onEnterKey(modifiers?: string) {
     let line = editor.document.lineAt(cursorPos.line);
     let textBeforeCursor = line.text.substr(0, cursorPos.character);
 
+    // Empty list item
+    if (/^[-\+\*0-9]\.?$/.test(textBeforeCursor.trim())) {
+        editor.edit(editBuilder => {
+            console.log(line.range.end.character);
+            editBuilder.delete(line.range);
+            editBuilder.insert(line.range.end, '\n');
+        });
+    }
+
     let lineBreakPos = cursorPos;
     if (modifiers == 'ctrl') {
         lineBreakPos = line.range.end;
@@ -50,7 +59,6 @@ function onEnterKey(modifiers?: string) {
     } else {
         if (modifiers == 'ctrl') {
             commands.executeCommand('editor.action.insertLineAfter');
-            return;
         } else {
             editor.edit(editBuilder => {
                 editBuilder.insert(lineBreakPos, '\n');
