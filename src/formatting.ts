@@ -12,7 +12,7 @@ export function activate(context: ExtensionContext) {
     const cmds: Command[] = [
         { command: 'toggleBold', callback: toggleBold },
         { command: 'toggleItalic', callback: toggleItalic },
-        // { command: 'toggleCodeSpan', callback: toggleCodeSpan },
+        { command: 'toggleCodeSpan', callback: toggleCodeSpan },
         { command: 'toggleHeadingUp', callback: toggleHeadingUp },
         { command: 'toggleHeadingDown', callback: toggleHeadingDown }
     ].map(cmd => {
@@ -33,9 +33,9 @@ function toggleItalic() {
     styleByWrapping('*');
 }
 
-// function toggleCodeSpan() {
-//     wrapSelection('`');
-// }
+function toggleCodeSpan() {
+    styleByWrapping('`');
+}
 
 function toggleHeadingUp() {
     let editor = window.activeTextEditor;
