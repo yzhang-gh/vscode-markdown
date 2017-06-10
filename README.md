@@ -7,7 +7,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Features
 
-- **Keyboard shortcuts** (toggle bold, italic, heading)
+- **Keyboard shortcuts** (toggle bold, italic, code span and heading)
   - Different behaviors depending on the context (see instruction below)
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
@@ -18,6 +18,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   - Pressing <kbd>Backspace</kbd> at the beginning of a list item will unindent it (or delete the list marker)
   - Blank list item won't be continued
   - *Note*: there is an option to choose ordered list marker: always `1.` or ordered number.
+- **Document formatter** (only format GFM table now)
 - **Word completion** (moved to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion))
 
 ### Keyboard Shortcuts
@@ -42,6 +43,10 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ![list editing](images/gifs/list-editing.gif)
 
+### Table Formatter
+
+![table formatter](images/gifs/table-formatter.gif)
+
 <!-- ### Print to PDF
 
 ![print to pdf](images/gifs/pdf.gif) -->
@@ -52,15 +57,12 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | --- | --- |
 | <kbd>ctrl</kbd> + <kbd>b</kbd> | Toggle bold |
 | <kbd>ctrl</kbd> + <kbd>i</kbd> | Toggle italic |
+| <kbd>ctrl</kbd> + <kbd>`</kbd> | Toggle code span |
 | <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel) |
 | <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel) |
 
 ## Available Commands
 
-- Markdown: Toggle Bold
-- Markdown: Toggle Italic
-- Markdown: Toggle Heading Uplevel
-- Markdown: Toggle Heading Downlevel
 - Markdown: Create Table of Contents
 - Markdown: Update Table of Contents
 - ~~Markdown: Print to PDF~~
@@ -78,7 +80,13 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### Latest 0.6.2 (2017.06.07)
+### Latest 0.7.0 (2017.06.10)
+
+- **New**: GFM table formatter
+- **New**: Add shortcuts for code spans (<kbd>ctrl</kbd> + <kbd>`</kbd>)
+- **New**: Remove empty list item when pressing <kbd>Enter</kbd>
+
+### 0.6.2 (2017.06.07)
 
 - **Other**: Add marketplace badges; Improve documentation
 
@@ -103,7 +111,7 @@ Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc
   - Anchors within PDF won't work
   - No bookmarks generated -->
 
-## And More ...
+## If You Would Like to ...
 
 Vote for prospective vscode features (Add 👍 to GitHub issues):
 

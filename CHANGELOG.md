@@ -1,3 +1,9 @@
+### 0.7.0 (2017.06.10)
+
+- **New**: GFM table formatter
+- **New**: Add shortcuts for code spans (<kbd>ctrl</kbd> + <kbd>`</kbd>)
+- **New**: Remove empty list item when pressing <kbd>Enter</kbd>
+
 ### 0.6.2 (2017.06.07)
 
 - **Other**: Add marketplace badges; Improve documentation

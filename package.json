@@ -3,7 +3,7 @@
     "displayName": "Markdown All in One",
     "description": "All you need to write Markdown (keyboard shortcuts, table of contents, auto preview and more)",
     "icon": "images/Markdown-mark.svg",
-    "version": "0.6.2",
+    "version": "0.7.0",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.6.0"
@@ -30,22 +30,6 @@
     "main": "./out/src/extension",
     "contributes": {
         "commands": [
-            {
-                "command": "markdown.extension.editing.toggleBold",
-                "title": "Markdown: Toggle Bold"
-            },
-            {
-                "command": "markdown.extension.editing.toggleItalic",
-                "title": "Markdown: Toggle Italic"
-            },
-            {
-                "command": "markdown.extension.editing.toggleHeadingUp",
-                "title": "Markdown: Toggle Heading Uplevel"
-            },
-            {
-                "command": "markdown.extension.editing.toggleHeadingDown",
-                "title": "Markdown: Toggle Heading Downlevel"
-            },
             {
                 "command": "markdown.extension.toc.create",
                 "title": "Markdown: Create Table of Contents"
@@ -74,8 +58,8 @@
             },
             {
                 "command": "markdown.extension.editing.toggleCodeSpan",
-                "key": "ctrl+m ctrl+c",
-                "mac": "cmd+m cmd+c",
+                "key": "ctrl+`",
+                "mac": "cmd+`",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
