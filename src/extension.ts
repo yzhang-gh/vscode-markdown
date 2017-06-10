@@ -6,6 +6,7 @@ import * as toc from './toc';
 import * as preview from './preview';
 import * as print from './print';
 import * as listEditing from './listEditing'
+import * as tableFormatter from './tableFormatter'
 
 export function activate(context: ExtensionContext) {
     // Shortcuts
@@ -18,6 +19,8 @@ export function activate(context: ExtensionContext) {
     // print.activate(context);
     // Override `Enter`, `Tab` and `Backspace` keys
     listEditing.activate(context);
+    // Table formatter
+    tableFormatter.activate(context);
 
     languages.setLanguageConfiguration('markdown', {
         comments: { blockComment: ["<!-- ", " -->"] }
