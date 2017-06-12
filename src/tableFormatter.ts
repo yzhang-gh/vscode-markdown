@@ -15,7 +15,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         let edits: TextEdit[] = [];
         let tables = this.detectTables(document.getText());
         tables.forEach(table => {
-            edits.push(new TextEdit(this.getRange(document, table), this.formatTable(table, options)));
+            edits.push(new TextEdit(this.getRange(document, table), this.formatTable(table)));
         });
         return edits;
     }
@@ -35,7 +35,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         return new Range(start, end);
     }
 
-    private formatTable(text: string, options: FormattingOptions) {
+    private formatTable(text: string) {
         let rows = text.split(/\r?\n/g);
         let content = rows.map(row => {
             return row.trim().replace(/^\|/g, '').replace(/\|$/g, '').trim().split(/\s*\|\s*/g);
