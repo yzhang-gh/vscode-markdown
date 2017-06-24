@@ -80,20 +80,15 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### Latest 0.7.0 (2017.06.10)
+### Latest 0.7.1 (2017.06.23)
+
+- **Fix**: Better TOC detection rules ([#7](https://github.com/neilsustc/vscode-markdown/issues/7))
+
+### 0.7.0 (2017.06.10)
 
 - **New**: GFM table formatter
 - **New**: Add shortcuts for code spans (<kbd>ctrl</kbd> + <kbd>`</kbd>)
 - **New**: Remove empty list item when pressing <kbd>Enter</kbd>
-
-### 0.6.2 (2017.06.07)
-
-- **Other**: Add marketplace badges; Improve documentation
-
-### 0.6.1 (2017.05.23)
-
-- **Fix**: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> won't break current line now
-- **Other**: Move word completion feature to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion)
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
@@ -103,9 +98,9 @@ Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc
 
 ## Known Issues
 
-- To avoid distractive HTML comments, this extension will 'guess' where the TOC is. Currently, a TOC will be recognized if
+<!-- - To avoid distractive HTML comments, this extension will 'guess' where the TOC is. Currently, a TOC will be recognized if
   - It's a list block in Markdown syntax
-  - Its first list item title matches the first heading in the file
+  - Its first list item title matches the first heading in the file -->
 - CJK in TOC anchors (A more complex slugify function is needed)
 <!-- - (**Help wanted**) Because of the using of `html-pdf` package,
   - Anchors within PDF won't work

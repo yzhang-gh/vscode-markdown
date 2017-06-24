@@ -1,3 +1,7 @@
+### 0.7.1 (2017.06.23)
+
+- **Fix**: Better TOC detection rules ([#7](https://github.com/neilsustc/vscode-markdown/issues/7))
+
 ### 0.7.0 (2017.06.10)
 
 - **New**: GFM table formatter
