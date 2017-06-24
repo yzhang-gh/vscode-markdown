@@ -142,10 +142,14 @@ function detectTocRange(): Range {
         for (let index = 0; index < doc.lineCount; index++) {
             let lineText = doc.lineAt(index).text;
             if (start == null) { // No line matched with start yet
-                let regResult = lineText.match(/^[\-1]\.? \[?([^\]]+)/); // Match list block and get list item
+                let regResult = lineText.match(/^[\-1]\.? (.+)$/); // Match list block and get list item
                 if (regResult != null) {
-                    let listItem = regResult[1];
-                    if (listItem.startsWith(headings[0].title)) {
+                    let header = regResult[1];
+                    let res = header.match(/^\[(.+?)\]\(#.+?\)$/); // Get `header` from `[header](anchor)`
+                    if (res != null) {
+                        header = res[1];
+                    }
+                    if (header.startsWith(headings[0].title)) {
                         start = new Position(index, 0);
                         // log('Start', start);
                     }
