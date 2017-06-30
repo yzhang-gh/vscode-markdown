@@ -1,4 +1,9 @@
-### 0.7.1 (2017.06.23)
+### 0.7.2 (2017.06.30)
+
+- **Fix**: Adopt normal <kbd>Enter</kbd>, <kbd>Tab</kbd> and <kbd>Backspace</kbd> behaviors in fenced code blocks ([#8](https://github.com/neilsustc/vscode-markdown/issues/8))
+- **Fix**: Unexpected list continuing
+
+### 0.7.1 (2017.06.24)
 
 - **Fix**: Better TOC detection rules ([#7](https://github.com/neilsustc/vscode-markdown/issues/7))
 

@@ -2,8 +2,8 @@
     "name": "markdown-all-in-one",
     "displayName": "Markdown All in One",
     "description": "All you need to write Markdown (keyboard shortcuts, table of contents, auto preview and more)",
-    "icon": "images/Markdown-mark.svg",
-    "version": "0.7.1",
+    "icon": "images/Markdown-mark.png",
+    "version": "0.7.2",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.6.0"

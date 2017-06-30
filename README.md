@@ -12,7 +12,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
   - ~~Automatically close preview when changing editor~~
-- ~~Print your Markdown to PDF~~ (not satisfied with the current solution)
+- ~~**Print your Markdown to PDF**~~ (not satisfied with the current solution)
 - **List editing** (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
   - Pressing <kbd>Tab</kbd> at the beginning of a list item will indent it
   - Pressing <kbd>Backspace</kbd> at the beginning of a list item will unindent it (or delete the list marker)
@@ -80,7 +80,12 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### Latest 0.7.1 (2017.06.23)
+### Latest 0.7.2 (2017.06.30)
+
+- **Fix**: Adopt normal <kbd>Enter</kbd>, <kbd>Tab</kbd> and <kbd>Backspace</kbd> behaviors in fenced code blocks ([#8](https://github.com/neilsustc/vscode-markdown/issues/8))
+- **Fix**: Unexpected list continuing
+
+### 0.7.1 (2017.06.24)
 
 - **Fix**: Better TOC detection rules ([#7](https://github.com/neilsustc/vscode-markdown/issues/7))
 
@@ -101,7 +106,9 @@ Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc
 <!-- - To avoid distractive HTML comments, this extension will 'guess' where the TOC is. Currently, a TOC will be recognized if
   - It's a list block in Markdown syntax
   - Its first list item title matches the first heading in the file -->
+
 - CJK in TOC anchors (A more complex slugify function is needed)
+
 <!-- - (**Help wanted**) Because of the using of `html-pdf` package,
   - Anchors within PDF won't work
   - No bookmarks generated -->
