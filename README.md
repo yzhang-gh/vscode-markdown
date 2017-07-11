@@ -80,7 +80,11 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### Latest 0.7.2 (2017.06.30)
+### Latest 0.7.3 (2017.07.11)
+
+- **Fix**: Chinese TOC ([#11](https://github.com/neilsustc/vscode-markdown/issues/11))
+
+### 0.7.2 (2017.06.30)
 
 - **Fix**: Adopt normal <kbd>Enter</kbd>, <kbd>Tab</kbd> and <kbd>Backspace</kbd> behaviors in fenced code blocks ([#8](https://github.com/neilsustc/vscode-markdown/issues/8))
 - **Fix**: Unexpected list continuing
@@ -100,18 +104,6 @@ See [CHANGELOG](CHANGELOG.md) for more information.
 ## Contributing
 
 Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc/vscode-markdown/issues).
-
-## Known Issues
-
-<!-- - To avoid distractive HTML comments, this extension will 'guess' where the TOC is. Currently, a TOC will be recognized if
-  - It's a list block in Markdown syntax
-  - Its first list item title matches the first heading in the file -->
-
-- CJK in TOC anchors (A more complex slugify function is needed)
-
-<!-- - (**Help wanted**) Because of the using of `html-pdf` package,
-  - Anchors within PDF won't work
-  - No bookmarks generated -->
 
 ## If You Would Like to ...
 

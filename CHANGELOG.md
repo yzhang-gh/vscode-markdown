@@ -1,3 +1,7 @@
+### 0.7.3 (2017.07.11)
+
+- **Fix**: Chinese TOC ([#11](https://github.com/neilsustc/vscode-markdown/issues/11))
+
 ### 0.7.2 (2017.06.30)
 
 - **Fix**: Adopt normal <kbd>Enter</kbd>, <kbd>Tab</kbd> and <kbd>Backspace</kbd> behaviors in fenced code blocks ([#8](https://github.com/neilsustc/vscode-markdown/issues/8))
