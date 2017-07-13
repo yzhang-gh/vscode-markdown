@@ -24,8 +24,7 @@
     },
     "license": "MIT",
     "activationEvents": [
-        "onLanguage:markdown",
-        "workspaceContains:*.md"
+        "*"
     ],
     "main": "./out/src/extension",
     "contributes": {

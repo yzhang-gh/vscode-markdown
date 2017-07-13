@@ -1,6 +1,6 @@
 'use strict';
 
-import { languages, ExtensionContext, IndentAction } from 'vscode';
+import { languages, workspace, ExtensionContext, IndentAction } from 'vscode';
 import * as formatting from './formatting';
 import * as toc from './toc';
 import * as preview from './preview';
@@ -9,6 +9,14 @@ import * as listEditing from './listEditing'
 import * as tableFormatter from './tableFormatter'
 
 export function activate(context: ExtensionContext) {
+    workspace.findFiles('**/*.md', '**/node_modules/**', 1).then((files) => {
+        if (files !== undefined && files.length !== 0) {
+            activateMdExt(context);
+        }
+    });
+}
+
+function activateMdExt(context: ExtensionContext) {
     // Shortcuts
     formatting.activate(context);
     // Toc
