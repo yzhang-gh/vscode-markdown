@@ -21,10 +21,6 @@ export function activate(context: ExtensionContext) {
     listEditing.activate(context);
     // Table formatter
     tableFormatter.activate(context);
-
-    languages.setLanguageConfiguration('markdown', {
-        comments: { blockComment: ["<!-- ", " -->"] }
-    });
 }
 
 export function deactivate() { }
