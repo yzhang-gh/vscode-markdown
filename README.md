@@ -80,24 +80,13 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### Latest 0.7.3 (2017.07.11)
+### Latest 0.7.4 (2017.07.14)
+
+- **Fix**: Fix activation events ([#12](https://github.com/neilsustc/vscode-markdown/issues/12))
+
+### 0.7.3 (2017.07.11)
 
 - **Fix**: Chinese TOC ([#11](https://github.com/neilsustc/vscode-markdown/issues/11))
-
-### 0.7.2 (2017.06.30)
-
-- **Fix**: Adopt normal <kbd>Enter</kbd>, <kbd>Tab</kbd> and <kbd>Backspace</kbd> behaviors in fenced code blocks ([#8](https://github.com/neilsustc/vscode-markdown/issues/8))
-- **Fix**: Unexpected list continuing
-
-### 0.7.1 (2017.06.24)
-
-- **Fix**: Better TOC detection rules ([#7](https://github.com/neilsustc/vscode-markdown/issues/7))
-
-### 0.7.0 (2017.06.10)
-
-- **New**: GFM table formatter
-- **New**: Add shortcuts for code spans (<kbd>ctrl</kbd> + <kbd>`</kbd>)
-- **New**: Remove empty list item when pressing <kbd>Enter</kbd>
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 

@@ -1,3 +1,7 @@
+### 0.7.4 (2017.07.14)
+
+- **Fix**: Fix activation events ([#12](https://github.com/neilsustc/vscode-markdown/issues/12))
+
 ### 0.7.3 (2017.07.11)
 
 - **Fix**: Chinese TOC ([#11](https://github.com/neilsustc/vscode-markdown/issues/11))
