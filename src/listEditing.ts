@@ -45,15 +45,16 @@ function onEnterKey(modifiers?: string) {
     }
 
     // If it's an empty list item, remove it
-    if (/^[-\+\*0-9]\.?$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
+    if (/^([-+*]|[0-9]+[.)])$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
         editor.edit(editBuilder => {
             editBuilder.delete(line.range);
             editBuilder.insert(line.range.end, '\n');
         });
+        return;
     }
 
     let matches;
-    if ((matches = /^(\s*[-\+\*] ).+$/.exec(textBeforeCursor)) !== null) {
+    if ((matches = /^(\s*[-+*] +).+$/.exec(textBeforeCursor)) !== null) {
         // Unordered list
         editor.edit(editBuilder => {
             editBuilder.insert(lineBreakPos, `\n${matches[1]}`);
@@ -63,19 +64,27 @@ function onEnterKey(modifiers?: string) {
             let newCursorPos = cursorPos.with(line.lineNumber + 1, matches[1].length);
             editor.selection = new Selection(newCursorPos, newCursorPos);
         }
-    } else if ((matches = /^(\s*)([0-8])([\.\)] ).+$/.exec(textBeforeCursor)) !== null) {
+    } else if ((matches = /^(\s*)([0-9]+)([.)])( +).+$/.exec(textBeforeCursor)) !== null) {
         // Ordered list
         let config = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker');
         let marker = '1';
+        let leadingSpace = matches[1];
+        let previousMarker = matches[2];
+        let delimiter = matches[3];
+        let trailingSpace = matches[4];
+        let textIndent = (previousMarker + delimiter + trailingSpace).length;
         if (config == 'ordered') {
-            marker = String(Number(matches[2]) + 1);
+            marker = String(Number(previousMarker) + 1);
         }
+        // Add enough trailing spaces so that the text is aligned with the previous list item, but always keep at least one space
+        trailingSpace = " ".repeat(Math.max(1, textIndent - (marker + delimiter).length));
+
         editor.edit(editBuilder => {
-            editBuilder.insert(lineBreakPos, `\n${matches[1] + marker + matches[3]}`);
+            editBuilder.insert(lineBreakPos, `\n${leadingSpace + marker + delimiter + trailingSpace}`);
         });
         // Fix cursor position
         if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
-            let newCursorPos = cursorPos.with(line.lineNumber + 1, (matches[1] + marker + matches[3]).length);
+            let newCursorPos = cursorPos.with(line.lineNumber + 1, (leadingSpace + marker + trailingSpace).length);
             editor.selection = new Selection(newCursorPos, newCursorPos);
         }
     } else {
@@ -101,7 +110,7 @@ function onTabKey() {
         return;
     }
 
-    if (/^\s*[-\+\*] $/.test(textBeforeCursor) || /^\s*[0-8][\.\)] $/.test(textBeforeCursor)) {
+    if (/^\s*([-+*]|[0-9]+[.)]) +$/.test(textBeforeCursor)) {
         commands.executeCommand('editor.action.indentLines');
     } else {
         // Normal behavior
@@ -120,9 +129,9 @@ function onBackspaceKey() {
         return;
     }
 
-    if (/^\s+[-\+\*] $/.test(textBeforeCursor) || /^\s+[0-9][\.\)] $/.test(textBeforeCursor)) {
+    if (/^\s+([-+*]|[0-9]+[.)]) +$/.test(textBeforeCursor)) {
         commands.executeCommand('editor.action.outdentLines');
-    } else if (/^[-\+\*] $/.test(textBeforeCursor) || /^[0-9][\.\)] $/.test(textBeforeCursor)) {
+    } else if (/^([-+*]|[0-9]+[.)]) +$/.test(textBeforeCursor)) {
         editor.edit(editBuilder => {
             editBuilder.delete(new Range(cursorPos.with({ character: 0 }), cursorPos));
         });
