@@ -77,6 +77,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.toc.updateOnSave` | `false` | Automatically update the table of contents on save. |
 | `markdown.extension.preview.autoShowPreviewToSide` | `false` | Automatically show preview when opening a Markdown file. |
 | `markdown.extension.orderedList.marker` | `one` | Start a list item always with '1.' or in increasing numerical order (using option `ordered`) |
+| `markdown.extension.italic.indicator` | `*` | Use `*` or `_` to wrap italic text |
 
 ## Changelog
 

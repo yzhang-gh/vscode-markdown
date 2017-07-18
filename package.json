@@ -132,6 +132,15 @@
                         "one",
                         "ordered"
                     ]
+                },
+                "markdown.extension.italic.indicator": {
+                    "type": "string",
+                    "default": "*",
+                    "description": "Use `*` or `_` to wrap italic text",
+                    "enum": [
+                        "*",
+                        "_"
+                    ]
                 }
             }
         }

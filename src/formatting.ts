@@ -4,7 +4,7 @@
  * Modified from <https://github.com/mdickin/vscode-markdown-shortcuts>
  */
 
-import { commands, window, ExtensionContext, Position, Range, Selection } from 'vscode';
+import { commands, window, workspace, ExtensionContext, Position, Range, Selection } from 'vscode';
 
 const prefix = 'markdown.extension.editing.';
 
@@ -30,7 +30,8 @@ function toggleBold() {
 }
 
 function toggleItalic() {
-    styleByWrapping('*');
+    let indicator = workspace.getConfiguration('markdown.extension.italic').get<string>('indicator');
+    styleByWrapping(indicator);
 }
 
 function toggleCodeSpan() {
