@@ -10,9 +10,10 @@ import * as tableFormatter from './tableFormatter'
 
 export function activate(context: ExtensionContext) {
     if (workspace.rootPath === undefined) { // No folder is opened
-        if (window.activeTextEditor !== undefined && window.activeTextEditor.document.languageId === 'markdown') {
-            activateMdExt(context);
-        }
+        /* Greedy activation */
+        // if (window.activeTextEditor !== undefined && window.activeTextEditor.document.languageId === 'markdown') {
+        activateMdExt(context);
+        // }
     } else {
         workspace.findFiles('**/*.md', '**/node_modules/**', 1).then((files) => {
             if (files !== undefined && files.length !== 0) {
