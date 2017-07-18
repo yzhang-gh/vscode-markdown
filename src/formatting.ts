@@ -80,19 +80,33 @@ function styleByWrapping(startPattern, endPattern?) {
         let position = selection.active;
         let newPosition = position;
         switch (getContext(startPattern)) {
+            // Empty bold or italic block
             case `${startPattern}|${endPattern}`:
                 newPosition = position.with(position.line, position.character - startPattern.length);
                 editor.edit((editBuilder) => {
                     editBuilder.delete(new Range(newPosition, position.with({ character: position.character + endPattern.length })));
                 });
                 break;
+            // At the end of bold or italic block
             case `${startPattern}some text|${endPattern}`:
                 newPosition = position.with({ character: position.character + endPattern.length });
                 break;
+            // Plain text
             case '|':
-                editor.edit((editBuilder) => {
-                    editBuilder.insert(selection.start, startPattern + endPattern);
-                });
+                // TODO: quick styling
+                let wordRange = editor.document.getWordRangeAtPosition(position);
+                console.log(wordRange);
+                if (wordRange == undefined) {
+                    editor.edit((editBuilder) => {
+                        editBuilder.insert(position, startPattern + endPattern);
+                    });
+                } else {
+                    console.log(editor.document.getText(wordRange));
+                    editor.edit((editBuilder) => {
+                        editBuilder.insert(wordRange.start, startPattern);
+                        editBuilder.insert(wordRange.end, endPattern);
+                    });
+                }
                 newPosition = position.with({ character: position.character + startPattern.length });
                 break;
         }
