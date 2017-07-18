@@ -81,7 +81,11 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### Latest 0.7.5 (2017.07.15)
+### Latest 0.7.6 (2017.07.18)
+
+- **Fix**: Fix again (activation events)
+
+### 0.7.5 (2017.07.15)
 
 - **Fix**: Cannot activate extension when no folder is opened ([#14](https://github.com/neilsustc/vscode-markdown/issues/14))
 

@@ -1,3 +1,7 @@
+### 0.7.6 (2017.07.18)
+
+- **Fix**: Fix again (activation events)
+
 ### 0.7.5 (2017.07.15)
 
 - **Fix**: Cannot activate extension when no folder is opened ([#14](https://github.com/neilsustc/vscode-markdown/issues/14))
