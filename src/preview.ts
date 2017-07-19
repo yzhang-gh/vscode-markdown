@@ -10,9 +10,7 @@ let currentDoc: TextDocument;
 
 export function activate(context: ExtensionContext) {
     window.onDidChangeActiveTextEditor(editor => {
-        if (editor && editor.document.languageId === 'markdown') {
-            preview(editor);
-        }
+        preview(editor);
     });
 
     // The first time
@@ -21,6 +19,8 @@ export function activate(context: ExtensionContext) {
 
 function preview(editor: TextEditor) {
     if (!workspace.getConfiguration('markdown.extension.preview').get<boolean>('autoShowPreviewToSide'))
+        return;
+    if (!editor || editor.document.languageId !== 'markdown')
         return;
 
     let doc = editor.document;
