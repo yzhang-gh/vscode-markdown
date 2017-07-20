@@ -24,7 +24,8 @@
     },
     "license": "MIT",
     "activationEvents": [
-        "*"
+        "onLanguage:markdown",
+        "workspaceContains:README.md"
     ],
     "main": "./out/src/extension",
     "contributes": {
