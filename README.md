@@ -81,9 +81,9 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### Latest 0.7.6 (2017.07.18)
+### Latest 0.7.6/7 (2017.07.18/20)
 
-- **Fix**: Fix again (activation events)
+- **Fix**: Fix again (activation events). Finally go back to the legacy activation events (not fancy but robust).
 
 ### 0.7.5 (2017.07.15)
 
