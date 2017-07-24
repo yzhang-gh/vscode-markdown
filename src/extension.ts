@@ -51,7 +51,7 @@ function activateMdExt(context: ExtensionContext) {
     // Table formatter
     tableFormatter.activate(context);
 
-    console.log('activated');
+    // console.log('activated');
 
     // activated = true;
 }

@@ -95,13 +95,13 @@ function styleByWrapping(startPattern, endPattern?) {
             case '|':
                 // TODO: quick styling
                 let wordRange = editor.document.getWordRangeAtPosition(position);
-                console.log(wordRange);
+                // console.log(wordRange);
                 if (wordRange == undefined) {
                     editor.edit((editBuilder) => {
                         editBuilder.insert(position, startPattern + endPattern);
                     });
                 } else {
-                    console.log(editor.document.getText(wordRange));
+                    // console.log(editor.document.getText(wordRange));
                     editor.edit((editBuilder) => {
                         editBuilder.insert(wordRange.start, startPattern);
                         editBuilder.insert(wordRange.end, endPattern);
