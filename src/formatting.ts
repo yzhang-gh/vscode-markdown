@@ -131,12 +131,14 @@ async function wrapRange(cursor: Position, range: Range, isSelected: boolean, st
         await replaceWith(range, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
 
         // Fix cursor position
-        newCursorPos = cursor.with({ character: cursor.character - startPattern.length });
-        if (!range.isEmpty) {
-            if (cursor.character == range.start.character) {
-                newCursorPos = cursor
-            } else if (cursor.character == range.end.character) {
-                newCursorPos = cursor.with({ character: cursor.character - startPattern.length - endPattern.length });
+        if (!isSelected) {
+            newCursorPos = cursor.with({ character: cursor.character - startPattern.length });
+            if (!range.isEmpty) {
+                if (cursor.character == range.start.character) {
+                    newCursorPos = cursor
+                } else if (cursor.character == range.end.character) {
+                    newCursorPos = cursor.with({ character: cursor.character - startPattern.length - endPattern.length });
+                }
             }
         }
     }
@@ -145,12 +147,14 @@ async function wrapRange(cursor: Position, range: Range, isSelected: boolean, st
         await replaceWith(range, startPattern + text + endPattern);
 
         // Fix cursor position
-        newCursorPos = cursor.with({ character: cursor.character + startPattern.length });
-        if (!range.isEmpty) {
-            if (cursor.character == range.start.character) {
-                newCursorPos = cursor
-            } else if (cursor.character == range.end.character) {
-                newCursorPos = cursor.with({ character: cursor.character + startPattern.length + endPattern.length });
+        if (!isSelected) {
+            newCursorPos = cursor.with({ character: cursor.character + startPattern.length });
+            if (!range.isEmpty) {
+                if (cursor.character == range.start.character) {
+                    newCursorPos = cursor
+                } else if (cursor.character == range.end.character) {
+                    newCursorPos = cursor.with({ character: cursor.character + startPattern.length + endPattern.length });
+                }
             }
         }
     }
