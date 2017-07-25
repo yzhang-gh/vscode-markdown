@@ -25,25 +25,27 @@ export function activate(context: ExtensionContext) {
     });
 }
 
+// Return Promise because need to chain operations in unit tests
+
 function toggleBold() {
-    styleByWrapping('**');
+    return styleByWrapping('**');
 }
 
 function toggleItalic() {
     let indicator = workspace.getConfiguration('markdown.extension.italic').get<string>('indicator');
-    styleByWrapping(indicator);
+    return styleByWrapping(indicator);
 }
 
 function toggleCodeSpan() {
-    styleByWrapping('`');
+    return styleByWrapping('`');
 }
 
-function toggleHeadingUp() {
+async function toggleHeadingUp() {
     let editor = window.activeTextEditor;
     let lineIndex = editor.selection.active.line;
     let lineText = editor.document.lineAt(lineIndex).text;
 
-    editor.edit((editBuilder) => {
+    return await editor.edit((editBuilder) => {
         if (!lineText.startsWith('#')) { // Not a heading
             editBuilder.insert(new Position(lineIndex, 0), '# ');
         }
@@ -68,7 +70,7 @@ function toggleHeadingDown() {
     });
 }
 
-function styleByWrapping(startPattern, endPattern?) {
+async function styleByWrapping(startPattern, endPattern?) {
     if (endPattern == undefined) {
         endPattern = startPattern;
     }
@@ -83,7 +85,7 @@ function styleByWrapping(startPattern, endPattern?) {
             // Empty bold or italic block
             case `${startPattern}|${endPattern}`:
                 newPosition = position.with(position.line, position.character - startPattern.length);
-                editor.edit((editBuilder) => {
+                await editor.edit((editBuilder) => {
                     editBuilder.delete(new Range(newPosition, position.with({ character: position.character + endPattern.length })));
                 });
                 break;
@@ -95,14 +97,14 @@ function styleByWrapping(startPattern, endPattern?) {
             case '|':
                 // TODO: quick styling
                 let wordRange = editor.document.getWordRangeAtPosition(position);
-                console.log(wordRange);
+                // console.log(wordRange);
                 if (wordRange == undefined) {
-                    editor.edit((editBuilder) => {
+                    await editor.edit((editBuilder) => {
                         editBuilder.insert(position, startPattern + endPattern);
                     });
                 } else {
-                    console.log(editor.document.getText(wordRange));
-                    editor.edit((editBuilder) => {
+                    // console.log(editor.document.getText(wordRange));
+                    await editor.edit((editBuilder) => {
                         editBuilder.insert(wordRange.start, startPattern);
                         editBuilder.insert(wordRange.end, endPattern);
                     });
@@ -113,11 +115,11 @@ function styleByWrapping(startPattern, endPattern?) {
         editor.selection = new Selection(newPosition, newPosition);
     }
     else { // Text selected
-        wrapSelection(startPattern);
+        await wrapSelection(startPattern);
     }
 }
 
-function wrapSelection(startPattern, endPattern?) {
+async function wrapSelection(startPattern, endPattern?) {
     if (endPattern == undefined) {
         endPattern = startPattern;
     }
@@ -126,10 +128,10 @@ function wrapSelection(startPattern, endPattern?) {
     let selection = editor.selection;
     let text = editor.document.getText(selection);
     if (isWrapped(text, startPattern)) {
-        replaceWith(selection, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
+        await replaceWith(selection, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
     }
     else {
-        replaceWith(selection, startPattern + text + endPattern);
+        await replaceWith(selection, startPattern + text + endPattern);
     }
 }
 
@@ -140,9 +142,9 @@ function isWrapped(text, startPattern, endPattern?): boolean {
     return text.startsWith(startPattern) && text.endsWith(endPattern);
 }
 
-function replaceWith(selection, newText) {
+async function replaceWith(selection, newText) {
     let editor = window.activeTextEditor;
-    editor.edit((edit) => {
+    await editor.edit((edit) => {
         edit.replace(selection, newText);
     });
 }
