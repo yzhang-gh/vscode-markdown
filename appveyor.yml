@@ -3,7 +3,7 @@ install:
 
 build_script:
   - npm install
-  - tsc -p ./
+  - npm run compile
 
 test_script:
   - npm test
