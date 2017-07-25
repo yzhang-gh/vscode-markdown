@@ -100,10 +100,10 @@
             "type": "object",
             "title": "Markdown All in One",
             "properties": {
-                "markdown.extension.toc.depth": {
-                    "type": "number",
-                    "default": 6,
-                    "description": "Depth control [1-6]"
+                "markdown.extension.toc.levels": {
+                    "type": "string",
+                    "default": "1..6",
+                    "description": "Range of levels for table of contents. Use `x..y` for level x to y"
                 },
                 "markdown.extension.toc.orderedList": {
                     "type": "boolean",

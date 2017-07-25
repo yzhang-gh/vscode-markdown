@@ -16,7 +16,7 @@ const REGEXP_CODE_BLOCK = /^```/;
  * Workspace config
  */
 let wsConfig = { tab: '    ', eol: '\r\n' };
-let tocConfig = { depth: 6, orderedList: false, updateOnSave: false, plaintext: false };
+let tocConfig = { startDepth: 1, endDepth: 6, orderedList: false, updateOnSave: false, plaintext: false };
 
 export function activate(context: ExtensionContext) {
     const cmds: Command[] = [
@@ -46,15 +46,15 @@ export function activate(context: ExtensionContext) {
     }
 }
 
-function createToc() {
+async function createToc() {
     let editor = window.activeTextEditor;
-    editor.edit(function (editBuilder) {
+    await editor.edit(function (editBuilder) {
         editBuilder.delete(editor.selection);
         editBuilder.insert(editor.selection.active, generateTocText());
     });
 }
 
-function updateToc() {
+async function updateToc() {
     let tocRange = detectTocRange();
     if (tocRange != null) {
         let oldToc = getText(tocRange).replace(/\r?\n|\r/g, wsConfig.eol);
@@ -85,7 +85,7 @@ function updateToc() {
                 location = rangeToBeDel.start;
             }
 
-            window.activeTextEditor.edit(editBuilder => {
+            await window.activeTextEditor.edit(editBuilder => {
                 if (!justAppending) {
                     editBuilder.delete(rangeToBeDel);
                 }
@@ -104,14 +104,11 @@ function generateTocText(): string {
 
     let toc = [];
     let headingList = getHeadingList();
-    let startDepth = 6; // In case that there is no heading in level 1.
-    headingList.forEach(heading => {
-        if (heading.level < startDepth) startDepth = heading.level;
-    });
-    let order = new Array(tocConfig.depth - startDepth + 1).fill(0); // Used for ordered list
+    let startDepth = tocConfig.startDepth;
+    let order = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
 
     headingList.forEach(heading => {
-        if (heading.level <= tocConfig.depth) {
+        if (heading.level <= tocConfig.endDepth && heading.level >= startDepth) {
             let indentation = heading.level - startDepth;
             let row = [
                 wsConfig.tab.repeat(indentation),
@@ -126,17 +123,17 @@ function generateTocText(): string {
 }
 
 function detectTocRange(): Range {
-    // log('Detecting TOC ...');
+    loadTocConfig();
 
     let doc = window.activeTextEditor.document;
     let start, end: Position;
     let headings = getHeadingList();
 
     if (headings.length == 0) {
-        // log('No headings');
+        // No headings
         return null;
     } else if (headings[0].title.length == 0) {
-        // log('The first heading is empty');
+        // The first heading is empty
         return null;
     } else {
         for (let index = 0; index < doc.lineCount; index++) {
@@ -149,9 +146,11 @@ function detectTocRange(): Range {
                     if (res != null) {
                         header = res[1];
                     }
-                    if (header.startsWith(headings[0].title)) {
+                    let expectedFirstHeader = headings.find(h => {
+                        return h.level == tocConfig.startDepth;
+                    }).title;
+                    if (header.startsWith(expectedFirstHeader)) {
                         start = new Position(index, 0);
-                        // log('Start', start);
                     }
                 }
             } else { // Start line already found
@@ -190,8 +189,6 @@ function getHeadingList(): Heading[] {
         if (headingResult == null) continue;
 
         let level = headingResult[0].length; // Get heading level
-        if (level > tocConfig.depth) continue;
-
         let title = lineText.substr(level).trim().replace(/\#*$/, "").trim(); // Get heading title
 
         headingList.push({
@@ -211,7 +208,12 @@ function onWillSave(e: TextDocumentWillSaveEvent) {
 
 function loadTocConfig() {
     let tocSectionCfg = workspace.getConfiguration('markdown.extension.toc');
-    tocConfig.depth = tocSectionCfg.get<number>('depth');
+    let tocLevels = tocSectionCfg.get<string>('levels');
+    let matches;
+    if (matches = tocLevels.match(/^([1-6])\.\.([1-6])$/)) {
+        tocConfig.startDepth = matches[1];
+        tocConfig.endDepth = matches[2];
+    }
     tocConfig.orderedList = tocSectionCfg.get<boolean>('orderedList');
     tocConfig.plaintext = tocSectionCfg.get<boolean>('plaintext');
     tocConfig.updateOnSave = tocSectionCfg.get<boolean>('updateOnSave');
