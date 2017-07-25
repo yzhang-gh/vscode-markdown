@@ -6,7 +6,7 @@
     "version": "0.7.7",
     "publisher": "yzhang",
     "engines": {
-        "vscode": "^1.6.0"
+        "vscode": "^1.10.0"
     },
     "categories": [
         "Other"
@@ -88,7 +88,7 @@
             {
                 "command": "markdown.extension.onTabKey",
                 "key": "tab",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible && !editorReadonly && !editorTabMovesFocus && !inSnippetMode"
             },
             {
                 "command": "markdown.extension.onBackspaceKey",
