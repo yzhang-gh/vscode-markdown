@@ -38,7 +38,7 @@ export async function testCommand(command: string, configs, lines: string[], sel
                 window.activeTextEditor.selection = selection;
                 return commands.executeCommand(command).then(() => {
                     let actual = window.activeTextEditor.document.getText();
-                    actual = actual.replace(/\r\n/g, '\n'); /* !!! */
+                    actual = actual.replace(/\r\n/g, '\n').replace(/\t/g, '    '); /* !!! */
                     assert.deepEqual(actual, expLines.join('\n'));
                     assert.deepEqual(window.activeTextEditor.selection, expSelection);
                 });
