@@ -1,6 +1,5 @@
 import * as assert from 'assert';
 
-import * as vscode from 'vscode';
 import { commands, window, workspace, Position, Range, Selection, Uri } from 'vscode';
 import * as path from 'path'
 
@@ -30,15 +29,15 @@ async function testCommand(command: string, configs, lines: string[], selection:
             await workspace.getConfiguration().update(key, tempConfigs[key], true);
         }
     }
-    return vscode.workspace.openTextDocument(testMdFile).then(document => {
-        return vscode.window.showTextDocument(document).then(editor => {
+    return workspace.openTextDocument(testMdFile).then(document => {
+        return window.showTextDocument(document).then(editor => {
             return editor.edit(editBuilder => {
                 let fullRange = new Range(new Position(0, 0), editor.document.positionAt(editor.document.getText().length));
                 editBuilder.delete(fullRange);
                 editBuilder.insert(new Position(0, 0), lines.join('\n'));
             }).then(b => {
                 window.activeTextEditor.selection = selection;
-                return vscode.commands.executeCommand(command).then(num => {
+                return commands.executeCommand(command).then(num => {
                     assert.deepEqual(window.activeTextEditor.document.getText(), expLines.join('\n'));
                     assert.deepEqual(window.activeTextEditor.selection, expSelection);
                 });
@@ -52,7 +51,10 @@ function toString(s: Selection): string {
 }
 
 suite("Formatting.", () => {
-    suiteSetup(() => {
+    suiteSetup(async () => {
+        // 💩 Preload file to prevent the first test timeout
+        await workspace.openTextDocument(testMdFile);
+
         for (let key in defaultConfigs) {
             if (defaultConfigs.hasOwnProperty(key)) {
                 defaultConfigs[key] = workspace.getConfiguration().get(key);
