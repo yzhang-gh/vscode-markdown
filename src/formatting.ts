@@ -3,7 +3,6 @@
 import { commands, languages, window, workspace, ExtensionContext, Position, Range, Selection } from 'vscode';
 
 const prefix = 'markdown.extension.editing.';
-let quickStyling;
 
 export function activate(context: ExtensionContext) {
     const cmds: Command[] = [
@@ -21,12 +20,10 @@ export function activate(context: ExtensionContext) {
         context.subscriptions.push(commands.registerCommand(cmd.command, cmd.callback));
     });
 
-    quickStyling = workspace.getConfiguration('markdown.extension').get<boolean>('quickStyling');
-    if (quickStyling) {
-        languages.setLanguageConfiguration('markdown', {
-            wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g
-        });
-    }
+    // Allow `*` in word pattern for quick styling
+    languages.setLanguageConfiguration('markdown', {
+        wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g
+    });
 }
 
 // Return Promise because need to chain operations in unit tests
@@ -84,12 +81,13 @@ async function styleByWrapping(startPattern, endPattern?) {
     let cursorPos = selection.active;
 
     if (selection.isEmpty) { // No selected text
-        if (quickStyling) {
+        // Quick styling
+        if (workspace.getConfiguration('markdown.extension').get<boolean>('quickStyling')) {
             let wordRange = editor.document.getWordRangeAtPosition(cursorPos);
             if (wordRange == undefined) {
                 wordRange = new Range(cursorPos, cursorPos);
             }
-            wrapRange(cursorPos, wordRange, false, startPattern);
+            await wrapRange(cursorPos, wordRange, false, startPattern);
         } else {
             switch (getContext(startPattern)) {
                 case `${startPattern}text|${endPattern}`:
@@ -99,37 +97,62 @@ async function styleByWrapping(startPattern, endPattern?) {
                 case `${startPattern}|${endPattern}`:
                     let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
                     let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
-                    wrapRange(cursorPos, new Range(start, end), false, startPattern);
+                    await wrapRange(cursorPos, new Range(start, end), false, startPattern);
                     break;
                 default:
-                    wrapRange(cursorPos, new Range(cursorPos, cursorPos), false, startPattern);
+                    await wrapRange(cursorPos, new Range(cursorPos, cursorPos), false, startPattern);
                     break;
             }
         }
     }
     else { // Text selected
-        wrapRange(cursorPos, selection, true, startPattern);
+        await wrapRange(cursorPos, selection, true, startPattern);
     }
 }
 
 /**
  * Add or remove `startPattern`/`endPattern` according to the context
+ * @param cursor cursor position
+ * @param range range to be replaced
+ * @param isSelected is this range selected
+ * @param startPattern 
+ * @param endPattern 
  */
-function wrapRange(cursor: Position, range: Range, isSelected: boolean, startPattern, endPattern?) {
+async function wrapRange(cursor: Position, range: Range, isSelected: boolean, startPattern: string, endPattern?: string) {
     if (endPattern == undefined) {
         endPattern = startPattern;
     }
 
     let editor = window.activeTextEditor;
     let text = editor.document.getText(range);
-    let newCursorPos;
+    let newCursorPos: Position;
     if (isWrapped(text, startPattern)) {
-        replaceWith(range, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
+        // remove start/end patterns from range
+        await replaceWith(range, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
+
+        // Fix cursor position
         newCursorPos = cursor.with({ character: cursor.character - startPattern.length });
+        if (!range.isEmpty) {
+            if (cursor.character == range.start.character) {
+                newCursorPos = cursor
+            } else if (cursor.character == range.end.character) {
+                newCursorPos = cursor.with({ character: cursor.character - startPattern.length - endPattern.length });
+            }
+        }
     }
     else {
-        replaceWith(range, startPattern + text + endPattern);
+        // add start/end patterns arround range
+        await replaceWith(range, startPattern + text + endPattern);
+
+        // Fix cursor position
         newCursorPos = cursor.with({ character: cursor.character + startPattern.length });
+        if (!range.isEmpty) {
+            if (cursor.character == range.start.character) {
+                newCursorPos = cursor
+            } else if (cursor.character == range.end.character) {
+                newCursorPos = cursor.with({ character: cursor.character + startPattern.length + endPattern.length });
+            }
+        }
     }
 
     if (!isSelected) {
