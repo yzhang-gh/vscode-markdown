@@ -12,6 +12,7 @@ suite("Formatting.", () => {
             }
         }
     });
+
     suiteTeardown(async () => {
         for (let key in defaultConfigs) {
             if (defaultConfigs.hasOwnProperty(key)) {
@@ -19,6 +20,7 @@ suite("Formatting.", () => {
             }
         }
     });
+
     test("Toggle bold. No selection (no quick styling). Toggle on", done => {
         testCommand('markdown.extension.editing.toggleBold', { "markdown.extension.quickStyling": false }, ['text'], new Selection(0, 4, 0, 4), ['text****'], new Selection(0, 6, 0, 6)).then(done, done);
     });
