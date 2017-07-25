@@ -1,6 +1,6 @@
 'use strict';
 
-import { languages, window, workspace, ExtensionContext, IndentAction } from 'vscode';
+import { window, workspace, ExtensionContext, IndentAction } from 'vscode';
 import * as formatting from './formatting';
 import * as toc from './toc';
 import * as preview from './preview';

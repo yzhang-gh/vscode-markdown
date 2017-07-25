@@ -1,12 +1,9 @@
 'use strict';
 
-/**
- * Modified from <https://github.com/mdickin/vscode-markdown-shortcuts>
- */
-
-import { commands, window, workspace, ExtensionContext, Position, Range, Selection } from 'vscode';
+import { commands, languages, window, workspace, ExtensionContext, Position, Range, Selection } from 'vscode';
 
 const prefix = 'markdown.extension.editing.';
+let quickStyling;
 
 export function activate(context: ExtensionContext) {
     const cmds: Command[] = [
@@ -23,6 +20,13 @@ export function activate(context: ExtensionContext) {
     cmds.forEach(cmd => {
         context.subscriptions.push(commands.registerCommand(cmd.command, cmd.callback));
     });
+
+    quickStyling = workspace.getConfiguration('markdown.extension').get<boolean>('quickStyling');
+    if (quickStyling) {
+        languages.setLanguageConfiguration('markdown', {
+            wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g
+        });
+    }
 }
 
 // Return Promise because need to chain operations in unit tests
@@ -77,61 +81,59 @@ async function styleByWrapping(startPattern, endPattern?) {
 
     let editor = window.activeTextEditor;
     let selection = editor.selection;
+    let cursorPos = selection.active;
 
     if (selection.isEmpty) { // No selected text
-        let position = selection.active;
-        let newPosition = position;
-        switch (getContext(startPattern)) {
-            // Empty bold or italic block
-            case `${startPattern}|${endPattern}`:
-                newPosition = position.with(position.line, position.character - startPattern.length);
-                await editor.edit((editBuilder) => {
-                    editBuilder.delete(new Range(newPosition, position.with({ character: position.character + endPattern.length })));
-                });
-                break;
-            // At the end of bold or italic block
-            case `${startPattern}some text|${endPattern}`:
-                newPosition = position.with({ character: position.character + endPattern.length });
-                break;
-            // Plain text
-            case '|':
-                // TODO: quick styling
-                let wordRange = editor.document.getWordRangeAtPosition(position);
-                // console.log(wordRange);
-                if (wordRange == undefined) {
-                    await editor.edit((editBuilder) => {
-                        editBuilder.insert(position, startPattern + endPattern);
-                    });
-                } else {
-                    // console.log(editor.document.getText(wordRange));
-                    await editor.edit((editBuilder) => {
-                        editBuilder.insert(wordRange.start, startPattern);
-                        editBuilder.insert(wordRange.end, endPattern);
-                    });
-                }
-                newPosition = position.with({ character: position.character + startPattern.length });
-                break;
+        if (quickStyling) {
+            let wordRange = editor.document.getWordRangeAtPosition(cursorPos);
+            if (wordRange == undefined) {
+                wordRange = new Range(cursorPos, cursorPos);
+            }
+            wrapRange(cursorPos, wordRange, false, startPattern);
+        } else {
+            switch (getContext(startPattern)) {
+                case `${startPattern}text|${endPattern}`:
+                    let newCursorPos = cursorPos.with({ character: cursorPos.character + endPattern.length });
+                    editor.selection = new Selection(newCursorPos, newCursorPos);
+                    break;
+                case `${startPattern}|${endPattern}`:
+                    let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
+                    let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
+                    wrapRange(cursorPos, new Range(start, end), false, startPattern);
+                    break;
+                default:
+                    wrapRange(cursorPos, new Range(cursorPos, cursorPos), false, startPattern);
+                    break;
+            }
         }
-        editor.selection = new Selection(newPosition, newPosition);
     }
     else { // Text selected
-        await wrapSelection(startPattern);
+        wrapRange(cursorPos, selection, true, startPattern);
     }
 }
 
-async function wrapSelection(startPattern, endPattern?) {
+/**
+ * Add or remove `startPattern`/`endPattern` according to the context
+ */
+function wrapRange(cursor: Position, range: Range, isSelected: boolean, startPattern, endPattern?) {
     if (endPattern == undefined) {
         endPattern = startPattern;
     }
 
     let editor = window.activeTextEditor;
-    let selection = editor.selection;
-    let text = editor.document.getText(selection);
+    let text = editor.document.getText(range);
+    let newCursorPos;
     if (isWrapped(text, startPattern)) {
-        await replaceWith(selection, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
+        replaceWith(range, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
+        newCursorPos = cursor.with({ character: cursor.character - startPattern.length });
     }
     else {
-        await replaceWith(selection, startPattern + text + endPattern);
+        replaceWith(range, startPattern + text + endPattern);
+        newCursorPos = cursor.with({ character: cursor.character + startPattern.length });
+    }
+
+    if (!isSelected) {
+        editor.selection = new Selection(newCursorPos, newCursorPos);
     }
 }
 
@@ -170,9 +172,9 @@ function getContext(startPattern, endPattern?): string {
 
     if (rightText == endPattern) {
         if (leftText == startPattern) {
-            return `${startPattern}|${endPattern}`
+            return `${startPattern}|${endPattern}`;
         } else {
-            return `${startPattern}some text|${endPattern}`
+            return `${startPattern}text|${endPattern}`;
         }
     }
     return '|';

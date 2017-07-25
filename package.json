@@ -142,6 +142,11 @@
                         "*",
                         "_"
                     ]
+                },
+                "markdown.extension.quickStyling": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Toggle italic/bold without selecting text"
                 }
             }
         }
