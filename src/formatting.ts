@@ -118,43 +118,58 @@ async function styleByWrapping(startPattern, endPattern?) {
  * @param startPattern 
  * @param endPattern 
  */
-async function wrapRange(cursor: Position, range: Range, isSelected: boolean, startPattern: string, endPattern?: string) {
+function wrapRange(cursor: Position, range: Range, isSelected: boolean, startPattern: string, endPattern?: string) {
     if (endPattern == undefined) {
         endPattern = startPattern;
     }
+
+    /**
+     * 💩 IMHO, it makes more sense to use `await` to chain these two operations
+     *     1. replace text
+     *     2. fix cursor position
+     * But using `await` will cause noticeable cursor moving from `|` to `****|` to `**|**`.
+     * Since using promise here can also pass the unit tests, I choose this "bad codes"(?)
+     */
+    let promise: Thenable<boolean>;
 
     let editor = window.activeTextEditor;
     let text = editor.document.getText(range);
     let newCursorPos: Position;
     if (isWrapped(text, startPattern)) {
         // remove start/end patterns from range
-        await replaceWith(range, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
+        promise = replaceWith(range, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
 
         // Fix cursor position
         if (!isSelected) {
-            newCursorPos = cursor.with({ character: cursor.character - startPattern.length });
-            if (!range.isEmpty) {
+            if (!range.isEmpty) { // means quick styling
                 if (cursor.character == range.start.character) {
                     newCursorPos = cursor
                 } else if (cursor.character == range.end.character) {
                     newCursorPos = cursor.with({ character: cursor.character - startPattern.length - endPattern.length });
+                } else {
+                    newCursorPos = cursor.with({ character: cursor.character - startPattern.length });
                 }
+            } else { // means `**|**` -> `|`
+                newCursorPos = cursor.with({ character: cursor.character + startPattern.length });
             }
         }
     }
     else {
         // add start/end patterns arround range
-        await replaceWith(range, startPattern + text + endPattern);
+        promise = replaceWith(range, startPattern + text + endPattern);
 
         // Fix cursor position
         if (!isSelected) {
-            newCursorPos = cursor.with({ character: cursor.character + startPattern.length });
-            if (!range.isEmpty) {
+            if (!range.isEmpty) { // means quick styling
                 if (cursor.character == range.start.character) {
                     newCursorPos = cursor
                 } else if (cursor.character == range.end.character) {
                     newCursorPos = cursor.with({ character: cursor.character + startPattern.length + endPattern.length });
+                } else {
+                    newCursorPos = cursor.with({ character: cursor.character + startPattern.length });
                 }
+            } else { // means `|` -> `**|**`
+                newCursorPos = cursor.with({ character: cursor.character + startPattern.length });
             }
         }
     }
@@ -162,6 +177,8 @@ async function wrapRange(cursor: Position, range: Range, isSelected: boolean, st
     if (!isSelected) {
         editor.selection = new Selection(newCursorPos, newCursorPos);
     }
+
+    return promise;
 }
 
 function isWrapped(text, startPattern, endPattern?): boolean {
@@ -171,10 +188,10 @@ function isWrapped(text, startPattern, endPattern?): boolean {
     return text.startsWith(startPattern) && text.endsWith(endPattern);
 }
 
-async function replaceWith(selection, newText) {
+function replaceWith(range: Range, newText: string) {
     let editor = window.activeTextEditor;
-    await editor.edit((edit) => {
-        edit.replace(selection, newText);
+    return editor.edit(edit => {
+        edit.replace(range, newText);
     });
 }
 
