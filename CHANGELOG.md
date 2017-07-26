@@ -1,3 +1,7 @@
+### Unreleased (2017.)
+
+- **New**: Support more than 9 list items and some improvements. Thank you [@rbolsius](https://github.com/rbolsius)
+
 ### 0.8.0 (2017.07.26)
 
 - **New**: New setting `markdown.extension.quickStyling`. Quick styling (toggle bold/italic without selecting words) (default `false`)
