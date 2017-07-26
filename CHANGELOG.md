@@ -1,3 +1,10 @@
+### 0.8.0 (2017.07.26)
+
+- **New**: New setting `markdown.extension.quickStyling`. Quick styling (toggle bold/italic without selecting words) (default `false`)
+- **New**: New setting `markdown.extension.italic.indicator` (`*` or `_`)
+- **New**: New setting `markdown.extension.toc.levels` controling the range of TOC levels (syntax `x..y`, default `1..6`)
+- **Other**: Add unit tests and continuous integration (Appveyor)
+
 ### 0.7.6/7 (2017.07.18/20)
 
 - **Fix**: Fix again (activation events). Finally go back to the legacy activation events (not fancy but robust).

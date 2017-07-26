@@ -10,6 +10,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 - **Keyboard shortcuts** (toggle bold, italic, code span and heading)
   - Different behaviors depending on the context (see instruction below)
+  - *Quick styling mode*: toggle bold/italic without selecting words
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
   - ~~Automatically close preview when changing editor~~
@@ -24,17 +25,11 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ### Keyboard Shortcuts
 
-- When toggling bold or italic,
-  - If there is NO selection, pressing the hotkey will **turn on** or **off** the style
-    - `|` becomes `**|**` or `*|*` (turn on the style)
-    - `**|**` or `*|*` becomes `|` (turn off the style)
-    - `**bold|**` or `*italic|*` becomes `**bold**|` or `*italic*|` (turn off the style, if the cursor is at the end of a **bold** or *italic* block)
-  - If there is a selection, pressing the hotkey will add or remove asterisk (`*`) depending on the selected text
-- When toggling heading,
-  - the same logic with indenting/unindenting one line (<kbd>ctrl</kbd> + <kbd>]</kbd>/<kbd>[</kbd>)
-  - easily adjusting the heading level without moving cursor to the beginning of the line (<kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>]</kbd>/<kbd>[</kbd>)
+![shortcuts1](images/gifs/bold-normal.gif)
 
-![shortcuts](images/gifs/shortcuts.gif)
+![shortcuts2](images/gifs/bold-quick.gif)
+
+![shortcuts3](images/gifs/heading.gif)
 
 ### Table of Contents
 
@@ -72,31 +67,23 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `markdown.extension.toc.depth` | `6` | Control the heading level to show in the table of contents. |
+| `markdown.extension.toc.levels` | `1..6` | Control the heading levels to show in the table of contents. |
 | `markdown.extension.toc.orderedList` | `false` | Use ordered list in the table of contents. |
 | `markdown.extension.toc.plaintext` | `false` | Just plain text. |
 | `markdown.extension.toc.updateOnSave` | `false` | Automatically update the table of contents on save. |
 | `markdown.extension.preview.autoShowPreviewToSide` | `false` | Automatically show preview when opening a Markdown file. |
 | `markdown.extension.orderedList.marker` | `one` | Start a list item always with '1.' or in increasing numerical order (using option `ordered`) |
 | `markdown.extension.italic.indicator` | `*` | Use `*` or `_` to wrap italic text |
+| `markdown.extension.quickStyling` | `false` | Toggle bold/italic without selecting words |
 
 ## Changelog
 
-### Latest 0.7.6/7 (2017.07.18/20)
+### Latest 0.8.0 (2017.07.26)
 
-- **Fix**: Fix again (activation events). Finally go back to the legacy activation events (not fancy but robust).
-
-### 0.7.5 (2017.07.15)
-
-- **Fix**: Cannot activate extension when no folder is opened ([#14](https://github.com/neilsustc/vscode-markdown/issues/14))
-
-### 0.7.4 (2017.07.14)
-
-- **Fix**: Fix activation events ([#12](https://github.com/neilsustc/vscode-markdown/issues/12))
-
-### 0.7.3 (2017.07.11)
-
-- **Fix**: Chinese TOC ([#11](https://github.com/neilsustc/vscode-markdown/issues/11))
+- **New**: New setting `markdown.extension.quickStyling`. Quick styling (toggle bold/italic without selecting words) (default `false`)
+- **New**: New setting `markdown.extension.italic.indicator` (`*` or `_`)
+- **New**: New setting `markdown.extension.toc.levels` controling the range of TOC levels (syntax `x..y`, default `1..6`)
+- **Other**: Add unit tests and continuous integration (Appveyor)
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
