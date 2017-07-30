@@ -1,6 +1,7 @@
-### Unreleased (2017.)
+### 0.8.1 (2017.07.30)
 
 - **New**: Support more than 9 list items and some improvements. Thank you [@rbolsius](https://github.com/rbolsius)
+- **Fix**: Wrong formatting when table contains `|` ([#24](https://github.com/neilsustc/vscode-markdown/issues/24))
 
 ### 0.8.0 (2017.07.26)
 
