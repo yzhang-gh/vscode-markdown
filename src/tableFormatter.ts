@@ -38,7 +38,13 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     private formatTable(text: string) {
         let rows = text.split(/\r?\n/g);
         let content = rows.map(row => {
-            return row.trim().replace(/^\|/g, '').replace(/\|$/g, '').trim().split(/\s*\|\s*/g);
+            // Escape `|` in code span
+            while (/`([^`]*?)\|([^`]*?)`/.test(row)) {
+                row = row.replace(/`([^`]*?)\|([^`]*?)`/, '`$1%7c$2`');
+            }
+            return row.trim().replace(/^\|/g, '').replace(/\|$/g, '').trim().split(/\s*\|\s*/g).map(cell => {
+                return cell.replace(/%7c/g, '|')
+            });
         });
         // Normalize the num of hyphen
         content[1] = content[1].map(cell => {
