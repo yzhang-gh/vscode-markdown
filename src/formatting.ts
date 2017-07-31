@@ -1,6 +1,6 @@
 'use strict';
 
-import { commands, languages, window, workspace, ExtensionContext, Position, Range, Selection } from 'vscode';
+import { commands, window, workspace, ExtensionContext, Position, Range, Selection } from 'vscode';
 
 const prefix = 'markdown.extension.editing.';
 
@@ -18,11 +18,6 @@ export function activate(context: ExtensionContext) {
 
     cmds.forEach(cmd => {
         context.subscriptions.push(commands.registerCommand(cmd.command, cmd.callback));
-    });
-
-    // Allow `*` in word pattern for quick styling
-    languages.setLanguageConfiguration('markdown', {
-        wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g
     });
 }
 

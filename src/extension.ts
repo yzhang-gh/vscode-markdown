@@ -1,6 +1,6 @@
 'use strict';
 
-import { window, workspace, ExtensionContext, IndentAction } from 'vscode';
+import { languages, window, workspace, ExtensionContext, IndentAction } from 'vscode';
 import * as formatting from './formatting';
 import * as toc from './toc';
 import * as preview from './preview';
@@ -50,6 +50,11 @@ function activateMdExt(context: ExtensionContext) {
     listEditing.activate(context);
     // Table formatter
     tableFormatter.activate(context);
+
+    // Allow `*` in word pattern for quick styling
+    languages.setLanguageConfiguration('markdown', {
+        wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s\，\。\《\》\？\；\：\‘\“\’\”\（\）\【\】\、]+)/g
+    });
 
     // console.log('activated');
 
