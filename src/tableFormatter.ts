@@ -59,10 +59,16 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
             }
         });
         let colWidth = Array(content[0].length).fill(3);
+        let cn = /[\u4e00-\u9eff，。《》？；：‘“’”（）【】、—]/g;
         content.forEach(row => {
             row.forEach((cell, i) => {
-                if (colWidth[i] < cell.length) {
-                    colWidth[i] = cell.length;
+                // Treat Chinese characters as 2 English characters
+                let cellLength = cell.length;
+                if (cn.test(cell)) {
+                    cellLength += cell.match(cn).length;
+                }
+                if (colWidth[i] < cellLength) {
+                    colWidth[i] = cellLength;
                 }
             });
         });
@@ -80,7 +86,11 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         });
         return content.map(row => {
             let cells = row.map((cell, i) => {
-                return (cell + ' '.repeat(colWidth[i])).slice(0, colWidth[i]);
+                let cellLength = colWidth[i];
+                if (cn.test(cell)) {
+                    cellLength -= cell.match(cn).length;
+                }
+                return (cell + ' '.repeat(cellLength)).slice(0, cellLength);
             });
             return '| ' + cells.join(' | ') + ' |';
         }).join(<string>workspace.getConfiguration("files").get("eol"));
