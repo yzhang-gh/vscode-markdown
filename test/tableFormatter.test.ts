@@ -52,4 +52,20 @@ suite("Table formatter.", () => {
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
+
+    test("中文", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '| a | b |',
+                '| --- | --- |',
+                '| c 中文 | d |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| a      | b   |',
+                '| ------ | --- |',
+                '| c 中文 | d   |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
 });
