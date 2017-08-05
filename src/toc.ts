@@ -224,13 +224,11 @@ function getText(range: Range): string {
 }
 
 function slugify(text: string): string {
-    // Chinese characters
-    let cn = /[\u4e00-\u9eff，。《》？；：‘“’”（）【】、—]/;
-    if (cn.test(text)) {
-        return text.toLocaleLowerCase().replace(/[\s\-]+/g, '-').replace(/^\-/, '').replace(/\-$/, '');
-    } else {
-        return text.toLocaleLowerCase().replace(/[\s\W\-]+/g, '-').replace(/^\-/, '').replace(/\-$/, '');
-    }
+    return text.toLocaleLowerCase()
+        .replace(/[\]\[\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\_\{\|\}\~]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/^\-+/, '')
+        .replace(/\-+$/, '');
 }
 
 class TocCodeLensProvider implements CodeLensProvider {
