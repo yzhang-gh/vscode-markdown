@@ -78,7 +78,12 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### Latest 0.8.1 (2017.07.30)
+### Latest 0.8.2 (2017.08.07)
+
+- **Fix**: Handle Chinese characters when formatting table ([#26](https://github.com/neilsustc/vscode-markdown/issues/26))
+- **Fix**: Use the same slugify function with vscode when creating table of contents ([#27](https://github.com/neilsustc/vscode-markdown/issues/27))
+
+### 0.8.1 (2017.07.30)
 
 - **New**: Support more than 9 list items and some improvements. Thank you [@rbolsius](https://github.com/rbolsius)
 - **Fix**: Wrong formatting when table cell contains `|` ([#24](https://github.com/neilsustc/vscode-markdown/issues/24))
@@ -95,6 +100,8 @@ See [CHANGELOG](CHANGELOG.md) for more information.
 ## Contributing
 
 Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc/vscode-markdown/issues).
+
+Or write a review on [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one#review-details) 😉.
 
 ## If You Would Like to ...
 

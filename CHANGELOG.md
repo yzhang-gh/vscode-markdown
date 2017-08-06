@@ -1,3 +1,8 @@
+### 0.8.2 (2017.08.07)
+
+- **Fix**: Handle Chinese characters when formatting table ([#26](https://github.com/neilsustc/vscode-markdown/issues/26))
+- **Fix**: Use the same slugify function with vscode when creating table of contents ([#27](https://github.com/neilsustc/vscode-markdown/issues/27))
+
 ### 0.8.1 (2017.07.30)
 
 - **New**: Support more than 9 list items and some improvements. Thank you [@rbolsius](https://github.com/rbolsius)
