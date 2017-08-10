@@ -20,7 +20,7 @@ function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
     }
 }
 
-function onEnterKey(modifiers?: string) {
+async function onEnterKey(modifiers?: string) {
     let editor = window.activeTextEditor;
     let cursorPos = editor.selection.active;
     let line = editor.document.lineAt(cursorPos.line);
@@ -35,28 +35,24 @@ function onEnterKey(modifiers?: string) {
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
         // Normal behavior
         if (modifiers == 'ctrl') {
-            commands.executeCommand('editor.action.insertLineAfter');
+            return commands.executeCommand('editor.action.insertLineAfter');
         } else {
-            editor.edit(editBuilder => {
-                editBuilder.insert(lineBreakPos, '\n');
-            });
+            return commands.executeCommand('type', { source: 'keyboard', text: '\n' });
         }
-        return;
     }
 
     // If it's an empty list item, remove it
     if (/^([-+*]|[0-9]+[.)])$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
-        editor.edit(editBuilder => {
+        return editor.edit(editBuilder => {
             editBuilder.delete(line.range);
             editBuilder.insert(line.range.end, '\n');
         });
-        return;
     }
 
     let matches;
     if ((matches = /^(\s*[-+*] +).+$/.exec(textBeforeCursor)) !== null) {
         // Unordered list
-        editor.edit(editBuilder => {
+        await editor.edit(editBuilder => {
             editBuilder.insert(lineBreakPos, `\n${matches[1]}`);
         });
         // Fix cursor position
@@ -79,7 +75,7 @@ function onEnterKey(modifiers?: string) {
         // Add enough trailing spaces so that the text is aligned with the previous list item, but always keep at least one space
         trailingSpace = " ".repeat(Math.max(1, textIndent - (marker + delimiter).length));
 
-        editor.edit(editBuilder => {
+        await editor.edit(editBuilder => {
             editBuilder.insert(lineBreakPos, `\n${leadingSpace + marker + delimiter + trailingSpace}`);
         });
         // Fix cursor position
@@ -90,11 +86,9 @@ function onEnterKey(modifiers?: string) {
     } else {
         // Normal behavior
         if (modifiers == 'ctrl') {
-            commands.executeCommand('editor.action.insertLineAfter');
+            return commands.executeCommand('editor.action.insertLineAfter');
         } else {
-            editor.edit(editBuilder => {
-                editBuilder.insert(lineBreakPos, '\n');
-            });
+            return commands.executeCommand('type', { source: 'keyboard', text: '\n' });
         }
     }
 }

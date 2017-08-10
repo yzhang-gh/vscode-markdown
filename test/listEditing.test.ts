@@ -1,0 +1,43 @@
+import { workspace, Selection } from 'vscode';
+import { testMdFile, defaultConfigs, testCommand } from './testUtils';
+
+suite("List editing.", () => {
+    suiteSetup(async () => {
+        // 💩 Preload file to prevent the first test to be treated timeout
+        await workspace.openTextDocument(testMdFile);
+
+        for (let key in defaultConfigs) {
+            if (defaultConfigs.hasOwnProperty(key)) {
+                defaultConfigs[key] = workspace.getConfiguration().get(key);
+            }
+        }
+    });
+
+    suiteTeardown(async () => {
+        for (let key in defaultConfigs) {
+            if (defaultConfigs.hasOwnProperty(key)) {
+                await workspace.getConfiguration().update(key, defaultConfigs[key], true);
+            }
+        }
+    });
+
+    test("Enter key. Continue list item", done => {
+        testCommand('markdown.extension.onEnterKey', {}, ['- item1'], new Selection(0, 7, 0, 7), ['- item1', '- '], new Selection(1, 2, 1, 2)).then(done, done);
+    });
+
+    test("Enter key. Don't continue empty list item", done => {
+        testCommand('markdown.extension.onEnterKey', {}, ['- item1', '- '], new Selection(1, 2, 1, 2), ['- item1', '', ''], new Selection(2, 0, 2, 0)).then(done, done);
+    });
+
+    test("Enter key. List marker `*`", done => {
+        testCommand('markdown.extension.onEnterKey', {}, ['* item1'], new Selection(0, 7, 0, 7), ['* item1', '* '], new Selection(1, 2, 1, 2)).then(done, done);
+    });
+
+    test("Enter key. Disable in fenced code block", done => {
+        testCommand('markdown.extension.onEnterKey', {}, ['```', '- item1'], new Selection(1, 7, 1, 7), ['```', '- item1', ''], new Selection(2, 0, 2, 0)).then(done, done);
+    });
+
+    test("Enter key. Respect indentation rules", done => {
+        testCommand('markdown.extension.onEnterKey', {}, ['```', '{}'], new Selection(1, 1, 1, 1), ['```', '{', '    ', '}'], new Selection(2, 4, 2, 4)).then(done, done);
+    });
+});
