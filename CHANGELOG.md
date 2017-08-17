@@ -1,3 +1,8 @@
+### 0.8.3 (2017.08.17)
+
+- **Fix**: Respect indentation rules ([#9](https://github.com/neilsustc/vscode-markdown/issues/9))
+- **Fix**: Handle escaped pipe when formatting GFM table ([#28](https://github.com/neilsustc/vscode-markdown/issues/28))
+
 ### 0.8.2 (2017.08.07)
 
 - **Fix**: Handle Chinese characters when formatting table ([#26](https://github.com/neilsustc/vscode-markdown/issues/26))

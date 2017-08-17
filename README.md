@@ -78,22 +78,15 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### Latest 0.8.2 (2017.08.07)
+### Latest 0.8.3 (2017.08.17)
+
+- **Fix**: Respect indentation rules ([#9](https://github.com/neilsustc/vscode-markdown/issues/9))
+- **Fix**: Handle escaped pipe when formatting GFM table ([#28](https://github.com/neilsustc/vscode-markdown/issues/28))
+
+### 0.8.2 (2017.08.07)
 
 - **Fix**: Handle Chinese characters when formatting table ([#26](https://github.com/neilsustc/vscode-markdown/issues/26))
 - **Fix**: Use the same slugify function with vscode when creating table of contents ([#27](https://github.com/neilsustc/vscode-markdown/issues/27))
-
-### 0.8.1 (2017.07.30)
-
-- **New**: Support more than 9 list items and some improvements. Thank you [@rbolsius](https://github.com/rbolsius)
-- **Fix**: Wrong formatting when table cell contains `|` ([#24](https://github.com/neilsustc/vscode-markdown/issues/24))
-
-### 0.8.0 (2017.07.26)
-
-- **New**: New setting `markdown.extension.quickStyling`. Quick styling (toggle bold/italic without selecting words) (default `false`)
-- **New**: New setting `markdown.extension.italic.indicator` (`*` or `_`)
-- **New**: New setting `markdown.extension.toc.levels` controling the range of TOC levels (syntax `x..y`, default `1..6`)
-- **Other**: Add unit tests and continuous integration (Appveyor)
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
