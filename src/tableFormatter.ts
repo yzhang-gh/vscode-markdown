@@ -38,10 +38,14 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     private formatTable(text: string) {
         let rows = text.split(/\r?\n/g);
         let content = rows.map(row => {
-            // Escape `|` in code span
-            while (/`([^`]*?)\|([^`]*?)`/.test(row)) {
-                row = row.replace(/`([^`]*?)\|([^`]*?)`/, '`$1%7c$2`');
+            // Escape 
+            // 1. `|` in code span
+            // 2. `\|`
+            while (/`([^` ]*?)\|([^` ]*?)`/.test(row)) {
+                // Use `while` because there might be more than one `|` in a code span
+                row = row.replace(/`([^` ]*?)\|([^` ]*?)`/, '`$1%7c$2`');
             }
+            row = row.replace(/\\\|/g, '\\%7c');
             return row.trim().replace(/^\|/g, '').replace(/\|$/g, '').trim().split(/\s*\|\s*/g).map(cell => {
                 return cell.replace(/%7c/g, '|')
             });

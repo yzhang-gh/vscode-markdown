@@ -42,13 +42,29 @@ suite("Table formatter.", () => {
             [
                 '| a | b |',
                 '| --- | --- |',
-                '| c `a|b|c` | d |'
+                '| c `a|b|c` | d `|` |'
             ],
             new Selection(0, 0, 0, 0),
             [
-                '| a         | b   |',
-                '| --------- | --- |',
-                '| c `a|b|c` | d   |'
+                '| a         | b     |',
+                '| --------- | ----- |',
+                '| c `a|b|c` | d `|` |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
+
+    test("Contains \\|", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '| a | b |',
+                '| --- | --- |',
+                '| c \\| b | d \\| |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| a      | b    |',
+                '| ------ | ---- |',
+                '| c \\| b | d \\| |'
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
