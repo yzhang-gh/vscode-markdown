@@ -16,9 +16,6 @@ const engine = new MdEngine();
 
 const prefix = 'markdown.extension.toc.';
 
-const REGEXP_HEADING = /^\#{1,6}/;
-const REGEXP_CODE_BLOCK = /^```/;
-
 /**
  * Workspace config
  */
