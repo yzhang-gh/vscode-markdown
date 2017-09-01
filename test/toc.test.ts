@@ -212,7 +212,7 @@ suite("TOC.", () => {
                 '',
                 '# Section 2',
                 '',
-                '- [Section 中文](#section-中文)',
+                '- [Section 中文](#section-%E4%B8%AD%E6%96%87)',
                 '    - [Section 1.1](#section-11)',
                 '- [Section 2](#section-2)'
             ],
