@@ -1,6 +1,6 @@
 'use strict';
 
-import { commands, window, workspace, ExtensionContext, Position, Range, Selection } from 'vscode';
+import { commands, window, workspace, ExtensionContext, Position, Range, Selection, TextEditor } from 'vscode';
 
 const prefix = 'markdown.extension.editing.';
 
@@ -72,36 +72,52 @@ async function styleByWrapping(startPattern, endPattern?) {
     }
 
     let editor = window.activeTextEditor;
-    let selection = editor.selection;
-    let cursorPos = selection.active;
+    
+    let selections = editor.selections;
 
-    if (selection.isEmpty) { // No selected text
-        // Quick styling
-        if (workspace.getConfiguration('markdown.extension').get<boolean>('quickStyling')) {
-            let wordRange = editor.document.getWordRangeAtPosition(cursorPos);
-            if (wordRange == undefined) {
-                wordRange = new Range(cursorPos, cursorPos);
-            }
-            await wrapRange(cursorPos, wordRange, false, startPattern);
-        } else {
-            switch (getContext(startPattern)) {
-                case `${startPattern}text|${endPattern}`:
-                    let newCursorPos = cursorPos.with({ character: cursorPos.character + endPattern.length });
-                    editor.selection = new Selection(newCursorPos, newCursorPos);
-                    break;
-                case `${startPattern}|${endPattern}`:
-                    let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
-                    let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
-                    await wrapRange(cursorPos, new Range(start, end), false, startPattern);
-                    break;
-                default:
-                    await wrapRange(cursorPos, new Range(cursorPos, cursorPos), false, startPattern);
-                    break;
+    for (let i = 0; i < selections.length; i++) {
+        var selection = selections[i];
+        let cursorPos = selection.active;
+
+        let options = {
+            undoStopBefore: false,
+            undoStopAfter: false
+        }
+
+        if (i === 0) {
+            options.undoStopBefore = true
+        } else if (i === selections.length - 1) {
+            options.undoStopAfter = true
+        }
+
+        if (selection.isEmpty) { // No selected text
+            // Quick styling
+            if (workspace.getConfiguration('markdown.extension').get<boolean>('quickStyling')) {
+                let wordRange = editor.document.getWordRangeAtPosition(cursorPos);
+                if (wordRange == undefined) {
+                    wordRange = new Range(cursorPos, cursorPos);
+                }
+                await wrapRange(editor, options, cursorPos, wordRange, false, startPattern);
+            } else {
+                switch (getContext(startPattern)) {
+                    case `${startPattern}text|${endPattern}`:
+                        let newCursorPos = cursorPos.with({ character: cursorPos.character + endPattern.length });
+                        editor.selection = new Selection(newCursorPos, newCursorPos);
+                        break;
+                    case `${startPattern}|${endPattern}`:
+                        let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
+                        let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
+                        await wrapRange(editor, options, cursorPos, new Range(start, end), false, startPattern);
+                        break;
+                    default:
+                        await wrapRange(editor, options, cursorPos, new Range(cursorPos, cursorPos), false, startPattern);
+                        break;
+                }
             }
         }
-    }
-    else { // Text selected
-        await wrapRange(cursorPos, selection, true, startPattern);
+        else { // Text selected
+            await wrapRange(editor, options, cursorPos, selection, true, startPattern);
+        }
     }
 }
 
@@ -113,7 +129,7 @@ async function styleByWrapping(startPattern, endPattern?) {
  * @param startPattern 
  * @param endPattern 
  */
-function wrapRange(cursor: Position, range: Range, isSelected: boolean, startPattern: string, endPattern?: string) {
+function wrapRange(editor: TextEditor, options, cursor: Position, range: Range, isSelected: boolean, startPattern: string, endPattern?: string) {
     if (endPattern == undefined) {
         endPattern = startPattern;
     }
@@ -127,12 +143,11 @@ function wrapRange(cursor: Position, range: Range, isSelected: boolean, startPat
      */
     let promise: Thenable<boolean>;
 
-    let editor = window.activeTextEditor;
     let text = editor.document.getText(range);
     let newCursorPos: Position;
     if (isWrapped(text, startPattern)) {
         // remove start/end patterns from range
-        promise = replaceWith(range, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
+        promise = replaceWith(range, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length), options);
 
         // Fix cursor position
         if (!isSelected) {
@@ -151,7 +166,7 @@ function wrapRange(cursor: Position, range: Range, isSelected: boolean, startPat
     }
     else {
         // add start/end patterns arround range
-        promise = replaceWith(range, startPattern + text + endPattern);
+        promise = replaceWith(range, startPattern + text + endPattern, options);
 
         // Fix cursor position
         if (!isSelected) {
@@ -183,11 +198,11 @@ function isWrapped(text, startPattern, endPattern?): boolean {
     return text.startsWith(startPattern) && text.endsWith(endPattern);
 }
 
-function replaceWith(range: Range, newText: string) {
+function replaceWith(range: Range, newText: string, options) {
     let editor = window.activeTextEditor;
     return editor.edit(edit => {
         edit.replace(range, newText);
-    });
+    }, options);
 }
 
 function getContext(startPattern, endPattern?): string {
