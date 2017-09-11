@@ -76,7 +76,7 @@ async function styleByWrapping(startPattern, endPattern?) {
     let selections = editor.selections;
 
     for (let i = 0; i < selections.length; i++) {
-        var selection = selections[i];
+        var selection = editor.selections[i]; // 💩 get the latest selection range
         let cursorPos = selection.active;
 
         let options = {
