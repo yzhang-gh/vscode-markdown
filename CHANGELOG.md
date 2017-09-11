@@ -1,3 +1,9 @@
+### 0.9.0 (2017.09.11)
+
+- **New**: Multi-cursor support ([#33](https://github.com/neilsustc/vscode-markdown/issues/33))
+- **Fix**: Support setext heading syntax on TOC generation ([#30](https://github.com/neilsustc/vscode-markdown/issues/30))
+- **Fix**: Remove backticks in generated TOC link ([#29](https://github.com/neilsustc/vscode-markdown/issues/29))
+
 ### 0.8.3 (2017.08.17)
 
 - **Fix**: Respect indentation rules ([#9](https://github.com/neilsustc/vscode-markdown/issues/9))
@@ -17,7 +23,7 @@
 
 - **New**: New setting `markdown.extension.quickStyling`. Quick styling (toggle bold/italic without selecting words) (default `false`)
 - **New**: New setting `markdown.extension.italic.indicator` (`*` or `_`)
-- **New**: New setting `markdown.extension.toc.levels` controling the range of TOC levels (syntax `x..y`, default `1..6`)
+- **New**: New setting `markdown.extension.toc.levels` controlling the range of TOC levels (syntax `x..y`, default `1..6`)
 - **Other**: Add unit tests and continuous integration (Appveyor)
 
 ### 0.7.6/7 (2017.07.18/20)

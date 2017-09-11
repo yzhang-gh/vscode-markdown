@@ -78,15 +78,16 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### Latest 0.8.3 (2017.08.17)
+### Latest 0.9.0 (2017.09.11)
+
+- **New**: Multi-cursor support ([#33](https://github.com/neilsustc/vscode-markdown/issues/33))
+- **Fix**: Support setext heading syntax on TOC generation ([#30](https://github.com/neilsustc/vscode-markdown/issues/30))
+- **Fix**: Remove backticks in generated TOC link ([#29](https://github.com/neilsustc/vscode-markdown/issues/29))
+
+### 0.8.3 (2017.08.17)
 
 - **Fix**: Respect indentation rules ([#9](https://github.com/neilsustc/vscode-markdown/issues/9))
 - **Fix**: Handle escaped pipe when formatting GFM table ([#28](https://github.com/neilsustc/vscode-markdown/issues/28))
-
-### 0.8.2 (2017.08.07)
-
-- **Fix**: Handle Chinese characters when formatting table ([#26](https://github.com/neilsustc/vscode-markdown/issues/26))
-- **Fix**: Use the same slugify function with vscode when creating table of contents ([#27](https://github.com/neilsustc/vscode-markdown/issues/27))
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
@@ -101,5 +102,4 @@ Or write a review on [vscode marketplace](https://marketplace.visualstudio.com/i
 Vote for prospective vscode features (Add 👍 to GitHub issues):
 
 - Open `.pdf`, `.xlsx` etc. in vscode [#12176](https://github.com/Microsoft/vscode/issues/12176)
-- Print Markdown to PDF using electron `printToPdf` [#20869](https://github.com/Microsoft/vscode/issues/20869)
 - Support setting font-size in Decoration [#9078](https://github.com/Microsoft/vscode/issues/9078)
