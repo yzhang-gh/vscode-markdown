@@ -186,7 +186,7 @@ async function detectTocRange(document: TextDocument): Promise<Range> {
 function onWillSave(e: TextDocumentWillSaveEvent) {
     if (!tocConfig.updateOnSave) return;
     if (e.document.languageId == 'markdown') {
-        updateToc();
+        e.waitUntil(updateToc());
     }
 }
 
