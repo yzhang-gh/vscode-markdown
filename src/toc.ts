@@ -4,11 +4,11 @@
  * Modified from <https://github.com/AlanWalk/Markdown-TOC>
  */
 
-import { commands, extensions, languages, window, workspace, CancellationToken, CodeLens, CodeLensProvider, ExtensionContext, Position, Range, TextDocument, TextDocumentWillSaveEvent } from 'vscode';
+import * as vscode from 'vscode';
 import { log } from './util';
 import * as path from 'path';
 
-const officialExt = extensions.getExtension("Microsoft.vscode-markdown");
+const officialExt = vscode.extensions.getExtension("Microsoft.vscode-markdown");
 const TocProvider = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider')).TableOfContentsProvider;
 const MdEngine = require(path.join(officialExt.extensionPath, 'out', 'markdownEngine')).MarkdownEngine;
 
@@ -22,7 +22,7 @@ const prefix = 'markdown.extension.toc.';
 let wsConfig = { tab: '    ', eol: '\r\n' };
 let tocConfig = { startDepth: 1, endDepth: 6, orderedList: false, updateOnSave: false, plaintext: false };
 
-export function activate(context: ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
     const cmds: Command[] = [
         { command: 'create', callback: createToc },
         { command: 'update', callback: updateToc }
@@ -33,25 +33,27 @@ export function activate(context: ExtensionContext) {
     });
 
     cmds.forEach(cmd => {
-        context.subscriptions.push(commands.registerCommand(cmd.command, cmd.callback));
+        context.subscriptions.push(vscode.commands.registerCommand(cmd.command, cmd.callback));
     });
 
-    context.subscriptions.push(workspace.onWillSaveTextDocument(onWillSave));
-    context.subscriptions.push(languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider()));
+    context.subscriptions.push(vscode.workspace.onWillSaveTextDocument(onWillSave));
+    context.subscriptions.push(vscode.languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider()));
 
     // Load workspace config
-    wsConfig.eol = <string>workspace.getConfiguration("files").get("eol");
-    let tabSize = <number>workspace.getConfiguration("editor").get("tabSize");
-    let insertSpaces = <boolean>workspace.getConfiguration("editor").get("insertSpaces");
+    wsConfig.eol = <string>vscode.workspace.getConfiguration("files").get("eol");
+    let tabSize = <number>vscode.workspace.getConfiguration("editor").get("tabSize");
+    let insertSpaces = <boolean>vscode.workspace.getConfiguration("editor").get("insertSpaces");
 
     wsConfig.tab = '\t';
     if (insertSpaces && tabSize > 0) {
         wsConfig.tab = " ".repeat(tabSize);
     }
+
+    vscode.window.registerTreeDataProvider('mdOutline', new MdOutlineProvider());
 }
 
 async function createToc() {
-    let editor = window.activeTextEditor;
+    let editor = vscode.window.activeTextEditor;
     let toc = await generateTocText(editor.document);
     await editor.edit(function (editBuilder) {
         editBuilder.delete(editor.selection);
@@ -60,7 +62,7 @@ async function createToc() {
 }
 
 async function updateToc() {
-    let editor = window.activeTextEditor;
+    let editor = vscode.window.activeTextEditor;
     let tocRange = await detectTocRange(editor.document);
     if (tocRange != null) {
         let oldToc = getText(tocRange).replace(/\r?\n|\r/g, wsConfig.eol);
@@ -86,12 +88,12 @@ async function updateToc() {
                 location = tocRange.end;
                 text = wsConfig.eol + text;
             } else { // Delete and then append
-                let delPosition = new Position(tocRange.start.line + firstChangedLine, tocRange.start.character);
-                rangeToBeDel = new Range(delPosition, tocRange.end);
+                let delPosition = new vscode.Position(tocRange.start.line + firstChangedLine, tocRange.start.character);
+                rangeToBeDel = new vscode.Range(delPosition, tocRange.end);
                 location = rangeToBeDel.start;
             }
 
-            await window.activeTextEditor.edit(editBuilder => {
+            await vscode.window.activeTextEditor.edit(editBuilder => {
                 if (!justAppending) {
                     editBuilder.delete(rangeToBeDel);
                 }
@@ -105,7 +107,7 @@ function deleteToc() {
     // Pass
 }
 
-async function generateTocText(document: TextDocument): Promise<string> {
+async function generateTocText(document: vscode.TextDocument): Promise<string> {
     loadTocConfig();
 
     const tocProvider = new TocProvider(engine, document);
@@ -130,13 +132,12 @@ async function generateTocText(document: TextDocument): Promise<string> {
     return toc.join(wsConfig.eol);
 }
 
-async function detectTocRange(document: TextDocument): Promise<Range> {
+async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> {
     loadTocConfig();
 
-    const tocProvider = new TocProvider(engine, document);
+    const tocProvider = new TocProvider(engine, doc);
 
-    let doc = window.activeTextEditor.document;
-    let start, end: Position;
+    let start, end: vscode.Position;
     let headings = await tocProvider.getToc();
 
     if (headings.length == 0) {
@@ -160,30 +161,30 @@ async function detectTocRange(document: TextDocument): Promise<Range> {
                         return h.level == tocConfig.startDepth;
                     }).text;
                     if (header.startsWith(expectedFirstHeader)) {
-                        start = new Position(index, 0);
+                        start = new vscode.Position(index, 0);
                     }
                 }
             } else { // Start line already found
                 lineText = lineText.trim();
                 if (lineText.match(/^[\-\d]\.? /) == null) { // End of a list block
-                    end = new Position(index - 1, doc.lineAt(index - 1).text.length);
+                    end = new vscode.Position(index - 1, doc.lineAt(index - 1).text.length);
                     // log('End', end);
                     break;
                 } else if (index == doc.lineCount - 1) { // End of file
-                    end = new Position(index, doc.lineAt(index).text.length);
+                    end = new vscode.Position(index, doc.lineAt(index).text.length);
                     // log('End', end);
                 }
             }
         }
         if ((start != null) && (end != null)) {
-            return new Range(start, end);
+            return new vscode.Range(start, end);
         }
         // log('No TOC detected.');
         return null;
     }
 }
 
-function onWillSave(e: TextDocumentWillSaveEvent) {
+function onWillSave(e: vscode.TextDocumentWillSaveEvent) {
     if (!tocConfig.updateOnSave) return;
     if (e.document.languageId == 'markdown') {
         e.waitUntil(updateToc());
@@ -191,7 +192,7 @@ function onWillSave(e: TextDocumentWillSaveEvent) {
 }
 
 function loadTocConfig() {
-    let tocSectionCfg = workspace.getConfiguration('markdown.extension.toc');
+    let tocSectionCfg = vscode.workspace.getConfiguration('markdown.extension.toc');
     let tocLevels = tocSectionCfg.get<string>('levels');
     let matches;
     if (matches = tocLevels.match(/^([1-6])\.\.([1-6])$/)) {
@@ -203,19 +204,19 @@ function loadTocConfig() {
     tocConfig.updateOnSave = tocSectionCfg.get<boolean>('updateOnSave');
 }
 
-function getText(range: Range): string {
-    return window.activeTextEditor.document.getText(range);
+function getText(range: vscode.Range): string {
+    return vscode.window.activeTextEditor.document.getText(range);
 }
 
-class TocCodeLensProvider implements CodeLensProvider {
-    public provideCodeLenses(document: TextDocument, token: CancellationToken):
-        CodeLens[] | Thenable<CodeLens[]> {
-        let lenses: CodeLens[] = [];
+class TocCodeLensProvider implements vscode.CodeLensProvider {
+    public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken):
+        vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
+        let lenses: vscode.CodeLens[] = [];
         return detectTocRange(document).then(tocRange => {
             if (tocRange == null) return lenses; // No TOC
             return generateTocText(document).then(text => {
                 let status = getText(tocRange).replace(/\r?\n|\r/g, wsConfig.eol) === text ? 'up to date' : 'out of date';
-                lenses.push(new CodeLens(tocRange, {
+                lenses.push(new vscode.CodeLens(tocRange, {
                     arguments: [],
                     title: `Table of Contents (${status})`,
                     command: ''
@@ -229,4 +230,71 @@ class TocCodeLensProvider implements CodeLensProvider {
     //     CodeLens | Thenable<CodeLens> {
 
     // }
+}
+
+class MdOutlineProvider implements vscode.TreeDataProvider<number> {
+
+    private _onDidChangeTreeData: vscode.EventEmitter<number | null> = new vscode.EventEmitter<number | null>();
+    readonly onDidChangeTreeData: vscode.Event<number | null> = this._onDidChangeTreeData.event;
+
+    private toc;
+    private editor: vscode.TextEditor;
+
+    /**
+     * @param realIndex starts from 1
+     */
+    getTreeItem(realIndex: number): vscode.TreeItem | Thenable<vscode.TreeItem> {
+        console.log('getTreeItem', realIndex);
+        return this.getTreeItemByIdx(realIndex - 1);
+    }
+
+    getChildren(realIndex?: number): number[] | Thenable<number[]> {
+        if (realIndex == undefined) { // Get root nodes
+            return this.toc.filter(h => {
+                return h.level === 1;
+            }).map((h) => {
+                return this.toc.indexOf(h) + 1;
+            });
+        } else if (realIndex < this.toc.length) {
+            let childLevel = this.toc[realIndex - 1].level + 1;
+            let children = [];
+            for (var i = realIndex; i < this.toc.length; i++) {
+                if (this.toc[i].level === childLevel) {
+                    children.push(i + 1);
+                } else if (this.toc[i].level < childLevel) {
+                    break;
+                }
+            }
+            return children;
+        } else {
+            return [];
+        }
+    }
+
+    constructor() {
+        vscode.window.onDidChangeActiveTextEditor(editor => {
+            this.buildToc();
+            this._onDidChangeTreeData.fire();
+        });
+        this.buildToc();
+    }
+
+    private async buildToc() {
+        this.toc = null;
+        this.editor = vscode.window.activeTextEditor;
+        if (this.editor && this.editor.document && this.editor.document.languageId === 'markdown') {
+            const tocProvider = new TocProvider(engine, this.editor.document);
+            this.toc = await tocProvider.getToc();
+        }
+    }
+
+    private getTreeItemByIdx(idx: number): vscode.TreeItem {
+        let treeItem = new vscode.TreeItem(this.toc[idx].text);
+        if (idx === this.toc.length - 1) {
+            treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
+        } else if (this.toc[idx + 1].level > this.toc[idx].level) {
+            treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
+        }
+        return treeItem;
+    }
 }
