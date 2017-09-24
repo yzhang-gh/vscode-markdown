@@ -248,7 +248,9 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
     }
 
     getChildren(realIndex?: number): number[] | Thenable<number[]> {
-        if (realIndex == undefined) { // Get root nodes
+        if (this.toc == null) {
+            return [];
+        } else if (realIndex == undefined) { // Get root nodes
             return this.toc.filter(h => {
                 return h.level === 1;
             }).map((h) => {
