@@ -1,7 +1,7 @@
 ### 0.10.0 (2017.09.24)
 
 - **New**: Outline view ([#36](https://github.com/neilsustc/vscode-markdown/issues/36))
-- **New**: Toggle strikethrough `~~` with <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>`</kbd> ([#35](https://github.com/neilsustc/vscode-markdown/issues/35))
+- **New**: Toggle strikethrough `~~` with the keybinding you like `markdown.extension.editing.toggleStrikethrough` ([#35](https://github.com/neilsustc/vscode-markdown/issues/35))
 - **Fix**: Update TOC on save
 
 ### 0.9.0 (2017.09.11)
