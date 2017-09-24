@@ -78,16 +78,17 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### Latest 0.9.0 (2017.09.11)
+### Latest 0.10.0 (2017.09.24)
+
+- **New**: Outline view ([#36](https://github.com/neilsustc/vscode-markdown/issues/36))
+- **New**: Toggle strikethrough `~~` with <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>`</kbd> ([#35](https://github.com/neilsustc/vscode-markdown/issues/35))
+- **Fix**: Update TOC on save
+
+### 0.9.0 (2017.09.11)
 
 - **New**: Multi-cursor support ([#33](https://github.com/neilsustc/vscode-markdown/issues/33))
 - **Fix**: Support setext heading syntax on TOC generation ([#30](https://github.com/neilsustc/vscode-markdown/issues/30))
 - **Fix**: Remove backticks in generated TOC link ([#29](https://github.com/neilsustc/vscode-markdown/issues/29))
-
-### 0.8.3 (2017.08.17)
-
-- **Fix**: Respect indentation rules ([#9](https://github.com/neilsustc/vscode-markdown/issues/9))
-- **Fix**: Handle escaped pipe when formatting GFM table ([#28](https://github.com/neilsustc/vscode-markdown/issues/28))
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 

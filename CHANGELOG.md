@@ -1,3 +1,9 @@
+### 0.10.0 (2017.09.24)
+
+- **New**: Outline view ([#36](https://github.com/neilsustc/vscode-markdown/issues/36))
+- **New**: Toggle strikethrough `~~` with <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>`</kbd> ([#35](https://github.com/neilsustc/vscode-markdown/issues/35))
+- **Fix**: Update TOC on save
+
 ### 0.9.0 (2017.09.11)
 
 - **New**: Multi-cursor support ([#33](https://github.com/neilsustc/vscode-markdown/issues/33))

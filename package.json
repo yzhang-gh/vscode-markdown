@@ -3,10 +3,10 @@
     "displayName": "Markdown All in One",
     "description": "All you need to write Markdown (keyboard shortcuts, table of contents, auto preview and more)",
     "icon": "images/Markdown-mark.png",
-    "version": "0.9.0",
+    "version": "0.10.0",
     "publisher": "yzhang",
     "engines": {
-        "vscode": "^1.10.0"
+        "vscode": "^1.16.0"
     },
     "categories": [
         "Other"
@@ -41,6 +41,14 @@
             {
                 "command": "markdown.extension.print",
                 "title": "Markdown: Print to PDF"
+            },
+            {
+                "command": "markdown.extension.editing.toggleCodeSpan",
+                "title": "Markdown: Toggle code span"
+            },
+            {
+                "command": "markdown.extension.editing.toggleStrikethrough",
+                "title": "Markdown: Toggle strikethrough"
             }
         ],
         "keybindings": [
@@ -54,12 +62,6 @@
                 "command": "markdown.extension.editing.toggleItalic",
                 "key": "ctrl+i",
                 "mac": "cmd+i",
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.editing.toggleCodeSpan",
-                "key": "ctrl+`",
-                "mac": "cmd+`",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
@@ -149,6 +151,14 @@
                     "description": "Toggle italic/bold without selecting text"
                 }
             }
+        },
+        "views": {
+            "explorer": [
+                {
+                    "id": "mdOutline",
+                    "name": "Outline"
+                }
+            ]
         }
     },
     "scripts": {
