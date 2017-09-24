@@ -8,10 +8,11 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Features
 
-- **Keyboard shortcuts** (toggle bold, italic, code span and heading)
+- **Keyboard shortcuts** (toggle bold, italic, code span, strikethrough and heading)
   - Different behaviors depending on the context (see instruction below)
   - *Quick styling mode*: toggle bold/italic without selecting words
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
+- **Outline view** in explorer panel
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
   - ~~Automatically close preview when changing editor~~
 - ~~**Print your Markdown to PDF**~~ (not satisfied with the current solution)
@@ -53,7 +54,6 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | --- | --- |
 | <kbd>ctrl</kbd> + <kbd>b</kbd> | Toggle bold |
 | <kbd>ctrl</kbd> + <kbd>i</kbd> | Toggle italic |
-| <kbd>ctrl</kbd> + <kbd>`</kbd> | Toggle code span |
 | <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel) |
 | <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel) |
 
@@ -61,6 +61,8 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 - Markdown: Create Table of Contents
 - Markdown: Update Table of Contents
+- Markdown: Toggle code span
+- Markdown: Toggle strikethrough
 - ~~Markdown: Print to PDF~~
 
 ## Supported Settings
