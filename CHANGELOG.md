@@ -1,3 +1,8 @@
+### Patches
+
+- **v0.10.2**: Fix `toc == null`
+- **v0.10.1**: Update readme
+
 ### 0.10.0 (2017.09.24)
 
 - **New**: Outline view ([#36](https://github.com/neilsustc/vscode-markdown/issues/36))
