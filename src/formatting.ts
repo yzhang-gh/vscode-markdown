@@ -9,6 +9,7 @@ export function activate(context: ExtensionContext) {
         { command: 'toggleBold', callback: toggleBold },
         { command: 'toggleItalic', callback: toggleItalic },
         { command: 'toggleCodeSpan', callback: toggleCodeSpan },
+        { command: 'toggleStrikethrough', callback: toggleStrikethrough },
         { command: 'toggleHeadingUp', callback: toggleHeadingUp },
         { command: 'toggleHeadingDown', callback: toggleHeadingDown }
     ].map(cmd => {
@@ -34,6 +35,10 @@ function toggleItalic() {
 
 function toggleCodeSpan() {
     return styleByWrapping('`');
+}
+
+function toggleStrikethrough() {
+    return styleByWrapping('~~');
 }
 
 async function toggleHeadingUp() {
