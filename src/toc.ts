@@ -244,7 +244,6 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
      * @param realIndex starts from 1
      */
     getTreeItem(realIndex: number): vscode.TreeItem | Thenable<vscode.TreeItem> {
-        console.log('getTreeItem', realIndex);
         return this.getTreeItemByIdx(realIndex - 1);
     }
 
@@ -295,6 +294,11 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
         } else if (this.toc[idx + 1].level > this.toc[idx].level) {
             treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
         }
+        treeItem.command = {
+            command: 'revealLine',
+            title: '',
+            arguments: [{ lineNumber: this.toc[idx].line, at: 'top' }]
+        };
         return treeItem;
     }
 }
