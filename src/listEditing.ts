@@ -42,7 +42,7 @@ async function onEnterKey(modifiers?: string) {
     }
 
     // If it's an empty list item, remove it
-    if (/^([-+*]|[0-9]+[.)])$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
+    if (/^([-+*]|[0-9]+[.)])(| \[[ x]\])$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
         return editor.edit(editBuilder => {
             editBuilder.delete(line.range);
             editBuilder.insert(line.range.end, '\n');
@@ -50,17 +50,17 @@ async function onEnterKey(modifiers?: string) {
     }
 
     let matches;
-    if ((matches = /^(\s*[-+*] +).+$/.exec(textBeforeCursor)) !== null) {
+    if ((matches = /^(\s*[-+*] +(|\[[ x]\] +))[^\[\]]+$/.exec(textBeforeCursor)) !== null) {
         // Unordered list
         await editor.edit(editBuilder => {
-            editBuilder.insert(lineBreakPos, `\n${matches[1]}`);
+            editBuilder.insert(lineBreakPos, `\n${matches[1].replace('[x]', '[ ]')}`);
         });
         // Fix cursor position
         if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
             let newCursorPos = cursorPos.with(line.lineNumber + 1, matches[1].length);
             editor.selection = new Selection(newCursorPos, newCursorPos);
         }
-    } else if ((matches = /^(\s*)([0-9]+)([.)])( +).+$/.exec(textBeforeCursor)) !== null) {
+    } else if ((matches = /^(\s*)([0-9]+)([.)])( +)(|\[[ x]\] +)[^\[\]]+$/.exec(textBeforeCursor)) !== null) {
         // Ordered list
         let config = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker');
         let marker = '1';
@@ -68,6 +68,7 @@ async function onEnterKey(modifiers?: string) {
         let previousMarker = matches[2];
         let delimiter = matches[3];
         let trailingSpace = matches[4];
+        let gfmCheckbox = matches[5].replace('[x]', '[ ]');
         let textIndent = (previousMarker + delimiter + trailingSpace).length;
         if (config == 'ordered') {
             marker = String(Number(previousMarker) + 1);
@@ -76,11 +77,11 @@ async function onEnterKey(modifiers?: string) {
         trailingSpace = " ".repeat(Math.max(1, textIndent - (marker + delimiter).length));
 
         await editor.edit(editBuilder => {
-            editBuilder.insert(lineBreakPos, `\n${leadingSpace + marker + delimiter + trailingSpace}`);
+            editBuilder.insert(lineBreakPos, `\n${leadingSpace + marker + delimiter + trailingSpace + gfmCheckbox}`);
         });
         // Fix cursor position
         if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
-            let newCursorPos = cursorPos.with(line.lineNumber + 1, (leadingSpace + marker + trailingSpace).length);
+            let newCursorPos = cursorPos.with(line.lineNumber + 1, (leadingSpace + marker + trailingSpace + gfmCheckbox).length);
             editor.selection = new Selection(newCursorPos, newCursorPos);
         }
     } else {
@@ -93,45 +94,43 @@ async function onEnterKey(modifiers?: string) {
     }
 }
 
-function onTabKey() {
+async function onTabKey() {
     let editor = window.activeTextEditor;
     let cursorPos = editor.selection.active;
     let textBeforeCursor = editor.document.lineAt(cursorPos.line).text.substr(0, cursorPos.character);
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
         // Normal behavior
-        commands.executeCommand('tab');
-        return;
+        return commands.executeCommand('tab');
     }
 
     if (/^\s*([-+*]|[0-9]+[.)]) +$/.test(textBeforeCursor)) {
-        commands.executeCommand('editor.action.indentLines');
+        return commands.executeCommand('editor.action.indentLines');
     } else {
         // Normal behavior
-        commands.executeCommand('tab');
+        return commands.executeCommand('tab');
     }
 }
 
-function onBackspaceKey() {
+async function onBackspaceKey() {
     let editor = window.activeTextEditor;
     let cursorPos = editor.selection.active;
     let textBeforeCursor = editor.document.lineAt(cursorPos.line).text.substr(0, cursorPos.character);
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
         // Normal behavior
-        commands.executeCommand('deleteLeft');
-        return;
+        return commands.executeCommand('deleteLeft');
     }
 
-    if (/^\s+([-+*]|[0-9]+[.)]) +$/.test(textBeforeCursor)) {
-        commands.executeCommand('editor.action.outdentLines');
-    } else if (/^([-+*]|[0-9]+[.)]) +$/.test(textBeforeCursor)) {
-        editor.edit(editBuilder => {
+    if (/^\s+([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
+        return commands.executeCommand('editor.action.outdentLines');
+    } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
+        await editor.edit(editBuilder => {
             editBuilder.delete(new Range(cursorPos.with({ character: 0 }), cursorPos));
         });
     } else {
         // Normal behavior
-        commands.executeCommand('deleteLeft');
+        return commands.executeCommand('deleteLeft');
     }
 }
 
