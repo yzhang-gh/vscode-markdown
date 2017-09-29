@@ -44,6 +44,10 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ![table formatter](images/gifs/table-formatter.gif)
 
+### Outline
+
+![outline](images/outline.png)
+
 <!-- ### Print to PDF
 
 ![print to pdf](images/gifs/pdf.gif) -->
@@ -80,17 +84,16 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### Latest 0.10.0 (2017.09.24)
+### 0.10.3 (2017.09.30)
+
+- **New**: Support GFM checkbox when continue list item ([#38](https://github.com/neilsustc/vscode-markdown/issues/38))
+- **Fix**: Unexpected deletion of list marker when deleting leading spaces of a list item ([#39](https://github.com/neilsustc/vscode-markdown/issues/39))
+
+### 0.10.0 (2017.09.24)
 
 - **New**: Outline view ([#36](https://github.com/neilsustc/vscode-markdown/issues/36))
 - **New**: Toggle strikethrough `~~` with the keybinding you like `markdown.extension.editing.toggleStrikethrough` ([#35](https://github.com/neilsustc/vscode-markdown/issues/35))
 - **Fix**: Update TOC on save
-
-### 0.9.0 (2017.09.11)
-
-- **New**: Multi-cursor support ([#33](https://github.com/neilsustc/vscode-markdown/issues/33))
-- **Fix**: Support setext heading syntax on TOC generation ([#30](https://github.com/neilsustc/vscode-markdown/issues/30))
-- **Fix**: Remove backticks in generated TOC link ([#29](https://github.com/neilsustc/vscode-markdown/issues/29))
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
