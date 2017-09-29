@@ -40,4 +40,16 @@ suite("List editing.", () => {
     test("Enter key. Respect indentation rules", done => {
         testCommand('markdown.extension.onEnterKey', {}, ['```', '{}'], new Selection(1, 1, 1, 1), ['```', '{', '    ', '}'], new Selection(2, 4, 2, 4)).then(done, done);
     });
+
+    test("Enter key. Continue GFM checkbox item", done => {
+        testCommand('markdown.extension.onEnterKey', {}, ['- [ ] item1'], new Selection(0, 11, 0, 11), ['- [ ] item1', '- [ ] '], new Selection(1, 6, 1, 6)).then(done, done);
+    });
+
+    test("Backspace key. 1", done => {
+        testCommand('markdown.extension.onBackspaceKey', {}, ['- item1'], new Selection(0, 2, 0, 2), ['item1'], new Selection(0, 0, 0, 0)).then(done, done);
+    });
+
+    test("Backspace key. 2", done => {
+        testCommand('markdown.extension.onBackspaceKey', {}, ['-  item1'], new Selection(0, 3, 0, 3), ['- item1'], new Selection(0, 2, 0, 2)).then(done, done);
+    });
 });
