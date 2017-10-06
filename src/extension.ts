@@ -45,7 +45,7 @@ function activateMdExt(context: ExtensionContext) {
     // Auto show preview to side
     preview.activate(context);
     // Print to PDF
-    // print.activate(context);
+    print.activate(context);
     // Override `Enter`, `Tab` and `Backspace` keys
     listEditing.activate(context);
     // Table formatter

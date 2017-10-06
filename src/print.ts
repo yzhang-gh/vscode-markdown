@@ -2,12 +2,14 @@
 
 // See https://github.com/Microsoft/vscode/tree/master/extensions/markdown/src
 
-import { commands, window, workspace, Disposable, ExtensionContext, TextDocument, Uri } from 'vscode';
+import * as vscode from 'vscode';
 import * as path from 'path';
 
-const hljs = require('highlight.js');
-const mdnh = require('markdown-it-named-headers');
-const md = require('markdown-it')({
+const officialExt = vscode.extensions.getExtension("Microsoft.vscode-markdown");
+
+const hljs = require(path.join(officialExt.extensionPath, 'node_modules', 'highlight.js'));
+const mdnh = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it-named-headers'));
+const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it'))({
     html: true,
     highlight: (str: string, lang: string) => {
         if (lang && hljs.getLanguage(lang)) {
@@ -19,7 +21,7 @@ const md = require('markdown-it')({
         return str;
     }
 }).use(mdnh, {});
-const htmlPdf = require('html-pdf');
+// const htmlPdf = require('html-pdf');
 const fs = require('fs');
 
 let options = {
@@ -33,12 +35,12 @@ let options = {
     }
 };
 
-let thisContext: ExtensionContext;
+let thisContext: vscode.ExtensionContext;
 // let disposables: Disposable[] = [];
 
-export function activate(context: ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
     thisContext = context;
-    context.subscriptions.push(commands.registerCommand('markdown.extension.print', print));
+    context.subscriptions.push(vscode.commands.registerCommand('markdown.extension.print', print));
 }
 
 export function deactivate() {
@@ -48,12 +50,12 @@ export function deactivate() {
 }
 
 function print() {
-    let editor = window.activeTextEditor;
+    let editor = vscode.window.activeTextEditor;
     let doc = editor.document;
     let uri = doc.uri;
 
     if (!editor || doc.languageId != 'markdown') {
-        window.showErrorMessage('No valid Markdown file');
+        vscode.window.showErrorMessage('No valid Markdown file');
         return;
     }
 
@@ -61,10 +63,10 @@ function print() {
         doc.save();
     }
 
-    window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`, printToPdf(doc));
+    vscode.window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`, printToHtml(doc));
 }
 
-function printToPdf(doc: TextDocument) {
+function printToHtml(doc: vscode.TextDocument) {
     return new Promise((resolve, reject) => {
         let outPath = doc.fileName.replace(/\.md$/, '.pdf');
         outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
@@ -79,9 +81,9 @@ function printToPdf(doc: TextDocument) {
         <html>
         <head>
             <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-            <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('github.css')).toString()}">
-            <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('tomorrow.css')).toString()}">
-            <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('fix.css')).toString()}">
+            <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('github.css')).toString()}">
+            <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('tomorrow.css')).toString()}">
+            <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('fix.css')).toString()}">
             ${computeCustomStyleSheetIncludes(doc.fileName)}
             ${getSettingsOverrideStyles()}
         </head>
@@ -90,22 +92,22 @@ function printToPdf(doc: TextDocument) {
         </body>
         </html>`;
         // Print HTML to debug
-        // fs.writeFile(outPath.replace(/.pdf$/, '.html'), html, 'utf-8', function (err) {
-        //     if (err) {
-        //         console.log(err);
-        //     }
-        // });
-        htmlPdf.create(html, options).toBuffer(function (err, buffer) {
-            fs.writeFile(outPath, buffer, function (err) {
-                if (err) {
-                    window.showErrorMessage(err.message);
-                    reject();
-                } else {
-                    window.setStatusBarMessage(`Output written on '${outPath}'`, 3000);
-                    resolve();
-                }
-            });
+        fs.writeFile(outPath.replace(/.pdf$/, '.html'), html, 'utf-8', function (err) {
+            if (err) {
+                console.log(err);
+            }
         });
+        // htmlPdf.create(html, options).toBuffer(function (err, buffer) {
+        //     fs.writeFile(outPath, buffer, function (err) {
+        //         if (err) {
+        //             window.showErrorMessage(err.message);
+        //             reject();
+        //         } else {
+        //             window.setStatusBarMessage(`Output written on '${outPath}'`, 3000);
+        //             resolve();
+        //         }
+        //     });
+        // });
     });
 }
 
@@ -118,7 +120,7 @@ function getMediaPath(mediaFile: string): string {
 }
 
 function computeCustomStyleSheetIncludes(fileName: string): string {
-    const styles = workspace.getConfiguration('markdown')['styles'];
+    const styles = vscode.workspace.getConfiguration('markdown')['styles'];
     if (styles && Array.isArray(styles) && styles.length > 0) {
         return styles.map((style) => {
             return `<link rel="stylesheet" href="${fixHref(fileName, style)}" type="text/css" media="screen">`;
@@ -130,13 +132,13 @@ function computeCustomStyleSheetIncludes(fileName: string): string {
 function fixHref(activeFileName: string, href: string): string {
     if (href) {
         // Use href if it is already an URL
-        if (Uri.parse(href).scheme) {
+        if (vscode.Uri.parse(href).scheme) {
             return href;
         }
 
         // Use href as file URI if it is absolute
         if (isAbsolute(href)) {
-            return Uri.file(href).toString();
+            return vscode.Uri.file(href).toString();
         }
 
         // use a workspace relative path if there is a workspace
@@ -146,7 +148,7 @@ function fixHref(activeFileName: string, href: string): string {
         // }
 
         // otherwise look relative to the markdown file
-        return Uri.file(path.join(path.dirname(activeFileName), href)).toString();
+        return vscode.Uri.file(path.join(path.dirname(activeFileName), href)).toString();
     }
     return href;
 }
@@ -156,7 +158,7 @@ function isAbsolute(p: string): boolean {
 }
 
 function getSettingsOverrideStyles(): string {
-    const previewSettings = workspace.getConfiguration('markdown')['preview'];
+    const previewSettings = vscode.workspace.getConfiguration('markdown')['preview'];
     if (!previewSettings) {
         return '';
     }
