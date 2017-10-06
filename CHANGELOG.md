@@ -1,6 +1,6 @@
 ### 0.10.3 (2017.09.30)
 
-- **New**: Support GFM checkbox when continue list item ([#38](https://github.com/neilsustc/vscode-markdown/issues/38))
+- **New**: Support GFM checkbox when continuing list item ([#38](https://github.com/neilsustc/vscode-markdown/issues/38))
 - **Fix**: Unexpected deletion of list marker when deleting leading spaces of a list item ([#39](https://github.com/neilsustc/vscode-markdown/issues/39))
 
 ### Patches
