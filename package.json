@@ -39,8 +39,8 @@
                 "title": "Markdown: Update Table of Contents"
             },
             {
-                "command": "markdown.extension.print",
-                "title": "Markdown: Print to PDF"
+                "command": "markdown.extension.printToHtml",
+                "title": "Markdown: Print current document to HTML"
             },
             {
                 "command": "markdown.extension.editing.toggleCodeSpan",
