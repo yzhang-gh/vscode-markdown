@@ -62,47 +62,45 @@ function print(type: string) {
         doc.save();
     }
 
-    vscode.window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}' to HTML ...`, printToHtml(doc));
-}
+    let statusBarMsg = vscode.window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}' to ${type.toUpperCase()} ...`, 1000);
 
-/**
- * Modified from <https://github.com/Microsoft/vscode/tree/master/extensions/markdown>
- * src/previewContentProvider MDDocumentContentProvider provideTextDocumentContent
- */
-function printToHtml(doc: vscode.TextDocument) {
-    return new Promise((resolve, reject) => {
-        let outPath = doc.fileName.replace(/\.md$/, '.pdf');
-        outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
-            return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
-        });
-
-        let body = render(doc.getText());
-        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
-            return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
-        });
-
-        let html = `<!DOCTYPE html>
-        <html>
-        <head>
-            <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-            <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('markdown.css')).toString()}">
-            <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('tomorrow.css')).toString()}">
-            ${computeCustomStyleSheetIncludes(doc.fileName)}
-            ${getSettingsOverrideStyles()}
-        </head>
-        <body>
-            ${body}
-        </body>
-        </html>`;
-
-        fs.writeFile(outPath.replace(/.pdf$/, '.html'), html, 'utf-8', function (err) {
-            if (err) {
-                console.log(err);
-                reject();
-            }
-            resolve();
-        });
+    /**
+     * Modified from <https://github.com/Microsoft/vscode/tree/master/extensions/markdown>
+     * src/previewContentProvider MDDocumentContentProvider provideTextDocumentContent
+     */
+    let outPath = doc.fileName.replace(/\.md$/, `.${type}`);
+    outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
+        return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
     });
+
+    let body = render(doc.getText());
+    body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
+        return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
+    });
+
+    let html = `<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('markdown.css')).toString()}">
+        <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('tomorrow.css')).toString()}">
+        ${computeCustomStyleSheetIncludes(doc.fileName)}
+        ${getSettingsOverrideStyles()}
+    </head>
+    <body>
+        ${body}
+    </body>
+    </html>`;
+
+    switch (type) {
+        case 'html':
+            fs.writeFile(outPath, html, 'utf-8', function (err) {
+                if (err) { console.log(err); }
+            });
+            break;
+        case 'pdf':
+            break;
+    }
 }
 
 function render(text: string) {
