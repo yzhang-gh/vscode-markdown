@@ -25,9 +25,16 @@ function preview(editor: TextEditor) {
 
     let doc = editor.document;
     if (doc != currentDoc) {
-        commands.executeCommand('markdown.showPreviewToSide').then(() => {
-            commands.executeCommand('workbench.action.navigateBack');
-        });
+        try {
+            commands.executeCommand("markdown-preview-enhanced.openPreview").then(() => {
+                commands.executeCommand('workbench.action.navigateBack');
+            });
+        } catch (error) {
+            commands.executeCommand('markdown.showPreviewToSide').then(() => {
+                commands.executeCommand('workbench.action.navigateBack');
+            });
+        }
+        
         currentDoc = doc;
     }
 }

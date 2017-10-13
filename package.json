@@ -156,7 +156,8 @@
             "explorer": [
                 {
                     "id": "mdOutline",
-                    "name": "Outline"
+                    "name": "Outline",
+                    "when": "resourceLangId == markdown"
                 }
             ]
         }
