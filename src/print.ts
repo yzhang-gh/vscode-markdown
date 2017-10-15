@@ -4,6 +4,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from "fs";
 
 const officialExt = vscode.extensions.getExtension("Microsoft.vscode-markdown");
 
@@ -22,7 +23,6 @@ const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdow
     }
 }).use(mdnh, {});
 // const htmlPdf = require('html-pdf');
-const fs = require('fs');
 
 let options = {
     "format": "A4",
@@ -40,7 +40,7 @@ let thisContext: vscode.ExtensionContext;
 
 export function activate(context: vscode.ExtensionContext) {
     thisContext = context;
-    context.subscriptions.push(vscode.commands.registerCommand('markdown.extension.print', print));
+    context.subscriptions.push(vscode.commands.registerCommand('markdown.extension.printToHtml', () => { print('html'); }));
 }
 
 export function deactivate() {
@@ -49,10 +49,9 @@ export function deactivate() {
     // });
 }
 
-function print() {
+function print(type: string) {
     let editor = vscode.window.activeTextEditor;
     let doc = editor.document;
-    let uri = doc.uri;
 
     if (!editor || doc.languageId != 'markdown') {
         vscode.window.showErrorMessage('No valid Markdown file');
@@ -63,52 +62,45 @@ function print() {
         doc.save();
     }
 
-    vscode.window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`, printToHtml(doc));
-}
+    let statusBarMsg = vscode.window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}' to ${type.toUpperCase()} ...`, 1000);
 
-function printToHtml(doc: vscode.TextDocument) {
-    return new Promise((resolve, reject) => {
-        let outPath = doc.fileName.replace(/\.md$/, '.pdf');
-        outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
-            return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
-        });
-
-        let body = render(doc.getText());
-        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
-            return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
-        });
-        let html = `<!DOCTYPE html>
-        <html>
-        <head>
-            <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-            <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('github.css')).toString()}">
-            <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('tomorrow.css')).toString()}">
-            <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('fix.css')).toString()}">
-            ${computeCustomStyleSheetIncludes(doc.fileName)}
-            ${getSettingsOverrideStyles()}
-        </head>
-        <body>
-            ${body}
-        </body>
-        </html>`;
-        // Print HTML to debug
-        fs.writeFile(outPath.replace(/.pdf$/, '.html'), html, 'utf-8', function (err) {
-            if (err) {
-                console.log(err);
-            }
-        });
-        // htmlPdf.create(html, options).toBuffer(function (err, buffer) {
-        //     fs.writeFile(outPath, buffer, function (err) {
-        //         if (err) {
-        //             window.showErrorMessage(err.message);
-        //             reject();
-        //         } else {
-        //             window.setStatusBarMessage(`Output written on '${outPath}'`, 3000);
-        //             resolve();
-        //         }
-        //     });
-        // });
+    /**
+     * Modified from <https://github.com/Microsoft/vscode/tree/master/extensions/markdown>
+     * src/previewContentProvider MDDocumentContentProvider provideTextDocumentContent
+     */
+    let outPath = doc.fileName.replace(/\.md$/, `.${type}`);
+    outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
+        return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
     });
+
+    let body = render(doc.getText());
+    body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
+        return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
+    });
+
+    let html = `<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('markdown.css')).toString()}">
+        <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('tomorrow.css')).toString()}">
+        ${computeCustomStyleSheetIncludes(doc.fileName)}
+        ${getSettingsOverrideStyles()}
+    </head>
+    <body>
+        ${body}
+    </body>
+    </html>`;
+
+    switch (type) {
+        case 'html':
+            fs.writeFile(outPath, html, 'utf-8', function (err) {
+                if (err) { console.log(err); }
+            });
+            break;
+        case 'pdf':
+            break;
+    }
 }
 
 function render(text: string) {
@@ -162,7 +154,7 @@ function getSettingsOverrideStyles(): string {
     if (!previewSettings) {
         return '';
     }
-    const {fontFamily, fontSize, lineHeight} = previewSettings;
+    const { fontFamily, fontSize, lineHeight } = previewSettings;
     return `<style>
             body {
                 ${fontFamily ? `font-family: ${fontFamily};` : ''}
