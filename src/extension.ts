@@ -32,6 +32,12 @@ export function activate(context: ExtensionContext) {
     // }
 
     activateMdExt(context);
+
+    return {
+        extendMarkdownIt(md) {
+            return md.use(require('markdown-it-task-lists'));
+        }
+    }
 }
 
 function activateMdExt(context: ExtensionContext) {

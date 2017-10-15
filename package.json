@@ -159,7 +159,11 @@
                     "name": "Outline"
                 }
             ]
-        }
+        },
+        "markdown.markdownItPlugins": true,
+        "markdown.previewStyles": [
+            "./media/checkbox.css"
+        ]
     },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
@@ -170,7 +174,9 @@
     "extensionDependencies": [
         "Microsoft.vscode-markdown"
     ],
-    "dependencies": {},
+    "dependencies": {
+        "markdown-it-task-lists": "^2.0.1"
+    },
     "devDependencies": {
         "typescript": "^2.0.3",
         "vscode": "^1.0.0",
