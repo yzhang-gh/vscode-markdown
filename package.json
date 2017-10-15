@@ -96,6 +96,11 @@
                 "command": "markdown.extension.onBackspaceKey",
                 "key": "backspace",
                 "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.checkTaskList",
+                "key": "alt+c",
+                "when": "editorTextFocus && editorLangId == markdown"
             }
         ],
         "configuration": {

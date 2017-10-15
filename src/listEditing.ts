@@ -8,6 +8,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand('markdown.extension.onCtrlEnterKey', () => { onEnterKey('ctrl'); }));
     context.subscriptions.push(commands.registerCommand('markdown.extension.onTabKey', onTabKey));
     context.subscriptions.push(commands.registerCommand('markdown.extension.onBackspaceKey', onBackspaceKey));
+    context.subscriptions.push(commands.registerCommand('markdown.extension.checkTaskList', checkTaskList));
 }
 
 function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
@@ -131,6 +132,23 @@ async function onBackspaceKey() {
     } else {
         // Normal behavior
         return commands.executeCommand('deleteLeft');
+    }
+}
+
+function checkTaskList() {
+    let editor = window.activeTextEditor;
+    let cursorPos = editor.selection.active;
+    let line = editor.document.lineAt(cursorPos.line).text;
+
+    let matches;
+    if (matches = /^(\s*([-+*]|[0-9]+[.)]) \[) \]/.exec(line)) {
+        return editor.edit(editBuilder => {
+            editBuilder.replace(new Range(cursorPos.with({ character: matches[1].length }), cursorPos.with({ character: matches[1].length + 1 })), 'x');
+        });
+    } else if (matches = /^(\s*([-+*]|[0-9]+[.)]) \[)x\]/.exec(line)) {
+        return editor.edit(editBuilder => {
+            editBuilder.replace(new Range(cursorPos.with({ character: matches[1].length }), cursorPos.with({ character: matches[1].length + 1 })), ' ');
+        });
     }
 }
 
