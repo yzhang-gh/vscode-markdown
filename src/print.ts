@@ -10,6 +10,7 @@ const officialExt = vscode.extensions.getExtension("Microsoft.vscode-markdown");
 
 const hljs = require(path.join(officialExt.extensionPath, 'node_modules', 'highlight.js'));
 const mdnh = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it-named-headers'));
+const mdtl = require('markdown-it-task-lists');
 const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it'))({
     html: true,
     highlight: (str: string, lang: string) => {
@@ -21,7 +22,7 @@ const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdow
         // return `<pre class="hljs"><code><div>${this.engine.utils.escapeHtml(str)}</div></code></pre>`;
         return str;
     }
-}).use(mdnh, {});
+}).use(mdnh, {}).use(mdtl);
 // const htmlPdf = require('html-pdf');
 
 let options = {
@@ -84,6 +85,7 @@ function print(type: string) {
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('markdown.css')).toString()}">
         <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('tomorrow.css')).toString()}">
+        <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('checkbox.css')).toString()}">
         ${computeCustomStyleSheetIncludes(doc.fileName)}
         ${getSettingsOverrideStyles()}
     </head>
