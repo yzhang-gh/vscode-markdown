@@ -154,6 +154,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Toggle italic/bold without selecting text"
+                },
+                "markdown.extension.showExplorer": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show outline view in explorer panel"
                 }
             }
         },
@@ -161,7 +166,8 @@
             "explorer": [
                 {
                     "id": "mdOutline",
-                    "name": "Outline"
+                    "name": "Outline",
+                    "when": "config.markdown.extension.showExplorer == true"
                 }
             ]
         },
