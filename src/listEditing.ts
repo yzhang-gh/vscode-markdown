@@ -3,11 +3,14 @@
 import { commands, window, workspace, ExtensionContext, Position, Range, Selection, TextDocument } from 'vscode';
 import * as vscode from 'vscode';
 
+let actionLock = false;
+
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand('markdown.extension.onEnterKey', onEnterKey));
     context.subscriptions.push(commands.registerCommand('markdown.extension.onCtrlEnterKey', () => { onEnterKey('ctrl'); }));
     context.subscriptions.push(commands.registerCommand('markdown.extension.onTabKey', onTabKey));
     context.subscriptions.push(commands.registerCommand('markdown.extension.onBackspaceKey', onBackspaceKey));
+    context.subscriptions.push(commands.registerCommand('markdown.extension.checkTaskList', checkTaskList));
 }
 
 function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
@@ -18,6 +21,19 @@ function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
     } else {
         return matches.length % 2 != 0;
     }
+}
+
+async function getLengthChange(doc: TextDocument, lineNum: number) {
+    let beforeLen = doc.lineAt(lineNum).text.length;
+    await commands.executeCommand('cursorMove', {to: 'left', value: 1});
+    await commands.executeCommand('cursorMove', {to: 'right', value: 1});
+    return (doc.lineAt(lineNum).text.length - beforeLen);
+}
+
+async function handleUnikey(editor: vscode.TextEditor, range: Range) {
+    return await editor.edit(editBuilder => {
+        editBuilder.delete(range);
+    });
 }
 
 async function onEnterKey(modifiers?: string) {
@@ -98,7 +114,7 @@ async function onTabKey() {
     let editor = window.activeTextEditor;
     let cursorPos = editor.selection.active;
     let textBeforeCursor = editor.document.lineAt(cursorPos.line).text.substr(0, cursorPos.character);
-
+    
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
         // Normal behavior
         return commands.executeCommand('tab');
@@ -115,9 +131,10 @@ async function onTabKey() {
 async function onBackspaceKey() {
     let editor = window.activeTextEditor;
     let cursorPos = editor.selection.active;
-    let textBeforeCursor = editor.document.lineAt(cursorPos.line).text.substr(0, cursorPos.character);
-
-    if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
+    let editDocument = editor.document;
+    let textBeforeCursor = editDocument.lineAt(cursorPos.line).text.substr(0, cursorPos.character);
+ 
+    if (isInFencedCodeBlock(editDocument, cursorPos.line)) {
         // Normal behavior
         return commands.executeCommand('deleteLeft');
     }
@@ -129,8 +146,50 @@ async function onBackspaceKey() {
             editBuilder.delete(new Range(cursorPos.with({ character: 0 }), cursorPos));
         });
     } else {
-        // Normal behavior
-        return commands.executeCommand('deleteLeft');
+        if(actionLock) {
+            return;
+        } else {
+            actionLock = true;
+            if(textBeforeCursor.endsWith(" ")){
+                actionLock = false;
+                return commands.executeCommand('deleteLeft');
+            } else {
+                await getLengthChange(editDocument, cursorPos.line).then(len => {
+                    let startIndex = len > 0? cursorPos.character - len : -1;
+                    if(startIndex == -1) {
+                        commands.executeCommand('deleteLeft').then(result => {
+                            actionLock = false;
+                            return;
+                        });
+                    } else {
+                        let range = new Range(cursorPos.with({ character: startIndex }), cursorPos);//range to delete
+                        handleUnikey(editor, range).then(success => {
+                            actionLock = false;
+                            return;
+                        });
+                    }
+                });
+            }
+            return;
+        }
+    }    
+}
+
+
+function checkTaskList() {
+    let editor = window.activeTextEditor;
+    let cursorPos = editor.selection.active;
+    let line = editor.document.lineAt(cursorPos.line).text;
+
+    let matches;
+    if (matches = /^(\s*([-+*]|[0-9]+[.)]) \[) \]/.exec(line)) {
+        return editor.edit(editBuilder => {
+            editBuilder.replace(new Range(cursorPos.with({ character: matches[1].length }), cursorPos.with({ character: matches[1].length + 1 })), 'x');
+        });
+    } else if (matches = /^(\s*([-+*]|[0-9]+[.)]) \[)x\]/.exec(line)) {
+        return editor.edit(editBuilder => {
+            editBuilder.replace(new Range(cursorPos.with({ character: matches[1].length }), cursorPos.with({ character: matches[1].length + 1 })), ' ');
+        });
     }
 }
 
