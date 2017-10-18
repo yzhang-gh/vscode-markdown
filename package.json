@@ -39,8 +39,8 @@
                 "title": "Markdown: Update Table of Contents"
             },
             {
-                "command": "markdown.extension.print",
-                "title": "Markdown: Print to PDF"
+                "command": "markdown.extension.printToHtml",
+                "title": "Markdown: Print current document to HTML"
             },
             {
                 "command": "markdown.extension.editing.toggleCodeSpan",
@@ -96,6 +96,11 @@
                 "command": "markdown.extension.onBackspaceKey",
                 "key": "backspace",
                 "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.checkTaskList",
+                "key": "alt+c",
+                "when": "editorTextFocus && editorLangId == markdown"
             }
         ],
         "configuration": {
@@ -160,7 +165,11 @@
                     "when": "resourceLangId == markdown"
                 }
             ]
-        }
+        },
+        "markdown.markdownItPlugins": true,
+        "markdown.previewStyles": [
+            "./media/checkbox.css"
+        ]
     },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
@@ -171,7 +180,9 @@
     "extensionDependencies": [
         "Microsoft.vscode-markdown"
     ],
-    "dependencies": {},
+    "dependencies": {
+        "markdown-it-task-lists": "^2.0.1"
+    },
     "devDependencies": {
         "typescript": "^2.0.3",
         "vscode": "^1.0.0",

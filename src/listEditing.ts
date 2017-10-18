@@ -175,7 +175,6 @@ async function onBackspaceKey() {
     }    
 }
 
-
 function checkTaskList() {
     let editor = window.activeTextEditor;
     let cursorPos = editor.selection.active;
