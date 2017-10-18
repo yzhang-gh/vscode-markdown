@@ -1,3 +1,10 @@
+### 0.11.0 (2017.10.18)
+
+- **New**: Support GFM task lists (checkbox)
+  - Press <kbd>alt</kbd> + <kbd>c</kbd> to check/uncheck a task list item
+- **New**: Add new setting `markdown.extension.showExplorer` to control whether to show outline view in the explorer panel (Thank you, [Ali Karbassi (@karbassi)](https://github.com/karbassi), [PR#44](https://github.com/neilsustc/vscode-markdown/pull/44))
+- **Preview**: Print to HTML<del>/PDF</del> (work in progress)
+
 ### 0.10.3 (2017.09.30)
 
 - **New**: Support GFM checkbox when continuing list item ([#38](https://github.com/neilsustc/vscode-markdown/issues/38))

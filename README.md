@@ -16,13 +16,15 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - **Outline view** in explorer panel
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
   - ~~Automatically close preview when changing editor~~
-- ~~**Print your Markdown to PDF**~~ (not satisfied with the current solution)
+- **Print your Markdown to HTML/PDF** (PDF not yet finished)
 - **List editing** (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
   - Pressing <kbd>Tab</kbd> at the beginning of a list item will indent it
   - Pressing <kbd>Backspace</kbd> at the beginning of a list item will unindent it (or delete the list marker)
   - Blank list item won't be continued
   - *Note*: there is an option to choose ordered list marker: always `1.` or ordered number.
-- **Document formatter** (only format GFM table now)
+- **GitHub Flavored Markdown**
+  - Table formatter
+  - Task lists
 - **Word completion** (moved to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion))
 
 ### Keyboard Shortcuts
@@ -49,6 +51,10 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ![outline](images/outline.png)
 
+### Task Lists
+
+![task lists](images/gifs/tasklists.gif)
+
 <!-- ### Print to PDF
 
 ![print to pdf](images/gifs/pdf.gif) -->
@@ -61,6 +67,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | <kbd>ctrl</kbd> + <kbd>i</kbd> | Toggle italic |
 | <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel) |
 | <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel) |
+| <kbd>alt</kbd> + <kbd>c</kbd> | Check/Uncheck task list item |
 
 ## Available Commands
 
@@ -68,7 +75,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - Markdown: Update Table of Contents
 - Markdown: Toggle code span
 - Markdown: Toggle strikethrough
-- ~~Markdown: Print to PDF~~
+- Markdown: Print current document to HTML (*preview*)
 
 ## Supported Settings
 
@@ -82,19 +89,21 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.orderedList.marker` | `one` | Start a list item always with '1.' or in increasing numerical order (using option `ordered`) |
 | `markdown.extension.italic.indicator` | `*` | Use `*` or `_` to wrap italic text |
 | `markdown.extension.quickStyling` | `false` | Toggle bold/italic without selecting words |
+| `markdown.extension.showExplorer` | `true` | Show outline view in explorer panel |
 
 ## Changelog
+
+### 0.11.0 (2017.10.18)
+
+- **New**: Support GFM task lists (checkbox)
+  - Press <kbd>alt</kbd> + <kbd>c</kbd> to check/uncheck a task list item
+- **New**: Add new setting `markdown.extension.showExplorer` to control whether to show outline view in the explorer panel (Thank you, [Ali Karbassi (@karbassi)](https://github.com/karbassi), [PR#44](https://github.com/neilsustc/vscode-markdown/pull/44))
+- **Preview**: Print to HTML<del>/PDF</del> (work in progress)
 
 ### 0.10.3 (2017.09.30)
 
 - **New**: Support GFM checkbox when continuing list item ([#38](https://github.com/neilsustc/vscode-markdown/issues/38))
 - **Fix**: Unexpected deletion of list marker when deleting leading spaces of a list item ([#39](https://github.com/neilsustc/vscode-markdown/issues/39))
-
-### 0.10.0 (2017.09.24)
-
-- **New**: Outline view ([#36](https://github.com/neilsustc/vscode-markdown/issues/36))
-- **New**: Toggle strikethrough `~~` with the keybinding you like `markdown.extension.editing.toggleStrikethrough` ([#35](https://github.com/neilsustc/vscode-markdown/issues/35))
-- **Fix**: Update TOC on save
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
