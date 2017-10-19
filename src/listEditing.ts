@@ -115,46 +115,53 @@ async function onTabKey() {
 }
 
 async function onBackspaceKey() {
-    let oldPosition = window.activeTextEditor.selection.active; //Old cursor position 
-    return await handler.updateEditor().then(result => {
-        let editor = window.activeTextEditor
-        let newPosition = editor.selection.active; //Current cursor position
-        if(result == false && oldPosition.character == newPosition.character) { //No typing Vietnamese 
-            let editDocument = editor.document;
-            let textBeforeCursor = editDocument.lineAt(newPosition.line).text.substr(0, newPosition.character);
-            if (isInFencedCodeBlock(editor.document, newPosition.line)) {
-                // Normal behavior 
-                return commands.executeCommand('deleteLeft');
-            }
-            if (/^\s+([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
-                return commands.executeCommand('editor.action.outdentLines');
-            } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
-                return handler.deleteRange(editor, new Range(newPosition.with({ character: 0 }), newPosition));
-            } else {
-                // Normal behavior
-                return commands.executeCommand('deleteLeft');
-            }
+    let editor = window.activeTextEditor
+    let oldPosition = editor.selection.active; // Old cursor position
+    // Handle Vietnamese
+    let isTypingVn = await handler.vnTest();
+    let newPosition = editor.selection.active; // Current cursor position
+    if (isTypingVn == false && oldPosition.character == newPosition.character) { // Not typing Vietnamese
+        let document = editor.document;
+        let textBeforeCursor = document.lineAt(newPosition.line).text.substr(0, newPosition.character);
+
+        if (isInFencedCodeBlock(document, newPosition.line)) {
+            // Normal behavior 
+            return commands.executeCommand('deleteLeft');
+        }
+
+        if (/^\s+([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
+            return commands.executeCommand('editor.action.outdentLines');
+        } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
+            return deleteRange(editor, new Range(newPosition.with({ character: 0 }), newPosition));
         } else {
-            if(oldPosition.character == newPosition.character) {
-                // Normal behavior
-                return commands.executeCommand('deleteLeft');
-            } else {
-                let characterCount = newPosition.character - oldPosition.character;
-                if(characterCount < 0) {
+            // Normal behavior
+            return commands.executeCommand('deleteLeft');
+        }
+    } else {
+        if (oldPosition.character == newPosition.character) {
+            // Normal behavior
+            return commands.executeCommand('deleteLeft');
+        } else {
+            let characterCount = newPosition.character - oldPosition.character;
+            if (characterCount < 0) {
+                return false;
+            }
+            return handler.handleUnikey(characterCount).then(result => {
+                if (result == true) {
+                    deleteRange(editor, new Range(newPosition.line, oldPosition.character - characterCount,
+                        newPosition.line, oldPosition.character));
+                    return true;
+                } else {
                     return false;
                 }
-                return handler.handleUnikey(characterCount).then(result => {
-                   if(result == true) {
-                       handler.deletePosition(newPosition.line,
-                            oldPosition.character - characterCount,
-                            oldPosition.character);
-                       return true;
-                   } else {
-                       return false;
-                   }
-                });
-            }
+            });
         }
+    }
+}
+
+async function deleteRange(editor: vscode.TextEditor, range: Range): Promise<boolean> {
+    return await editor.edit(editBuilder => {
+        editBuilder.delete(range);
     });
 }
 
