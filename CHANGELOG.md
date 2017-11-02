@@ -1,3 +1,7 @@
+### 0.11.1 (2017.11.02)
+
+- **New**: Use <kbd>Tab</kbd>/<kbd>Backspace</kbd> key to indent/outdent task list ([#50](https://github.com/neilsustc/vscode-markdown/issues/50))
+
 ### 0.11.0 (2017.10.18)
 
 - **New**: Support GFM task lists (checkbox)
