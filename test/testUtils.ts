@@ -11,7 +11,9 @@ export let defaultConfigs = {
     "markdown.extension.preview.autoShowPreviewToSide": false,
     "markdown.extension.orderedList.marker": "one",
     "markdown.extension.italic.indicator": "*",
-    "markdown.extension.quickStyling": false
+    "markdown.extension.quickStyling": false,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
 }
 
 // 💩 Promise, then, async/await ... <https://github.com/Microsoft/vscode/issues/31210>

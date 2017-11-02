@@ -45,11 +45,31 @@ suite("List editing.", () => {
         testCommand('markdown.extension.onEnterKey', {}, ['- [ ] item1'], new Selection(0, 11, 0, 11), ['- [ ] item1', '- [ ] '], new Selection(1, 6, 1, 6)).then(done, done);
     });
 
-    test("Backspace key. 1", done => {
+    test("Backspace key. 1: '- |'", done => {
         testCommand('markdown.extension.onBackspaceKey', {}, ['- item1'], new Selection(0, 2, 0, 2), ['item1'], new Selection(0, 0, 0, 0)).then(done, done);
     });
 
-    test("Backspace key. 2", done => {
+    test("Backspace key. 2: '-  |'", done => {
         testCommand('markdown.extension.onBackspaceKey', {}, ['-  item1'], new Selection(0, 3, 0, 3), ['- item1'], new Selection(0, 2, 0, 2)).then(done, done);
+    });
+
+    test("Backspace key. 3: '- [ ] |'", done => {
+        testCommand('markdown.extension.onBackspaceKey', {}, ['- [ ] item1'], new Selection(0, 6, 0, 6), ['- item1'], new Selection(0, 2, 0, 2)).then(done, done);
+    });
+
+    test("Backspace key. 4: '- [ ]  |'", done => {
+        testCommand('markdown.extension.onBackspaceKey', {}, ['- [ ]  item1'], new Selection(0, 7, 0, 7), ['- [ ] item1'], new Selection(0, 6, 0, 6)).then(done, done);
+    });
+
+    test("Tab key. 1: '- |'", done => {
+        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['- item1'], new Selection(0, 2, 0, 2), ['    - item1'], new Selection(0, 6, 0, 6)).then(done, done);
+    });
+
+    test("Tab key. 2: '-  |'", done => {
+        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['-  item1'], new Selection(0, 3, 0, 3), ['    -  item1'], new Selection(0, 7, 0, 7)).then(done, done);
+    });
+
+    test("Tab key. 3: '- [ ] |'", done => {
+        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['- [ ] item1'], new Selection(0, 6, 0, 6), ['    - [ ] item1'], new Selection(0, 10, 0, 10)).then(done, done);
     });
 });
