@@ -106,7 +106,7 @@ async function onTabKey() {
         return commands.executeCommand('tab');
     }
 
-    if (/^\s*([-+*]|[0-9]+[.)]) +$/.test(textBeforeCursor)) {
+    if (/^\s*([-+*]|[0-9]+[.)]) +(|\[[ x]\] +)$/.test(textBeforeCursor)) {
         return commands.executeCommand('editor.action.indentLines');
     } else {
         // Normal behavior
@@ -117,46 +117,50 @@ async function onTabKey() {
 async function onBackspaceKey() {
     let editor = window.activeTextEditor
     let oldPosition = editor.selection.active; // Old cursor position
-    // Handle Vietnamese
-    let isTypingVn = await handler.vnTest();
+    // FIXME: Handle Vietnamese //
+    // let isTypingVn = await handler.vnTest();
     let newPosition = editor.selection.active; // Current cursor position
-    if (isTypingVn == false && oldPosition.character == newPosition.character) { // Not typing Vietnamese
-        let document = editor.document;
-        let textBeforeCursor = document.lineAt(newPosition.line).text.substr(0, newPosition.character);
+    // if (isTypingVn == false && oldPosition.character == newPosition.character) { // Not typing Vietnamese
+    let document = editor.document;
+    let textBeforeCursor = document.lineAt(newPosition.line).text.substr(0, newPosition.character);
 
-        if (isInFencedCodeBlock(document, newPosition.line)) {
-            // Normal behavior 
-            return commands.executeCommand('deleteLeft');
-        }
-
-        if (/^\s+([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
-            return commands.executeCommand('editor.action.outdentLines');
-        } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
-            return deleteRange(editor, new Range(newPosition.with({ character: 0 }), newPosition));
-        } else {
-            // Normal behavior
-            return commands.executeCommand('deleteLeft');
-        }
-    } else {
-        if (oldPosition.character == newPosition.character) {
-            // Normal behavior
-            return commands.executeCommand('deleteLeft');
-        } else {
-            let characterCount = newPosition.character - oldPosition.character;
-            if (characterCount < 0) {
-                return false;
-            }
-            return handler.handleUnikey(characterCount).then(result => {
-                if (result == true) {
-                    deleteRange(editor, new Range(newPosition.line, oldPosition.character - characterCount,
-                        newPosition.line, oldPosition.character));
-                    return true;
-                } else {
-                    return false;
-                }
-            });
-        }
+    if (isInFencedCodeBlock(document, newPosition.line)) {
+        // Normal behavior 
+        return commands.executeCommand('deleteLeft');
     }
+
+    if (/^\s+([-+*]|[0-9]+[.)]) (|\[[ x]\] )$/.test(textBeforeCursor)) {
+        return commands.executeCommand('editor.action.outdentLines');
+    } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
+        // e.g. textBeforeCursor == '- ', '1. '
+        return deleteRange(editor, new Range(newPosition.with({ character: 0 }), newPosition));
+    } else if (/^([-+*]|[0-9]+[.)]) (\[[ x]\] )$/.test(textBeforeCursor)) {
+        // e.g. textBeforeCursor == '- [ ]', '1. [x]'
+        return deleteRange(editor, new Range(newPosition.with({ character: textBeforeCursor.length - 4 }), newPosition));
+    } else {
+        // Normal behavior
+        return commands.executeCommand('deleteLeft');
+    }
+    // } else {
+    //     if (oldPosition.character == newPosition.character) {
+    //         // Normal behavior
+    //         return commands.executeCommand('deleteLeft');
+    //     } else {
+    //         let characterCount = newPosition.character - oldPosition.character;
+    //         if (characterCount < 0) {
+    //             return false;
+    //         }
+    //         return handler.handleUnikey(characterCount).then(result => {
+    //             if (result == true) {
+    //                 deleteRange(editor, new Range(newPosition.line, oldPosition.character - characterCount,
+    //                     newPosition.line, oldPosition.character));
+    //                 return true;
+    //             } else {
+    //                 return false;
+    //             }
+    //         });
+    //     }
+    // }
 }
 
 async function deleteRange(editor: vscode.TextEditor, range: Range): Promise<boolean> {
