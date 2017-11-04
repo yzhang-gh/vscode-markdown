@@ -37,6 +37,22 @@ suite("Table formatter.", () => {
             new Selection(0, 0, 0, 0)).then(done, done);
     });
 
+    test("Normal 2", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                'a |b',
+                '---| ---',
+                'c|de'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| a   | b   |',
+                '| --- | --- |',
+                '| c   | de  |'
+            ],
+            new Selection(0, 2, 0, 2)).then(done, done);
+    });
+
     test("Contains `|`", done => {
         testCommand('editor.action.formatDocument', {},
             [
