@@ -159,6 +159,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Show outline view in explorer panel"
+                },
+                "markdown.extension.tableFormatter.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable GFM table formatter"
                 }
             }
         },

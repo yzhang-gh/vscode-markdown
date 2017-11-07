@@ -44,6 +44,8 @@ function activateMdExt(context: ExtensionContext) {
     // if (activated)
     //     return;
 
+    // Override `Enter`, `Tab` and `Backspace` keys
+    listEditing.activate(context);
     // Shortcuts
     formatting.activate(context);
     // Toc
@@ -52,10 +54,10 @@ function activateMdExt(context: ExtensionContext) {
     preview.activate(context);
     // Print to PDF
     print.activate(context);
-    // Override `Enter`, `Tab` and `Backspace` keys
-    listEditing.activate(context);
     // Table formatter
-    tableFormatter.activate(context);
+    if (workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('enabled')) {
+        tableFormatter.activate(context);
+    }
 
     // Allow `*` in word pattern for quick styling
     languages.setLanguageConfiguration('markdown', {
