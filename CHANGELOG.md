@@ -1,3 +1,10 @@
+### 0.11.2 (2017.11.23)
+
+- **New**: Option `markdown.extension.tableFormatter.enabled` ([#51](https://github.com/neilsustc/vscode-markdown/issues/51))
+- **Fix**: Show outline only when current doc is Markdown ([#40](https://github.com/neilsustc/vscode-markdown/issues/40))
+- **Fix**: Now option `editor.tabCompletion` is correctly handled ([#55](https://github.com/neilsustc/vscode-markdown/issues/55))
+- **Fix**: Now if you export Markdown to HTML, all CSS will be embedded rather than referred ([#57](https://github.com/neilsustc/vscode-markdown/issues/57))
+
 ### 0.11.1 (2017.11.02)
 
 - **New**: Use <kbd>Tab</kbd>/<kbd>Backspace</kbd> key to indent/outdent task list ([#50](https://github.com/neilsustc/vscode-markdown/issues/50))
