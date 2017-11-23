@@ -79,14 +79,14 @@ function print(type: string) {
         return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
     });
 
+    let styleSheets = ['markdown.css', 'tomorrow.css', 'checkbox.css'].map(s => getMediaPath(s))
+        .concat(getCustomStyleSheets());
+
     let html = `<!DOCTYPE html>
     <html>
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-        <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('markdown.css')).toString()}">
-        <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('tomorrow.css')).toString()}">
-        <link rel="stylesheet" type="text/css" href="${vscode.Uri.file(getMediaPath('checkbox.css')).toString()}">
-        ${computeCustomStyleSheetIncludes(doc.fileName)}
+        ${styleSheets.map(css => `<style>\n${readCss(css)}\n</style>`).join('\n')}
         ${getSettingsOverrideStyles()}
     </head>
     <body>
@@ -113,14 +113,16 @@ function getMediaPath(mediaFile: string): string {
     return thisContext.asAbsolutePath(path.join('media', mediaFile));
 }
 
-function computeCustomStyleSheetIncludes(fileName: string): string {
+function readCss(fileName: string) {
+    return fs.readFileSync(fileName).toString().replace(/\s+/g, ' ');
+}
+
+function getCustomStyleSheets(): string[] {
     const styles = vscode.workspace.getConfiguration('markdown')['styles'];
     if (styles && Array.isArray(styles) && styles.length > 0) {
-        return styles.map((style) => {
-            return `<link rel="stylesheet" href="${fixHref(fileName, style)}" type="text/css" media="screen">`;
-        }).join('\n');
+        return styles;
     }
-    return '';
+    return [];
 }
 
 function fixHref(activeFileName: string, href: string): string {
