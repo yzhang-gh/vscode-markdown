@@ -1,9 +1,5 @@
 'use strict';
 
-/**
- * Modified from <https://github.com/AlanWalk/Markdown-TOC>
- */
-
 import * as vscode from 'vscode';
 import { log } from './util';
 import * as path from 'path';
