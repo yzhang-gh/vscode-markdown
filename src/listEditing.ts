@@ -100,17 +100,26 @@ async function onTabKey() {
     let editor = window.activeTextEditor;
     let cursorPos = editor.selection.active;
     let textBeforeCursor = editor.document.lineAt(cursorPos.line).text.substr(0, cursorPos.character);
+    const tabCompletion: boolean = vscode.workspace.getConfiguration('editor').get<boolean>('tabCompletion');
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
         // Normal behavior
-        return commands.executeCommand('tab');
+        if (tabCompletion && textBeforeCursor.match(/[^\s]$/) !== null) {
+            return commands.executeCommand('editor.action.triggerSuggest');
+        } else {
+            return commands.executeCommand('tab');
+        }
     }
 
     if (/^\s*([-+*]|[0-9]+[.)]) +(|\[[ x]\] +)$/.test(textBeforeCursor)) {
         return commands.executeCommand('editor.action.indentLines');
     } else {
         // Normal behavior
-        return commands.executeCommand('tab');
+        if (tabCompletion && textBeforeCursor.match(/[^\s]$/) !== null) {
+            return commands.executeCommand('editor.action.triggerSuggest');
+        } else {
+            return commands.executeCommand('tab');
+        }
     }
 }
 
