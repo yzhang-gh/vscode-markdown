@@ -14,10 +14,14 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     public provideDocumentFormattingEdits(document: TextDocument, options: FormattingOptions, token: CancellationToken): TextEdit[] | Thenable<TextEdit[]> {
         let edits: TextEdit[] = [];
         let tables = this.detectTables(document.getText());
-        tables.forEach(table => {
-            edits.push(new TextEdit(this.getRange(document, table), this.formatTable(table)));
-        });
-        return edits;
+        if (tables !== null) {
+            tables.forEach(table => {
+                edits.push(new TextEdit(this.getRange(document, table), this.formatTable(table)));
+            });
+            return edits;
+        } else {
+            return [];
+        }
     }
 
     private detectTables(text: string) {
