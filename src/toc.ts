@@ -270,18 +270,28 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
 
     constructor() {
         vscode.window.onDidChangeActiveTextEditor(editor => {
-            this.buildToc();
-            this._onDidChangeTreeData.fire();
+            this.update();
         });
-        this.buildToc();
+
+        vscode.workspace.onDidSaveTextDocument(doc => {
+            this.update();
+        });
+
+        this.update();
+    }
+
+    public async update() {
+        await this.buildToc();
+        this._onDidChangeTreeData.fire();
     }
 
     private async buildToc() {
-        this.toc = null;
         this.editor = vscode.window.activeTextEditor;
         if (this.editor && this.editor.document && this.editor.document.languageId === 'markdown') {
             const tocProvider = new TocProvider(engine, this.editor.document);
             this.toc = await tocProvider.getToc();
+        } else {
+            this.toc = null;
         }
     }
 
