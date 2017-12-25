@@ -24,7 +24,7 @@ function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
 
 async function onEnterKey(modifiers?: string) {
     let editor = window.activeTextEditor;
-    let cursorPos = editor.selection.active;
+    let cursorPos: Position = editor.selection.active;
     let line = editor.document.lineAt(cursorPos.line);
     let textBeforeCursor = line.text.substr(0, cursorPos.character);
     let textAfterCursor = line.text.substr(cursorPos.character);
@@ -78,12 +78,13 @@ async function onEnterKey(modifiers?: string) {
         // Add enough trailing spaces so that the text is aligned with the previous list item, but always keep at least one space
         trailingSpace = " ".repeat(Math.max(1, textIndent - (marker + delimiter).length));
 
+        const toBeAdded = leadingSpace + marker + delimiter + trailingSpace + gfmCheckbox;
         await editor.edit(editBuilder => {
-            editBuilder.insert(lineBreakPos, `\n${leadingSpace + marker + delimiter + trailingSpace + gfmCheckbox}`);
+            editBuilder.insert(lineBreakPos, `\n${toBeAdded}`);
         });
         // Fix cursor position
         if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
-            let newCursorPos = cursorPos.with(line.lineNumber + 1, (leadingSpace + marker + trailingSpace + gfmCheckbox).length);
+            let newCursorPos = cursorPos.with(line.lineNumber + 1, toBeAdded.length);
             editor.selection = new Selection(newCursorPos, newCursorPos);
         }
     } else {
