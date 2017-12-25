@@ -8,9 +8,6 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand('markdown.extension.onEnterKey', onEnterKey));
     context.subscriptions.push(commands.registerCommand('markdown.extension.onCtrlEnterKey', () => { onEnterKey('ctrl'); }));
     context.subscriptions.push(commands.registerCommand('markdown.extension.onTabKey', onTabKey));
-
-    console.log("[listEditing] 'onTabKey' registered.")
-
     context.subscriptions.push(commands.registerCommand('markdown.extension.onBackspaceKey', onBackspaceKey));
     context.subscriptions.push(commands.registerCommand('markdown.extension.checkTaskList', checkTaskList));
 }
@@ -100,18 +97,12 @@ async function onEnterKey(modifiers?: string) {
 }
 
 async function onTabKey() {
-
-    console.log("[listEditing] 'onTabKey' called")
-
     let editor = window.activeTextEditor;
     let cursorPos = editor.selection.active;
     let textBeforeCursor = editor.document.lineAt(cursorPos.line).text.substr(0, cursorPos.character);
     const tabCompletion: boolean = vscode.workspace.getConfiguration('editor').get<boolean>('tabCompletion');
-    
-    console.log('[listEditing] textBeforeCursor', textBeforeCursor);
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
-        console.log('[listEditing] isInFencedCodeBlock: true');
         // Normal behavior
         if (tabCompletion && textBeforeCursor.match(/[^\s]$/) !== null) {
             return commands.executeCommand('editor.action.triggerSuggest');
@@ -119,13 +110,10 @@ async function onTabKey() {
             return commands.executeCommand('tab');
         }
     }
-    console.log('[listEditing] isInFencedCodeBlock: false');
 
     if (/^\s*([-+*]|[0-9]+[.)]) +(|\[[ x]\] +)$/.test(textBeforeCursor)) {
-        console.log('[listEditing] indentLines');
         return commands.executeCommand('editor.action.indentLines');
     } else {
-        console.log('[listEditing] do nothing');
         // Normal behavior
         if (tabCompletion && textBeforeCursor.match(/[^\s]$/) !== null) {
             return commands.executeCommand('editor.action.triggerSuggest');
