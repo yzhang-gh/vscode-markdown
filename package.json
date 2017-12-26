@@ -67,13 +67,13 @@
             {
                 "command": "markdown.extension.editing.toggleHeadingUp",
                 "key": "ctrl+shift+]",
-                "mac": "cmd+shift+]",
+                "mac": "ctrl+shift+]",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
                 "command": "markdown.extension.editing.toggleHeadingDown",
                 "key": "ctrl+shift+[",
-                "mac": "cmd+shift+[",
+                "mac": "ctrl+shift+[",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
