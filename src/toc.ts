@@ -36,9 +36,9 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider()));
 
     // Load workspace config
-    wsConfig.eol = <string>vscode.workspace.getConfiguration("files").get("eol");
-    let tabSize = <number>vscode.workspace.getConfiguration("editor").get("tabSize");
-    let insertSpaces = <boolean>vscode.workspace.getConfiguration("editor").get("insertSpaces");
+    wsConfig.eol = <string>vscode.workspace.getConfiguration("files", null).get("eol");
+    let tabSize = <number>vscode.workspace.getConfiguration("editor", null).get("tabSize");
+    let insertSpaces = <boolean>vscode.workspace.getConfiguration("editor", null).get("insertSpaces");
 
     wsConfig.tab = '\t';
     if (insertSpaces && tabSize > 0) {
