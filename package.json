@@ -117,6 +117,16 @@
                     "default": false,
                     "description": "Use ordered list (1. ..., 2. ...)"
                 },
+                "markdown.extension.toc.unorderedList.marker": {
+                    "type": "string",
+                    "default": "-",
+                    "description": "Unordered list marker",
+                    "enum": [
+                        "-",
+                        "*",
+                        "+"
+                    ]
+                },
                 "markdown.extension.toc.plaintext": {
                     "type": "boolean",
                     "default": false,

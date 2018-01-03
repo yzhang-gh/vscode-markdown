@@ -16,7 +16,7 @@ const prefix = 'markdown.extension.toc.';
  * Workspace config
  */
 let wsConfig = { tab: '    ', eol: '\r\n' };
-let tocConfig = { startDepth: 1, endDepth: 6, orderedList: false, updateOnSave: false, plaintext: false };
+let tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false };
 
 export function activate(context: vscode.ExtensionContext) {
     const cmds: Command[] = [
@@ -118,7 +118,7 @@ async function generateTocText(document: vscode.TextDocument): Promise<string> {
             let indentation = entry.level - startDepth;
             let row = [
                 wsConfig.tab.repeat(indentation),
-                tocConfig.orderedList ? ++order[indentation] + '. ' : '- ',
+                (tocConfig.orderedList ? ++order[indentation] + '.' : tocConfig.listMarker) + ' ',
                 tocConfig.plaintext ? entry.text : `[${entry.text}](#${TocProvider.slugify(entry.text)})`
             ];
             toc.push(row.join(''));
@@ -146,7 +146,7 @@ async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> {
         for (let index = 0; index < doc.lineCount; index++) {
             let lineText = doc.lineAt(index).text;
             if (start == null) { // No line matched with start yet
-                let regResult = lineText.match(/^[\-1]\.? (.+)$/); // Match list block and get list item
+                let regResult = lineText.match(/^[\-\*\+1]\.? (.+)$/); // Match list block and get list item
                 if (regResult != null) {
                     let header = regResult[1];
                     let res = header.match(/^\[(.+?)\]\(#.+?\)$/); // Get `header` from `[header](anchor)`
@@ -162,7 +162,7 @@ async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> {
                 }
             } else { // Start line already found
                 lineText = lineText.trim();
-                if (lineText.match(/^[\-\d]\.? /) == null) { // End of a list block
+                if (lineText.match(/^[\-\*\+\d]\.? /) == null) { // End of a list block
                     end = new vscode.Position(index - 1, doc.lineAt(index - 1).text.length);
                     // log('End', end);
                     break;
@@ -196,6 +196,7 @@ function loadTocConfig() {
         tocConfig.endDepth = matches[2];
     }
     tocConfig.orderedList = tocSectionCfg.get<boolean>('orderedList');
+    tocConfig.listMarker = tocSectionCfg.get<string>('unorderedList.marker');
     tocConfig.plaintext = tocSectionCfg.get<boolean>('plaintext');
     tocConfig.updateOnSave = tocSectionCfg.get<boolean>('updateOnSave');
 }
