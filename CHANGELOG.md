@@ -1,3 +1,10 @@
+### 1.0.0 (2018.01.05)
+
+- **New**: Update outline view on save ([#68](https://github.com/neilsustc/vscode-markdown/issues/68))
+- **New**: Option `markdown.extension.toc.unorderedList.marker` ([#74](https://github.com/neilsustc/vscode-markdown/issues/74))
+- **Change**: Use <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> (or <kbd>]</kbd>) to change heading level in Mac ([#71](https://github.com/neilsustc/vscode-markdown/issues/71))
+- **Fix**: Some fixes you might not notice
+
 ### 0.11.2 (2017.11.23)
 
 - **New**: Option `markdown.extension.tableFormatter.enabled` ([#51](https://github.com/neilsustc/vscode-markdown/issues/51))

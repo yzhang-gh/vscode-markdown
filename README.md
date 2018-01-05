@@ -10,18 +10,18 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 ## Features
 
 - **Keyboard shortcuts** (toggle bold, italic, code span, strikethrough and heading)
-  - Different behaviors depending on the context (see instruction below)
+  - Tip: in normal mode, `**word|**` -> `**word**|` (<kbd>ctrl</kbd> + <kbd>b</kbd>)
   - *Quick styling mode*: toggle bold/italic without selecting words
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
 - **Outline view** in explorer panel
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
   - ~~Automatically close preview when changing editor~~
-- **Print your Markdown to HTML/PDF** (PDF not yet finished)
+- **Print your Markdown to HTML**
+  - It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others
 - **List editing** (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
   - Pressing <kbd>Tab</kbd> at the beginning of a list item will indent it
   - Pressing <kbd>Backspace</kbd> at the beginning of a list item will unindent it (or delete the list marker)
   - Blank list item won't be continued
-  - *Note*: there is an option to choose ordered list marker: always `1.` or ordered number.
 - **GitHub Flavored Markdown**
   - Table formatter
   - Task lists
@@ -75,7 +75,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - Markdown: Update Table of Contents
 - Markdown: Toggle code span
 - Markdown: Toggle strikethrough
-- Markdown: Print current document to HTML (*preview*)
+- Markdown: Print current document to HTML
 
 ## Supported Settings
 
@@ -94,16 +94,12 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
-### 0.11.2 (2017.11.23)
+### 1.0.0 (2018.01.05)
 
-- **New**: Option `markdown.extension.tableFormatter.enabled` ([#51](https://github.com/neilsustc/vscode-markdown/issues/51))
-- **Fix**: Show outline only when current doc is Markdown ([#40](https://github.com/neilsustc/vscode-markdown/issues/40))
-- **Fix**: Now option `editor.tabCompletion` is correctly handled ([#55](https://github.com/neilsustc/vscode-markdown/issues/55))
-- **Fix**: Now if you export Markdown to HTML, all CSS will be embedded rather than referred ([#57](https://github.com/neilsustc/vscode-markdown/issues/57))
-
-### 0.11.1 (2017.11.02)
-
-- **New**: Use <kbd>Tab</kbd>/<kbd>Backspace</kbd> key to indent/outdent task list ([#50](https://github.com/neilsustc/vscode-markdown/issues/50))
+- **New**: Update outline view on save ([#68](https://github.com/neilsustc/vscode-markdown/issues/68))
+- **New**: Option `markdown.extension.toc.unorderedList.marker` ([#74](https://github.com/neilsustc/vscode-markdown/issues/74))
+- **Change**: Use <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> (or <kbd>]</kbd>) to change heading level in Mac ([#71](https://github.com/neilsustc/vscode-markdown/issues/71))
+- **Fix**: Some fixes you might not notice
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
@@ -111,11 +107,4 @@ See [CHANGELOG](CHANGELOG.md) for more information.
 
 Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc/vscode-markdown/issues).
 
-Or write a review on [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one#review-details) 😉.
-
-## If You Would Like to ...
-
-Vote for prospective vscode features (Add 👍 to GitHub issues):
-
-- Open `.pdf`, `.xlsx` etc. in vscode [#12176](https://github.com/Microsoft/vscode/issues/12176)
-- Support setting font-size in Decoration [#9078](https://github.com/Microsoft/vscode/issues/9078)
+Or leave a review on [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one#review-details) 😉.
