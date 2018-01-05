@@ -120,7 +120,7 @@
                 "markdown.extension.toc.unorderedList.marker": {
                     "type": "string",
                     "default": "-",
-                    "description": "Unordered list marker",
+                    "description": "Use `-`, `*` or `+` in the table of contents (for unordered list)",
                     "enum": [
                         "-",
                         "*",
@@ -144,8 +144,8 @@
                 },
                 "markdown.extension.orderedList.marker": {
                     "type": "string",
-                    "default": "one",
-                    "description": "Start a list item always with '1.' or in increasing numerical order",
+                    "default": "ordered",
+                    "description": "`one`: always use `1.` as ordered list marker; `ordered`",
                     "enum": [
                         "one",
                         "ordered"
