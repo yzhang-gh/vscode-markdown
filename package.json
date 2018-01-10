@@ -181,7 +181,7 @@
                 {
                     "id": "mdOutline",
                     "name": "Outline",
-                    "when": "resourceLangId == markdown && config.markdown.extension.showExplorer == true"
+                    "when": "config.markdown.extension.showExplorer == true && mdContext"
                 }
             ]
         },

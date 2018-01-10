@@ -271,6 +271,11 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
 
     constructor() {
         vscode.window.onDidChangeActiveTextEditor(editor => {
+            if (this.isMdEditor(editor)) {
+                vscode.commands.executeCommand('setContext', 'mdContext', true);
+            } else {
+                vscode.commands.executeCommand('setContext', 'mdContext', false);
+            }
             this.update();
         });
 
@@ -278,7 +283,17 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
             this.update();
         });
 
+        // First time
+        if (this.isMdEditor(vscode.window.activeTextEditor)) {
+            vscode.commands.executeCommand('setContext', 'mdContext', true);
+        } else {
+            vscode.commands.executeCommand('setContext', 'mdContext', false);
+        }
         this.update();
+    }
+
+    private isMdEditor(editor: vscode.TextEditor) {
+        return editor && editor.document && editor.document.uri.scheme === 'file' && editor.document.languageId === 'markdown';
     }
 
     public async update() {
@@ -288,7 +303,7 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
 
     private async buildToc() {
         this.editor = vscode.window.activeTextEditor;
-        if (this.editor && this.editor.document && this.editor.document.languageId === 'markdown') {
+        if (this.isMdEditor(this.editor)) {
             const tocProvider = new TocProvider(engine, this.editor.document);
             this.toc = await tocProvider.getToc();
         } else {
