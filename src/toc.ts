@@ -15,7 +15,7 @@ const prefix = 'markdown.extension.toc.';
 /**
  * Workspace config
  */
-let wsConfig = { tab: '    ', eol: '\r\n' };
+let docConfig = { tab: '    ', eol: '\r\n' };
 let tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false };
 
 export function activate(context: vscode.ExtensionContext) {
@@ -35,16 +35,6 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.workspace.onWillSaveTextDocument(onWillSave));
     context.subscriptions.push(vscode.languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider()));
 
-    // Load workspace config
-    wsConfig.eol = <string>vscode.workspace.getConfiguration("files", null).get("eol");
-    let tabSize = <number>vscode.workspace.getConfiguration("editor", null).get("tabSize");
-    let insertSpaces = <boolean>vscode.workspace.getConfiguration("editor", null).get("insertSpaces");
-
-    wsConfig.tab = '\t';
-    if (insertSpaces && tabSize > 0) {
-        wsConfig.tab = " ".repeat(tabSize);
-    }
-
     vscode.window.registerTreeDataProvider('mdOutline', new MdOutlineProvider());
 }
 
@@ -61,12 +51,12 @@ async function updateToc() {
     let editor = vscode.window.activeTextEditor;
     let tocRange = await detectTocRange(editor.document);
     if (tocRange != null) {
-        let oldToc = getText(tocRange).replace(/\r?\n|\r/g, wsConfig.eol);
+        let oldToc = getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol);
         let newToc = await generateTocText(editor.document);
         if (oldToc != newToc) {
             // Keep the unchanged lines. (to prevent codeLens from re-emergence in UI)
-            let oldTocArr = oldToc.split(wsConfig.eol);
-            let newTocArr = newToc.split(wsConfig.eol);
+            let oldTocArr = oldToc.split(docConfig.eol);
+            let newTocArr = newToc.split(docConfig.eol);
             let firstChangedLine = 0;
             for (let i = 0; i < newTocArr.length; i++) {
                 if (newTocArr[i] != oldTocArr[i]) {
@@ -75,14 +65,14 @@ async function updateToc() {
                 }
             }
 
-            let text = newTocArr.slice(firstChangedLine).join(wsConfig.eol);
+            let text = newTocArr.slice(firstChangedLine).join(docConfig.eol);
             let justAppending = false;
             let rangeToBeDel;
             let location;
             if (firstChangedLine + 1 > oldTocArr.length) { // Append to old TOC, no deletion
                 justAppending = true;
                 location = tocRange.end;
-                text = wsConfig.eol + text;
+                text = docConfig.eol + text;
             } else { // Delete and then append
                 let delPosition = new vscode.Position(tocRange.start.line + firstChangedLine, tocRange.start.character);
                 rangeToBeDel = new vscode.Range(delPosition, tocRange.end);
@@ -117,7 +107,7 @@ async function generateTocText(document: vscode.TextDocument): Promise<string> {
         if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
             let indentation = entry.level - startDepth;
             let row = [
-                wsConfig.tab.repeat(indentation),
+                docConfig.tab.repeat(indentation),
                 (tocConfig.orderedList ? ++order[indentation] + '.' : tocConfig.listMarker) + ' ',
                 tocConfig.plaintext ? entry.text : `[${entry.text}](#${TocProvider.slugify(entry.text)})`
             ];
@@ -125,7 +115,7 @@ async function generateTocText(document: vscode.TextDocument): Promise<string> {
             if (tocConfig.orderedList) order.fill(0, indentation + 1);
         }
     });
-    return toc.join(wsConfig.eol);
+    return toc.join(docConfig.eol);
 }
 
 async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> {
@@ -199,6 +189,16 @@ function loadTocConfig() {
     tocConfig.listMarker = tocSectionCfg.get<string>('unorderedList.marker');
     tocConfig.plaintext = tocSectionCfg.get<boolean>('plaintext');
     tocConfig.updateOnSave = tocSectionCfg.get<boolean>('updateOnSave');
+
+    // Load workspace config
+    docConfig.eol = vscode.window.activeTextEditor.document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
+    let tabSize = Number(vscode.window.activeTextEditor.options.tabSize);
+    let insertSpaces = vscode.window.activeTextEditor.options.insertSpaces;
+
+    docConfig.tab = '\t';
+    if (insertSpaces && tabSize > 0) {
+        docConfig.tab = " ".repeat(tabSize);
+    }
 }
 
 function getText(range: vscode.Range): string {
@@ -212,7 +212,7 @@ class TocCodeLensProvider implements vscode.CodeLensProvider {
         return detectTocRange(document).then(tocRange => {
             if (tocRange == null) return lenses; // No TOC
             return generateTocText(document).then(text => {
-                let status = getText(tocRange).replace(/\r?\n|\r/g, wsConfig.eol) === text ? 'up to date' : 'out of date';
+                let status = getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol) === text ? 'up to date' : 'out of date';
                 lenses.push(new vscode.CodeLens(tocRange, {
                     arguments: [],
                     title: `Table of Contents (${status})`,
