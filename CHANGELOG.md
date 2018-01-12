@@ -1,3 +1,8 @@
+### 1.0.1 (2018.01.12)
+
+- **Fix**: Conditions to show outline ([#60](https://github.com/neilsustc/vscode-markdown/issues/60))
+- **Fix**: Respect `insertSpaces` and `tabSize` options of current file when generate TOC ([#77](https://github.com/neilsustc/vscode-markdown/issues/77))
+
 ### 1.0.0 (2018.01.05)
 
 - **New**: Update outline view on save ([#68](https://github.com/neilsustc/vscode-markdown/issues/68))
