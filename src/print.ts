@@ -8,6 +8,8 @@ import * as fs from "fs";
 
 const officialExt = vscode.extensions.getExtension("Microsoft.vscode-markdown");
 
+const TocProvider = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider')).TableOfContentsProvider;
+
 const hljs = require(path.join(officialExt.extensionPath, 'node_modules', 'highlight.js'));
 const mdnh = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it-named-headers'));
 const mdtl = require('markdown-it-task-lists');
@@ -22,22 +24,11 @@ const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdow
         // return `<pre class="hljs"><code><div>${this.engine.utils.escapeHtml(str)}</div></code></pre>`;
         return str;
     }
-}).use(mdnh, {}).use(mdtl);
-// const htmlPdf = require('html-pdf');
-
-let options = {
-    "format": "A4",
-    "orientation": "portrait",
-    "border": {
-        "top": "1in",
-        "right": "0.8in",
-        "bottom": "1in",
-        "left": "0.8in"
-    }
-};
+}).use(mdnh, {
+    slugify: (header: string) => TocProvider.slugify(header)
+}).use(mdtl);
 
 let thisContext: vscode.ExtensionContext;
-// let disposables: Disposable[] = [];
 
 export function activate(context: vscode.ExtensionContext) {
     thisContext = context;
