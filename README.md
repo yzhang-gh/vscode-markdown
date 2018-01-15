@@ -94,6 +94,10 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
+### 1.0.2 (2018.01.15)
+
+- **Fix**: Anchors in exported HTML ([#78](https://github.com/neilsustc/vscode-markdown/issues/78))
+
 ### 1.0.1 (2018.01.12)
 
 - **Fix**: Conditions to show outline ([#60](https://github.com/neilsustc/vscode-markdown/issues/60))
