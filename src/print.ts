@@ -66,9 +66,12 @@ function print(type: string) {
     });
 
     let body = render(doc.getText());
-    body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
-        return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
-    });
+
+    if (vscode.workspace.getConfiguration("markdown.extension.print.absoluteImgPath", doc.uri)) {
+        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
+            return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
+        });
+    }
 
     let styleSheets = ['markdown.css', 'tomorrow.css', 'checkbox.css'].map(s => getMediaPath(s))
         .concat(getCustomStyleSheets());

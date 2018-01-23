@@ -173,6 +173,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Enable GFM table formatter"
+                },
+                "markdown.extension.print.absoluteImgPath": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Convert image path to absolute path"
                 }
             }
         },
