@@ -95,6 +95,10 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
+### 1.0.3 (2018.01.23)
+
+- **New**: Option `markdown.extension.print.absoluteImgPath` ([#81](https://github.com/neilsustc/vscode-markdown/issues/81))
+
 ### 1.0.2 (2018.01.15)
 
 - **Fix**: Anchors in exported HTML ([#78](https://github.com/neilsustc/vscode-markdown/issues/78))
