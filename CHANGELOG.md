@@ -1,3 +1,7 @@
+### 1.0.4 (2018.01.29)
+
+- **Fix**: TOC entries that contain links do not generate correctly ([#83](https://github.com/neilsustc/vscode-markdown/issues/83))
+
 ### 1.0.3 (2018.01.23)
 
 - **New**: Option `markdown.extension.print.absoluteImgPath` ([#81](https://github.com/neilsustc/vscode-markdown/issues/81))
