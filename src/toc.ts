@@ -106,10 +106,14 @@ async function generateTocText(document: vscode.TextDocument): Promise<string> {
     tocEntry.forEach(entry => {
         if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
             let indentation = entry.level - startDepth;
+            // #83 TOC entries that contain links do not generate correctly
+            let entryText = entry.text.replace(/\[([^\]]+?)\]\([^\)]+?\)/g, function (match, g1) {
+                return g1;
+            });
             let row = [
                 docConfig.tab.repeat(indentation),
                 (tocConfig.orderedList ? ++order[indentation] + '.' : tocConfig.listMarker) + ' ',
-                tocConfig.plaintext ? entry.text : `[${entry.text}](#${TocProvider.slugify(entry.text)})`
+                tocConfig.plaintext ? entryText : `[${entryText}](#${TocProvider.slugify(entryText)})`
             ];
             toc.push(row.join(''));
             if (tocConfig.orderedList) order.fill(0, indentation + 1);
