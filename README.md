@@ -95,6 +95,10 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Changelog
 
+### 1.0.5 (2018.02.01)
+
+- **Fix**: Option `markdown.extension.print.absoluteImgPath` doesn't work ([#84](https://github.com/neilsustc/vscode-markdown/issues/84))
+
 ### 1.0.4 (2018.01.29)
 
 - **Fix**: TOC entries that contain links do not generate correctly ([#83](https://github.com/neilsustc/vscode-markdown/issues/83))
@@ -102,22 +106,6 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 ### 1.0.3 (2018.01.23)
 
 - **New**: Option `markdown.extension.print.absoluteImgPath` ([#81](https://github.com/neilsustc/vscode-markdown/issues/81))
-
-### 1.0.2 (2018.01.15)
-
-- **Fix**: Anchors in exported HTML ([#78](https://github.com/neilsustc/vscode-markdown/issues/78))
-
-### 1.0.1 (2018.01.12)
-
-- **Fix**: Conditions to show outline ([#60](https://github.com/neilsustc/vscode-markdown/issues/60))
-- **Fix**: Respect `insertSpaces` and `tabSize` options of current file when generating TOC ([#77](https://github.com/neilsustc/vscode-markdown/issues/77))
-
-### 1.0.0 (2018.01.05)
-
-- **New**: Update outline view on save ([#68](https://github.com/neilsustc/vscode-markdown/issues/68))
-- **New**: Option `markdown.extension.toc.unorderedList.marker` ([#74](https://github.com/neilsustc/vscode-markdown/issues/74))
-- **Change**: Use <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> (or <kbd>]</kbd>) to change heading level in Mac ([#71](https://github.com/neilsustc/vscode-markdown/issues/71))
-- **Fix**: Some fixes you might not notice
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
