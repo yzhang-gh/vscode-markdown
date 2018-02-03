@@ -133,39 +133,44 @@ async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> {
         // The first heading is empty
         return null;
     } else {
+        // Iterate all lines to find start/end positions
         for (let index = 0; index < doc.lineCount; index++) {
             let lineText = doc.lineAt(index).text;
-            if (start == null) { // No line matched with start yet
-                let regResult = lineText.match(/^[\-\*\+1]\.? (.+)$/); // Match list block and get list item
-                if (regResult != null) {
-                    let header = regResult[1];
-                    let res = header.match(/^\[(.+?)\]\(#.+?\)$/); // Get `header` from `[header](anchor)`
-                    if (res != null) {
-                        header = res[1];
+            if (start == null) { // Find TOC start position
+                let listMatcher = lineText.match(/^[\-\*\+1]\.? (.+)$/); // Match list block and get list item
+                if (listMatcher != null) {
+                    let heading = listMatcher[1];
+                    if (!tocConfig.plaintext) { // TOC should be links rather than plain texts
+                        let headingMatcher = heading.match(/^\[(.+?)\]\(#.+?\)$/); // Get `heading` from `[heading](anchor)`
+                        if (headingMatcher === null) {
+                            continue;
+                        } else {
+                            heading = headingMatcher[1];
+                        }
                     }
-                    let expectedFirstHeader = headings.find(h => {
-                        return h.level == tocConfig.startDepth;
+                    let expectedFirstHeading = headings.find(h => {
+                        return h.level === tocConfig.startDepth;
                     }).text;
-                    if (header.startsWith(expectedFirstHeader)) {
+                    if (heading.startsWith(expectedFirstHeading)) {
                         start = new vscode.Position(index, 0);
                     }
                 }
-            } else { // Start line already found
+            } else { // Find TOC end position
                 lineText = lineText.trim();
-                if (lineText.match(/^[\-\*\+\d]\.? /) == null) { // End of a list block
+                if (lineText.match(/^[\-\*\+\d]\.? /) === null) { // End of a list block
                     end = new vscode.Position(index - 1, doc.lineAt(index - 1).text.length);
-                    // log('End', end);
                     break;
                 } else if (index == doc.lineCount - 1) { // End of file
                     end = new vscode.Position(index, doc.lineAt(index).text.length);
-                    // log('End', end);
                 }
             }
         }
-        if ((start != null) && (end != null)) {
+        if (start !== undefined && end === undefined && start.line === doc.lineCount - 1) {
+            end = new vscode.Position(start.line, doc.lineAt(start.line).text.length);
+        }
+        if ((start !== undefined) && (end !== undefined)) {
             return new vscode.Range(start, end);
         }
-        // log('No TOC detected.');
         return null;
     }
 }
@@ -182,8 +187,8 @@ function loadTocConfig() {
     let tocLevels = tocSectionCfg.get<string>('levels');
     let matches;
     if (matches = tocLevels.match(/^([1-6])\.\.([1-6])$/)) {
-        tocConfig.startDepth = matches[1];
-        tocConfig.endDepth = matches[2];
+        tocConfig.startDepth = Number(matches[1]);
+        tocConfig.endDepth = Number(matches[2]);
     }
     tocConfig.orderedList = tocSectionCfg.get<boolean>('orderedList');
     tocConfig.listMarker = tocSectionCfg.get<string>('unorderedList.marker');
