@@ -8,7 +8,7 @@ suite("Table formatter.", () => {
 
         for (let key in defaultConfigs) {
             if (defaultConfigs.hasOwnProperty(key)) {
-                defaultConfigs[key] = workspace.getConfiguration().get(key);
+                defaultConfigs[key] = workspace.getConfiguration('', null).get(key);
             }
         }
     });
@@ -16,7 +16,7 @@ suite("Table formatter.", () => {
     suiteTeardown(async () => {
         for (let key in defaultConfigs) {
             if (defaultConfigs.hasOwnProperty(key)) {
-                await workspace.getConfiguration().update(key, defaultConfigs[key], true);
+                await workspace.getConfiguration('', null).update(key, defaultConfigs[key], true);
             }
         }
     });
@@ -40,17 +40,19 @@ suite("Table formatter.", () => {
     test("Normal 2", done => {
         testCommand('editor.action.formatDocument', {},
             [
+                '',
                 'a |b',
                 '---| ---',
                 'c|de'
             ],
             new Selection(0, 0, 0, 0),
             [
+                '',
                 '| a   | b   |',
                 '| --- | --- |',
                 '| c   | de  |'
             ],
-            new Selection(0, 2, 0, 2)).then(done, done);
+            new Selection(0, 0, 0, 0)).then(done, done);
     });
 
     test("Contains `|`", done => {

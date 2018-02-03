@@ -16,7 +16,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         let tables = this.detectTables(document.getText());
         if (tables !== null) {
             tables.forEach(table => {
-                edits.push(new TextEdit(this.getRange(document, table), this.formatTable(table)));
+                edits.push(new TextEdit(this.getRange(document, table), this.formatTable(table, document)));
             });
             return edits;
         } else {
@@ -39,7 +39,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         return new Range(start, end);
     }
 
-    private formatTable(text: string) {
+    private formatTable(text: string, doc: TextDocument) {
         let rows = text.split(/\r?\n/g);
         let content = rows.map(row => {
             // Escape 
@@ -101,6 +101,6 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 return (cell + ' '.repeat(cellLength)).slice(0, cellLength);
             });
             return '| ' + cells.join(' | ') + ' |';
-        }).join(<string>workspace.getConfiguration("files").get("eol"));
+        }).join(workspace.getConfiguration('files', doc.uri).get('eol'));
     }
 }

@@ -8,7 +8,7 @@ suite("Formatting.", () => {
 
         for (let key in defaultConfigs) {
             if (defaultConfigs.hasOwnProperty(key)) {
-                defaultConfigs[key] = workspace.getConfiguration().get(key);
+                defaultConfigs[key] = workspace.getConfiguration('', null).get(key);
             }
         }
     });
@@ -16,7 +16,7 @@ suite("Formatting.", () => {
     suiteTeardown(async () => {
         for (let key in defaultConfigs) {
             if (defaultConfigs.hasOwnProperty(key)) {
-                await workspace.getConfiguration().update(key, defaultConfigs[key], true);
+                await workspace.getConfiguration('', null).update(key, defaultConfigs[key], true);
             }
         }
     });
