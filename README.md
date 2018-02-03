@@ -61,13 +61,13 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Shortcuts
 
-| Key | Command |
-| --- | --- |
-| <kbd>ctrl</kbd> + <kbd>b</kbd> | Toggle bold |
-| <kbd>ctrl</kbd> + <kbd>i</kbd> | Toggle italic |
-| <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel) |
-| <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel) |
-| <kbd>alt</kbd> + <kbd>c</kbd> | Check/Uncheck task list item |
+| Key                                               | Command                      |
+| ------------------------------------------------- | ---------------------------- |
+| <kbd>ctrl</kbd> + <kbd>b</kbd>                    | Toggle bold                  |
+| <kbd>ctrl</kbd> + <kbd>i</kbd>                    | Toggle italic                |
+| <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel)     |
+| <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel)   |
+| <kbd>alt</kbd> + <kbd>c</kbd>                     | Check/Uncheck task list item |
 
 ## Available Commands
 
@@ -79,32 +79,33 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Supported Settings
 
-| Name | Default | Description |
-| --- | --- | --- |
-| `markdown.extension.toc.levels` | `1..6` | Control the heading levels to show in the table of contents. |
-| `markdown.extension.toc.unorderedList.marker` | `-` | Use `-`, `*` or `+` in the table of contents (for unordered list) |
-| `markdown.extension.toc.orderedList` | `false` | Use ordered list in the table of contents. |
-| `markdown.extension.toc.plaintext` | `false` | Just plain text. |
-| `markdown.extension.toc.updateOnSave` | `false` | Automatically update the table of contents on save. |
-| `markdown.extension.preview.autoShowPreviewToSide` | `false` | Automatically show preview when opening a Markdown file. |
-| `markdown.extension.orderedList.marker` | `ordered` | Or `one`: always use `1.` as ordered list marker |
-| `markdown.extension.italic.indicator` | `*` | Use `*` or `_` to wrap italic text |
-| `markdown.extension.quickStyling` | `false` | Toggle bold/italic without selecting words |
-| `markdown.extension.showExplorer` | `true` | Show outline view in explorer panel |
+| Name                                               | Default   | Description                                                       |
+| -------------------------------------------------- | --------- | ----------------------------------------------------------------- |
+| `markdown.extension.toc.levels`                    | `1..6`    | Control the heading levels to show in the table of contents.      |
+| `markdown.extension.toc.unorderedList.marker`      | `-`       | Use `-`, `*` or `+` in the table of contents (for unordered list) |
+| `markdown.extension.toc.orderedList`               | `false`   | Use ordered list in the table of contents.                        |
+| `markdown.extension.toc.plaintext`                 | `false`   | Just plain text.                                                  |
+| `markdown.extension.toc.updateOnSave`              | `false`   | Automatically update the table of contents on save.               |
+| `markdown.extension.preview.autoShowPreviewToSide` | `false`   | Automatically show preview when opening a Markdown file.          |
+| `markdown.extension.orderedList.marker`            | `ordered` | Or `one`: always use `1.` as ordered list marker                  |
+| `markdown.extension.italic.indicator`              | `*`       | Use `*` or `_` to wrap italic text                                |
+| `markdown.extension.quickStyling`                  | `false`   | Toggle bold/italic without selecting words                        |
+| `markdown.extension.showExplorer`                  | `true`    | Show outline view in explorer panel                               |
+| `markdown.extension.print.absoluteImgPath`         | `true`    | Convert image path to absolute path                               |
 
 ## Changelog
 
-### 1.0.1 (2018.01.12)
+### 1.0.5 (2018.02.01)
 
-- **Fix**: Conditions to show outline ([#60](https://github.com/neilsustc/vscode-markdown/issues/60))
-- **Fix**: Respect `insertSpaces` and `tabSize` options of current file when generating TOC ([#77](https://github.com/neilsustc/vscode-markdown/issues/77))
+- **Fix**: Option `markdown.extension.print.absoluteImgPath` doesn't work ([#84](https://github.com/neilsustc/vscode-markdown/issues/84))
 
-### 1.0.0 (2018.01.05)
+### 1.0.4 (2018.01.29)
 
-- **New**: Update outline view on save ([#68](https://github.com/neilsustc/vscode-markdown/issues/68))
-- **New**: Option `markdown.extension.toc.unorderedList.marker` ([#74](https://github.com/neilsustc/vscode-markdown/issues/74))
-- **Change**: Use <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> (or <kbd>]</kbd>) to change heading level in Mac ([#71](https://github.com/neilsustc/vscode-markdown/issues/71))
-- **Fix**: Some fixes you might not notice
+- **Fix**: TOC entries that contain links do not generate correctly ([#83](https://github.com/neilsustc/vscode-markdown/issues/83))
+
+### 1.0.3 (2018.01.23)
+
+- **New**: Option `markdown.extension.print.absoluteImgPath` ([#81](https://github.com/neilsustc/vscode-markdown/issues/81))
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
