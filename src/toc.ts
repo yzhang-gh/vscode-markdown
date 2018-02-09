@@ -5,7 +5,11 @@ import { log } from './util';
 import * as path from 'path';
 
 const officialExt = vscode.extensions.getExtension("Microsoft.vscode-markdown");
-const TocProvider = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider')).TableOfContentsProvider;
+
+const tocModule = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider'));
+const TocProvider = tocModule.TableOfContentsProvider;
+const Slug = tocModule.Slug;
+
 const MdEngine = require(path.join(officialExt.extensionPath, 'out', 'markdownEngine')).MarkdownEngine;
 
 const engine = new MdEngine();
@@ -113,7 +117,7 @@ async function generateTocText(document: vscode.TextDocument): Promise<string> {
             let row = [
                 docConfig.tab.repeat(indentation),
                 (tocConfig.orderedList ? ++order[indentation] + '.' : tocConfig.listMarker) + ' ',
-                tocConfig.plaintext ? entryText : `[${entryText}](#${TocProvider.slugify(entryText)})`
+                tocConfig.plaintext ? entryText : `[${entryText}](#${Slug.fromHeading(entryText).value})`
             ];
             toc.push(row.join(''));
             if (tocConfig.orderedList) order.fill(0, indentation + 1);
