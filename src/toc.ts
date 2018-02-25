@@ -108,7 +108,7 @@ async function generateTocText(document: vscode.TextDocument): Promise<string> {
     tocEntry.forEach(entry => {
         if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
             let indentation = entry.level - startDepth;
-            // #83 TOC entries that contain links do not generate correctly
+            // [text](link) -> text. In case there are links in heading (#83)
             let entryText = entry.text.replace(/\[([^\]]+?)\]\([^\)]+?\)/g, function (match, g1) {
                 return g1;
             });
@@ -157,6 +157,10 @@ async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> {
                     let expectedFirstHeading = headings.find(h => {
                         return h.level === tocConfig.startDepth;
                     }).text;
+                    // [text](link) -> text. In case there are links in heading (#83, #102)
+                    expectedFirstHeading = expectedFirstHeading.replace(/\[([^\]]+?)\]\([^\)]+?\)/g, function (match, g1) {
+                        return g1;
+                    });
                     if (heading.startsWith(expectedFirstHeading)) {
                         start = new vscode.Position(index, 0);
                     }
