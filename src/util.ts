@@ -1,6 +1,6 @@
 'use strict'
 
-import { Position, Range, TextDocument } from 'vscode';
+import { Position, Range, TextDocument, workspace } from 'vscode';
 
 export function log(msg: string, obj?) {
     if (obj) {
@@ -24,4 +24,14 @@ export function log(msg: string, obj?) {
     } else {
         console.log(msg);
     }
+}
+
+export function slugify(heading: string) {
+    let slug = heading.trim()
+        .toLowerCase()
+        .replace(/[\]\[\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\_\{\|\}\~\`]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/^\-+/, '')
+        .replace(/\-+$/, '');
+    return workspace.getConfiguration('markdown.extension.toc').get<boolean>('encodeUri') ? encodeURI(slug) : slug;
 }

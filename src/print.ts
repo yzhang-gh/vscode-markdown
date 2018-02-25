@@ -5,6 +5,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from "fs";
+import { slugify } from './util';
 
 const officialExt = vscode.extensions.getExtension("Microsoft.vscode-markdown");
 
@@ -25,7 +26,7 @@ const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdow
         return str;
     }
 }).use(mdnh, {
-    slugify: (header: string) => TocProvider.slugify(header)
+    slugify: (header: string) => slugify(header)
 }).use(mdtl);
 
 let thisContext: vscode.ExtensionContext;

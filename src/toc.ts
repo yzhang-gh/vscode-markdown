@@ -1,7 +1,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import { log } from './util';
+import { log, slugify } from './util';
 import * as path from 'path';
 
 const officialExt = vscode.extensions.getExtension("Microsoft.vscode-markdown");
@@ -115,7 +115,7 @@ async function generateTocText(document: vscode.TextDocument): Promise<string> {
             let row = [
                 docConfig.tab.repeat(indentation),
                 (tocConfig.orderedList ? ++order[indentation] + '.' : tocConfig.listMarker) + ' ',
-                tocConfig.plaintext ? entryText : `[${entryText}](#${TocProvider.slugify(entryText)})`
+                tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(entryText)})`
             ];
             toc.push(row.join(''));
             if (tocConfig.orderedList) order.fill(0, indentation + 1);

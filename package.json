@@ -136,6 +136,11 @@
                     "default": true,
                     "description": "Auto update on save"
                 },
+                "markdown.extension.toc.encodeUri": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "In VS Code preview, the anchors of headings are encoded. But if you want the generated TOC to work on GitHub etc., you might need to set this to `false`"
+                },
                 "markdown.extension.preview.autoShowPreviewToSide": {
                     "type": "boolean",
                     "default": false,
