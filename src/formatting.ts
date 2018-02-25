@@ -77,7 +77,7 @@ async function styleByWrapping(startPattern, endPattern?) {
     }
 
     let editor = window.activeTextEditor;
-    
+
     let selections = editor.selections;
 
     for (let i = 0; i < selections.length; i++) {
@@ -101,6 +101,11 @@ async function styleByWrapping(startPattern, endPattern?) {
                 let wordRange = editor.document.getWordRangeAtPosition(cursorPos);
                 if (wordRange == undefined) {
                     wordRange = new Range(cursorPos, cursorPos);
+                }
+                // One special case: toggle strikethrough in task list
+                const currentTextLine = editor.document.lineAt(selection.start.line);
+                if (startPattern === '~~' && /^\s*[\*\+\-] \[[ x]\]\s+/g.test(currentTextLine.text.trim())) {
+                    wordRange = currentTextLine.range.with(new Position(selection.start.line, currentTextLine.text.match(/^\s*[\*\+\-] \[[ x]\]\s+/g)[0].length));
                 }
                 await wrapRange(editor, options, cursorPos, wordRange, false, startPattern);
             } else {
