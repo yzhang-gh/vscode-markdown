@@ -61,7 +61,7 @@ function print(type: string) {
      * Modified from <https://github.com/Microsoft/vscode/tree/master/extensions/markdown>
      * src/previewContentProvider MDDocumentContentProvider provideTextDocumentContent
      */
-    let outPath = doc.fileName.replace(/\.md$/, `.${type}`);
+    let outPath = doc.fileName.replace(/\.(md|MD|markdown)$/, `.${type}`);
     outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
         return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
     });
