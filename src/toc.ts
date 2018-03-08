@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import { log, slugify } from './util';
 import * as path from 'path';
 
-const officialExt = vscode.extensions.getExtension("Microsoft.vscode-markdown");
+const officialExt = vscode.extensions.getExtension("vscode.markdown-language-features");
 
 const tocModule = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider'));
 const TocProvider = tocModule.TableOfContentsProvider;
