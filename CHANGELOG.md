@@ -1,3 +1,9 @@
+### 1.1.0 (2018.03.08)
+
+- **New**: Option `toc.encodeUri` ([#90](https://github.com/neilsustc/vscode-markdown/issues/90), [#98](https://github.com/neilsustc/vscode-markdown/issues/98))
+- **Fix**: TOC detection ([#85](https://github.com/neilsustc/vscode-markdown/issues/85), [#102](https://github.com/neilsustc/vscode-markdown/issues/102))
+- **Fix**: Wrong HTML output path if you are editing `.MD` file ([#105](https://github.com/neilsustc/vscode-markdown/issues/105))
+
 ### 1.0.5 (2018.02.01)
 
 - **Fix**: Option `markdown.extension.print.absoluteImgPath` doesn't work ([#84](https://github.com/neilsustc/vscode-markdown/issues/84))

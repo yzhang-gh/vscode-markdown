@@ -15,8 +15,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
 - **Outline view** in explorer panel
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
-  - ~~Automatically close preview when changing editor~~
-- **Print your Markdown to HTML**
+- **Print Markdown to HTML**
   - It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others
 - **List editing** (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
   - Pressing <kbd>Tab</kbd> at the beginning of a list item will indent it
@@ -55,10 +54,6 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ![task lists](images/gifs/tasklists.gif)
 
-<!-- ### Print to PDF
-
-![print to pdf](images/gifs/pdf.gif) -->
-
 ## Shortcuts
 
 | Key                                               | Command                      |
@@ -79,33 +74,28 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Supported Settings
 
-| Name                                               | Default   | Description                                                       |
-| -------------------------------------------------- | --------- | ----------------------------------------------------------------- |
-| `markdown.extension.toc.levels`                    | `1..6`    | Control the heading levels to show in the table of contents.      |
-| `markdown.extension.toc.unorderedList.marker`      | `-`       | Use `-`, `*` or `+` in the table of contents (for unordered list) |
-| `markdown.extension.toc.orderedList`               | `false`   | Use ordered list in the table of contents.                        |
-| `markdown.extension.toc.plaintext`                 | `false`   | Just plain text.                                                  |
-| `markdown.extension.toc.updateOnSave`              | `false`   | Automatically update the table of contents on save.               |
-| `markdown.extension.preview.autoShowPreviewToSide` | `false`   | Automatically show preview when opening a Markdown file.          |
-| `markdown.extension.orderedList.marker`            | `ordered` | Or `one`: always use `1.` as ordered list marker                  |
-| `markdown.extension.italic.indicator`              | `*`       | Use `*` or `_` to wrap italic text                                |
-| `markdown.extension.quickStyling`                  | `false`   | Toggle bold/italic without selecting words                        |
-| `markdown.extension.showExplorer`                  | `true`    | Show outline view in explorer panel                               |
-| `markdown.extension.print.absoluteImgPath`         | `true`    | Convert image path to absolute path                               |
+| Name                                               | Default   | Description                                                                        |
+| -------------------------------------------------- | --------- | ---------------------------------------------------------------------------------- |
+| `markdown.extension.toc.levels`                    | `1..6`    | Control the heading levels to show in the table of contents.                       |
+| `markdown.extension.toc.unorderedList.marker`      | `-`       | Use `-`, `*` or `+` in the table of contents (for unordered list)                  |
+| `markdown.extension.toc.orderedList`               | `false`   | Use ordered list in the table of contents.                                         |
+| `markdown.extension.toc.plaintext`                 | `false`   | Just plain text.                                                                   |
+| `markdown.extension.toc.updateOnSave`              | `false`   | Automatically update the table of contents on save.                                |
+| `markdown.extension.toc.encodeUri`                 | `true`    | You might want to set this to `false` if you have some non-Latin characters in TOC |
+| `markdown.extension.preview.autoShowPreviewToSide` | `false`   | Automatically show preview when opening a Markdown file.                           |
+| `markdown.extension.orderedList.marker`            | `ordered` | Or `one`: always use `1.` as ordered list marker                                   |
+| `markdown.extension.italic.indicator`              | `*`       | Use `*` or `_` to wrap italic text                                                 |
+| `markdown.extension.quickStyling`                  | `false`   | Toggle bold/italic without selecting words                                         |
+| `markdown.extension.showExplorer`                  | `true`    | Show outline view in explorer panel                                                |
+| `markdown.extension.print.absoluteImgPath`         | `true`    | Convert image path to absolute path                                                |
 
 ## Changelog
 
-### 1.0.5 (2018.02.01)
+### 1.1.0 (2018.03.08)
 
-- **Fix**: Option `markdown.extension.print.absoluteImgPath` doesn't work ([#84](https://github.com/neilsustc/vscode-markdown/issues/84))
-
-### 1.0.4 (2018.01.29)
-
-- **Fix**: TOC entries that contain links do not generate correctly ([#83](https://github.com/neilsustc/vscode-markdown/issues/83))
-
-### 1.0.3 (2018.01.23)
-
-- **New**: Option `markdown.extension.print.absoluteImgPath` ([#81](https://github.com/neilsustc/vscode-markdown/issues/81))
+- **New**: Option `toc.encodeUri` ([#90](https://github.com/neilsustc/vscode-markdown/issues/90), [#98](https://github.com/neilsustc/vscode-markdown/issues/98))
+- **Fix**: TOC detection ([#85](https://github.com/neilsustc/vscode-markdown/issues/85), [#102](https://github.com/neilsustc/vscode-markdown/issues/102))
+- **Fix**: Wrong HTML output path if you are editing `.MD` file ([#105](https://github.com/neilsustc/vscode-markdown/issues/105))
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
