@@ -198,10 +198,7 @@
         "markdown.markdownItPlugins": true,
         "markdown.previewStyles": [
             "./media/checkbox.css",
-            "./media/katex-0.9.0.min.css"
-        ],
-        "markdown.previewScripts": [
-            "./media/katex-0.9.0.min.js"
+            "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css"
         ]
     },
     "scripts": {
@@ -215,7 +212,7 @@
     ],
     "dependencies": {
         "markdown-it-task-lists": "^2.0.1",
-        "markdown-it-katex": "^2.0.3"
+        "@iktakahiro/markdown-it-katex": "^3.0.3"
     },
     "devDependencies": {
         "typescript": "^2.0.3",

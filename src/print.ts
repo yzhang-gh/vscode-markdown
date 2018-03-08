@@ -16,6 +16,7 @@ const Slug = tocModule.Slug;
 const hljs = require(path.join(officialExt.extensionPath, 'node_modules', 'highlight.js'));
 const mdnh = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it-named-headers'));
 const mdtl = require('markdown-it-task-lists');
+const mdkt = require('@iktakahiro/markdown-it-katex');
 const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it'))({
     html: true,
     highlight: (str: string, lang: string) => {
@@ -29,7 +30,7 @@ const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdow
     }
 }).use(mdnh, {
     slugify: (header: string) => Slug.fromHeading(header).value
-}).use(mdtl);
+}).use(mdtl).use(mdkt);
 
 let thisContext: vscode.ExtensionContext;
 
@@ -84,6 +85,7 @@ function print(type: string) {
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
         ${styleSheets.map(css => `<style>\n${readCss(css)}\n</style>`).join('\n')}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
         ${getSettingsOverrideStyles()}
     </head>
     <body>
