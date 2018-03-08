@@ -197,7 +197,11 @@
         },
         "markdown.markdownItPlugins": true,
         "markdown.previewStyles": [
-            "./media/checkbox.css"
+            "./media/checkbox.css",
+            "./media/katex-0.9.0.min.css"
+        ],
+        "markdown.previewScripts": [
+            "./media/katex-0.9.0.min.js"
         ]
     },
     "scripts": {
@@ -210,7 +214,8 @@
         "vscode.markdown-language-features"
     ],
     "dependencies": {
-        "markdown-it-task-lists": "^2.0.1"
+        "markdown-it-task-lists": "^2.0.1",
+        "markdown-it-katex": "^2.0.3"
     },
     "devDependencies": {
         "typescript": "^2.0.3",
