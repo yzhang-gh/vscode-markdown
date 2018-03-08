@@ -6,7 +6,9 @@ import * as path from 'path';
 
 const officialExt = vscode.extensions.getExtension("Microsoft.vscode-markdown");
 
-const TocProvider = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider')).TableOfContentsProvider;
+const tocModule = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider'));
+const TocProvider = tocModule.TableOfContentsProvider;
+const Slug = tocModule.Slug;
 
 const MdEngine = require(path.join(officialExt.extensionPath, 'out', 'markdownEngine')).MarkdownEngine;
 

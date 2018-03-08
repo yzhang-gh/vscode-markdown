@@ -9,7 +9,9 @@ import { slugify } from './util';
 
 const officialExt = vscode.extensions.getExtension("Microsoft.vscode-markdown");
 
-const TocProvider = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider')).TableOfContentsProvider;
+const tocModule = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider'));
+const TocProvider = tocModule.TableOfContentsProvider;
+const Slug = tocModule.Slug;
 
 const hljs = require(path.join(officialExt.extensionPath, 'node_modules', 'highlight.js'));
 const mdnh = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it-named-headers'));
@@ -26,7 +28,7 @@ const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdow
         return str;
     }
 }).use(mdnh, {
-    slugify: (header: string) => slugify(header)
+    slugify: (header: string) => Slug.fromHeading(header).value
 }).use(mdtl);
 
 let thisContext: vscode.ExtensionContext;
