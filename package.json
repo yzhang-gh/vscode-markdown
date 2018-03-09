@@ -198,7 +198,7 @@
         "markdown.markdownItPlugins": true,
         "markdown.previewStyles": [
             "./media/checkbox.css",
-            "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css"
+            "./media/katex-0.9.0.min.css"
         ]
     },
     "scripts": {
