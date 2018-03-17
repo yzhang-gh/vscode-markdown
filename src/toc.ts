@@ -265,9 +265,10 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
         if (this.toc == null) {
             return [];
         } else if (realIndex == undefined) { // Get root nodes
+            let minHeadingLevel = Math.min.apply(null, this.toc.map(h => h.level));
             return this.toc.filter(h => {
-                return h.level === 1;
-            }).map((h) => {
+                return h.level === minHeadingLevel;
+            }).map(h => {
                 return this.toc.indexOf(h) + 1;
             });
         } else if (realIndex < this.toc.length) {
