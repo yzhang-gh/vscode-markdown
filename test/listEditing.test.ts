@@ -41,8 +41,12 @@ suite("List editing.", () => {
         testCommand('markdown.extension.onEnterKey', {}, ['```', '{}'], new Selection(1, 1, 1, 1), ['```', '{', '    ', '}'], new Selection(2, 4, 2, 4)).then(done, done);
     });
 
-    test("Enter key. Continue GFM checkbox item", done => {
+    test("Enter key. Continue GFM checkbox item. '- [ ] item1|'", done => {
         testCommand('markdown.extension.onEnterKey', {}, ['- [ ] item1'], new Selection(0, 11, 0, 11), ['- [ ] item1', '- [ ] '], new Selection(1, 6, 1, 6)).then(done, done);
+    });
+
+    test("Enter key. '- [test]|'. #122", done => {
+        testCommand('markdown.extension.onEnterKey', {}, ['- [test]'], new Selection(0, 8, 0, 8), ['- [test]', '- '], new Selection(1, 2, 1, 2)).then(done, done);
     });
 
     test("Backspace key. 1: '- |'", done => {
