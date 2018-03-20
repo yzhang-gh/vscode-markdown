@@ -71,7 +71,7 @@ function print(type: string) {
     let body = render(doc.getText());
 
     if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("absoluteImgPath")) {
-        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
+        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
             return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
         });
     }
