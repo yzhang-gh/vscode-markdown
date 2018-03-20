@@ -52,7 +52,7 @@ async function onEnterKey(modifiers?: string) {
     }
 
     let matches;
-    if ((matches = /^(\s*[-+*] +(|\[[ x]\] +))[^\[].*$/.exec(textBeforeCursor)) !== null) {
+    if ((matches = /^(\s*[-+*] +(|\[[ x]\] +))(?!\[[ x]\]).*$/.exec(textBeforeCursor)) !== null) {
         // Unordered list
         await editor.edit(editBuilder => {
             editBuilder.insert(lineBreakPos, `\n${matches[1].replace('[x]', '[ ]')}`);
@@ -62,7 +62,7 @@ async function onEnterKey(modifiers?: string) {
             let newCursorPos = cursorPos.with(line.lineNumber + 1, matches[1].length);
             editor.selection = new Selection(newCursorPos, newCursorPos);
         }
-    } else if ((matches = /^(\s*)([0-9]+)([.)])( +)(|\[[ x]\] +)[^\[].*$/.exec(textBeforeCursor)) !== null) {
+    } else if ((matches = /^(\s*)([0-9]+)([.)])( +)(|\[[ x]\] +)(?!\[[ x]\]).*$/.exec(textBeforeCursor)) !== null) {
         // Ordered list
         let config = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker');
         let marker = '1';
