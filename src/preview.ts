@@ -10,14 +10,32 @@ let currentDoc: TextDocument;
 
 export function activate(context: ExtensionContext) {
     window.onDidChangeActiveTextEditor(editor => {
-        preview(editor);
+        autoPreviewToSide(editor);
     });
 
-    // The first time
-    preview(window.activeTextEditor);
+    // Try preview when this extension is activated the first time
+    autoPreviewToSide(window.activeTextEditor);
+
+    // Override default preview keybindings (from 'open preview' to 'toggle preview' i.e. 'open/close preview')
+    context.subscriptions.push(commands.registerCommand('markdown.extension.togglePreview', () => {
+        let editor = window.activeTextEditor;
+        if (!editor) {
+            commands.executeCommand('workbench.action.closeActiveEditor');
+        } else if (editor.document.languageId === 'markdown') {
+            commands.executeCommand('markdown.showPreview');
+        }
+    }));
+    context.subscriptions.push(commands.registerCommand('markdown.extension.togglePreviewToSide', () => {
+        let editor = window.activeTextEditor;
+        if (!editor) {
+            commands.executeCommand('workbench.action.closeActiveEditor');
+        } else if (editor.document.languageId === 'markdown') {
+            commands.executeCommand('markdown.showPreviewToSide');
+        }
+    }));
 }
 
-function preview(editor: TextEditor) {
+function autoPreviewToSide(editor: TextEditor) {
     if (!workspace.getConfiguration('markdown.extension.preview').get<boolean>('autoShowPreviewToSide'))
         return;
     if (!editor || editor.document.languageId !== 'markdown')
