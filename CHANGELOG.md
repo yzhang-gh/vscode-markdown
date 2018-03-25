@@ -1,3 +1,11 @@
+### 1.1.1 (2018.03.24)
+
+- **New**: Override default "Open Preview" keybinding with "Toggle Preview". Now you can close preview use the same keybinding. ([#86](https://github.com/neilsustc/vscode-markdown/issues/86))
+- **Fix**: No outline if first-level headiing is missing ([#120](https://github.com/neilsustc/vscode-markdown/issues/120))
+- **Fix**: List does not continue if a list item starts with URL ([#122](https://github.com/neilsustc/vscode-markdown/issues/122))
+- **Fix**: `print.absoluteImgPath` option doesn't take effect on some image tags ([#124](https://github.com/neilsustc/vscode-markdown/issues/124))
+- **Fix**: A bug when formatting table ([#128](https://github.com/neilsustc/vscode-markdown/issues/128))
+
 ### 1.1.0 (2018.03.08)
 
 - **New**: Option `toc.encodeUri` ([#90](https://github.com/neilsustc/vscode-markdown/issues/90), [#98](https://github.com/neilsustc/vscode-markdown/issues/98))

@@ -39,11 +39,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('markdown.extension.printToHtml', () => { print('html'); }));
 }
 
-export function deactivate() {
-    // disposables.forEach(d => {
-    //     d.dispose();
-    // });
-}
+export function deactivate() { }
 
 function print(type: string) {
     let editor = vscode.window.activeTextEditor;
@@ -69,10 +65,10 @@ function print(type: string) {
         return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
     });
 
-    let body = render(doc.getText());
+    let body = render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
 
     if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("absoluteImgPath")) {
-        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
+        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
             return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
         });
     }
@@ -104,7 +100,12 @@ function print(type: string) {
     }
 }
 
-function render(text: string) {
+function render(text: string, config: vscode.WorkspaceConfiguration) {
+    console.log('config.get<boolean>(\'breaks\', false)', config.get<boolean>('breaks', false));
+    md.set({
+        breaks: config.get<boolean>('breaks', false),
+        linkify: config.get<boolean>('linkify', true)
+    });
     return md.render(text);
 }
 

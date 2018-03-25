@@ -43,15 +43,16 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         let rows = text.split(/\r?\n/g);
         let content = rows.map(row => {
             // Escape 
-            // 1. `|` in code span
-            // 2. `\|`
-            while (/`([^` ]*?)\|([^` ]*?)`/.test(row)) {
-                // Use `while` because there might be more than one `|` in a code span
-                row = row.replace(/`([^` ]*?)\|([^` ]*?)`/, '`$1%7c$2`');
+            // 1. replace (`,`) pair with (%60,`) to distinguish starting and ending `
+            // 2. escape | in %60...|...` (use while clause because in case of %60...|...|...`)
+            // 3. escape \|
+            row = row.replace(/`([^`]*?)`/g, '%60$1`');
+            while (/%60([^`]*?)\|([^`]*?)`/.test(row)) {
+                row = row.replace(/%60([^`]*?)\|([^`]*?)`/, '%60$1%7c$2`');
             }
             row = row.replace(/\\\|/g, '\\%7c');
             return row.trim().replace(/^\|/g, '').replace(/\|$/g, '').trim().split(/\s*\|\s*/g).map(cell => {
-                return cell.replace(/%7c/g, '|')
+                return cell.replace(/%7c/g, '|').replace(/%60/g, '`');
             });
         });
         // Normalize the num of hyphen
