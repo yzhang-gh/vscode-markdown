@@ -73,7 +73,7 @@ function print(type: string) {
     }
 
     let styleSheets = ['markdown.css', 'tomorrow.css', 'checkbox.css'].map(s => getMediaPath(s))
-        .concat(getCustomStyleSheets());
+        .concat(getCustomStyleSheets().map(s => isAbsolute(s) ? s : path.join(path.dirname(doc.fileName), s)));
 
     let html = `<!DOCTYPE html>
     <html>
@@ -99,7 +99,6 @@ function print(type: string) {
 }
 
 function render(text: string, config: vscode.WorkspaceConfiguration) {
-    console.log('config.get<boolean>(\'breaks\', false)', config.get<boolean>('breaks', false));
     md.set({
         breaks: config.get<boolean>('breaks', false),
         linkify: config.get<boolean>('linkify', true)
