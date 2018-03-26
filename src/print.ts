@@ -111,7 +111,12 @@ function getMediaPath(mediaFile: string): string {
 }
 
 function readCss(fileName: string) {
-    return fs.readFileSync(fileName).toString().replace(/\s+/g, ' ');
+    try {
+        return fs.readFileSync(fileName).toString().replace(/\s+/g, ' ');
+    } catch (error) {
+        vscode.window.showWarningMessage(error.message.replace('ENOENT: no such file or directory, open', 'Custom style') + ' not found.');
+        return '';
+    }
 }
 
 function getCustomStyleSheets(): string[] {
