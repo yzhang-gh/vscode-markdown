@@ -99,6 +99,7 @@ function deleteToc() {
 
 async function generateTocText(document: vscode.TextDocument): Promise<string> {
     loadTocConfig();
+    const orderedListMarkerIsOne: boolean = vscode.workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
 
     const tocProvider = new TocProvider(engine, document);
 
@@ -116,7 +117,7 @@ async function generateTocText(document: vscode.TextDocument): Promise<string> {
             });
             let row = [
                 docConfig.tab.repeat(indentation),
-                (tocConfig.orderedList ? ++order[indentation] + '.' : tocConfig.listMarker) + ' ',
+                (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[indentation]) + '.' : tocConfig.listMarker) + ' ',
                 tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(entryText)})`
             ];
             toc.push(row.join(''));
@@ -169,7 +170,7 @@ async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> {
                 }
             } else { // Find TOC end position
                 lineText = lineText.trim();
-                if (lineText.match(/^[\-\*\+\d]\.? /) === null) { // End of a list block
+                if (lineText.match(/^([-+*]|[0-9]+[.)]) /) === null) { // End of a list block
                     end = new vscode.Position(index - 1, doc.lineAt(index - 1).text.length);
                     break;
                 } else if (index == doc.lineCount - 1) { // End of file
