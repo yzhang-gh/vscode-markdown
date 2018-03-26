@@ -48,6 +48,10 @@
             {
                 "command": "markdown.extension.editing.toggleStrikethrough",
                 "title": "Markdown: Toggle strikethrough"
+            },
+            {
+                "command": "markdown.extension.copySlug",
+                "title": "Markdown: Copy Slugified Heading"
             }
         ],
         "keybindings": [
@@ -193,6 +197,22 @@
                     "description": "Convert image path to absolute path"
                 }
             }
+        },
+        "menus": {
+            "editor/context": [
+                {
+                    "when": "mdContext",
+                    "command": "markdown.extension.copySlug",
+                    "group": "9_cutcopypaste@4"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "when": "mdContext",
+                    "command": "markdown.extension.copySlug",
+                    "group": "5_cutcopypaste"
+                }
+            ]
         },
         "views": {
             "explorer": [

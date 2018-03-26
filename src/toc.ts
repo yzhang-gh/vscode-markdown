@@ -8,7 +8,6 @@ const officialExt = vscode.extensions.getExtension("vscode.markdown-language-fea
 
 const tocModule = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider'));
 const TocProvider = tocModule.TableOfContentsProvider;
-const Slug = tocModule.Slug;
 
 const MdEngine = require(path.join(officialExt.extensionPath, 'out', 'markdownEngine')).MarkdownEngine;
 
@@ -39,7 +38,20 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.workspace.onWillSaveTextDocument(onWillSave));
     context.subscriptions.push(vscode.languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider()));
 
-    vscode.window.registerTreeDataProvider('mdOutline', new MdOutlineProvider());
+    const mdOutlineProvider = new MdOutlineProvider();
+    vscode.window.registerTreeDataProvider('mdOutline', mdOutlineProvider);
+
+    // Context menu for copying slugified heading
+    vscode.commands.registerCommand('markdown.extension.copySlug', async args => {
+        if (typeof args === "number") {
+            // Source: outline view
+            // TODO: copy to clipboard
+            console.log(slugify((await mdOutlineProvider.getTreeItem(args)).label));
+        } else {
+            // Source: editor
+            // TODO:
+        }
+    });
 }
 
 async function createToc() {
