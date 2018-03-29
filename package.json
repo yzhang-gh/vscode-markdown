@@ -107,7 +107,8 @@
             },
             {
                 "command": "markdown.extension.togglePreview",
-                "key": "ctrl+shift+v"
+                "key": "ctrl+shift+v",
+                "when": "!terminalFocus"
             },
             {
                 "command": "markdown.extension.togglePreviewToSide",
