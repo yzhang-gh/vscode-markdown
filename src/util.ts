@@ -32,5 +32,9 @@ export function slugify(heading: string) {
         .replace(/\s+/g, '-')
         .replace(/^\-+/, '')
         .replace(/\-+$/, '');
+    if (workspace.getConfiguration('markdown.extension.toc').get<boolean>('toLowerCase')) {
+        slug = slug.toLowerCase();
+    }
+    
     return workspace.getConfiguration('markdown.extension.toc').get<boolean>('encodeUri') ? encodeURI(slug) : slug;
 }
