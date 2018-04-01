@@ -28,7 +28,6 @@ export function log(msg: string, obj?) {
 
 export function slugify(heading: string) {
     let slug = heading.trim()
-        .toLowerCase()
         .replace(/[\]\[\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\_\{\|\}\~\`]/g, '')
         .replace(/\s+/g, '-')
         .replace(/^\-+/, '')
