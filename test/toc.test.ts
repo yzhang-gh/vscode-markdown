@@ -269,4 +269,35 @@ suite("TOC.", () => {
             ],
             new Selection(7, 32, 7, 32)).then(done, done);
     });
+    
+    test("Non-Latin symbols", done => {
+        testCommand('markdown.extension.toc.create',
+            {
+                "markdown.extension.toc.levels": "1..6",
+                "markdown.extension.toc.orderedList": false,
+                "markdown.extension.toc.plaintext": false,            
+                "markdown.extension.toc.toLowerCase": false
+            },
+            [
+                'Секция 1',
+                '===',
+                '',
+                'Секция 1.1',
+                '---',
+                '',
+                ''
+            ],
+            new Selection(6, 0, 6, 0),
+            [
+                'Секция 1',
+                '===',
+                '',
+                'Секция 1.1',
+                '---',
+                '',
+                '- [Секция 1](#Секция-1)',
+                '    - [Секция 1.1](#Секция-11)'
+            ],
+            new Selection(7, 32, 7, 32)).then(done, done);
+    });
 });
