@@ -299,6 +299,6 @@ suite("TOC.", () => {
                 '- [Секция 1](#Секция-1)',
                 '    - [Секция 1.1](#Секция-11)'
             ],
-            new Selection(7, 32, 7, 32)).then(done, done);
+            new Selection(7, 30, 7, 30)).then(done, done);
     });
 });
