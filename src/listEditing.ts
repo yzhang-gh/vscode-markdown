@@ -85,6 +85,7 @@ async function onEnterKey(modifiers?: string) {
     } else {
         return asNormal('enter', { modifiers });
     }
+    editor.revealRange(editor.selection);
 }
 
 async function onTabKey() {
