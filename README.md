@@ -24,7 +24,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   - Blank list item will be remove on <kbd>Enter</kbd>
 - **GitHub Flavored Markdown**
   - Table formatter (<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd>)
-  - Task lists (use <kbd>Alt</kbd> + <kbd>C</kbd> to check/uncheck a task)
+  - Task list (use <kbd>Alt</kbd> + <kbd>C</kbd> to check/uncheck a list item)
 - **Word completion** (moved to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion))
 - **Others**
   - Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
