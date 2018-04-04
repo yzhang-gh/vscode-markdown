@@ -68,18 +68,18 @@ function print(type: string) {
 
     if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("absoluteImgPath")) {
         body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
-            return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
+            return `${p1}${fixHref(doc.uri, p2)}${p3}`;
         });
     }
 
     let styleSheets = ['markdown.css', 'tomorrow.css', 'checkbox.css'].map(s => getMediaPath(s))
-        .concat(getCustomStyleSheets().map(s => isAbsolute(s) ? s : path.join(path.dirname(doc.fileName), s)));
+        .concat(getCustomStyleSheets(doc.uri));
 
     let html = `<!DOCTYPE html>
     <html>
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-        ${styleSheets.map(css => `<style>\n${readCss(css)}\n</style>`).join('\n')}
+        ${styleSheets.map(css => wrapWithStyleTag(css)).join('\n')}
         ${getSettingsOverrideStyles()}
     </head>
     <body>
@@ -110,6 +110,15 @@ function getMediaPath(mediaFile: string): string {
     return thisContext.asAbsolutePath(path.join('media', mediaFile));
 }
 
+function wrapWithStyleTag(src: string) {
+    let uri = vscode.Uri.parse(src);
+    if (uri.scheme.includes('http')) {
+        return `<link rel="stylesheet" href="${src}">`;
+    } else {
+        return `<style>\n${readCss(src)}\n</style>`;
+    }
+}
+
 function readCss(fileName: string) {
     try {
         return fs.readFileSync(fileName).toString().replace(/\s+/g, ' ');
@@ -119,40 +128,44 @@ function readCss(fileName: string) {
     }
 }
 
-function getCustomStyleSheets(): string[] {
+function getCustomStyleSheets(resource: vscode.Uri): string[] {
     const styles = vscode.workspace.getConfiguration('markdown')['styles'];
     if (styles && Array.isArray(styles) && styles.length > 0) {
-        return styles;
+        return styles.map(s => {
+            let uri = vscode.Uri.parse(fixHref(resource, s));
+            if (uri.scheme === 'file') {
+                return uri.fsPath;
+            }
+            return s;
+        });
     }
     return [];
 }
 
-function fixHref(activeFileName: string, href: string): string {
-    if (href) {
-        // Use href if it is already an URL
-        if (vscode.Uri.parse(href).scheme) {
-            return href;
-        }
-
-        // Use href as file URI if it is absolute
-        if (isAbsolute(href)) {
-            return vscode.Uri.file(href).toString();
-        }
-
-        // use a workspace relative path if there is a workspace
-        // let rootPath = workspace.rootPath;
-        // if (rootPath) {
-        //     return Uri.file(path.join(rootPath, href)).toString();
-        // }
-
-        // otherwise look relative to the markdown file
-        return vscode.Uri.file(path.join(path.dirname(activeFileName), href)).toString();
+function fixHref(resource: vscode.Uri, href: string): string {
+    if (!href) {
+        return href;
     }
-    return href;
-}
 
-function isAbsolute(p: string): boolean {
-    return path.normalize(p + '/') === path.normalize(path.resolve(p) + '/');
+    // Use href if it is already an URL
+    const hrefUri = vscode.Uri.parse(href);
+    if (['http', 'https'].indexOf(hrefUri.scheme) >= 0) {
+        return hrefUri.toString();
+    }
+
+    // Use href as file URI if it is absolute
+    if (path.isAbsolute(href) || hrefUri.scheme === 'file') {
+        return vscode.Uri.file(href).toString();
+    }
+
+    // Use a workspace relative path if there is a workspace
+    let root = vscode.workspace.getWorkspaceFolder(resource);
+    if (root) {
+        return vscode.Uri.file(path.join(root.uri.fsPath, href)).toString();
+    }
+
+    // Otherwise look relative to the markdown file
+    return vscode.Uri.file(path.join(path.dirname(resource.fsPath), href)).toString();
 }
 
 function getSettingsOverrideStyles(): string {

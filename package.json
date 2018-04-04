@@ -200,7 +200,8 @@
                 "markdown.extension.print.absoluteImgPath": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Convert image path to absolute path"
+                    "description": "Convert image path to absolute path",
+                    "scope": "resource"
                 }
             }
         },
