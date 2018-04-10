@@ -46,10 +46,6 @@
                 "title": "Markdown: Toggle code span"
             },
             {
-                "command": "markdown.extension.editing.toggleStrikethrough",
-                "title": "Markdown: Toggle strikethrough"
-            },
-            {
                 "command": "markdown.extension.copySlug",
                 "title": "Markdown: Copy Slugified Heading"
             }
@@ -65,6 +61,11 @@
                 "command": "markdown.extension.editing.toggleItalic",
                 "key": "ctrl+i",
                 "mac": "cmd+i",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "markdown.extension.editing.toggleStrikethrough",
+                "key": "alt+s",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {

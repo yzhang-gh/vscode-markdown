@@ -63,6 +63,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | ------------------------------------------------- | ---------------------------- |
 | <kbd>Ctrl</kbd> + <kbd>B</kbd>                    | Toggle bold                  |
 | <kbd>Ctrl</kbd> + <kbd>I</kbd>                    | Toggle italic                |
+| <kbd>Alt</kbd> + <kbd>S</kbd>                     | Toggle strikethrough         |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel)     |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel)   |
 | <kbd>Alt</kbd> + <kbd>C</kbd>                     | Check/Uncheck task list item |
@@ -72,7 +73,6 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - Markdown: Create Table of Contents
 - Markdown: Update Table of Contents
 - Markdown: Toggle code span
-- Markdown: Toggle strikethrough
 - Markdown: Print current document to HTML
 
 ## Supported Settings
