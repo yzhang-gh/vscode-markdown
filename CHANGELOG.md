@@ -4,7 +4,7 @@
 - **Fix**: Handle relative CSS paths in `markdown.styles` setting when printing ([#113](https://github.com/neilsustc/vscode-markdown/issues/113))
 - **Fix**: TOC now works better with ordered list ([#130](https://github.com/neilsustc/vscode-markdown/issues/130), [#131](https://github.com/neilsustc/vscode-markdown/issues/131))
 - **Fix**: Keybinding conflict between `togglePreview` and `paste` on Linux ([#134](https://github.com/neilsustc/vscode-markdown/issues/134))
-- **Fix**: Reveal cursor after editing list in case it is out of view ([#136](https://github.com/neilsustc/vscode-markdown/issues/136))
+- **Fix**: Reveal cursor after editing list in case it is out of view ([#138](https://github.com/neilsustc/vscode-markdown/issues/138))
 
 ### 1.1.1 (2018.03.24)
 
