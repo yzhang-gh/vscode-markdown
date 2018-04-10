@@ -123,7 +123,11 @@ function readCss(fileName: string) {
     try {
         return fs.readFileSync(fileName).toString().replace(/\s+/g, ' ');
     } catch (error) {
-        vscode.window.showWarningMessage(error.message.replace('ENOENT: no such file or directory, open', 'Custom style') + ' not found.');
+        let msg = error.message.replace('ENOENT: no such file or directory, open', 'Custom style') + ' not found.';
+        msg = msg.replace(/'([c-z]):/, function (match, g1) {
+            return `'${g1.toUpperCase()}:`;
+        });
+        vscode.window.showWarningMessage(msg);
         return '';
     }
 }
