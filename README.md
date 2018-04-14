@@ -1,3 +1,7 @@
+# Attention
+
+Can only use `npm install` to install dependences
+
 # Markdown Support for Visual Studio Code
 
 [![version](https://img.shields.io/vscode-marketplace/v/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)  
