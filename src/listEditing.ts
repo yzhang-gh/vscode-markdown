@@ -35,12 +35,7 @@ async function onEnterKey(modifiers?: string) {
     }
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
-        // Normal behavior
-        if (modifiers == 'ctrl') {
-            return commands.executeCommand('editor.action.insertLineAfter');
-        } else {
-            return commands.executeCommand('type', { source: 'keyboard', text: '\n' });
-        }
+        return asNormal('enter', { modifiers });
     }
 
     // If it's an empty list item, remove it
@@ -88,13 +83,9 @@ async function onEnterKey(modifiers?: string) {
             editor.selection = new Selection(newCursorPos, newCursorPos);
         }
     } else {
-        // Normal behavior
-        if (modifiers == 'ctrl') {
-            return commands.executeCommand('editor.action.insertLineAfter');
-        } else {
-            return commands.executeCommand('type', { source: 'keyboard', text: '\n' });
-        }
+        return asNormal('enter', { modifiers });
     }
+    editor.revealRange(editor.selection);
 }
 
 async function onTabKey() {
@@ -102,75 +93,59 @@ async function onTabKey() {
     let cursorPos = editor.selection.active;
     let textBeforeCursor = editor.document.lineAt(cursorPos.line).text.substr(0, cursorPos.character);
     const tabCompletion: boolean = vscode.workspace.getConfiguration('editor').get<boolean>('tabCompletion');
+    const triggerSuggest = tabCompletion && textBeforeCursor.match(/[^\s]$/) !== null;
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
-        // Normal behavior
-        if (tabCompletion && textBeforeCursor.match(/[^\s]$/) !== null) {
-            return commands.executeCommand('editor.action.triggerSuggest');
-        } else {
-            return commands.executeCommand('tab');
-        }
+        return asNormal('tab', { triggerSuggest });
     }
 
     if (/^\s*([-+*]|[0-9]+[.)]) +(|\[[ x]\] +)$/.test(textBeforeCursor)) {
         return commands.executeCommand('editor.action.indentLines');
     } else {
-        // Normal behavior
-        if (tabCompletion && textBeforeCursor.match(/[^\s]$/) !== null) {
-            return commands.executeCommand('editor.action.triggerSuggest');
-        } else {
-            return commands.executeCommand('tab');
-        }
+        return asNormal('tab', { triggerSuggest });
     }
 }
 
 async function onBackspaceKey() {
     let editor = window.activeTextEditor
-    let oldPosition = editor.selection.active; // Old cursor position
-    // FIXME: Handle Vietnamese //
-    // let isTypingVn = await handler.vnTest();
-    let newPosition = editor.selection.active; // Current cursor position
-    // if (isTypingVn == false && oldPosition.character == newPosition.character) { // Not typing Vietnamese
+    let cursor = editor.selection.active;
     let document = editor.document;
-    let textBeforeCursor = document.lineAt(newPosition.line).text.substr(0, newPosition.character);
+    let textBeforeCursor = document.lineAt(cursor.line).text.substr(0, cursor.character);
 
-    if (isInFencedCodeBlock(document, newPosition.line)) {
-        // Normal behavior 
-        return commands.executeCommand('deleteLeft');
+    if (isInFencedCodeBlock(document, cursor.line)) {
+        return asNormal('backspace', {});
     }
 
     if (/^\s+([-+*]|[0-9]+[.)]) (|\[[ x]\] )$/.test(textBeforeCursor)) {
         return commands.executeCommand('editor.action.outdentLines');
     } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- ', '1. '
-        return deleteRange(editor, new Range(newPosition.with({ character: 0 }), newPosition));
+        return deleteRange(editor, new Range(cursor.with({ character: 0 }), cursor));
     } else if (/^([-+*]|[0-9]+[.)]) (\[[ x]\] )$/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- [ ]', '1. [x]'
-        return deleteRange(editor, new Range(newPosition.with({ character: textBeforeCursor.length - 4 }), newPosition));
+        return deleteRange(editor, new Range(cursor.with({ character: textBeforeCursor.length - 4 }), cursor));
     } else {
-        // Normal behavior
-        return commands.executeCommand('deleteLeft');
+        return asNormal('backspace', {});
     }
-    // } else {
-    //     if (oldPosition.character == newPosition.character) {
-    //         // Normal behavior
-    //         return commands.executeCommand('deleteLeft');
-    //     } else {
-    //         let characterCount = newPosition.character - oldPosition.character;
-    //         if (characterCount < 0) {
-    //             return false;
-    //         }
-    //         return handler.handleUnikey(characterCount).then(result => {
-    //             if (result == true) {
-    //                 deleteRange(editor, new Range(newPosition.line, oldPosition.character - characterCount,
-    //                     newPosition.line, oldPosition.character));
-    //                 return true;
-    //             } else {
-    //                 return false;
-    //             }
-    //         });
-    //     }
-    // }
+}
+
+function asNormal(key: string, { modifiers = '', triggerSuggest = false }: { modifiers?: string, triggerSuggest?: boolean }) {
+    switch (key) {
+        case 'enter':
+            if (modifiers === 'ctrl') {
+                return commands.executeCommand('editor.action.insertLineAfter');
+            } else {
+                return commands.executeCommand('type', { source: 'keyboard', text: '\n' });
+            }
+        case 'tab':
+            if (triggerSuggest) {
+                return commands.executeCommand('editor.action.triggerSuggest');
+            } else {
+                return commands.executeCommand('tab');
+            }
+        case 'backspace':
+            return commands.executeCommand('deleteLeft');
+    }
 }
 
 async function deleteRange(editor: vscode.TextEditor, range: Range): Promise<boolean> {

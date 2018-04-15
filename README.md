@@ -10,27 +10,28 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 ## Features
 
 - **Keyboard shortcuts** (toggle bold, italic, code span, strikethrough and heading)
-  - Tip: in normal mode, `**word|**` -> `**word**|` (<kbd>ctrl</kbd> + <kbd>b</kbd>)
+  - Tip: in normal mode, `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
   - *Quick styling mode*: toggle bold/italic without selecting words
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
+  - To make TOC compatible with GitHub, you might need to set options `encodeUri` and `toLowerCase` to `false`
 - **Outline view** in explorer panel
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
 - **Print Markdown to HTML**
   - It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others
-- **List editing** (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
+- **List editing** (continue list when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
   - Pressing <kbd>Tab</kbd> at the beginning of a list item will indent it
   - Pressing <kbd>Backspace</kbd> at the beginning of a list item will unindent it (or delete the list marker)
-  - Blank list item won't be continued
+  - Blank list item will be remove on <kbd>Enter</kbd>
 - **GitHub Flavored Markdown**
-  - Table formatter
-  - Task lists
+  - Table formatter (<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd>)
+  - Task list (use <kbd>Alt</kbd> + <kbd>C</kbd> to check/uncheck a list item)
 - **Word completion** (moved to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion))
 - **Others**
-  - Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding.
+  - Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
 
 ### Keyboard Shortcuts
 
-![shortcuts1](images/gifs/bold-normal.gif)
+<!-- ![shortcuts1](images/gifs/bold-normal.gif) -->
 
 ![shortcuts2](images/gifs/bold-quick.gif)
 
@@ -60,18 +61,18 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 | Key                                               | Command                      |
 | ------------------------------------------------- | ---------------------------- |
-| <kbd>ctrl</kbd> + <kbd>b</kbd>                    | Toggle bold                  |
-| <kbd>ctrl</kbd> + <kbd>i</kbd>                    | Toggle italic                |
-| <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel)     |
-| <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel)   |
-| <kbd>alt</kbd> + <kbd>c</kbd>                     | Check/Uncheck task list item |
+| <kbd>Ctrl</kbd> + <kbd>B</kbd>                    | Toggle bold                  |
+| <kbd>Ctrl</kbd> + <kbd>I</kbd>                    | Toggle italic                |
+| <kbd>Alt</kbd> + <kbd>S</kbd>                     | Toggle strikethrough         |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel)     |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel)   |
+| <kbd>Alt</kbd> + <kbd>C</kbd>                     | Check/Uncheck task list item |
 
 ## Available Commands
 
 - Markdown: Create Table of Contents
 - Markdown: Update Table of Contents
 - Markdown: Toggle code span
-- Markdown: Toggle strikethrough
 - Markdown: Print current document to HTML
 
 ## Supported Settings
@@ -82,8 +83,9 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.toc.unorderedList.marker`      | `-`       | Use `-`, `*` or `+` in the table of contents (for unordered list)                  |
 | `markdown.extension.toc.orderedList`               | `false`   | Use ordered list in the table of contents.                                         |
 | `markdown.extension.toc.plaintext`                 | `false`   | Just plain text.                                                                   |
-| `markdown.extension.toc.updateOnSave`              | `false`   | Automatically update the table of contents on save.                                |
+| `markdown.extension.toc.updateOnSave`              | `true`    | Automatically update the table of contents on save.                                |
 | `markdown.extension.toc.encodeUri`                 | `true`    | You might want to set this to `false` if you have some non-Latin characters in TOC |
+| `markdown.extension.toc.toLowerCase`               | `true`    | Prevent non-Latin symbols from lowercasing                                         |
 | `markdown.extension.preview.autoShowPreviewToSide` | `false`   | Automatically show preview when opening a Markdown file.                           |
 | `markdown.extension.orderedList.marker`            | `ordered` | Or `one`: always use `1.` as ordered list marker                                   |
 | `markdown.extension.italic.indicator`              | `*`       | Use `*` or `_` to wrap italic text                                                 |
@@ -92,14 +94,6 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.print.absoluteImgPath`         | `true`    | Convert image path to absolute path                                                |
 
 ## Changelog
-
-### 1.1.1 (2018.03.24)
-
-- **New**: Override default "Open Preview" keybinding with "Toggle Preview". Now you can close preview use the same keybinding. ([#86](https://github.com/neilsustc/vscode-markdown/issues/86))
-- **Fix**: No outline if first-level headiing is missing ([#120](https://github.com/neilsustc/vscode-markdown/issues/120))
-- **Fix**: List does not continue if a list item starts with URL ([#122](https://github.com/neilsustc/vscode-markdown/issues/122))
-- **Fix**: `print.absoluteImgPath` option doesn't take effect on some image tags ([#124](https://github.com/neilsustc/vscode-markdown/issues/124))
-- **Fix**: A bug when formatting table ([#128](https://github.com/neilsustc/vscode-markdown/issues/128))
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 

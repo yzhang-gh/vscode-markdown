@@ -28,10 +28,13 @@ export function log(msg: string, obj?) {
 
 export function slugify(heading: string) {
     let slug = heading.trim()
-        .toLowerCase()
         .replace(/[\]\[\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\_\{\|\}\~\`]/g, '')
         .replace(/\s+/g, '-')
         .replace(/^\-+/, '')
         .replace(/\-+$/, '');
+    if (workspace.getConfiguration('markdown.extension.toc').get<boolean>('toLowerCase')) {
+        slug = slug.toLowerCase();
+    }
+    
     return workspace.getConfiguration('markdown.extension.toc').get<boolean>('encodeUri') ? encodeURI(slug) : slug;
 }

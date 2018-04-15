@@ -3,7 +3,7 @@
     "displayName": "Markdown All in One",
     "description": "All you need to write Markdown (keyboard shortcuts, table of contents, auto preview and more)",
     "icon": "images/Markdown-mark.png",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.20.0"
@@ -46,8 +46,8 @@
                 "title": "Markdown: Toggle code span"
             },
             {
-                "command": "markdown.extension.editing.toggleStrikethrough",
-                "title": "Markdown: Toggle strikethrough"
+                "command": "markdown.extension.copySlug",
+                "title": "Markdown: Copy Slugified Heading"
             }
         ],
         "keybindings": [
@@ -61,6 +61,11 @@
                 "command": "markdown.extension.editing.toggleItalic",
                 "key": "ctrl+i",
                 "mac": "cmd+i",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "markdown.extension.editing.toggleStrikethrough",
+                "key": "alt+s",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
@@ -103,7 +108,8 @@
             },
             {
                 "command": "markdown.extension.togglePreview",
-                "key": "ctrl+shift+v"
+                "key": "ctrl+shift+v",
+                "when": "!terminalFocus"
             },
             {
                 "command": "markdown.extension.togglePreviewToSide",
@@ -149,6 +155,11 @@
                     "default": true,
                     "description": "In VS Code preview, the anchors of headings are encoded. But if you want the generated TOC to work on GitHub etc., you might need to set this to `false`"
                 },
+                "markdown.extension.toc.toLowerCase": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Prevent non-Latin symbols from lowercasing"
+                },
                 "markdown.extension.preview.autoShowPreviewToSide": {
                     "type": "boolean",
                     "default": false,
@@ -190,9 +201,26 @@
                 "markdown.extension.print.absoluteImgPath": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Convert image path to absolute path"
+                    "description": "Convert image path to absolute path",
+                    "scope": "resource"
                 }
             }
+        },
+        "menus": {
+            "editor/context": [
+                {
+                    "when": "mdContext",
+                    "command": "markdown.extension.copySlug",
+                    "group": "9_cutcopypaste@4"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "when": "mdContext",
+                    "command": "markdown.extension.copySlug",
+                    "group": "5_cutcopypaste"
+                }
+            ]
         },
         "views": {
             "explorer": [

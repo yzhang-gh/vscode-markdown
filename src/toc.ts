@@ -8,7 +8,6 @@ const officialExt = vscode.extensions.getExtension("vscode.markdown-language-fea
 
 const tocModule = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider'));
 const TocProvider = tocModule.TableOfContentsProvider;
-const Slug = tocModule.Slug;
 
 const MdEngine = require(path.join(officialExt.extensionPath, 'out', 'markdownEngine')).MarkdownEngine;
 
@@ -39,7 +38,20 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.workspace.onWillSaveTextDocument(onWillSave));
     context.subscriptions.push(vscode.languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider()));
 
-    vscode.window.registerTreeDataProvider('mdOutline', new MdOutlineProvider());
+    const mdOutlineProvider = new MdOutlineProvider();
+    vscode.window.registerTreeDataProvider('mdOutline', mdOutlineProvider);
+
+    // Context menu for copying slugified heading
+    vscode.commands.registerCommand('markdown.extension.copySlug', async args => {
+        if (typeof args === "number") {
+            // Source: outline view
+            // TODO: copy to clipboard
+            console.log(slugify((await mdOutlineProvider.getTreeItem(args)).label));
+        } else {
+            // Source: editor
+            // TODO:
+        }
+    });
 }
 
 async function createToc() {
@@ -99,6 +111,7 @@ function deleteToc() {
 
 async function generateTocText(document: vscode.TextDocument): Promise<string> {
     loadTocConfig();
+    const orderedListMarkerIsOne: boolean = vscode.workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
 
     const tocProvider = new TocProvider(engine, document);
 
@@ -109,18 +122,18 @@ async function generateTocText(document: vscode.TextDocument): Promise<string> {
 
     tocEntry.forEach(entry => {
         if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
-            let indentation = entry.level - startDepth;
+            let relativeLvl = entry.level - startDepth;
             // [text](link) -> text. In case there are links in heading (#83)
             let entryText = entry.text.replace(/\[([^\]]+?)\]\([^\)]+?\)/g, function (match, g1) {
                 return g1;
             });
             let row = [
-                docConfig.tab.repeat(indentation),
-                (tocConfig.orderedList ? ++order[indentation] + '.' : tocConfig.listMarker) + ' ',
+                docConfig.tab.repeat(relativeLvl),
+                (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLvl]) + '.' : tocConfig.listMarker) + ' ',
                 tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(entryText)})`
             ];
             toc.push(row.join(''));
-            if (tocConfig.orderedList) order.fill(0, indentation + 1);
+            if (tocConfig.orderedList) order.fill(0, relativeLvl + 1);
         }
     });
     return toc.join(docConfig.eol);
@@ -169,7 +182,7 @@ async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> {
                 }
             } else { // Find TOC end position
                 lineText = lineText.trim();
-                if (lineText.match(/^[\-\*\+\d]\.? /) === null) { // End of a list block
+                if (lineText.match(/^([-+*]|[0-9]+[.)]) /) === null) { // End of a list block
                     end = new vscode.Position(index - 1, doc.lineAt(index - 1).text.length);
                     break;
                 } else if (index == doc.lineCount - 1) { // End of file
