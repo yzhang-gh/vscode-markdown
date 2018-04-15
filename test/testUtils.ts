@@ -5,11 +5,14 @@ import { commands, window, workspace, Position, Range, Selection } from 'vscode'
 export let testMdFile = path.join(__dirname, '..', '..', 'test', 'test.md');
 export let defaultConfigs = {
     "markdown.extension.toc.levels": "1..6",
+    "markdown.extension.toc.unorderedList.marker": "-",
     "markdown.extension.toc.orderedList": false,
     "markdown.extension.toc.plaintext": false,
     "markdown.extension.toc.updateOnSave": true,
+    "markdown.extension.toc.encodeUri": true,
+    "markdown.extension.toc.toLowerCase": true,
     "markdown.extension.preview.autoShowPreviewToSide": false,
-    "markdown.extension.orderedList.marker": "one",
+    "markdown.extension.orderedList.marker": "ordered",
     "markdown.extension.italic.indicator": "*",
     "markdown.extension.quickStyling": false,
     "editor.insertSpaces": true,
