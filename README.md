@@ -25,7 +25,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - **GitHub Flavored Markdown**
   - Table formatter (<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd>)
   - Task list (use <kbd>Alt</kbd> + <kbd>C</kbd> to check/uncheck a list item)
-- **Math rendering**
+- **Math rendering** (see screenshot below)
 - **Word completion** (moved to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion))
 - **Others**
   - Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
