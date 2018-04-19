@@ -10,6 +10,7 @@ import { officialExtPath, slugify } from './util';
 const hljs = require(path.join(officialExtPath, 'node_modules', 'highlight.js'));
 const mdnh = require(path.join(officialExtPath, 'node_modules', 'markdown-it-named-headers'));
 const mdtl = require('markdown-it-task-lists');
+const mdkt = require('@iktakahiro/markdown-it-katex');
 const md = require(path.join(officialExtPath, 'node_modules', 'markdown-it'))({
     html: true,
     highlight: (str: string, lang: string) => {
@@ -23,7 +24,7 @@ const md = require(path.join(officialExtPath, 'node_modules', 'markdown-it'))({
     }
 }).use(mdnh, {
     slugify: (header: string) => slugify(header)
-}).use(mdtl);
+}).use(mdtl).use(mdkt);
 
 let thisContext: vscode.ExtensionContext;
 
@@ -73,6 +74,7 @@ function print(type: string) {
     <html>
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
         ${styleSheets.map(css => wrapWithStyleTag(css)).join('\n')}
         ${getSettingsOverrideStyles()}
     </head>
