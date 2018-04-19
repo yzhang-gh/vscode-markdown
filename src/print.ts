@@ -11,7 +11,6 @@ const officialExt = vscode.extensions.getExtension("vscode.markdown-language-fea
 
 const tocModule = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider'));
 const TocProvider = tocModule.TableOfContentsProvider;
-const Slug = tocModule.Slug;
 
 const hljs = require(path.join(officialExt.extensionPath, 'node_modules', 'highlight.js'));
 const mdnh = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it-named-headers'));
@@ -28,7 +27,7 @@ const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdow
         return str;
     }
 }).use(mdnh, {
-    slugify: (header: string) => Slug.fromHeading(header).value
+    slugify: (header: string) => slugify(header)
 }).use(mdtl);
 
 let thisContext: vscode.ExtensionContext;
