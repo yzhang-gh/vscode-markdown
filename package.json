@@ -158,7 +158,7 @@
                 "markdown.extension.toc.toLowerCase": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Prevent non-Latin symbols from lowercasing"
+                    "description": "Set this to `false` to prevent non-Latin symbols from lowercasing"
                 },
                 "markdown.extension.preview.autoShowPreviewToSide": {
                     "type": "boolean",

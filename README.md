@@ -85,7 +85,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.toc.plaintext`                 | `false`   | Just plain text.                                                                   |
 | `markdown.extension.toc.updateOnSave`              | `true`    | Automatically update the table of contents on save.                                |
 | `markdown.extension.toc.encodeUri`                 | `true`    | You might want to set this to `false` if you have some non-Latin characters in TOC |
-| `markdown.extension.toc.toLowerCase`               | `true`    | Prevent non-Latin symbols from lowercasing                                         |
+| `markdown.extension.toc.toLowerCase`               | `true`    | Set this to `false` to prevent non-Latin symbols from lowercasing                  |
 | `markdown.extension.preview.autoShowPreviewToSide` | `false`   | Automatically show preview when opening a Markdown file.                           |
 | `markdown.extension.orderedList.marker`            | `ordered` | Or `one`: always use `1.` as ordered list marker                                   |
 | `markdown.extension.italic.indicator`              | `*`       | Use `*` or `_` to wrap italic text                                                 |
