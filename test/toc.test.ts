@@ -276,8 +276,7 @@ suite("TOC.", () => {
                 "markdown.extension.toc.levels": "1..6",
                 "markdown.extension.toc.orderedList": false,
                 "markdown.extension.toc.plaintext": false,
-                "markdown.extension.toc.encodeUri": false,
-                "markdown.extension.toc.toLowerCase": false
+                "markdown.extension.toc.githubCompatibility": true
             },
             [
                 'Секция 1',
