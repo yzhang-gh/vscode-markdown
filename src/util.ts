@@ -1,40 +1,25 @@
 'use strict'
 
-import { Position, Range, TextDocument, workspace } from 'vscode';
+import * as path from 'path';
+import { extensions, workspace } from 'vscode';
 
-export function log(msg: string, obj?) {
-    if (obj) {
-        let toStr;
-        if (obj instanceof Range) {
-            toStr = `Range (${obj.start.line + 1}, ${obj.start.character + 1}), (${obj.end.line + 1}, ${obj.end.character + 1})`;
-        } else if (obj instanceof Position) {
-            toStr = `Position (${obj.line + 1}, ${obj.character + 1})`;
-        } else if (obj.fileName !== undefined && obj.languageId !== undefined) { // TextDocument
-            toStr = `TextDocument {fileName: ${obj.fileName}, languageId: ${obj.languageId}}`;
-        } else if (obj.document !== undefined) { // TextEditor
-            toStr = `TextEditor {doc: {fileName: ${obj.document.fileName}, languageId: ${obj.document.languageId}}}`;
-        } else {
-            for (var key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    toStr += `${key}: ${obj[key]} `;
-                }
-            }
-        }
-        console.log(`${msg}: ${toStr}`);
-    } else {
-        console.log(msg);
-    }
-}
+export const officialExtPath = extensions.getExtension("vscode.markdown-language-features").extensionPath;
+const tocModule = require(path.join(officialExtPath, 'out', 'tableOfContentsProvider'));
+export const TocProvider = tocModule.TableOfContentsProvider;
 
 export function slugify(heading: string) {
-    let slug = heading.trim()
-        .replace(/[\]\[\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\_\{\|\}\~\`]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/^\-+/, '')
-        .replace(/\-+$/, '');
-    if (workspace.getConfiguration('markdown.extension.toc').get<boolean>('toLowerCase')) {
-        slug = slug.toLowerCase();
+    if (workspace.getConfiguration('markdown.extension.toc').get<boolean>('githubCompatibility')) {
+        // GitHub slugify function <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
+        let slug = heading.trim()
+            .replace(/[A-Z]/g, match => match.toLowerCase()) // only downcase ASCII region
+            .replace(/[\]\[\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\_\{\|\}\~\`]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/^\-+/, '')
+            .replace(/\-+$/, '');
+        return slug;
+    } else {
+        // VSCode slugify function
+        // <https://github.com/Microsoft/vscode/blob/b6417424521559acb9a5088111fb0ed70de7ccf2/extensions/markdown-language-features/src/tableOfContentsProvider.ts#L13>
+        return tocModule.Slug.fromHeading(heading).value;
     }
-    
-    return workspace.getConfiguration('markdown.extension.toc').get<boolean>('encodeUri') ? encodeURI(slug) : slug;
 }

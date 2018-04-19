@@ -150,15 +150,10 @@
                     "default": true,
                     "description": "Auto update on save"
                 },
-                "markdown.extension.toc.encodeUri": {
+                "markdown.extension.toc.githubCompatibility": {
                     "type": "boolean",
-                    "default": true,
-                    "description": "In VS Code preview, the anchors of headings are encoded. But if you want the generated TOC to work on GitHub etc., you might need to set this to `false`"
-                },
-                "markdown.extension.toc.toLowerCase": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Set this to `false` to prevent non-Latin symbols from lowercasing"
+                    "default": false,
+                    "description": "GitHub Compatibility"
                 },
                 "markdown.extension.preview.autoShowPreviewToSide": {
                     "type": "boolean",

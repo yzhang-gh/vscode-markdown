@@ -2,20 +2,15 @@
 
 // See https://github.com/Microsoft/vscode/tree/master/extensions/markdown/src
 
-import * as vscode from 'vscode';
-import * as path from 'path';
 import * as fs from "fs";
-import { slugify } from './util';
+import * as path from 'path';
+import * as vscode from 'vscode';
+import { officialExtPath, slugify } from './util';
 
-const officialExt = vscode.extensions.getExtension("vscode.markdown-language-features");
-
-const tocModule = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider'));
-const TocProvider = tocModule.TableOfContentsProvider;
-
-const hljs = require(path.join(officialExt.extensionPath, 'node_modules', 'highlight.js'));
-const mdnh = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it-named-headers'));
+const hljs = require(path.join(officialExtPath, 'node_modules', 'highlight.js'));
+const mdnh = require(path.join(officialExtPath, 'node_modules', 'markdown-it-named-headers'));
 const mdtl = require('markdown-it-task-lists');
-const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it'))({
+const md = require(path.join(officialExtPath, 'node_modules', 'markdown-it'))({
     html: true,
     highlight: (str: string, lang: string) => {
         if (lang && hljs.getLanguage(lang)) {
