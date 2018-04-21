@@ -198,6 +198,11 @@
                     "default": true,
                     "description": "Convert image path to absolute path",
                     "scope": "resource"
+                },
+                "markdown.extension.outline.expanded": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Sets whether outline expands by default"
                 }
             }
         },

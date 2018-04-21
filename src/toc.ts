@@ -342,7 +342,12 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
         if (idx === this.toc.length - 1) {
             treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
         } else if (this.toc[idx + 1].level > this.toc[idx].level) {
-            treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+            if (vscode.workspace.getConfiguration('markdown.extension.outline').get<boolean>('expanded')) {
+                treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
+            } else {
+                treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+            }
+            
         }
         treeItem.command = {
             command: 'revealLine',
