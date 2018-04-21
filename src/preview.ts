@@ -4,7 +4,6 @@
  * Modified from https://github.com/hnw/vscode-auto-open-markdown-preview
  */
 import { commands, window, workspace, ExtensionContext, TextDocument, TextEditor } from 'vscode';
-import { log } from './util';
 
 let currentDoc: TextDocument;
 

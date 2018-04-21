@@ -1,3 +1,10 @@
+### 1.2.0 (2018.04.20)
+
+- **New**: Math rendering! (supported in both vscode preview and exported HTML) ([#106](https://github.com/neilsustc/vscode-markdown/issues/106))
+- **New**: Option `toc.githubCompatibility` (in place of removed `toc.encodeUri` and `toc.toLowerCase`)
+- **Fix**: Replace underscore with dash when slugifying ([#147](https://github.com/neilsustc/vscode-markdown/issues/147))
+- **Other**: Add default keybinding <kbd>Alt</kbd> + <kbd>S</kbd> to command `toggleStrikethrough` ([#91](https://github.com/neilsustc/vscode-markdown/issues/91))
+
 ### 1.1.2 (2018.04.04)
 
 - **New**: Option `toc.toLowerCase` determining whether or not lowercasing TOC anchors ([#136](https://github.com/neilsustc/vscode-markdown/issues/136), [#137](https://github.com/neilsustc/vscode-markdown/issues/137). Thanks [@Владислав Люминарский](https://github.com/Vladislav-Lyuminarskiy))
@@ -45,7 +52,7 @@
 
 - **New**: Update outline view on save ([#68](https://github.com/neilsustc/vscode-markdown/issues/68))
 - **New**: Option `markdown.extension.toc.unorderedList.marker` ([#74](https://github.com/neilsustc/vscode-markdown/issues/74))
-- **Change**: Use <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> (or <kbd>]</kbd>) to change heading level in Mac ([#71](https://github.com/neilsustc/vscode-markdown/issues/71))
+- **Change**: Use <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>[</kbd> (or <kbd>]</kbd>) to change heading level in Mac ([#71](https://github.com/neilsustc/vscode-markdown/issues/71))
 - **Fix**: Some fixes you might not notice
 
 ### 0.11.2 (2017.11.23)
@@ -62,7 +69,7 @@
 ### 0.11.0 (2017.10.18)
 
 - **New**: Support GFM task lists (checkbox)
-  - Press <kbd>alt</kbd> + <kbd>c</kbd> to check/uncheck a task list item
+  - Press <kbd>Alt</kbd> + <kbd>C</kbd> to check/uncheck a task list item
 - **New**: Add new setting `markdown.extension.showExplorer` to control whether to show outline view in the explorer panel (Thank you, [Ali Karbassi (@karbassi)](https://github.com/karbassi), [PR#44](https://github.com/neilsustc/vscode-markdown/pull/44))
 - **Preview**: Print to HTML<del>/PDF</del> (work in progress)
 
@@ -138,7 +145,7 @@
 ### 0.7.0 (2017.06.10)
 
 - **New**: GFM table formatter
-- **New**: Add shortcuts for code spans (<kbd>ctrl</kbd> + <kbd>`</kbd>)
+- **New**: Add shortcuts for code spans (<kbd>Ctrl</kbd> + <kbd>`</kbd>)
 - **New**: Remove empty list item when pressing <kbd>Enter</kbd>
 
 ### 0.6.2 (2017.06.07)

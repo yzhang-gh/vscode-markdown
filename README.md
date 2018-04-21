@@ -29,6 +29,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - **GitHub Flavored Markdown**
   - Table formatter (<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd>)
   - Task list (use <kbd>Alt</kbd> + <kbd>C</kbd> to check/uncheck a list item)
+- **Math rendering** (see screenshot below)
 - **Word completion** (moved to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion))
 - **Others**
   - Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
@@ -61,6 +62,10 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ![task lists](images/gifs/tasklists.gif)
 
+### Math Rendering
+
+![math rendering](images/math.png)
+
 ## Shortcuts
 
 | Key                                               | Command                      |
@@ -81,21 +86,20 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Supported Settings
 
-| Name                                               | Default   | Description                                                                        |
-| -------------------------------------------------- | --------- | ---------------------------------------------------------------------------------- |
-| `markdown.extension.toc.levels`                    | `1..6`    | Control the heading levels to show in the table of contents.                       |
-| `markdown.extension.toc.unorderedList.marker`      | `-`       | Use `-`, `*` or `+` in the table of contents (for unordered list)                  |
-| `markdown.extension.toc.orderedList`               | `false`   | Use ordered list in the table of contents.                                         |
-| `markdown.extension.toc.plaintext`                 | `false`   | Just plain text.                                                                   |
-| `markdown.extension.toc.updateOnSave`              | `true`    | Automatically update the table of contents on save.                                |
-| `markdown.extension.toc.encodeUri`                 | `true`    | You might want to set this to `false` if you have some non-Latin characters in TOC |
-| `markdown.extension.toc.toLowerCase`               | `true`    | Prevent non-Latin symbols from lowercasing                                         |
-| `markdown.extension.preview.autoShowPreviewToSide` | `false`   | Automatically show preview when opening a Markdown file.                           |
-| `markdown.extension.orderedList.marker`            | `ordered` | Or `one`: always use `1.` as ordered list marker                                   |
-| `markdown.extension.italic.indicator`              | `*`       | Use `*` or `_` to wrap italic text                                                 |
-| `markdown.extension.quickStyling`                  | `false`   | Toggle bold/italic without selecting words                                         |
-| `markdown.extension.showExplorer`                  | `true`    | Show outline view in explorer panel                                                |
-| `markdown.extension.print.absoluteImgPath`         | `true`    | Convert image path to absolute path                                                |
+| Name                                               | Default   | Description                                                       |
+| -------------------------------------------------- | --------- | ----------------------------------------------------------------- |
+| `markdown.extension.toc.levels`                    | `1..6`    | Control the heading levels to show in the table of contents.      |
+| `markdown.extension.toc.unorderedList.marker`      | `-`       | Use `-`, `*` or `+` in the table of contents (for unordered list) |
+| `markdown.extension.toc.orderedList`               | `false`   | Use ordered list in the table of contents.                        |
+| `markdown.extension.toc.plaintext`                 | `false`   | Just plain text.                                                  |
+| `markdown.extension.toc.updateOnSave`              | `true`    | Automatically update the table of contents on save.               |
+| `markdown.extension.toc.githubCompatibility`       | `false`   | GitHub compatibility                                              |
+| `markdown.extension.preview.autoShowPreviewToSide` | `false`   | Automatically show preview when opening a Markdown file.          |
+| `markdown.extension.orderedList.marker`            | `ordered` | Or `one`: always use `1.` as ordered list marker                  |
+| `markdown.extension.italic.indicator`              | `*`       | Use `*` or `_` to wrap italic text                                |
+| `markdown.extension.quickStyling`                  | `false`   | Toggle bold/italic without selecting words                        |
+| `markdown.extension.showExplorer`                  | `true`    | Show outline view in explorer panel                               |
+| `markdown.extension.print.absoluteImgPath`         | `true`    | Convert image path to absolute path                               |
 
 ## Changelog
 

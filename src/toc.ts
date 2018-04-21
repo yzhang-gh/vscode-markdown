@@ -1,15 +1,10 @@
 'use strict';
 
-import * as vscode from 'vscode';
-import { log, slugify } from './util';
 import * as path from 'path';
+import * as vscode from 'vscode';
+import { officialExtPath, slugify, TocProvider } from './util';
 
-const officialExt = vscode.extensions.getExtension("vscode.markdown-language-features");
-
-const tocModule = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider'));
-const TocProvider = tocModule.TableOfContentsProvider;
-
-const MdEngine = require(path.join(officialExt.extensionPath, 'out', 'markdownEngine')).MarkdownEngine;
+const MdEngine = require(path.join(officialExtPath, 'out', 'markdownEngine')).MarkdownEngine;
 
 const engine = new MdEngine();
 

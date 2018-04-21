@@ -3,7 +3,7 @@
     "displayName": "Markdown All in One",
     "description": "All you need to write Markdown (keyboard shortcuts, table of contents, auto preview and more)",
     "icon": "images/Markdown-mark.png",
-    "version": "1.1.3",
+    "version": "1.2.0",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.20.0"
@@ -150,15 +150,10 @@
                     "default": true,
                     "description": "Auto update on save"
                 },
-                "markdown.extension.toc.encodeUri": {
+                "markdown.extension.toc.githubCompatibility": {
                     "type": "boolean",
-                    "default": true,
-                    "description": "In VS Code preview, the anchors of headings are encoded. But if you want the generated TOC to work on GitHub etc., you might need to set this to `false`"
-                },
-                "markdown.extension.toc.toLowerCase": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Prevent non-Latin symbols from lowercasing"
+                    "default": false,
+                    "description": "GitHub Compatibility"
                 },
                 "markdown.extension.preview.autoShowPreviewToSide": {
                     "type": "boolean",
@@ -233,7 +228,8 @@
         },
         "markdown.markdownItPlugins": true,
         "markdown.previewStyles": [
-            "./media/checkbox.css"
+            "./media/checkbox.css",
+            "./media/katex-0.9.0.min.css"
         ]
     },
     "scripts": {
@@ -246,7 +242,8 @@
         "vscode.markdown-language-features"
     ],
     "dependencies": {
-        "markdown-it-task-lists": "^2.0.1"
+        "markdown-it-task-lists": "^2.0.1",
+        "@iktakahiro/markdown-it-katex": "^3.0.3"
     },
     "devDependencies": {
         "typescript": "^2.0.3",

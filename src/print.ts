@@ -2,21 +2,16 @@
 
 // See https://github.com/Microsoft/vscode/tree/master/extensions/markdown/src
 
-import * as vscode from 'vscode';
-import * as path from 'path';
 import * as fs from "fs";
-import { slugify } from './util';
+import * as path from 'path';
+import * as vscode from 'vscode';
+import { officialExtPath, slugify } from './util';
 
-const officialExt = vscode.extensions.getExtension("vscode.markdown-language-features");
-
-const tocModule = require(path.join(officialExt.extensionPath, 'out', 'tableOfContentsProvider'));
-const TocProvider = tocModule.TableOfContentsProvider;
-const Slug = tocModule.Slug;
-
-const hljs = require(path.join(officialExt.extensionPath, 'node_modules', 'highlight.js'));
-const mdnh = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it-named-headers'));
+const hljs = require(path.join(officialExtPath, 'node_modules', 'highlight.js'));
+const mdnh = require(path.join(officialExtPath, 'node_modules', 'markdown-it-named-headers'));
 const mdtl = require('markdown-it-task-lists');
-const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdown-it'))({
+const mdkt = require('@iktakahiro/markdown-it-katex');
+const md = require(path.join(officialExtPath, 'node_modules', 'markdown-it'))({
     html: true,
     highlight: (str: string, lang: string) => {
         if (lang && hljs.getLanguage(lang)) {
@@ -28,8 +23,8 @@ const md = require(path.join(officialExt.extensionPath, 'node_modules', 'markdow
         return str;
     }
 }).use(mdnh, {
-    slugify: (header: string) => Slug.fromHeading(header).value
-}).use(mdtl);
+    slugify: (header: string) => slugify(header)
+}).use(mdtl).use(mdkt);
 
 let thisContext: vscode.ExtensionContext;
 
@@ -79,6 +74,7 @@ function print(type: string) {
     <html>
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
         ${styleSheets.map(css => wrapWithStyleTag(css)).join('\n')}
         ${getSettingsOverrideStyles()}
     </head>
