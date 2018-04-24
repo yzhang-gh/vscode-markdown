@@ -49,11 +49,11 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     vscode.commands.registerCommand('markdown.outline.fold', (args) => {
-        // TODO: fold fun
+        // TODO: toggle Collapsed or Expanded ?
     });
 
     vscode.commands.registerCommand('markdown.outline.refresh', (args) => {
-        updateToc();
+        mdOutlineProvider.update();
     });
 
 
@@ -271,6 +271,7 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
 
     private toc;
     private editor: vscode.TextEditor;
+    private maxExpandedLvl = 6;
 
     /**
      * @param realIndex starts from 1
@@ -345,20 +346,33 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
         } else {
             this.toc = null;
         }
+
+        // Better to have <= 10 expanded items in the outline view
+        let maxInitItems = 10;
+        this.maxExpandedLvl = 6;
+        for (let i = 1; i <= 6; i++) {
+            maxInitItems -= this.toc.filter(h => h.level === i).length;
+            if (maxInitItems < 0) {
+                this.maxExpandedLvl = i - 1;
+                break;
+            }
+        }
     }
 
+    /**
+     * @param idx Array index, starts from 0
+     */
     private getTreeItemByIdx(idx: number): vscode.TreeItem {
         let treeItem = new vscode.TreeItem(this.toc[idx].text);
-        if (idx === this.toc.length - 1) {
+        if (idx === this.toc.length - 1) { // The last item
             treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
-        } else if (this.toc[idx + 1].level > this.toc[idx].level) {
-            if (vscode.workspace.getConfiguration('markdown.extension.outline').get<boolean>('expanded')) {
+        } else if (this.toc[idx].level < this.toc[idx + 1].level) {
+            if (this.toc[idx].level < this.maxExpandedLvl) {
                 treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
             } else {
                 treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
             }
-            
-        }
+        } // else -> vscode.TreeItemCollapsibleState.None
         treeItem.command = {
             command: 'revealLine',
             title: '',
