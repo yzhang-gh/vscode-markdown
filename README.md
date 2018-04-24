@@ -96,7 +96,6 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.quickStyling`                  | `false`   | Toggle bold/italic without selecting words                        |
 | `markdown.extension.showExplorer`                  | `true`    | Show outline view in explorer panel                               |
 | `markdown.extension.print.absoluteImgPath`         | `true`    | Convert image path to absolute path                               |
-| `markdown.extension.outline.expanded`              | `true`    | Sets whether outline expands by default                           |
 
 ## Changelog
 
