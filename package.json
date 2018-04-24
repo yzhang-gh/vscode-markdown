@@ -57,16 +57,16 @@
                 "command": "markdown.outline.fold",
                 "title": "Fold",
                 "icon": {
-					"light": "media/icons/folder.svg",
-					"dark": "media/icons/folder.svg"
+					"light": "media/icons/light/folder.svg",
+					"dark": "media/icons/dark/folder.svg"
 				}
             },
             {
                 "command": "markdown.outline.refresh",
                 "title": "Refresh",
                 "icon": {
-					"light": "media/icons/refresh.svg",
-					"dark": "media/icons/refresh.svg"
+					"light": "media/icons/light/refresh.svg",
+					"dark": "media/icons/dark/refresh.svg"
 				}
             }
         ],
