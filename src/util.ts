@@ -12,7 +12,7 @@ export function slugify(heading: string) {
         // GitHub slugify function <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
         let slug = heading.trim()
             .replace(/[A-Z]/g, match => match.toLowerCase()) // only downcase ASCII region
-            .replace(/[\]\[\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\_\{\|\}\~\`]/g, '')
+            .replace(/[\]\[\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\{\|\}\~\`]/g, '') // `_` should be converted to `-` instead of being removed
             .replace(/\s+/g, '-')
             .replace(/^\-+/, '')
             .replace(/\-+$/, '');
