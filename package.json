@@ -48,6 +48,22 @@
             {
                 "command": "markdown.extension.copySlug",
                 "title": "Markdown: Copy Slugified Heading"
+            },
+            {
+                "command": "markdown.outline.fold",
+                "title": "Fold",
+                "icon": {
+					"light": "media/icons/light/folder.svg",
+					"dark": "media/icons/dark/folder.svg"
+				}
+            },
+            {
+                "command": "markdown.outline.refresh",
+                "title": "Refresh",
+                "icon": {
+					"light": "media/icons/light/refresh.svg",
+					"dark": "media/icons/dark/refresh.svg"
+				}
             }
         ],
         "keybindings": [
@@ -231,7 +247,19 @@
                     "command": "markdown.extension.copySlug",
                     "group": "5_cutcopypaste"
                 }
-            ]
+            ],
+            "view/title": [
+                {
+					"command": "markdown.outline.refresh",
+					"when": "view == mdOutline",
+					"group": "navigation"
+                },
+                {
+					"command": "markdown.outline.fold",
+					"when": "view == mdOutline",
+					"group": "navigation"
+				}
+			]
         },
         "views": {
             "explorer": [
