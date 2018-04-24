@@ -43,11 +43,31 @@
             },
             {
                 "command": "markdown.extension.editing.toggleCodeSpan",
-                "title": "Markdown: Toggle code span"
+                "title": "Markdown: Toggle code span",
+                "icon": {
+					"light": "media/icons/folder.svg",
+					"dark": "media/icons/folder.svg"
+				}
             },
             {
                 "command": "markdown.extension.copySlug",
                 "title": "Markdown: Copy Slugified Heading"
+            },
+            {
+                "command": "markdown.outline.fold",
+                "title": "Fold",
+                "icon": {
+					"light": "media/icons/folder.svg",
+					"dark": "media/icons/folder.svg"
+				}
+            },
+            {
+                "command": "markdown.outline.refresh",
+                "title": "Refresh",
+                "icon": {
+					"light": "media/icons/refresh.svg",
+					"dark": "media/icons/refresh.svg"
+				}
             }
         ],
         "keybindings": [
@@ -220,7 +240,19 @@
                     "command": "markdown.extension.copySlug",
                     "group": "5_cutcopypaste"
                 }
-            ]
+            ],
+            "view/title": [
+                {
+					"command": "markdown.outline.refresh",
+					"when": "view == mdOutline",
+					"group": "navigation"
+                },
+                {
+					"command": "markdown.outline.fold",
+					"when": "view == mdOutline",
+					"group": "navigation"
+				}
+			]
         },
         "views": {
             "explorer": [
