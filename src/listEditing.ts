@@ -94,12 +94,27 @@ async function onTabKey() {
     let textBeforeCursor = editor.document.lineAt(cursorPos.line).text.substr(0, cursorPos.character);
     const tabCompletion: boolean = vscode.workspace.getConfiguration('editor').get<boolean>('tabCompletion');
     const triggerSuggest = tabCompletion && textBeforeCursor.match(/[^\s]$/) !== null;
+    let matches;
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
         return asNormal('tab', { triggerSuggest });
     }
 
     if (/^\s*([-+*]|[0-9]+[.)]) +(|\[[ x]\] +)$/.test(textBeforeCursor)) {
+        if ((matches = /^(\s*)([0-9]+)([.)])( +)(|\[[ x]\] +)(?!\[[ x]\]).*$/.exec(textBeforeCursor)) !== null) {
+            // Ordered list - set marker to 1.
+            let config = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker');
+            let marker = '1';
+            let leadingSpace = matches[1];
+            let delimiter = matches[3];
+            let trailingSpace = " ";
+            let gfmCheckbox = matches[5].replace('[x]', '[ ]');
+
+            const toBeAdded = leadingSpace + marker + delimiter + trailingSpace + gfmCheckbox;
+            await editor.edit(editBuilder => {
+                editBuilder.replace(new Range(new Position(editor.selection.start.line, 0), cursorPos), `${toBeAdded}`);
+            });
+        }
         return commands.executeCommand('editor.action.indentLines');
     } else {
         return asNormal('tab', { triggerSuggest });
