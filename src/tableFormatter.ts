@@ -68,7 +68,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
             }
         });
         let colWidth = Array(content[0].length).fill(3);
-        let cn = /[\u4e00-\u9eff，。《》？；：‘“’”（）【】、—]/g;
+        let cn = /[\u3000-\u9fff\uff01-\uff60‘“’”—]/g;
         content.forEach(row => {
             row.forEach((cell, i) => {
                 // Treat Chinese characters as 2 English characters
