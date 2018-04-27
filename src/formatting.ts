@@ -2,24 +2,13 @@
 
 import { commands, window, workspace, ExtensionContext, Position, Range, Selection, TextEditor } from 'vscode';
 
-const prefix = 'markdown.extension.editing.';
-
 export function activate(context: ExtensionContext) {
-    const cmds: Command[] = [
-        { command: 'toggleBold', callback: toggleBold },
-        { command: 'toggleItalic', callback: toggleItalic },
-        { command: 'toggleCodeSpan', callback: toggleCodeSpan },
-        { command: 'toggleStrikethrough', callback: toggleStrikethrough },
-        { command: 'toggleHeadingUp', callback: toggleHeadingUp },
-        { command: 'toggleHeadingDown', callback: toggleHeadingDown }
-    ].map(cmd => {
-        cmd.command = prefix + cmd.command;
-        return cmd;
-    });
-
-    cmds.forEach(cmd => {
-        context.subscriptions.push(commands.registerCommand(cmd.command, cmd.callback));
-    });
+    context.subscriptions.push(commands.registerCommand('markdown.extension.editing.toggleBold', toggleBold));
+    context.subscriptions.push(commands.registerCommand('markdown.extension.editing.toggleItalic', toggleItalic));
+    context.subscriptions.push(commands.registerCommand('markdown.extension.editing.toggleCodeSpan', toggleCodeSpan));
+    context.subscriptions.push(commands.registerCommand('markdown.extension.editing.toggleStrikethrough', toggleStrikethrough));
+    context.subscriptions.push(commands.registerCommand('markdown.extension.editing.toggleHeadingUp', toggleHeadingUp));
+    context.subscriptions.push(commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown));
 }
 
 // Return Promise because need to chain operations in unit tests
@@ -175,7 +164,7 @@ function wrapRange(editor: TextEditor, options, cursor: Position, range: Range, 
         }
     }
     else {
-        // add start/end patterns arround range
+        // add start/end patterns around range
         promise = replaceWith(range, startPattern + text + endPattern, options);
 
         // Fix cursor position

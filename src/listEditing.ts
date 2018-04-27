@@ -2,7 +2,6 @@
 
 import { commands, window, workspace, ExtensionContext, Position, Range, Selection, TextDocument } from 'vscode';
 import * as vscode from 'vscode';
-import * as handler from "./unikeyHandler";
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand('markdown.extension.onEnterKey', onEnterKey));

@@ -8,8 +8,6 @@ const MdEngine = require(path.join(officialExtPath, 'out', 'markdownEngine')).Ma
 
 const engine = new MdEngine();
 
-const prefix = 'markdown.extension.toc.';
-
 /**
  * Workspace config
  */
@@ -17,18 +15,8 @@ let docConfig = { tab: '    ', eol: '\r\n' };
 let tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false };
 
 export function activate(context: vscode.ExtensionContext) {
-    const cmds: Command[] = [
-        { command: 'create', callback: createToc },
-        { command: 'update', callback: updateToc }
-        // , { command: 'delete', callback: deleteToc }
-    ].map(cmd => {
-        cmd.command = prefix + cmd.command;
-        return cmd;
-    });
-
-    cmds.forEach(cmd => {
-        context.subscriptions.push(vscode.commands.registerCommand(cmd.command, cmd.callback));
-    });
+    context.subscriptions.push(vscode.commands.registerCommand('markdown.extension.toc.create', createToc));
+    context.subscriptions.push(vscode.commands.registerCommand('markdown.extension.toc.update', updateToc));
 
     context.subscriptions.push(vscode.workspace.onWillSaveTextDocument(onWillSave));
     context.subscriptions.push(vscode.languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider()));
