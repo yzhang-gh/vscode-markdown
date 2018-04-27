@@ -35,7 +35,7 @@ async function onEnterKey(modifiers?: string) {
     }
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
-        return asNormal('enter', { modifiers });
+        return asNormal('enter', modifiers);
     }
 
     // If it's an empty list item, remove it
@@ -83,7 +83,7 @@ async function onEnterKey(modifiers?: string) {
             editor.selection = new Selection(newCursorPos, newCursorPos);
         }
     } else {
-        return asNormal('enter', { modifiers });
+        return asNormal('enter', modifiers);
     }
     editor.revealRange(editor.selection);
 }
@@ -92,17 +92,15 @@ async function onTabKey() {
     let editor = window.activeTextEditor;
     let cursorPos = editor.selection.active;
     let textBeforeCursor = editor.document.lineAt(cursorPos.line).text.substr(0, cursorPos.character);
-    const tabCompletion: boolean = vscode.workspace.getConfiguration('editor').get<boolean>('tabCompletion');
-    const triggerSuggest = tabCompletion && textBeforeCursor.match(/[^\s]$/) !== null;
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
-        return asNormal('tab', { triggerSuggest });
+        return asNormal('tab');
     }
 
     if (/^\s*([-+*]|[0-9]+[.)]) +(|\[[ x]\] +)$/.test(textBeforeCursor)) {
         return commands.executeCommand('editor.action.indentLines');
     } else {
-        return asNormal('tab', { triggerSuggest });
+        return asNormal('tab');
     }
 }
 
@@ -113,7 +111,7 @@ async function onBackspaceKey() {
     let textBeforeCursor = document.lineAt(cursor.line).text.substr(0, cursor.character);
 
     if (isInFencedCodeBlock(document, cursor.line)) {
-        return asNormal('backspace', {});
+        return asNormal('backspace');
     }
 
     if (/^\s+([-+*]|[0-9]+[.)]) (|\[[ x]\] )$/.test(textBeforeCursor)) {
@@ -125,11 +123,11 @@ async function onBackspaceKey() {
         // e.g. textBeforeCursor == '- [ ]', '1. [x]'
         return deleteRange(editor, new Range(cursor.with({ character: textBeforeCursor.length - 4 }), cursor));
     } else {
-        return asNormal('backspace', {});
+        return asNormal('backspace');
     }
 }
 
-function asNormal(key: string, { modifiers = '', triggerSuggest = false }: { modifiers?: string, triggerSuggest?: boolean }) {
+function asNormal(key: string, modifiers?: string) {
     switch (key) {
         case 'enter':
             if (modifiers === 'ctrl') {
@@ -138,8 +136,8 @@ function asNormal(key: string, { modifiers = '', triggerSuggest = false }: { mod
                 return commands.executeCommand('type', { source: 'keyboard', text: '\n' });
             }
         case 'tab':
-            if (triggerSuggest) {
-                return commands.executeCommand('editor.action.triggerSuggest');
+            if (workspace.getConfiguration('emmet').get<boolean>('triggerExpansionOnTab')) {
+                return commands.executeCommand('editor.emmet.action.expandAbbreviation');
             } else {
                 return commands.executeCommand('tab');
             }

@@ -94,7 +94,7 @@
             {
                 "command": "markdown.extension.onTabKey",
                 "key": "tab",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible && !editorReadonly && !editorTabMovesFocus && !inSnippetMode"
+                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !editorTabMovesFocus && !editorReadonly"
             },
             {
                 "command": "markdown.extension.onBackspaceKey",
