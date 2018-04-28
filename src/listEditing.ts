@@ -9,6 +9,8 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand('markdown.extension.onTabKey', onTabKey));
     context.subscriptions.push(commands.registerCommand('markdown.extension.onBackspaceKey', onBackspaceKey));
     context.subscriptions.push(commands.registerCommand('markdown.extension.checkTaskList', checkTaskList));
+    context.subscriptions.push(commands.registerCommand('markdown.extension.onMoveLineDown', onMoveLineDown));
+    context.subscriptions.push(commands.registerCommand('markdown.extension.onMoveLineUp', onMoveLineUp));
 }
 
 function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
@@ -97,6 +99,19 @@ async function onTabKey() {
     }
 
     if (/^\s*([-+*]|[0-9]+[.)]) +(|\[[ x]\] +)$/.test(textBeforeCursor)) {
+        let matches;
+        if ((matches = /^(\s*)[0-9]+([.)] +(?:|\[[x]\] +)(?!\[[x]\]).*)$/.exec(textBeforeCursor)) !== null
+            && workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'ordered') {
+            // Ordered list - set marker to 1.
+            let marker = '1';
+            let leadingSpace = matches[1];
+            let trailing = matches[2];
+
+            const toBeAdded = leadingSpace + marker + trailing;
+            await editor.edit(editBuilder => {
+                editBuilder.replace(new Range(new Position(editor.selection.start.line, 0), cursorPos), `${toBeAdded}`);
+            });
+        }
         return commands.executeCommand('editor.action.indentLines');
     } else {
         return asNormal('tab');
@@ -114,6 +129,23 @@ async function onBackspaceKey() {
     }
 
     if (/^\s+([-+*]|[0-9]+[.)]) (|\[[ x]\] )$/.test(textBeforeCursor)) {
+        /*
+        TODO: update marker to resume numbering from outer list on outdent
+        let matches;
+        if ((matches = /^(\s*)[0-9]+([.)] +(?:|\[[x]\] +)(?!\[[x]\]).*)$/.exec(textBeforeCursor)) !== null
+            && workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'ordered') {
+            // Ordered list - set marker to 1.
+            let leadingSpace = matches[1];
+            let trailing = matches[2];
+            // marker must be the last number from the outer list + 1
+            let marker = '1';
+
+            const toBeAdded = leadingSpace + marker + trailing;
+            await editor.edit(editBuilder => {
+                editBuilder.replace(new Range(new Position(editor.selection.start.line, 0), cursor), `${toBeAdded}`);
+            });
+        }
+        */
         return commands.executeCommand('editor.action.outdentLines');
     } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- ', '1. '
@@ -166,6 +198,68 @@ function checkTaskList() {
             editBuilder.replace(new Range(cursorPos.with({ character: matches[1].length }), cursorPos.with({ character: matches[1].length + 1 })), ' ');
         });
     }
+}
+
+async function onMoveLineUp() {
+    let editor = window.activeTextEditor;
+    let cursorPos = editor.selection.active;
+    if (cursorPos.line === 0) {
+        return commands.executeCommand('editor.action.moveLinesUpAction');
+    }
+    let activeLineText = editor.document.lineAt(cursorPos.line).text;
+    let swapLineText = editor.document.lineAt(cursorPos.line - 1).text;
+    let activeLineMatches, swapLineMatches;
+
+    // both lines in the swap must be ordered list
+    if ((activeLineMatches = /^\s*([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(activeLineText)) !== null
+        && (swapLineMatches = /^\s*([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(swapLineText)) !== null
+        && editor.selection.isSingleLine
+        && workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'ordered') {
+        // replace marker of active line with decremented marker
+        const activeLineMarker = Number(activeLineMatches[1]) - 1;
+        activeLineText = activeLineText.replace(/^(\s*)([0-9]+)/, `$1${activeLineMarker}`);
+
+        // replace marker of swap line with incremented marker
+        const swapLineMarker = Number(swapLineMatches[1]) + 1;
+        swapLineText = swapLineText.replace(/^(\s*)([0-9]+)/, `$1${swapLineMarker}`);
+
+        await editor.edit(editBuilder => {
+            editBuilder.replace(editor.document.lineAt(cursorPos.line).range, activeLineText);
+            editBuilder.replace(editor.document.lineAt(cursorPos.line - 1).range, swapLineText);
+        });
+    }
+    return commands.executeCommand('editor.action.moveLinesUpAction');
+}
+
+async function onMoveLineDown() {
+    let editor = window.activeTextEditor;
+    let cursorPos = editor.selection.active;
+    if (cursorPos.line === editor.document.lineCount - 1) {
+        return commands.executeCommand('editor.action.moveLinesDownAction');
+    }
+    let activeLineText = editor.document.lineAt(cursorPos.line).text;
+    let swapLineText = editor.document.lineAt(cursorPos.line + 1).text;
+    let activeLineMatches, swapLineMatches;
+
+    // both lines in the swap must be ordered list
+    if ((activeLineMatches = /^\s*([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(activeLineText)) !== null
+        && (swapLineMatches = /^\s*([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(swapLineText)) !== null
+        && editor.selection.isSingleLine
+        && workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'ordered') {
+        // replace marker of active line with decremented marker
+        const activeLineMarker = Number(activeLineMatches[1]) + 1;
+        activeLineText = activeLineText.replace(/^(\s*)([0-9]+)/, `$1${activeLineMarker}`);
+
+        // replace marker of swap line with incremented marker
+        const swapLineMarker = Number(swapLineMatches[1]) - 1;
+        swapLineText = swapLineText.replace(/^(\s*)([0-9]+)/, `$1${swapLineMarker}`);
+
+        await editor.edit(editBuilder => {
+            editBuilder.replace(editor.document.lineAt(cursorPos.line).range, activeLineText);
+            editBuilder.replace(editor.document.lineAt(cursorPos.line + 1).range, swapLineText);
+        });
+    }
+    return commands.executeCommand('editor.action.moveLinesDownAction');
 }
 
 export function deactivate() { }
