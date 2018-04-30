@@ -27,8 +27,8 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     private detectTables(text: string) {
         const lineBreak = '\\r?\\n';
         const contentLine = '\\|?.*\\|.*\\|?';
-        const hyphenLine = '[ \\t]*\\|?([ :]*[-]{3,}[ :]*\\|)([ :]*[-]{3,}[ :]*\\|?)+[ \\t]*'
-
+        // Trailing [ \t] is required to match trailing whitespaces in the hyphen line before lineBreak
+        const hyphenLine = '[ \\t]*\\|?( *:?-{3,}:? *\\|)+( *:?-{3,}:? *\\|?)[ \\t]*'
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
         return text.match(tableRegex);
     }
@@ -62,8 +62,8 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         while ((match = rowsNoIndentPattern.exec(text)) !== null) {
             rows.push(match[1])
         }
-        // Get all cell contents, also for ugly format (no trailing |)
-        let fieldRegExp = new RegExp(/(?:\|?((?:\\\||\\\\\||`.*?`|[^\|])*)\|)|(?:\|?((?:\\\||\\\\\||`.*?`|[^\|])+))/gu)
+        // Get all cell contents - Regex works because this can only be  a line of a table
+        let fieldRegExp = new RegExp(/(?:\|?((?:\\\||`.*?`|[^\|])+))/gu)
 
         let colWidth = []
         let cn = /[\u3000-\u9fff\uff01-\uff60‘“’”—]/g;
@@ -73,16 +73,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
             let values = []
             let i = 0
             while ((field = fieldRegExp.exec(row)) !== null) {
-                let cell = null
-                if (field[1] === undefined) {
-                    if (field[2] !== undefined && field[2].trim().length > 0) {
-                        cell = field[2].trim()
-                    } else {
-                        continue;
-                    }
-                } else {
-                    cell = field[1].trim()
-                }
+                let cell = field[1].trim()
                 values.push(cell)
                 // Treat Chinese characters as 2 English ones because of Unicode stuff
                 let length = cn.test(cell) ? cell.length + cell.match(cn).length : cell.length

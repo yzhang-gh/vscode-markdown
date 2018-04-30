@@ -180,4 +180,22 @@ suite("Table formatter.", () => {
             ],
             new Selection(0, 0, 0, 0)).then(done, done)
     });
+
+    test("Contains \\| in last open cell", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '', // Changing the first expected char somehow crashes the selection logic and the test fails
+                'a|b', 
+                '---|---',
+                'c|d\\|e'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '',
+                '| a   | b    |',
+                '| --- | ---- |',
+                '| c   | d\\|e |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
 });
