@@ -70,7 +70,17 @@ suite("List editing.", () => {
     });
 
     test("Backspace key. Fix ordered marker. 2", done => {
-        testCommand('markdown.extension.onBackspaceKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['1. item1', '    5. item2'], new Selection(1, 7, 1, 7), ['1. item1', '2. item2'], new Selection(1, 3, 1, 3)).then(done, done);
+        testCommand('markdown.extension.onBackspaceKey', { "editor.insertSpaces": true, "editor.tabSize": 4 },
+            [
+                '1. item1',
+                '    5. item2'
+            ],
+            new Selection(1, 7, 1, 7),
+            [
+                '1. item1',
+                '2. item2'
+            ],
+            new Selection(1, 3, 1, 3)).then(done, done);
     });
 
     test("Backspace key. Fix ordered marker. 3", done => {
@@ -79,13 +89,16 @@ suite("List editing.", () => {
                 '1. item1',
                 '    1. item1-1',
                 '    2. item1-2',
-                '    3. item1-3'],
+                '    3. item1-3',
+                '    4. item1-4'
+            ],
             new Selection(3, 7, 3, 7),
             [
                 '1. item1',
                 '    1. item1-1',
                 '    2. item1-2',
-                '2. item1-3'
+                '2. item1-3',
+                '    1. item1-4'
             ],
             new Selection(3, 3, 3, 3)).then(done, done);
     });
@@ -116,14 +129,16 @@ suite("List editing.", () => {
                 '1. test',
                 '    1. test',
                 '    2. test',
-                '2. test'
+                '2. test',
+                '    1. test'
             ],
             new Selection(3, 3, 3, 3),
             [
                 '1. test',
                 '    1. test',
                 '    2. test',
-                '    3. test'
+                '    3. test',
+                '    4. test'
             ],
             new Selection(3, 7, 3, 7)).then(done, done);
     });
