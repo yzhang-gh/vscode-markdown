@@ -177,6 +177,8 @@ function fixMarker(editor: vscode.TextEditor, line: number) {
             let marker = matches[2];
             let fixedMarker = lookUpwardForMarker(editor.document, line, leadingSpace);
 
+            if (Number(marker) === fixedMarker) return;
+
             return editor.edit(editBuilder => {
                 editBuilder.replace(new Range(line, leadingSpace.length, line, leadingSpace.length + marker.length), String(fixedMarker));
             });
