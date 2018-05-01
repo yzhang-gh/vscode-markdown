@@ -149,13 +149,18 @@ function asNormal(key: string, modifiers?: string) {
 
 function lookUpwardForMarker(editor: vscode.TextEditor, line: number, numOfSpaces: number): number {
     let orderedListRegex = /^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/;
-    let matches;
-    while (--line >= 0 && (matches = orderedListRegex.exec(editor.document.lineAt(line).text)) !== null) {
-        if (matches[1].length === numOfSpaces) {
-            return Number(matches[2]) + 1;
-        } else if ((editor.options.insertSpaces && matches[1].length + editor.options.tabSize <= numOfSpaces)
-            || !editor.options.insertSpaces && matches[1].length + 1 <= numOfSpaces) {
-            return 1;
+    while (--line >= 0) {
+        let matches;
+        const lineText = editor.document.lineAt(line).text;
+        if ((matches = orderedListRegex.exec(lineText)) !== null) {
+            if (matches[1].length === numOfSpaces) {
+                return Number(matches[2]) + 1;
+            } else if ((editor.options.insertSpaces && matches[1].length + editor.options.tabSize <= numOfSpaces)
+                || !editor.options.insertSpaces && matches[1].length + 1 <= numOfSpaces) {
+                return 1;
+            }
+        } else if (!lineText.startsWith(' ') && !lineText.startsWith('\\t')) {
+            break;
         }
     }
     return 1;
@@ -184,9 +189,16 @@ function fixMarker(editor: vscode.TextEditor, line: number) {
                 if (Number(marker) === fixedMarker) return;
                 editBuilder.replace(new Range(line, leadingSpace.length, line, leadingSpace.length + marker.length), String(fixedMarker));
             }).then(() => {
-                if (editor.document.lineCount > line + 1
-                    && /^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.test(editor.document.lineAt(line + 1).text)) {
-                    return fixMarker(editor, line + 1);
+                let nextLine = line + 1;
+                while (editor.document.lineCount > nextLine) {
+                    const nextLineText = editor.document.lineAt(nextLine).text;
+                    if (/^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.test(nextLineText)) {
+                        return fixMarker(editor, nextLine);
+                    } else if (nextLineText.startsWith(leadingSpace) && /[ \t]/.test(nextLineText.charAt(leadingSpace.length))) {
+                        nextLine++;
+                    } else {
+                        return;
+                    }
                 }
             });
         }

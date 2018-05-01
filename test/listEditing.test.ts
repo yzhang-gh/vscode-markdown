@@ -103,6 +103,26 @@ suite("List editing.", () => {
             new Selection(3, 3, 3, 3)).then(done, done);
     });
 
+    test("Backspace key. Fix ordered marker. 4: Multi-line list item", done => {
+        testCommand('markdown.extension.onBackspaceKey', { "editor.insertSpaces": true, "editor.tabSize": 4 },
+            [
+                '1. item1',
+                '    1. item1-1',
+                '       item1-2',
+                '    2. item1-3',
+                '    3. item1-4'
+            ],
+            new Selection(3, 7, 3, 7),
+            [
+                '1. item1',
+                '    1. item1-1',
+                '       item1-2',
+                '2. item1-3',
+                '    1. item1-4'
+            ],
+            new Selection(3, 3, 3, 3)).then(done, done);
+    });
+
     test("Tab key. 1: '- |'", done => {
         testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['- item1'], new Selection(0, 2, 0, 2), ['    - item1'], new Selection(0, 6, 0, 6)).then(done, done);
     });
@@ -139,6 +159,26 @@ suite("List editing.", () => {
                 '    2. test',
                 '    3. test',
                 '    4. test'
+            ],
+            new Selection(3, 7, 3, 7)).then(done, done);
+    });
+
+    test("Tab key. Fix ordered marker. 4: Multi-line list item", done => {
+        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 },
+            [
+                '1. test',
+                '    1. test',
+                '       test',
+                '2. test',
+                '    1. test'
+            ],
+            new Selection(3, 3, 3, 3),
+            [
+                '1. test',
+                '    1. test',
+                '       test',
+                '    2. test',
+                '    3. test'
             ],
             new Selection(3, 7, 3, 7)).then(done, done);
     });
