@@ -41,20 +41,22 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     }
 
     /**
-     * Get the normalized indentation of a table as multiple of the configured `tabSize`.
-     * The indentation is only read from the first line and normalized to the closest tab stop.
+     * Return the indentation of a table as a string of spaces by reading it from the first line.
+     * In case of `markdown.extension.table.normalizeIdentation` is `enabled` it is rounded to the closest multiple of
+     * the configured `tabSize`.
      */
-    private getNormalizedIndentation(text: string, options: FormattingOptions) {
+    private getTableIndentation(text: string, options: FormattingOptions) {
+        let doNormalize = workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('normalizeIndentation')
         let indentRegex = new RegExp(/^(\s*)\S/u)
         let match = text.match(indentRegex)
-        let indent = match[1].length
-        let tabStops = Math.round(indent / options.tabSize)
-
-        return " ".repeat(options.tabSize * tabStops)
+        let spacesInFirstLine = match[1].length
+        let tabStops = Math.round(spacesInFirstLine / options.tabSize)
+        let spaces = doNormalize ? " ".repeat(options.tabSize * tabStops) : " ".repeat(spacesInFirstLine)
+        return spaces
     }
 
     private formatTable(text: string, doc: TextDocument, options: FormattingOptions) {
-        let indentation = this.getNormalizedIndentation(text, options)
+        let indentation = this.getTableIndentation(text, options)
 
         let rows = []
         let rowsNoIndentPattern = new RegExp(/^\s*(\S.*)$/gum)

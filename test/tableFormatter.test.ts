@@ -149,8 +149,26 @@ suite("Table formatter.", () => {
             new Selection(0, 0, 0, 0)).then(done, done)
     });
 
-    test("Mixed-indented table", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Mixed-indented table (no normalization)", done => {
+        testCommand('editor.action.formatDocument',
+            { "markdown.extension.tableFormatter.normalizeIndentation": false },
+            [
+                '   | a | b |',
+                '  | --- | --- |',
+                '    | c | d |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '   | a   | b   |',
+                '   | --- | --- |',
+                '   | c   | d   |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done)
+    });
+
+    test("Mixed-indented table (normalization)", done => {
+        testCommand('editor.action.formatDocument',
+            { "markdown.extension.tableFormatter.normalizeIndentation": true },
             [
                 '   | a | b |',
                 '  | --- | --- |',
@@ -185,7 +203,7 @@ suite("Table formatter.", () => {
         testCommand('editor.action.formatDocument', {},
             [
                 '', // Changing the first expected char somehow crashes the selection logic and the test fails
-                'a|b', 
+                'a|b',
                 '---|---',
                 'c|d\\|e'
             ],
