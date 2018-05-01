@@ -1,6 +1,6 @@
 'use strict'
 
-import { commands, window, workspace, ExtensionContext, Position, Range, Selection, TextDocument } from 'vscode';
+import { commands, window, workspace, ExtensionContext, Position, Range, Selection, TextDocument, TextLine } from 'vscode';
 import * as vscode from 'vscode';
 
 export function activate(context: ExtensionContext) {
@@ -200,66 +200,54 @@ function checkTaskList() {
     }
 }
 
-async function onMoveLineUp() {
+function isOrdered(line1: TextLine, line2: TextLine) {
+
+}
+
+async function sortOrderedList(direction) {
     let editor = window.activeTextEditor;
     let cursorPos = editor.selection.active;
-    if (cursorPos.line === 0) {
-        return commands.executeCommand('editor.action.moveLinesUpAction');
-    }
-    let activeLineText = editor.document.lineAt(cursorPos.line).text;
-    let swapLineText = editor.document.lineAt(cursorPos.line - 1).text;
-    let activeLineMatches, swapLineMatches;
+    let activeLine = cursorPos.line;
+    let swapLine = direction === 'up' ? activeLine + 1 : activeLine - 1;
+    let topLine = Math.max(activeLine, swapLine);
+    let bottomLine = Math.min(activeLine, swapLine);
+    let topLineText = editor.document.lineAt(topLine).text;
+    let bottomLineText = editor.document.lineAt(bottomLine).text;
+    let orderedListRegex = /^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/;
+    let topLineMatches, bottomLineMatches;
 
     // both lines in the swap must be ordered list
-    if ((activeLineMatches = /^\s*([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(activeLineText)) !== null
-        && (swapLineMatches = /^\s*([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(swapLineText)) !== null
+    if ((topLineMatches = orderedListRegex.exec(topLineText)) !== null
+        && (bottomLineMatches = orderedListRegex.exec(bottomLineText)) !== null
         && editor.selection.isSingleLine
         && workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'ordered') {
-        // replace marker of active line with decremented marker
-        const activeLineMarker = Number(activeLineMatches[1]) - 1;
-        activeLineText = activeLineText.replace(/^(\s*)([0-9]+)/, `$1${activeLineMarker}`);
+        const topLineMarker = Number(topLineMatches[2]);
+        const bottomLineMarker = Number(bottomLineMatches[2]);
 
-        // replace marker of swap line with incremented marker
-        const swapLineMarker = Number(swapLineMatches[1]) + 1;
-        swapLineText = swapLineText.replace(/^(\s*)([0-9]+)/, `$1${swapLineMarker}`);
-
-        await editor.edit(editBuilder => {
-            editBuilder.replace(editor.document.lineAt(cursorPos.line).range, activeLineText);
-            editBuilder.replace(editor.document.lineAt(cursorPos.line - 1).range, swapLineText);
-        });
+        // only swap if out of order and same indentation level
+        if (topLineMarker < bottomLineMarker && topLineMatches[1] === bottomLineMatches[1]) {
+            return editor.edit(editBuilder => {
+                editBuilder.replace(
+                    editor.document.lineAt(topLine).range,
+                    topLineText.replace(/^(\s*)([0-9]+)/, `$1${bottomLineMarker}`)
+                );
+                editBuilder.replace(
+                    editor.document.lineAt(bottomLine).range,
+                    bottomLineText.replace(/^(\s*)([0-9]+)/, `$1${topLineMarker}`)
+                );
+            });
+        }
     }
-    return commands.executeCommand('editor.action.moveLinesUpAction');
+}
+
+async function onMoveLineUp() {
+    return commands.executeCommand('editor.action.moveLinesUpAction')
+        .then(() => sortOrderedList('up'));
 }
 
 async function onMoveLineDown() {
-    let editor = window.activeTextEditor;
-    let cursorPos = editor.selection.active;
-    if (cursorPos.line === editor.document.lineCount - 1) {
-        return commands.executeCommand('editor.action.moveLinesDownAction');
-    }
-    let activeLineText = editor.document.lineAt(cursorPos.line).text;
-    let swapLineText = editor.document.lineAt(cursorPos.line + 1).text;
-    let activeLineMatches, swapLineMatches;
-
-    // both lines in the swap must be ordered list
-    if ((activeLineMatches = /^\s*([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(activeLineText)) !== null
-        && (swapLineMatches = /^\s*([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(swapLineText)) !== null
-        && editor.selection.isSingleLine
-        && workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'ordered') {
-        // replace marker of active line with decremented marker
-        const activeLineMarker = Number(activeLineMatches[1]) + 1;
-        activeLineText = activeLineText.replace(/^(\s*)([0-9]+)/, `$1${activeLineMarker}`);
-
-        // replace marker of swap line with incremented marker
-        const swapLineMarker = Number(swapLineMatches[1]) - 1;
-        swapLineText = swapLineText.replace(/^(\s*)([0-9]+)/, `$1${swapLineMarker}`);
-
-        await editor.edit(editBuilder => {
-            editBuilder.replace(editor.document.lineAt(cursorPos.line).range, activeLineText);
-            editBuilder.replace(editor.document.lineAt(cursorPos.line + 1).range, swapLineText);
-        });
-    }
-    return commands.executeCommand('editor.action.moveLinesDownAction');
+    return commands.executeCommand('editor.action.moveLinesDownAction')
+        .then(() => sortOrderedList('down'));
 }
 
 export function deactivate() { }
