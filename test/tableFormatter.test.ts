@@ -118,4 +118,102 @@ suite("Table formatter.", () => {
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
+
+    test("No table", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                'a | b',
+                '---'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                'a | b',
+                '---'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done)
+    });
+
+    test("Indented table", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '    | a | b |',
+                '    | --- | --- |',
+                '    | c | d |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '    | a   | b   |',
+                '    | --- | --- |',
+                '    | c   | d   |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done)
+    });
+
+    test("Mixed-indented table (no normalization)", done => {
+        testCommand('editor.action.formatDocument',
+            { "markdown.extension.tableFormatter.normalizeIndentation": false },
+            [
+                '   | a | b |',
+                '  | --- | --- |',
+                '    | c | d |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '   | a   | b   |',
+                '   | --- | --- |',
+                '   | c   | d   |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done)
+    });
+
+    test("Mixed-indented table (normalization)", done => {
+        testCommand('editor.action.formatDocument',
+            { "markdown.extension.tableFormatter.normalizeIndentation": true },
+            [
+                '   | a | b |',
+                '  | --- | --- |',
+                '    | c | d |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '    | a   | b   |',
+                '    | --- | --- |',
+                '    | c   | d   |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done)
+    });
+
+    test("Mixed ugly table", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '| a | b | c ',
+                ' --- | --- | :---:',
+                ' c | d | e |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| a   | b   | c     |',
+                '| --- | --- | :---: |',
+                '| c   | d   | e     |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done)
+    });
+
+    test("Contains \\| in last open cell", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '', // Changing the first expected char somehow crashes the selection logic and the test fails
+                'a|b',
+                '---|---',
+                'c|d\\|e'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '',
+                '| a   | b    |',
+                '| --- | ---- |',
+                '| c   | d\\|e |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
 });

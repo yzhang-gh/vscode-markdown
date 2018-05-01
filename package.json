@@ -203,6 +203,11 @@
                     "default": true,
                     "description": "Enable GFM table formatter"
                 },
+                "markdown.extension.tableFormatter.normalizeIndentation": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Normalize table indentation to closest multiple of configured tabSize"
+                },
                 "markdown.extension.print.absoluteImgPath": {
                     "type": "boolean",
                     "default": true,

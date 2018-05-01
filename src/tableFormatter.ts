@@ -16,7 +16,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         let tables = this.detectTables(document.getText());
         if (tables !== null) {
             tables.forEach(table => {
-                edits.push(new TextEdit(this.getRange(document, table), this.formatTable(table, document)));
+                edits.push(new TextEdit(this.getRange(document, table), this.formatTable(table, document, options)));
             });
             return edits;
         } else {
@@ -27,7 +27,8 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     private detectTables(text: string) {
         const lineBreak = '\\r?\\n';
         const contentLine = '\\|?.*\\|.*\\|?';
-        const hyphenLine = '\\|?[ :]*[-]{3,}[- :\\|]*\\|?';
+        // Trailing [ \t] is required to match trailing whitespaces in the hyphen line before lineBreak
+        const hyphenLine = '[ \\t]*\\|?( *:?-{3,}:? *\\|)+( *:?-{3,}:? *\\|?)[ \\t]*'
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
         return text.match(tableRegex);
     }
@@ -39,61 +40,70 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         return new Range(start, end);
     }
 
-    private formatTable(text: string, doc: TextDocument) {
-        let rows = text.split(/\r?\n/g);
-        let content = rows.map(row => {
-            // Escape 
-            // 1. replace (`,`) pair with (%60,`) to distinguish starting and ending `
-            // 2. escape | in %60...|...` (use while clause because in case of %60...|...|...`)
-            // 3. escape \|
-            row = row.replace(/`([^`]*?)`/g, '%60$1`');
-            while (/%60([^`]*?)\|([^`]*?)`/.test(row)) {
-                row = row.replace(/%60([^`]*?)\|([^`]*?)`/, '%60$1%7c$2`');
-            }
-            row = row.replace(/\\\|/g, '\\%7c');
-            return row.trim().replace(/^\|/g, '').replace(/\|$/g, '').trim().split(/\s*\|\s*/g).map(cell => {
-                return cell.replace(/%7c/g, '|').replace(/%60/g, '`');
-            });
-        });
-        // Normalize the num of hyphen
-        content[1] = content[1].map(cell => {
-            if (/:-+:/.test(cell)) {
-                return ':---:';
-            } else if (/:-+/.test(cell)) {
-                return ':---';
-            } else if (/-+:/.test(cell)) {
-                return '---:';
-            } else if (/-+/.test(cell)) {
-                return '---';
-            }
-        });
-        let colWidth = Array(content[0].length).fill(3);
+    /**
+     * Return the indentation of a table as a string of spaces by reading it from the first line.
+     * In case of `markdown.extension.table.normalizeIdentation` is `enabled` it is rounded to the closest multiple of
+     * the configured `tabSize`.
+     */
+    private getTableIndentation(text: string, options: FormattingOptions) {
+        let doNormalize = workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('normalizeIndentation')
+        let indentRegex = new RegExp(/^(\s*)\S/u)
+        let match = text.match(indentRegex)
+        let spacesInFirstLine = match[1].length
+        let tabStops = Math.round(spacesInFirstLine / options.tabSize)
+        let spaces = doNormalize ? " ".repeat(options.tabSize * tabStops) : " ".repeat(spacesInFirstLine)
+        return spaces
+    }
+
+    private formatTable(text: string, doc: TextDocument, options: FormattingOptions) {
+        let indentation = this.getTableIndentation(text, options)
+
+        let rows = []
+        let rowsNoIndentPattern = new RegExp(/^\s*(\S.*)$/gum)
+        let match = null
+        while ((match = rowsNoIndentPattern.exec(text)) !== null) {
+            rows.push(match[1])
+        }
+        // Get all cell contents - Regex works because this can only be  a line of a table
+        let fieldRegExp = new RegExp(/(?:\|?((?:\\\||`.*?`|[^\|])+))/gu)
+
+        let colWidth = []
         let cn = /[\u3000-\u9fff\uff01-\uff60‘“’”—]/g;
-        content.forEach(row => {
-            row.forEach((cell, i) => {
-                // Treat Chinese characters as 2 English characters
-                let cellLength = cell.length;
-                if (cn.test(cell)) {
-                    cellLength += cell.match(cn).length;
-                }
-                if (colWidth[i] < cellLength) {
-                    colWidth[i] = cellLength;
-                }
-            });
+
+        let lines = rows.map(row => {
+            let field = null
+            let values = []
+            let i = 0
+            while ((field = fieldRegExp.exec(row)) !== null) {
+                let cell = field[1].trim()
+                values.push(cell)
+                // Treat Chinese characters as 2 English ones because of Unicode stuff
+                let length = cn.test(cell) ? cell.length + cell.match(cn).length : cell.length
+                colWidth[i] = colWidth[i] > length ? colWidth[i] : length
+
+                i = i + 1
+            }
+            return (values)
         });
-        // Format
-        content[1] = content[1].map((cell, i) => {
-            if (cell == ':---:') {
+
+        // Normalize the num of hyphen        
+        lines[1] = lines[1].map((cell, i) => {
+            if (/:-+:/.test(cell)) {
+                //:---:
                 return ':' + '-'.repeat(colWidth[i] - 2) + ':';
-            } else if (cell == ':---') {
+            } else if (/:-+/.test(cell)) {
+                //:---
                 return ':' + '-'.repeat(colWidth[i] - 1);
-            } else if (cell == '---:') {
+            } else if (/-+:/.test(cell)) {
+                //---:
                 return '-'.repeat(colWidth[i] - 1) + ':';
-            } else if (cell == '---') {
+            } else if (/-+/.test(cell)) {
+                //---
                 return '-'.repeat(colWidth[i]);
             }
         });
-        return content.map(row => {
+
+        return lines.map(row => {
             let cells = row.map((cell, i) => {
                 let cellLength = colWidth[i];
                 if (cn.test(cell)) {
@@ -101,7 +111,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 }
                 return (cell + ' '.repeat(cellLength)).slice(0, cellLength);
             });
-            return '| ' + cells.join(' | ') + ' |';
+            return indentation + '| ' + cells.join(' | ') + ' |';
         }).join(workspace.getConfiguration('files', doc.uri).get('eol'));
     }
 }
