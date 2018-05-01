@@ -118,6 +118,38 @@ async function onTabKey() {
     }
 }
 
+function getLastMarker(document: TextDocument, cursor: Position, leadingSpace: string): number {
+    let line = cursor.line;
+    let orderedListRegex = /^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/;
+    let matches;
+    while (line-- > 0 && (matches = orderedListRegex.exec(document.lineAt(line).text)) !== null) {
+        if (matches[1] === leadingSpace) {
+            return Number(matches[2]);
+        }
+    }
+    return -1;
+}
+
+async function updateList(editor, document: TextDocument, cursor: Position) {
+    let textBeforeCursor = document.lineAt(cursor.line).text;
+    let matches;
+    if ((matches = /^(\s*)[0-9]+([.)] +(?:|\[[x]\] +)(?!\[[x]\]).*)$/.exec(textBeforeCursor)) !== null
+        && workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'ordered') {
+        // Ordered list - set marker to 1.
+        let leadingSpace = matches[1];
+        let trailing = matches[2];
+        // marker must be the last number from the outer list + 1
+        let lastMarker = getLastMarker(document, cursor, leadingSpace);
+        if (lastMarker !== -1) {
+            let marker = lastMarker + 1;
+            const toBeAdded = leadingSpace + marker + trailing;
+            return editor.edit(editBuilder => {
+                editBuilder.replace(document.lineAt(editor.selection.start.line).range, `${toBeAdded}`);
+            });
+        }
+    }
+}
+
 async function onBackspaceKey() {
     let editor = window.activeTextEditor
     let cursor = editor.selection.active;
@@ -129,24 +161,7 @@ async function onBackspaceKey() {
     }
 
     if (/^\s+([-+*]|[0-9]+[.)]) (|\[[ x]\] )$/.test(textBeforeCursor)) {
-        /*
-        TODO: update marker to resume numbering from outer list on outdent
-        let matches;
-        if ((matches = /^(\s*)[0-9]+([.)] +(?:|\[[x]\] +)(?!\[[x]\]).*)$/.exec(textBeforeCursor)) !== null
-            && workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'ordered') {
-            // Ordered list - set marker to 1.
-            let leadingSpace = matches[1];
-            let trailing = matches[2];
-            // marker must be the last number from the outer list + 1
-            let marker = '1';
-
-            const toBeAdded = leadingSpace + marker + trailing;
-            await editor.edit(editBuilder => {
-                editBuilder.replace(new Range(new Position(editor.selection.start.line, 0), cursor), `${toBeAdded}`);
-            });
-        }
-        */
-        return commands.executeCommand('editor.action.outdentLines');
+        return commands.executeCommand('editor.action.outdentLines').then(() => updateList(editor, document, cursor));
     } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- ', '1. '
         return deleteRange(editor, new Range(cursor.with({ character: 0 }), cursor));
