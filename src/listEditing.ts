@@ -89,7 +89,7 @@ async function onEnterKey(modifiers?: string) {
     editor.revealRange(editor.selection);
 }
 
-async function onTabKey() {
+function onTabKey() {
     let editor = window.activeTextEditor;
     let cursorPos = editor.selection.active;
     let textBeforeCursor = editor.document.lineAt(cursorPos.line).text.substr(0, cursorPos.character);
@@ -99,58 +99,13 @@ async function onTabKey() {
     }
 
     if (/^\s*([-+*]|[0-9]+[.)]) +(|\[[ x]\] +)$/.test(textBeforeCursor)) {
-        let matches;
-        if ((matches = /^(\s*)[0-9]+([.)] +(?:|\[[x]\] +)(?!\[[x]\]).*)$/.exec(textBeforeCursor)) !== null
-            && workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'ordered') {
-            // Ordered list - set marker to 1.
-            let marker = '1';
-            let leadingSpace = matches[1];
-            let trailing = matches[2];
-
-            const toBeAdded = leadingSpace + marker + trailing;
-            await editor.edit(editBuilder => {
-                editBuilder.replace(new Range(new Position(editor.selection.start.line, 0), cursorPos), `${toBeAdded}`);
-            });
-        }
-        return commands.executeCommand('editor.action.indentLines');
+        return commands.executeCommand('editor.action.indentLines').then(() => fixMarker(editor, cursorPos.line));
     } else {
         return asNormal('tab');
     }
 }
 
-function getLastMarker(document: TextDocument, cursor: Position, leadingSpace: string): number {
-    let line = cursor.line;
-    let orderedListRegex = /^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/;
-    let matches;
-    while (line-- > 0 && (matches = orderedListRegex.exec(document.lineAt(line).text)) !== null) {
-        if (matches[1] === leadingSpace) {
-            return Number(matches[2]);
-        }
-    }
-    return -1;
-}
-
-async function updateList(editor, document: TextDocument, cursor: Position) {
-    let textBeforeCursor = document.lineAt(cursor.line).text;
-    let matches;
-    if ((matches = /^(\s*)[0-9]+([.)] +(?:|\[[x]\] +)(?!\[[x]\]).*)$/.exec(textBeforeCursor)) !== null
-        && workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'ordered') {
-        // Ordered list - set marker to 1.
-        let leadingSpace = matches[1];
-        let trailing = matches[2];
-        // marker must be the last number from the outer list + 1
-        let lastMarker = getLastMarker(document, cursor, leadingSpace);
-        if (lastMarker !== -1) {
-            let marker = lastMarker + 1;
-            const toBeAdded = leadingSpace + marker + trailing;
-            return editor.edit(editBuilder => {
-                editBuilder.replace(document.lineAt(editor.selection.start.line).range, `${toBeAdded}`);
-            });
-        }
-    }
-}
-
-async function onBackspaceKey() {
+function onBackspaceKey() {
     let editor = window.activeTextEditor
     let cursor = editor.selection.active;
     let document = editor.document;
@@ -161,7 +116,7 @@ async function onBackspaceKey() {
     }
 
     if (/^\s+([-+*]|[0-9]+[.)]) (|\[[ x]\] )$/.test(textBeforeCursor)) {
-        return commands.executeCommand('editor.action.outdentLines').then(() => updateList(editor, document, cursor));
+        return commands.executeCommand('editor.action.outdentLines').then(() => fixMarker(editor, cursor.line));
     } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- ', '1. '
         return deleteRange(editor, new Range(cursor.with({ character: 0 }), cursor));
@@ -192,8 +147,41 @@ function asNormal(key: string, modifiers?: string) {
     }
 }
 
-async function deleteRange(editor: vscode.TextEditor, range: Range): Promise<boolean> {
-    return await editor.edit(editBuilder => {
+function lookUpwardForMarker(document: TextDocument, line: number, leadingSpace: string): number {
+    let orderedListRegex = /^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/;
+    let matches;
+    while (--line >= 0 && (matches = orderedListRegex.exec(document.lineAt(line).text)) !== null) {
+        if (matches[1] === leadingSpace) {
+            return Number(matches[2]) + 1;
+        }
+    }
+    return 1;
+}
+
+/**
+ * Fix ordered list marker at current line (after indenting or outdenting)
+ */
+function fixMarker(editor: vscode.TextEditor, line: number) {
+    let currentLineText = editor.document.lineAt(line).text;
+    if (/^(\s*[-+*] +(|\[[ x]\] +))(?!\[[ x]\]).*$/.test(currentLineText) // unordered list
+        || workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'one') {
+        return;
+    } else {
+        let matches;
+        if ((matches = /^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(currentLineText)) !== null) {
+            let leadingSpace = matches[1];
+            let marker = matches[2];
+            let fixedMarker = lookUpwardForMarker(editor.document, line, leadingSpace);
+
+            return editor.edit(editBuilder => {
+                editBuilder.replace(new Range(line, leadingSpace.length, line, leadingSpace.length + marker.length), String(fixedMarker));
+            });
+        }
+    }
+}
+
+function deleteRange(editor: vscode.TextEditor, range: Range): Thenable<boolean> {
+    return editor.edit(editBuilder => {
         editBuilder.delete(range);
     });
 }
@@ -213,10 +201,6 @@ function checkTaskList() {
             editBuilder.replace(new Range(cursorPos.with({ character: matches[1].length }), cursorPos.with({ character: matches[1].length + 1 })), ' ');
         });
     }
-}
-
-function isOrdered(line1: TextLine, line2: TextLine) {
-
 }
 
 async function sortOrderedList(direction) {
