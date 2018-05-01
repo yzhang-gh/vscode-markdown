@@ -102,6 +102,16 @@
                 "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
             },
             {
+                "command": "markdown.extension.onMoveLineUp",
+                "key": "alt+up",
+                "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.onMoveLineDown",
+                "key": "alt+down",
+                "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
                 "command": "markdown.extension.checkTaskList",
                 "key": "alt+c",
                 "when": "editorTextFocus && editorLangId == markdown"
