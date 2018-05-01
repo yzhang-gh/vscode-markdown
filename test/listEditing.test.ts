@@ -78,7 +78,7 @@ suite("List editing.", () => {
     });
 
     test("Tab key. 4: '2. |'", done => {
-        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['2. item1'], new Selection(0, 2, 0, 2), ['    1. item1'], new Selection(0, 6, 0, 6)).then(done, done);
+        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['2. item1'], new Selection(0, 3, 0, 3), ['    1. item1'], new Selection(0, 7, 0, 7)).then(done, done);
     });
 
     test("Tab key. 5: '2.  |'", done => {
@@ -86,6 +86,6 @@ suite("List editing.", () => {
     });
 
     test("Tab key. 6: '2. [ ] |'", done => {
-        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['2. [ ] item1'], new Selection(0, 6, 0, 6), ['    1. [ ] item1'], new Selection(0, 10, 0, 10)).then(done, done);
+        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['2. [ ] item1'], new Selection(0, 7, 0, 7), ['    1. [ ] item1'], new Selection(0, 11, 0, 11)).then(done, done);
     });
 });
