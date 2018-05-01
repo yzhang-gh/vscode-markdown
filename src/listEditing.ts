@@ -162,6 +162,10 @@ function lookUpwardForMarker(document: TextDocument, line: number, leadingSpace:
  * Fix ordered list marker at current line (after indenting or outdenting)
  */
 function fixMarker(editor: vscode.TextEditor, line: number) {
+    if (line < 0 || editor.document.lineCount <= line) {
+        return;
+    }
+
     let currentLineText = editor.document.lineAt(line).text;
     if (/^(\s*[-+*] +(|\[[ x]\] +))(?!\[[ x]\]).*$/.test(currentLineText) // unordered list
         || workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'one') {
@@ -203,50 +207,20 @@ function checkTaskList() {
     }
 }
 
-async function sortOrderedList(direction) {
-    let editor = window.activeTextEditor;
-    let cursorPos = editor.selection.active;
-    let activeLine = cursorPos.line;
-    let swapLine = direction === 'up' ? activeLine + 1 : activeLine - 1;
-    let topLine = Math.max(activeLine, swapLine);
-    let bottomLine = Math.min(activeLine, swapLine);
-    let topLineText = editor.document.lineAt(topLine).text;
-    let bottomLineText = editor.document.lineAt(bottomLine).text;
-    let orderedListRegex = /^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/;
-    let topLineMatches, bottomLineMatches;
-
-    // both lines in the swap must be ordered list
-    if ((topLineMatches = orderedListRegex.exec(topLineText)) !== null
-        && (bottomLineMatches = orderedListRegex.exec(bottomLineText)) !== null
-        && editor.selection.isSingleLine
-        && workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'ordered') {
-        const topLineMarker = Number(topLineMatches[2]);
-        const bottomLineMarker = Number(bottomLineMatches[2]);
-
-        // only swap if out of order and same indentation level
-        if (topLineMarker < bottomLineMarker && topLineMatches[1] === bottomLineMatches[1]) {
-            return editor.edit(editBuilder => {
-                editBuilder.replace(
-                    editor.document.lineAt(topLine).range,
-                    topLineText.replace(/^(\s*)([0-9]+)/, `$1${bottomLineMarker}`)
-                );
-                editBuilder.replace(
-                    editor.document.lineAt(bottomLine).range,
-                    bottomLineText.replace(/^(\s*)([0-9]+)/, `$1${topLineMarker}`)
-                );
-            });
-        }
-    }
-}
-
-async function onMoveLineUp() {
+function onMoveLineUp() {
+    let editor = vscode.window.activeTextEditor;
+    const line = editor.selection.active.line;
     return commands.executeCommand('editor.action.moveLinesUpAction')
-        .then(() => sortOrderedList('up'));
+        .then(() => fixMarker(editor, line - 1))
+        .then(() => fixMarker(editor, line));
 }
 
-async function onMoveLineDown() {
+function onMoveLineDown() {
+    let editor = vscode.window.activeTextEditor;
+    const line = editor.selection.active.line;
     return commands.executeCommand('editor.action.moveLinesDownAction')
-        .then(() => sortOrderedList('down'));
+        .then(() => fixMarker(editor, line))
+        .then(() => fixMarker(editor, line + 1));
 }
 
 export function deactivate() { }
