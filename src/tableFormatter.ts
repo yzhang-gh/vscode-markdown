@@ -1,6 +1,6 @@
 'use strict';
 
-// https://help.github.com/articles/organizing-information-with-tables/
+// https://github.github.com/gfm/#tables-extension-
 
 import { languages, workspace, CancellationToken, DocumentFormattingEditProvider, ExtensionContext, FormattingOptions, Range, TextDocument, TextEdit } from 'vscode';
 
@@ -27,8 +27,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     private detectTables(text: string) {
         const lineBreak = '\\r?\\n';
         const contentLine = '\\|?.*\\|.*\\|?';
-        // Trailing [ \t] is required to match trailing whitespaces in the hyphen line before lineBreak
-        const hyphenLine = '[ \\t]*\\|?( *:?-{3,}:? *\\|)+( *:?-{3,}:? *\\|?)[ \\t]*'
+        const hyphenLine = '[ \\t]*\\|?( *:?-{3,}:? *\\|)+( *:?-{3,}:? *\\|?)[ \\t]*';
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
         return text.match(tableRegex);
     }
@@ -42,51 +41,54 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
 
     /**
      * Return the indentation of a table as a string of spaces by reading it from the first line.
-     * In case of `markdown.extension.table.normalizeIdentation` is `enabled` it is rounded to the closest multiple of
+     * In case of `markdown.extension.table.normalizeIndentation` is `enabled` it is rounded to the closest multiple of
      * the configured `tabSize`.
      */
     private getTableIndentation(text: string, options: FormattingOptions) {
-        let doNormalize = workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('normalizeIndentation')
-        let indentRegex = new RegExp(/^(\s*)\S/u)
-        let match = text.match(indentRegex)
-        let spacesInFirstLine = match[1].length
-        let tabStops = Math.round(spacesInFirstLine / options.tabSize)
-        let spaces = doNormalize ? " ".repeat(options.tabSize * tabStops) : " ".repeat(spacesInFirstLine)
-        return spaces
+        let doNormalize = workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('normalizeIndentation');
+        let indentRegex = new RegExp(/^(\s*)\S/u);
+        let match = text.match(indentRegex);
+        let spacesInFirstLine = match[1].length;
+        let tabStops = Math.round(spacesInFirstLine / options.tabSize);
+        let spaces = doNormalize ? " ".repeat(options.tabSize * tabStops) : " ".repeat(spacesInFirstLine);
+        return spaces;
     }
 
     private formatTable(text: string, doc: TextDocument, options: FormattingOptions) {
-        let indentation = this.getTableIndentation(text, options)
+        let indentation = this.getTableIndentation(text, options);
 
-        let rows = []
-        let rowsNoIndentPattern = new RegExp(/^\s*(\S.*)$/gum)
-        let match = null
+        let rows = [];
+        let rowsNoIndentPattern = new RegExp(/^\s*(\S.*)$/gum);
+        let match = null;
         while ((match = rowsNoIndentPattern.exec(text)) !== null) {
-            rows.push(match[1])
+            rows.push(match[1]);
         }
-        // Get all cell contents - Regex works because this can only be  a line of a table
-        let fieldRegExp = new RegExp(/(?:\|?((?:\\\||`.*?`|[^\|])+))/gu)
 
-        let colWidth = []
-        let cn = /[\u3000-\u9fff\uff01-\uff60‘“’”—]/g;
+        // Desired width of each column
+        let colWidth = [];
+        // Regex to extract cell content.
+        // Known issue: `\\|` is not correctly parsed as a valid delimiter
+        let fieldRegExp = new RegExp(/(?:\|?((?:\\\||`.*?`|[^\|])+))/gu);
+        let cjkRegex = /[\u3000-\u9fff\uff01-\uff60‘“’”—]/g;
 
         let lines = rows.map(row => {
-            let field = null
-            let values = []
-            let i = 0
+            let field = null;
+            let values = [];
+            let i = 0;
             while ((field = fieldRegExp.exec(row)) !== null) {
-                let cell = field[1].trim()
-                values.push(cell)
-                // Treat Chinese characters as 2 English ones because of Unicode stuff
-                let length = cn.test(cell) ? cell.length + cell.match(cn).length : cell.length
-                colWidth[i] = colWidth[i] > length ? colWidth[i] : length
+                let cell = field[1].trim();
+                values.push(cell);
 
-                i = i + 1
+                // Treat CJK characters as 2 English ones because of Unicode stuff
+                let length = cjkRegex.test(cell) ? cell.length + cell.match(cjkRegex).length : cell.length;
+                colWidth[i] = colWidth[i] > length ? colWidth[i] : length;
+
+                i++;
             }
             return (values)
         });
 
-        // Normalize the num of hyphen        
+        // Normalize the num of hyphen
         lines[1] = lines[1].map((cell, i) => {
             if (/:-+:/.test(cell)) {
                 //:---:
@@ -106,8 +108,8 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         return lines.map(row => {
             let cells = row.map((cell, i) => {
                 let cellLength = colWidth[i];
-                if (cn.test(cell)) {
-                    cellLength -= cell.match(cn).length;
+                if (cjkRegex.test(cell)) {
+                    cellLength -= cell.match(cjkRegex).length;
                 }
                 return (cell + ' '.repeat(cellLength)).slice(0, cellLength);
             });
