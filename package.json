@@ -123,7 +123,8 @@
             },
             {
                 "command": "markdown.extension.togglePreviewToSide",
-                "key": "ctrl+k v"
+                "key": "ctrl+k v",
+                "when": "!terminalFocus"
             }
         ],
         "configuration": {
