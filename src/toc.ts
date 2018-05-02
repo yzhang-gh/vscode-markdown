@@ -15,11 +15,12 @@ let docConfig = { tab: '    ', eol: '\r\n' };
 let tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false };
 
 export function activate(context: vscode.ExtensionContext) {
-    context.subscriptions.push(vscode.commands.registerCommand('markdown.extension.toc.create', createToc));
-    context.subscriptions.push(vscode.commands.registerCommand('markdown.extension.toc.update', updateToc));
-
-    context.subscriptions.push(vscode.workspace.onWillSaveTextDocument(onWillSave));
-    context.subscriptions.push(vscode.languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider()));
+    context.subscriptions.push(
+        vscode.commands.registerCommand('markdown.extension.toc.create', createToc),
+        vscode.commands.registerCommand('markdown.extension.toc.update', updateToc),
+        vscode.workspace.onWillSaveTextDocument(onWillSave),
+        vscode.languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider())
+    );
 
     const mdOutlineProvider = new MdOutlineProvider();
     vscode.window.registerTreeDataProvider('mdOutline', mdOutlineProvider);

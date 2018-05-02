@@ -16,22 +16,24 @@ export function activate(context: ExtensionContext) {
     autoPreviewToSide(window.activeTextEditor);
 
     // Override default preview keybindings (from 'open preview' to 'toggle preview' i.e. 'open/close preview')
-    context.subscriptions.push(commands.registerCommand('markdown.extension.togglePreview', () => {
-        let editor = window.activeTextEditor;
-        if (!editor) {
-            commands.executeCommand('workbench.action.closeActiveEditor');
-        } else if (editor.document.languageId === 'markdown') {
-            commands.executeCommand('markdown.showPreview');
-        }
-    }));
-    context.subscriptions.push(commands.registerCommand('markdown.extension.togglePreviewToSide', () => {
-        let editor = window.activeTextEditor;
-        if (!editor) {
-            commands.executeCommand('workbench.action.closeActiveEditor');
-        } else if (editor.document.languageId === 'markdown') {
-            commands.executeCommand('markdown.showPreviewToSide');
-        }
-    }));
+    context.subscriptions.push(
+        commands.registerCommand('markdown.extension.togglePreview', () => {
+            let editor = window.activeTextEditor;
+            if (!editor) {
+                commands.executeCommand('workbench.action.closeActiveEditor');
+            } else if (editor.document.languageId === 'markdown') {
+                commands.executeCommand('markdown.showPreview');
+            }
+        }),
+        commands.registerCommand('markdown.extension.togglePreviewToSide', () => {
+            let editor = window.activeTextEditor;
+            if (!editor) {
+                commands.executeCommand('workbench.action.closeActiveEditor');
+            } else if (editor.document.languageId === 'markdown') {
+                commands.executeCommand('markdown.showPreviewToSide');
+            }
+        })
+    );
 }
 
 function autoPreviewToSide(editor: TextEditor) {

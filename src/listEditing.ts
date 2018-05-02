@@ -4,13 +4,15 @@ import { commands, window, workspace, ExtensionContext, Position, Range, Selecti
 import * as vscode from 'vscode';
 
 export function activate(context: ExtensionContext) {
-    context.subscriptions.push(commands.registerCommand('markdown.extension.onEnterKey', onEnterKey));
-    context.subscriptions.push(commands.registerCommand('markdown.extension.onCtrlEnterKey', () => { onEnterKey('ctrl'); }));
-    context.subscriptions.push(commands.registerCommand('markdown.extension.onTabKey', onTabKey));
-    context.subscriptions.push(commands.registerCommand('markdown.extension.onBackspaceKey', onBackspaceKey));
-    context.subscriptions.push(commands.registerCommand('markdown.extension.checkTaskList', checkTaskList));
-    context.subscriptions.push(commands.registerCommand('markdown.extension.onMoveLineDown', onMoveLineDown));
-    context.subscriptions.push(commands.registerCommand('markdown.extension.onMoveLineUp', onMoveLineUp));
+    context.subscriptions.push(
+        commands.registerCommand('markdown.extension.onEnterKey', onEnterKey),
+        commands.registerCommand('markdown.extension.onCtrlEnterKey', () => { onEnterKey('ctrl'); }),
+        commands.registerCommand('markdown.extension.onTabKey', onTabKey),
+        commands.registerCommand('markdown.extension.onBackspaceKey', onBackspaceKey),
+        commands.registerCommand('markdown.extension.checkTaskList', checkTaskList),
+        commands.registerCommand('markdown.extension.onMoveLineDown', onMoveLineDown),
+        commands.registerCommand('markdown.extension.onMoveLineUp', onMoveLineUp)
+    );
 }
 
 function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {

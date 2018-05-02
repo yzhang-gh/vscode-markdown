@@ -3,12 +3,14 @@
 import { commands, window, workspace, ExtensionContext, Position, Range, Selection, TextEditor } from 'vscode';
 
 export function activate(context: ExtensionContext) {
-    context.subscriptions.push(commands.registerCommand('markdown.extension.editing.toggleBold', toggleBold));
-    context.subscriptions.push(commands.registerCommand('markdown.extension.editing.toggleItalic', toggleItalic));
-    context.subscriptions.push(commands.registerCommand('markdown.extension.editing.toggleCodeSpan', toggleCodeSpan));
-    context.subscriptions.push(commands.registerCommand('markdown.extension.editing.toggleStrikethrough', toggleStrikethrough));
-    context.subscriptions.push(commands.registerCommand('markdown.extension.editing.toggleHeadingUp', toggleHeadingUp));
-    context.subscriptions.push(commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown));
+    context.subscriptions.push(
+        commands.registerCommand('markdown.extension.editing.toggleBold', toggleBold),
+        commands.registerCommand('markdown.extension.editing.toggleItalic', toggleItalic),
+        commands.registerCommand('markdown.extension.editing.toggleCodeSpan', toggleCodeSpan),
+        commands.registerCommand('markdown.extension.editing.toggleStrikethrough', toggleStrikethrough),
+        commands.registerCommand('markdown.extension.editing.toggleHeadingUp', toggleHeadingUp),
+        commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown)
+    );
 }
 
 // Return Promise because need to chain operations in unit tests
