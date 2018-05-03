@@ -36,6 +36,16 @@ export function activate(context: vscode.ExtensionContext) {
             // TODO:
         }
     });
+
+    vscode.commands.registerCommand('markdown.outline.fold', (args) => {
+        // TODO: toggle Collapsed or Expanded ?
+    });
+
+    vscode.commands.registerCommand('markdown.outline.refresh', (args) => {
+        mdOutlineProvider.update();
+    });
+
+
 }
 
 async function createToc() {
@@ -352,7 +362,6 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
                 treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
             }
         } // else -> vscode.TreeItemCollapsibleState.None
-
         treeItem.command = {
             command: 'revealLine',
             title: '',
