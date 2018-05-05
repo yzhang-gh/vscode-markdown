@@ -181,15 +181,15 @@ function lookUpwardForMarker(editor: vscode.TextEditor, line: number, numOfSpace
 /**
  * Fix ordered list marker *iteratively* starting from current line
  */
-function fixMarker(editor: vscode.TextEditor, line: number) {
+function fixMarker(editor: vscode.TextEditor, line: number, undoStopBefore = true) {
     if (line < 0 || editor.document.lineCount <= line) {
-        return;
+        return editor.edit(() => { }, { undoStopBefore: false, undoStopAfter: true });
     }
 
     let currentLineText = editor.document.lineAt(line).text;
     if (/^(\s*[-+*] +(|\[[ x]\] +))(?!\[[ x]\]).*$/.test(currentLineText) // unordered list
         || workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'one') {
-        return;
+        return editor.edit(() => { }, { undoStopBefore: false, undoStopAfter: true });
     } else {
         let matches;
         if ((matches = /^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(currentLineText)) !== null) {
@@ -200,16 +200,16 @@ function fixMarker(editor: vscode.TextEditor, line: number) {
             return editor.edit(editBuilder => {
                 if (Number(marker) === fixedMarker) return;
                 editBuilder.replace(new Range(line, leadingSpace.length, line, leadingSpace.length + marker.length), String(fixedMarker));
-            }).then(() => {
+            }, { undoStopBefore: undoStopBefore, undoStopAfter: false }).then(() => {
                 let nextLine = line + 1;
                 while (editor.document.lineCount > nextLine) {
                     const nextLineText = editor.document.lineAt(nextLine).text;
                     if (/^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.test(nextLineText)) {
-                        return fixMarker(editor, nextLine);
+                        return fixMarker(editor, nextLine, false);
                     } else if (nextLineText.startsWith(leadingSpace) && /[ \t]/.test(nextLineText.charAt(leadingSpace.length))) {
                         nextLine++;
                     } else {
-                        return;
+                        return editor.edit(() => { }, { undoStopBefore: false, undoStopAfter: true });
                     }
                 }
             });
