@@ -49,6 +49,10 @@ suite("List editing.", () => {
         testCommand('markdown.extension.onEnterKey', {}, ['- [test]'], new Selection(0, 8, 0, 8), ['- [test]', '- '], new Selection(1, 2, 1, 2)).then(done, done);
     });
 
+    test("Enter key. '> |'", done => {
+        testCommand('markdown.extension.onEnterKey', {}, ['> test'], new Selection(0, 6, 0, 6), ['> test', '> '], new Selection(1, 2, 1, 2)).then(done, done);
+    });
+
     test("Backspace key. 1: '- |'", done => {
         testCommand('markdown.extension.onBackspaceKey', {}, ['- item1'], new Selection(0, 2, 0, 2), ['item1'], new Selection(0, 0, 0, 0)).then(done, done);
     });

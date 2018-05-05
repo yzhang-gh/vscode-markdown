@@ -42,7 +42,7 @@ async function onEnterKey(modifiers?: string) {
     }
 
     // If it's an empty list item, remove it
-    if (/^([-+*]|[0-9]+[.)])(| \[[ x]\])$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
+    if (/^(>|([-+*]|[0-9]+[.)])(| \[[ x]\]))$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
         return editor.edit(editBuilder => {
             editBuilder.delete(line.range);
             editBuilder.insert(line.range.end, '\n');
@@ -50,7 +50,17 @@ async function onEnterKey(modifiers?: string) {
     }
 
     let matches;
-    if ((matches = /^(\s*[-+*] +(|\[[ x]\] +))(?!\[[ x]\]).*$/.exec(textBeforeCursor)) !== null) {
+    if (/^> /.test(textBeforeCursor)) {
+        // Quote block
+        await editor.edit(editBuilder => {
+            editBuilder.insert(lineBreakPos, `\n> `);
+        });
+        // Fix cursor position
+        if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
+            let newCursorPos = cursorPos.with(line.lineNumber + 1, 2);
+            editor.selection = new Selection(newCursorPos, newCursorPos);
+        }
+    } else if ((matches = /^(\s*[-+*] +(|\[[ x]\] +))(?!\[[ x]\]).*$/.exec(textBeforeCursor)) !== null) {
         // Unordered list
         await editor.edit(editBuilder => {
             editBuilder.insert(lineBreakPos, `\n${matches[1].replace('[x]', '[ ]')}`);
