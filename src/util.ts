@@ -1,7 +1,7 @@
 'use strict'
 
 import * as path from 'path';
-import { extensions, workspace } from 'vscode';
+import { extensions, workspace, Uri, commands } from 'vscode';
 
 export const officialExtPath = extensions.getExtension("vscode.markdown-language-features").extensionPath;
 const tocModule = require(path.join(officialExtPath, 'out', 'tableOfContentsProvider'));
@@ -22,4 +22,25 @@ export function slugify(heading: string) {
         // <https://github.com/Microsoft/vscode/blob/b6417424521559acb9a5088111fb0ed70de7ccf2/extensions/markdown-language-features/src/tableOfContentsProvider.ts#L13>
         return tocModule.Slug.fromHeading(heading).value;
     }
+}
+
+export function getNewFeatureMsg(version: string) {
+    switch (version) {
+        case '1.3.0':
+            return 'New Feature! Auto renumbering ordered list.';
+    }
+    return undefined;
+}
+
+export function showChangelog() {
+    let mdExt = extensions.getExtension('vscode.markdown');
+    if (mdExt.isActive) {
+        previewChangelog();
+    } else {
+        mdExt.activate().then(previewChangelog);
+    }
+}
+
+function previewChangelog() {
+    commands.executeCommand('markdown.showPreview', Uri.file(path.join(__dirname, '../../CHANGELOG.md')));
 }
