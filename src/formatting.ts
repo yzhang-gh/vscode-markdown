@@ -1,6 +1,6 @@
 'use strict';
 
-import { commands, window, workspace, ExtensionContext, Position, Range, Selection, TextEditor } from 'vscode';
+import { commands, window, workspace, ExtensionContext, Position, Range, Selection, TextEditor, TextEdit } from 'vscode';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
@@ -8,6 +8,7 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.editing.toggleItalic', toggleItalic),
         commands.registerCommand('markdown.extension.editing.toggleCodeSpan', toggleCodeSpan),
         commands.registerCommand('markdown.extension.editing.toggleStrikethrough', toggleStrikethrough),
+        commands.registerCommand('markdown.extension.editing.toggleMath', toggleMath),
         commands.registerCommand('markdown.extension.editing.toggleHeadingUp', toggleHeadingUp),
         commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown)
     );
@@ -60,6 +61,27 @@ function toggleHeadingDown() {
             editBuilder.delete(new Range(new Position(lineIndex, 0), new Position(lineIndex, 1)));
         }
     });
+}
+
+function toggleMath() {
+    let editor = window.activeTextEditor;
+    if (!editor.selection.isEmpty) return;
+    let cursor = editor.selection.active;
+
+    if (getContext('$') === '$|$') {
+        return editor.edit(editBuilder => {
+            editBuilder.replace(new Range(cursor.line, cursor.character - 1, cursor.line, cursor.character + 1), '$$  $$');
+        }).then(() => {
+            let pos = cursor.with({ character: cursor.character + 2 });
+            editor.selection = new Selection(pos, pos);
+        });
+    } else if (getContext('$$ ', ' $$') === '$$ | $$') {
+        return editor.edit(editBuilder => {
+            editBuilder.delete(new Range(cursor.line, cursor.character - 3, cursor.line, cursor.character + 3));
+        });
+    } else {
+        return commands.executeCommand('editor.action.insertSnippet', { snippet: '$$0$' });
+    }
 }
 
 async function styleByWrapping(startPattern, endPattern?) {
