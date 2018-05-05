@@ -322,19 +322,19 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
         if (this.isMdEditor(this.editor)) {
             const tocProvider = new TocProvider(engine, this.editor.document);
             this.toc = await tocProvider.getToc();
+
+            // Better to have <= 10 expanded items in the outline view
+            let maxInitItems = 10;
+            this.maxExpandedLvl = 6;
+            for (let i = 1; i <= 6; i++) {
+                maxInitItems -= this.toc.filter(h => h.level === i).length;
+                if (maxInitItems < 0) {
+                    this.maxExpandedLvl = i - 1;
+                    break;
+                }
+            }
         } else {
             this.toc = null;
-        }
-
-        // Better to have <= 10 expanded items in the outline view
-        let maxInitItems = 10;
-        this.maxExpandedLvl = 6;
-        for (let i = 1; i <= 6; i++) {
-            maxInitItems -= this.toc.filter(h => h.level === i).length;
-            if (maxInitItems < 0) {
-                this.maxExpandedLvl = i - 1;
-                break;
-            }
         }
     }
 
