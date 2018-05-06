@@ -18,10 +18,11 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
 - **Print Markdown to HTML**
   - It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others
-- **List editing** (continue list when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
+- **List editing** (continue list when pressing <kbd>Enter</kbd> at the end of a list item) (also works for quote block)
   - Pressing <kbd>Tab</kbd> at the beginning of a list item will indent it
   - Pressing <kbd>Backspace</kbd> at the beginning of a list item will unindent it (or delete the list marker)
   - Blank list item will be remove on <kbd>Enter</kbd>
+  - Ordered list markers will be automatically fixed after you indent/outdent a line or move a line up/down
 - **GitHub Flavored Markdown**
   - Table formatter (<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd>)
   - Task list (use <kbd>Alt</kbd> + <kbd>C</kbd> to check/uncheck a list item)
@@ -71,6 +72,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | <kbd>Alt</kbd> + <kbd>S</kbd>                     | Toggle strikethrough         |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel)     |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel)   |
+| <kbd>Ctrl</kbd> + <kbd>M</kbd>                    | Toggle math environment      |
 | <kbd>Alt</kbd> + <kbd>C</kbd>                     | Check/Uncheck task list item |
 
 ## Available Commands

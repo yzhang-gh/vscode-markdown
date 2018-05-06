@@ -1,3 +1,29 @@
+### 1.3.0 (2018.05.05)
+
+- **New**: Automatically fix list markers when editing ordered list ([#32](https://github.com/neilsustc/vscode-markdown/issues/32), [#104](https://github.com/neilsustc/vscode-markdown/issues/104), [#154](https://github.com/neilsustc/vscode-markdown/issues/154)). Thanks, [Eric Yancey Dauenhauer (@ericyd)](https://github.com/ericyd)
+- **New**: Keyboard shortcut for toggling math environment (<kbd>Ctrl</kbd> + <kbd>M</kbd>) ([#165](https://github.com/neilsustc/vscode-markdown/issues/165))
+- **New**: Command `toggleUnorderedList`, switching between non-list, <code>- </code>, <code>* </code> and <code>+ </code> ([#145](https://github.com/neilsustc/vscode-markdown/issues/145))
+- **Fix**: Tables inside list item will be also formatted now ([#107](https://github.com/neilsustc/vscode-markdown/issues/107)). Thanks, [Stefan Zi (@StefanZi)](https://github.com/StefanZi)
+- **Fix**: Keybinding (<kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>) conflicts with command `workbench.action.terminal.clear` ([#161](https://github.com/neilsustc/vscode-markdown/issues/161))
+- **Other**: Handle Japanese characters when formatting tables ([#153](https://github.com/neilsustc/vscode-markdown/issues/153)). Thanks, [@Matsuyanagi (@Matsuyanagi)](https://github.com/Matsuyanagi)
+- **Other**: Smartly set collapse states when showing outline view ([#149](https://github.com/neilsustc/vscode-markdown/issues/149))
+
+#### List Renumbering
+
+![list renumbering](images/gifs/list-renumbering.gif)
+
+#### Keyboard Shortcut for Toggling Math Environment
+
+![math toggle](images/gifs/math-toggle.gif)
+
+#### Toggle Unordered List
+
+(assign your desired key binding to `markdown.extension.editing.toggleUnorderedList` first)
+
+![toggle unordered list](images/gifs/toggle-unordered-list.gif)
+
+---
+
 ### 1.2.0 (2018.04.20)
 
 - **New**: Math rendering! (supported in both vscode preview and exported HTML) ([#106](https://github.com/neilsustc/vscode-markdown/issues/106))
@@ -5,13 +31,17 @@
 - **Fix**: Replace underscore with dash when slugifying ([#147](https://github.com/neilsustc/vscode-markdown/issues/147))
 - **Other**: Add default keybinding <kbd>Alt</kbd> + <kbd>S</kbd> to command `toggleStrikethrough` ([#91](https://github.com/neilsustc/vscode-markdown/issues/91))
 
+---
+
 ### 1.1.2 (2018.04.04)
 
-- **New**: Option `toc.toLowerCase` determining whether or not lowercasing TOC anchors ([#136](https://github.com/neilsustc/vscode-markdown/issues/136), [#137](https://github.com/neilsustc/vscode-markdown/issues/137). Thanks [@Владислав Люминарский](https://github.com/Vladislav-Lyuminarskiy))
+- **New**: Option `toc.toLowerCase` determining whether or not lowercasing TOC anchors ([#136](https://github.com/neilsustc/vscode-markdown/issues/136), [#137](https://github.com/neilsustc/vscode-markdown/issues/137). Thanks, [Владислав Люминарский (@Vladislav-Lyuminarskiy)](https://github.com/Vladislav-Lyuminarskiy))
 - **Fix**: Handle relative CSS paths in `markdown.styles` setting when printing ([#113](https://github.com/neilsustc/vscode-markdown/issues/113))
 - **Fix**: TOC now works better with ordered list ([#130](https://github.com/neilsustc/vscode-markdown/issues/130), [#131](https://github.com/neilsustc/vscode-markdown/issues/131))
 - **Fix**: Keybinding conflict between `togglePreview` and `paste` on Linux ([#134](https://github.com/neilsustc/vscode-markdown/issues/134))
 - **Fix**: Reveal cursor after editing list in case it is out of view ([#138](https://github.com/neilsustc/vscode-markdown/issues/138))
+
+---
 
 ### 1.1.1 (2018.03.24)
 
@@ -20,6 +50,8 @@
 - **Fix**: List does not continue if a list item starts with URL ([#122](https://github.com/neilsustc/vscode-markdown/issues/122))
 - **Fix**: `print.absoluteImgPath` option doesn't take effect on some image tags ([#124](https://github.com/neilsustc/vscode-markdown/issues/124))
 - **Fix**: A bug when formatting table ([#128](https://github.com/neilsustc/vscode-markdown/issues/128))
+
+---
 
 ### 1.1.0 (2018.03.08)
 

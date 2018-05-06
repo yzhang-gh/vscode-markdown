@@ -27,18 +27,21 @@ export function slugify(heading: string) {
 export function getNewFeatureMsg(version: string) {
     switch (version) {
         case '1.3.0':
-            return 'New Feature! Auto renumbering ordered list.';
+            return 'Introduce an exciting feature! Auto renumbering ordered list.';
     }
     return undefined;
 }
 
 export function showChangelog() {
-    let mdExt = extensions.getExtension('vscode.markdown');
-    if (mdExt.isActive) {
-        previewChangelog();
-    } else {
-        mdExt.activate().then(previewChangelog);
-    }
+    // vscode#49268
+    // let mdExt = extensions.getExtension('vscode.markdown');
+    // if (mdExt.isActive) {
+    //     previewChangelog();
+    // } else {
+    //     mdExt.activate().then(previewChangelog);
+    // }
+
+    commands.executeCommand('vscode.open', Uri.parse('https://github.com/neilsustc/vscode-markdown/blob/master/CHANGELOG.md'))
 }
 
 function previewChangelog() {
