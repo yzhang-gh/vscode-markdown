@@ -10,7 +10,8 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.editing.toggleStrikethrough', toggleStrikethrough),
         commands.registerCommand('markdown.extension.editing.toggleMath', toggleMath),
         commands.registerCommand('markdown.extension.editing.toggleHeadingUp', toggleHeadingUp),
-        commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown)
+        commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown),
+        commands.registerCommand('markdown.extension.editing.toggleUnorderedList', toggleUnorderedList)
     );
 }
 
@@ -81,6 +82,36 @@ function toggleMath() {
         });
     } else {
         return commands.executeCommand('editor.action.insertSnippet', { snippet: '$$0$' });
+    }
+}
+
+function toggleUnorderedList() {
+    let editor = window.activeTextEditor;
+    if (!editor.selection.isEmpty) return;
+    let cursor = editor.selection.active;
+    let textBeforeCursor = editor.document.lineAt(cursor.line).text.substr(0, cursor.character);
+
+    let indentation = 0;
+    switch (textBeforeCursor.trim()) {
+        case '':
+            return editor.edit(editBuilder => {
+                editBuilder.insert(cursor, '- ');
+            });
+        case '-':
+            indentation = textBeforeCursor.indexOf('-');
+            return editor.edit(editBuilder => {
+                editBuilder.replace(new Range(cursor.line, indentation, cursor.line, cursor.character), '*' + ' '.repeat(textBeforeCursor.length - indentation - 1));
+            });
+        case '*':
+            indentation = textBeforeCursor.indexOf('*');
+            return editor.edit(editBuilder => {
+                editBuilder.replace(new Range(cursor.line, indentation, cursor.line, cursor.character), '+' + ' '.repeat(textBeforeCursor.length - indentation - 1));
+            });
+        case '+':
+            indentation = textBeforeCursor.indexOf('+');
+            return editor.edit(editBuilder => {
+                editBuilder.delete(new Range(cursor.line, indentation, cursor.line, cursor.character));
+            });
     }
 }
 

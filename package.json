@@ -50,6 +50,10 @@
                 "title": "Markdown: Toggle math environment"
             },
             {
+                "command": "markdown.extension.editing.toggleUnorderedList",
+                "title": "Markdown: Toggle unordered list"
+            },
+            {
                 "command": "markdown.extension.copySlug",
                 "title": "Markdown: Copy Slugified Heading"
             }
