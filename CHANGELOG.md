@@ -1,4 +1,4 @@
-### 1.3.0 (2018.05.05)
+### 1.3.0 (2018.05.06)
 
 - **New**: Automatically fix list markers when editing ordered list ([#32](https://github.com/neilsustc/vscode-markdown/issues/32), [#104](https://github.com/neilsustc/vscode-markdown/issues/104), [#154](https://github.com/neilsustc/vscode-markdown/issues/154)). Thanks, [Eric Yancey Dauenhauer (@ericyd)](https://github.com/ericyd)
 - **New**: Keyboard shortcut for toggling math environment (<kbd>Ctrl</kbd> + <kbd>M</kbd>) ([#165](https://github.com/neilsustc/vscode-markdown/issues/165))
