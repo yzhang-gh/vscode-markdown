@@ -133,12 +133,12 @@ function onBackspaceKey() {
         return commands.executeCommand('editor.action.outdentLines').then(() => fixMarker());
     } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- ', '1. '
-        return deleteRange(editor, new Range(cursor.with({ character: 0 }), cursor));
+        return deleteRange(editor, new Range(cursor.with({ character: 0 }), cursor)).then(() => fixMarker(cursor.line + 1));
     } else if (/^([-+*]|[0-9]+[.)]) (\[[ x]\] )$/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- [ ]', '1. [x]'
-        return deleteRange(editor, new Range(cursor.with({ character: textBeforeCursor.length - 4 }), cursor));
+        return deleteRange(editor, new Range(cursor.with({ character: textBeforeCursor.length - 4 }), cursor)).then(() => fixMarker(cursor.line + 1));
     } else {
-        return asNormal('backspace');
+        return asNormal('backspace').then(() => fixMarker());
     }
 }
 
@@ -184,7 +184,6 @@ function lookUpwardForMarker(editor: vscode.TextEditor, line: number, numOfSpace
  * Fix ordered list marker *iteratively* starting from current line
  */
 function fixMarker(line?: number) {
-    console.log('fix', line);
     let editor = vscode.window.activeTextEditor;
     if (line === undefined) {
         line = editor.selection.active.line;
@@ -220,6 +219,8 @@ function fixMarker(line?: number) {
                     }
                 }
             });
+        } else {
+            return editor.edit(() => { }, { undoStopBefore: false, undoStopAfter: true });
         }
     }
 }
