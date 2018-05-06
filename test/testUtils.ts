@@ -21,7 +21,7 @@ export let defaultConfigs = {
 // 💩 Promise, then, async/await ... <https://github.com/Microsoft/vscode/issues/31210>
 
 export async function testCommand(command: string, configs, lines: string[], selection: Selection, expLines: string[], expSelection: Selection) {
-    let tempConfigs = defaultConfigs;
+    let tempConfigs = Object.assign({}, defaultConfigs);
     for (let key in configs) {
         if (configs.hasOwnProperty(key)) {
             tempConfigs[key] = configs[key];

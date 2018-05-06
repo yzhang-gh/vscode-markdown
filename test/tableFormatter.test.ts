@@ -1,22 +1,24 @@
 import { workspace, Selection } from 'vscode';
 import { testMdFile, defaultConfigs, testCommand } from './testUtils';
 
+let previousConfigs = Object.assign({}, defaultConfigs);
+
 suite("Table formatter.", () => {
     suiteSetup(async () => {
         // 💩 Preload file to prevent the first test to be treated timeout
         await workspace.openTextDocument(testMdFile);
 
-        for (let key in defaultConfigs) {
-            if (defaultConfigs.hasOwnProperty(key)) {
-                defaultConfigs[key] = workspace.getConfiguration('', null).get(key);
+        for (let key in previousConfigs) {
+            if (previousConfigs.hasOwnProperty(key)) {
+                previousConfigs[key] = workspace.getConfiguration('', null).get(key);
             }
         }
     });
 
     suiteTeardown(async () => {
-        for (let key in defaultConfigs) {
-            if (defaultConfigs.hasOwnProperty(key)) {
-                await workspace.getConfiguration('', null).update(key, defaultConfigs[key], true);
+        for (let key in previousConfigs) {
+            if (previousConfigs.hasOwnProperty(key)) {
+                await workspace.getConfiguration('', null).update(key, previousConfigs[key], true);
             }
         }
     });
