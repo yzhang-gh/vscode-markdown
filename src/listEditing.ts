@@ -25,7 +25,7 @@ function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
     }
 }
 
-async function onEnterKey(modifiers?: string) {
+function onEnterKey(modifiers?: string) {
     let editor = window.activeTextEditor;
     let cursorPos: Position = editor.selection.active;
     let line = editor.document.lineAt(cursorPos.line);
@@ -52,24 +52,26 @@ async function onEnterKey(modifiers?: string) {
     let matches;
     if (/^> /.test(textBeforeCursor)) {
         // Quote block
-        await editor.edit(editBuilder => {
+        return editor.edit(editBuilder => {
             editBuilder.insert(lineBreakPos, `\n> `);
-        });
-        // Fix cursor position
-        if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
-            let newCursorPos = cursorPos.with(line.lineNumber + 1, 2);
-            editor.selection = new Selection(newCursorPos, newCursorPos);
-        }
+        }).then(() => {
+            // Fix cursor position
+            if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
+                let newCursorPos = cursorPos.with(line.lineNumber + 1, 2);
+                editor.selection = new Selection(newCursorPos, newCursorPos);
+            }
+        }).then(() => { editor.revealRange(editor.selection) });
     } else if ((matches = /^(\s*[-+*] +(|\[[ x]\] +))(?!\[[ x]\]).*$/.exec(textBeforeCursor)) !== null) {
         // Unordered list
-        await editor.edit(editBuilder => {
+        return editor.edit(editBuilder => {
             editBuilder.insert(lineBreakPos, `\n${matches[1].replace('[x]', '[ ]')}`);
-        });
-        // Fix cursor position
-        if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
-            let newCursorPos = cursorPos.with(line.lineNumber + 1, matches[1].length);
-            editor.selection = new Selection(newCursorPos, newCursorPos);
-        }
+        }).then(() => {
+            // Fix cursor position
+            if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
+                let newCursorPos = cursorPos.with(line.lineNumber + 1, matches[1].length);
+                editor.selection = new Selection(newCursorPos, newCursorPos);
+            }
+        }).then(() => { editor.revealRange(editor.selection) });
     } else if ((matches = /^(\s*)([0-9]+)([.)])( +)(|\[[ x]\] +)(?!\[[ x]\]).*$/.exec(textBeforeCursor)) !== null) {
         // Ordered list
         let config = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker');
@@ -87,19 +89,18 @@ async function onEnterKey(modifiers?: string) {
         trailingSpace = " ".repeat(Math.max(1, textIndent - (marker + delimiter).length));
 
         const toBeAdded = leadingSpace + marker + delimiter + trailingSpace + gfmCheckbox;
-        await editor.edit(editBuilder => {
+        return editor.edit(editBuilder => {
             editBuilder.insert(lineBreakPos, `\n${toBeAdded}`);
-        });
-        // Fix cursor position
-        if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
-            let newCursorPos = cursorPos.with(line.lineNumber + 1, toBeAdded.length);
-            editor.selection = new Selection(newCursorPos, newCursorPos);
-        }
-        await fixMarker(editor.selection.active.line);
+        }, { undoStopBefore: true, undoStopAfter: false }).then(() => {
+            // Fix cursor position
+            if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
+                let newCursorPos = cursorPos.with(line.lineNumber + 1, toBeAdded.length);
+                editor.selection = new Selection(newCursorPos, newCursorPos);
+            }
+        }).then(() => fixMarker()).then(() => { editor.revealRange(editor.selection) });
     } else {
         return asNormal('enter', modifiers);
     }
-    editor.revealRange(editor.selection);
 }
 
 function onTabKey() {
@@ -182,7 +183,8 @@ function lookUpwardForMarker(editor: vscode.TextEditor, line: number, numOfSpace
 /**
  * Fix ordered list marker *iteratively* starting from current line
  */
-function fixMarker(line?: number, undoStopBefore = true) {
+function fixMarker(line?: number) {
+    console.log('fix', line);
     let editor = vscode.window.activeTextEditor;
     if (line === undefined) {
         line = editor.selection.active.line;
@@ -205,12 +207,12 @@ function fixMarker(line?: number, undoStopBefore = true) {
             return editor.edit(editBuilder => {
                 if (Number(marker) === fixedMarker) return;
                 editBuilder.replace(new Range(line, leadingSpace.length, line, leadingSpace.length + marker.length), String(fixedMarker));
-            }, { undoStopBefore: undoStopBefore, undoStopAfter: false }).then(() => {
+            }, { undoStopBefore: false, undoStopAfter: false }).then(() => {
                 let nextLine = line + 1;
                 while (editor.document.lineCount > nextLine) {
                     const nextLineText = editor.document.lineAt(nextLine).text;
                     if (/^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.test(nextLineText)) {
-                        return fixMarker(nextLine, false);
+                        return fixMarker(nextLine);
                     } else if (nextLineText.startsWith(leadingSpace) && /[ \t]/.test(nextLineText.charAt(leadingSpace.length))) {
                         nextLine++;
                     } else {
