@@ -95,6 +95,7 @@ async function onEnterKey(modifiers?: string) {
             let newCursorPos = cursorPos.with(line.lineNumber + 1, toBeAdded.length);
             editor.selection = new Selection(newCursorPos, newCursorPos);
         }
+        await fixMarker(editor.selection.active.line);
     } else {
         return asNormal('enter', modifiers);
     }
@@ -111,7 +112,7 @@ function onTabKey() {
     }
 
     if (/^\s*([-+*]|[0-9]+[.)]) +(|\[[ x]\] +)$/.test(textBeforeCursor)) {
-        return commands.executeCommand('editor.action.indentLines').then(() => fixMarker(editor, cursorPos.line));
+        return commands.executeCommand('editor.action.indentLines').then(() => fixMarker());
     } else {
         return asNormal('tab');
     }
@@ -128,7 +129,7 @@ function onBackspaceKey() {
     }
 
     if (/^\s+([-+*]|[0-9]+[.)]) (|\[[ x]\] )$/.test(textBeforeCursor)) {
-        return commands.executeCommand('editor.action.outdentLines').then(() => fixMarker(editor, cursor.line));
+        return commands.executeCommand('editor.action.outdentLines').then(() => fixMarker());
     } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- ', '1. '
         return deleteRange(editor, new Range(cursor.with({ character: 0 }), cursor));
@@ -181,7 +182,11 @@ function lookUpwardForMarker(editor: vscode.TextEditor, line: number, numOfSpace
 /**
  * Fix ordered list marker *iteratively* starting from current line
  */
-function fixMarker(editor: vscode.TextEditor, line: number, undoStopBefore = true) {
+function fixMarker(line?: number, undoStopBefore = true) {
+    let editor = vscode.window.activeTextEditor;
+    if (line === undefined) {
+        line = editor.selection.active.line;
+    }
     if (line < 0 || editor.document.lineCount <= line) {
         return editor.edit(() => { }, { undoStopBefore: false, undoStopAfter: true });
     }
@@ -205,7 +210,7 @@ function fixMarker(editor: vscode.TextEditor, line: number, undoStopBefore = tru
                 while (editor.document.lineCount > nextLine) {
                     const nextLineText = editor.document.lineAt(nextLine).text;
                     if (/^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.test(nextLineText)) {
-                        return fixMarker(editor, nextLine, false);
+                        return fixMarker(nextLine, false);
                     } else if (nextLineText.startsWith(leadingSpace) && /[ \t]/.test(nextLineText.charAt(leadingSpace.length))) {
                         nextLine++;
                     } else {
@@ -241,17 +246,13 @@ function checkTaskList() {
 }
 
 function onMoveLineUp() {
-    let editor = vscode.window.activeTextEditor;
-    const line = editor.selection.active.line;
     return commands.executeCommand('editor.action.moveLinesUpAction')
-        .then(() => fixMarker(editor, line - 1));
+        .then(() => fixMarker());
 }
 
 function onMoveLineDown() {
-    let editor = vscode.window.activeTextEditor;
-    const line = editor.selection.active.line;
     return commands.executeCommand('editor.action.moveLinesDownAction')
-        .then(() => fixMarker(editor, line));
+        .then(() => fixMarker(vscode.window.activeTextEditor.selection.active.line - 1));
 }
 
 export function deactivate() { }
