@@ -14,6 +14,7 @@ export let defaultConfigs = {
     "markdown.extension.orderedList.marker": "ordered",
     "markdown.extension.italic.indicator": "*",
     "markdown.extension.quickStyling": false,
+    "markdown.extension.tableFormatter.normalizeIndentation": false,
     "editor.insertSpaces": true,
     "editor.tabSize": 4
 }

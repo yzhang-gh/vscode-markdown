@@ -152,8 +152,7 @@ suite("Table formatter.", () => {
     });
 
     test("Mixed-indented table (no normalization)", done => {
-        testCommand('editor.action.formatDocument',
-            { "markdown.extension.tableFormatter.normalizeIndentation": false },
+        testCommand('editor.action.formatDocument', {},
             [
                 '   | a | b |',
                 '  | --- | --- |',

@@ -24,12 +24,7 @@ suite("TOC.", () => {
     });
 
     test("Create", done => {
-        testCommand('markdown.extension.toc.create',
-            {
-                "markdown.extension.toc.levels": "1..6",
-                "markdown.extension.toc.orderedList": false,
-                "markdown.extension.toc.plaintext": false
-            },
+        testCommand('markdown.extension.toc.create', {},
             [
                 '# Section 1',
                 '',
@@ -55,12 +50,7 @@ suite("TOC.", () => {
     });
 
     test("Update", done => {
-        testCommand('markdown.extension.toc.update',
-            {
-                "markdown.extension.toc.levels": "1..6",
-                "markdown.extension.toc.orderedList": false,
-                "markdown.extension.toc.plaintext": false
-            },
+        testCommand('markdown.extension.toc.update', {},
             [
                 '# Section 1',
                 '',
@@ -95,9 +85,7 @@ suite("TOC.", () => {
     test("Create (levels 2..3)", done => {
         testCommand('markdown.extension.toc.create',
             {
-                "markdown.extension.toc.levels": "2..3",
-                "markdown.extension.toc.orderedList": false,
-                "markdown.extension.toc.plaintext": false
+                "markdown.extension.toc.levels": "2..3"
             },
             [
                 '# Section 1',
@@ -147,9 +135,7 @@ suite("TOC.", () => {
     test("Update (levels 2..3)", done => {
         testCommand('markdown.extension.toc.update',
             {
-                "markdown.extension.toc.levels": "2..3",
-                "markdown.extension.toc.orderedList": false,
-                "markdown.extension.toc.plaintext": false
+                "markdown.extension.toc.levels": "2..3"
             },
             [
                 '# Section 1',
@@ -191,12 +177,7 @@ suite("TOC.", () => {
     });
 
     test("Create 中文", done => {
-        testCommand('markdown.extension.toc.create',
-            {
-                "markdown.extension.toc.levels": "1..6",
-                "markdown.extension.toc.orderedList": false,
-                "markdown.extension.toc.plaintext": false
-            },
+        testCommand('markdown.extension.toc.create', {},
             [
                 '# Section 中文',
                 '',
@@ -222,12 +203,7 @@ suite("TOC.", () => {
     });
 
     test("Slugify. `a.b` c => ab-c", done => {
-        testCommand('markdown.extension.toc.create',
-            {
-                "markdown.extension.toc.levels": "1..6",
-                "markdown.extension.toc.orderedList": false,
-                "markdown.extension.toc.plaintext": false
-            },
+        testCommand('markdown.extension.toc.create', {},
             [
                 '# `a.b` c',
                 '',
@@ -243,12 +219,7 @@ suite("TOC.", () => {
     });
 
     test("Setext heading syntax", done => {
-        testCommand('markdown.extension.toc.create',
-            {
-                "markdown.extension.toc.levels": "1..6",
-                "markdown.extension.toc.orderedList": false,
-                "markdown.extension.toc.plaintext": false
-            },
+        testCommand('markdown.extension.toc.create', {},
             [
                 'Section 1',
                 '===',
@@ -271,13 +242,10 @@ suite("TOC.", () => {
             ],
             new Selection(7, 32, 7, 32)).then(done, done);
     });
-    
+
     test("Non-Latin symbols", done => {
         testCommand('markdown.extension.toc.create',
             {
-                "markdown.extension.toc.levels": "1..6",
-                "markdown.extension.toc.orderedList": false,
-                "markdown.extension.toc.plaintext": false,
                 "markdown.extension.toc.githubCompatibility": true
             },
             [

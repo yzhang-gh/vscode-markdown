@@ -24,15 +24,15 @@ suite("Formatting.", () => {
     });
 
     test("Toggle bold. No selection (no quick styling). Toggle on", done => {
-        testCommand('markdown.extension.editing.toggleBold', { "markdown.extension.quickStyling": false }, ['text'], new Selection(0, 4, 0, 4), ['text****'], new Selection(0, 6, 0, 6)).then(done, done);
+        testCommand('markdown.extension.editing.toggleBold', {}, ['text'], new Selection(0, 4, 0, 4), ['text****'], new Selection(0, 6, 0, 6)).then(done, done);
     });
 
     test("Toggle bold. No selection (no quick styling). Toggle off", done => {
-        testCommand('markdown.extension.editing.toggleBold', { "markdown.extension.quickStyling": false }, ['text****'], new Selection(0, 6, 0, 6), ['text'], new Selection(0, 4, 0, 4)).then(done, done);
+        testCommand('markdown.extension.editing.toggleBold', {}, ['text****'], new Selection(0, 6, 0, 6), ['text'], new Selection(0, 4, 0, 4)).then(done, done);
     });
 
     test("Toggle bold. No selection (no quick styling). `**text|**` -> `**text**|`", done => {
-        testCommand('markdown.extension.editing.toggleBold', { "markdown.extension.quickStyling": false }, ['**text**'], new Selection(0, 6, 0, 6), ['**text**'], new Selection(0, 8, 0, 8)).then(done, done);
+        testCommand('markdown.extension.editing.toggleBold', {}, ['**text**'], new Selection(0, 6, 0, 6), ['**text**'], new Selection(0, 8, 0, 8)).then(done, done);
     });
 
     test("Toggle bold. No selection (quick styling). Toggle on (1)", done => {
@@ -60,7 +60,7 @@ suite("Formatting.", () => {
     });
 
     test("Toggle italic. Use `*`", done => {
-        testCommand('markdown.extension.editing.toggleItalic', { 'markdown.extension.italic.indicator': '*' }, ['text'], new Selection(0, 0, 0, 4), ['*text*'], new Selection(0, 0, 0, 6)).then(done, done);
+        testCommand('markdown.extension.editing.toggleItalic', {}, ['text'], new Selection(0, 0, 0, 4), ['*text*'], new Selection(0, 0, 0, 6)).then(done, done);
     });
 
     test("Toggle italic. Use `_`", done => {

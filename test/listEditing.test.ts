@@ -55,6 +55,10 @@ suite("List editing.", () => {
         testCommand('markdown.extension.onEnterKey', {}, ['> test'], new Selection(0, 6, 0, 6), ['> test', '> '], new Selection(1, 2, 1, 2)).then(done, done);
     });
 
+    test("Enter key. Fix ordered marker", done => {
+        testCommand('markdown.extension.onEnterKey', {}, ['1. one', '2. two'], new Selection(0, 6, 0, 6), ['1. one', '2. ', '3. two'], new Selection(1, 3, 1, 3)).then(done, done);
+    });
+
     test("Backspace key. 1: '- |'", done => {
         testCommand('markdown.extension.onBackspaceKey', {}, ['- item1'], new Selection(0, 2, 0, 2), ['item1'], new Selection(0, 0, 0, 0)).then(done, done);
     });
@@ -72,11 +76,11 @@ suite("List editing.", () => {
     });
 
     test("Backspace key. Fix ordered marker. 1", done => {
-        testCommand('markdown.extension.onBackspaceKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['    1. item1'], new Selection(0, 7, 0, 7), ['1. item1'], new Selection(0, 3, 0, 3)).then(done, done);
+        testCommand('markdown.extension.onBackspaceKey', {}, ['    1. item1'], new Selection(0, 7, 0, 7), ['1. item1'], new Selection(0, 3, 0, 3)).then(done, done);
     });
 
     test("Backspace key. Fix ordered marker. 2", done => {
-        testCommand('markdown.extension.onBackspaceKey', { "editor.insertSpaces": true, "editor.tabSize": 4 },
+        testCommand('markdown.extension.onBackspaceKey', {},
             [
                 '1. item1',
                 '    5. item2'
@@ -90,7 +94,7 @@ suite("List editing.", () => {
     });
 
     test("Backspace key. Fix ordered marker. 3", done => {
-        testCommand('markdown.extension.onBackspaceKey', { "editor.insertSpaces": true, "editor.tabSize": 4 },
+        testCommand('markdown.extension.onBackspaceKey', {},
             [
                 '1. item1',
                 '    1. item1-1',
@@ -110,7 +114,7 @@ suite("List editing.", () => {
     });
 
     test("Backspace key. Fix ordered marker. 4: Multi-line list item", done => {
-        testCommand('markdown.extension.onBackspaceKey', { "editor.insertSpaces": true, "editor.tabSize": 4 },
+        testCommand('markdown.extension.onBackspaceKey', {},
             [
                 '1. item1',
                 '    1. item1-1',
@@ -130,27 +134,27 @@ suite("List editing.", () => {
     });
 
     test("Tab key. 1: '- |'", done => {
-        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['- item1'], new Selection(0, 2, 0, 2), ['    - item1'], new Selection(0, 6, 0, 6)).then(done, done);
+        testCommand('markdown.extension.onTabKey', {}, ['- item1'], new Selection(0, 2, 0, 2), ['    - item1'], new Selection(0, 6, 0, 6)).then(done, done);
     });
 
     test("Tab key. 2: '-  |'", done => {
-        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['-  item1'], new Selection(0, 3, 0, 3), ['    -  item1'], new Selection(0, 7, 0, 7)).then(done, done);
+        testCommand('markdown.extension.onTabKey', {}, ['-  item1'], new Selection(0, 3, 0, 3), ['    -  item1'], new Selection(0, 7, 0, 7)).then(done, done);
     });
 
     test("Tab key. 3: '- [ ] |'", done => {
-        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['- [ ] item1'], new Selection(0, 6, 0, 6), ['    - [ ] item1'], new Selection(0, 10, 0, 10)).then(done, done);
+        testCommand('markdown.extension.onTabKey', {}, ['- [ ] item1'], new Selection(0, 6, 0, 6), ['    - [ ] item1'], new Selection(0, 10, 0, 10)).then(done, done);
     });
 
     test("Tab key. Fix ordered marker. 1", done => {
-        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['2. item1'], new Selection(0, 3, 0, 3), ['    1. item1'], new Selection(0, 7, 0, 7)).then(done, done);
+        testCommand('markdown.extension.onTabKey', {}, ['2. item1'], new Selection(0, 3, 0, 3), ['    1. item1'], new Selection(0, 7, 0, 7)).then(done, done);
     });
 
     test("Tab key. Fix ordered marker. 2", done => {
-        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 }, ['2. [ ] item1'], new Selection(0, 7, 0, 7), ['    1. [ ] item1'], new Selection(0, 11, 0, 11)).then(done, done);
+        testCommand('markdown.extension.onTabKey', {}, ['2. [ ] item1'], new Selection(0, 7, 0, 7), ['    1. [ ] item1'], new Selection(0, 11, 0, 11)).then(done, done);
     });
 
     test("Tab key. Fix ordered marker. 3", done => {
-        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 },
+        testCommand('markdown.extension.onTabKey', {},
             [
                 '1. test',
                 '    1. test',
@@ -170,7 +174,7 @@ suite("List editing.", () => {
     });
 
     test("Tab key. Fix ordered marker. 4: Multi-line list item", done => {
-        testCommand('markdown.extension.onTabKey', { "editor.insertSpaces": true, "editor.tabSize": 4 },
+        testCommand('markdown.extension.onTabKey', {},
             [
                 '1. test',
                 '    1. test',
