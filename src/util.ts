@@ -33,15 +33,12 @@ export function getNewFeatureMsg(version: string) {
 }
 
 export function showChangelog() {
-    // vscode#49268
-    // let mdExt = extensions.getExtension('vscode.markdown');
-    // if (mdExt.isActive) {
-    //     previewChangelog();
-    // } else {
-    //     mdExt.activate().then(previewChangelog);
-    // }
-
-    commands.executeCommand('vscode.open', Uri.parse('https://github.com/neilsustc/vscode-markdown/blob/master/CHANGELOG.md'))
+    let mdExt = extensions.getExtension('vscode.markdown');
+    if (mdExt.isActive) {
+        previewChangelog();
+    } else {
+        mdExt.activate().then(previewChangelog);
+    }
 }
 
 function previewChangelog() {
