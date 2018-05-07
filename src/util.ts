@@ -3,6 +3,8 @@
 import * as path from 'path';
 import { extensions, workspace, Uri, commands } from 'vscode';
 
+export const mdDocSelector = [{ language: 'markdown', scheme: 'file' }, { language: 'markdown', scheme: 'untitled' }];
+
 export const officialExtPath = extensions.getExtension("vscode.markdown-language-features").extensionPath;
 const tocModule = require(path.join(officialExtPath, 'out', 'tableOfContentsProvider'));
 export const TocProvider = tocModule.TableOfContentsProvider;

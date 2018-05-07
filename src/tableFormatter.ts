@@ -3,9 +3,10 @@
 // https://github.github.com/gfm/#tables-extension-
 
 import { languages, workspace, CancellationToken, DocumentFormattingEditProvider, ExtensionContext, FormattingOptions, Range, TextDocument, TextEdit } from 'vscode';
+import { mdDocSelector } from './util';
 
 export function activate(context: ExtensionContext) {
-    context.subscriptions.push(languages.registerDocumentFormattingEditProvider('markdown', new MarkdownDocumentFormatter));
+    context.subscriptions.push(languages.registerDocumentFormattingEditProvider(mdDocSelector, new MarkdownDocumentFormatter));
 }
 
 export function deactivate() { }

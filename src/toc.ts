@@ -2,7 +2,7 @@
 
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { officialExtPath, slugify, TocProvider } from './util';
+import { officialExtPath, slugify, TocProvider, mdDocSelector } from './util';
 
 const MdEngine = require(path.join(officialExtPath, 'out', 'markdownEngine')).MarkdownEngine;
 
@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('markdown.extension.toc.create', createToc),
         vscode.commands.registerCommand('markdown.extension.toc.update', updateToc),
         vscode.workspace.onWillSaveTextDocument(onWillSave),
-        vscode.languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, new TocCodeLensProvider())
+        vscode.languages.registerCodeLensProvider(mdDocSelector, new TocCodeLensProvider())
     );
 
     const mdOutlineProvider = new MdOutlineProvider();
