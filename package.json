@@ -1,284 +1,295 @@
 {
-    "name": "markdown-all-in-one",
-    "displayName": "Markdown All in One",
-    "description": "All you need to write Markdown (keyboard shortcuts, table of contents, auto preview and more)",
-    "icon": "images/Markdown-mark.png",
-    "version": "1.3.0",
-    "publisher": "yzhang",
-    "engines": {
-        "vscode": "^1.20.0"
-    },
-    "categories": [
-        "Other"
-    ],
-    "keywords": [
-        "markdown"
-    ],
-    "bugs": {
-        "url": "https://github.com/neilsustc/vscode-markdown/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/neilsustc/vscode-markdown"
-    },
-    "license": "MIT",
-    "activationEvents": [
-        "onLanguage:markdown",
-        "workspaceContains:README.md"
-    ],
-    "main": "./out/src/extension",
-    "contributes": {
-        "commands": [
-            {
-                "command": "markdown.extension.toc.create",
-                "title": "Markdown: Create Table of Contents"
-            },
-            {
-                "command": "markdown.extension.toc.update",
-                "title": "Markdown: Update Table of Contents"
-            },
-            {
-                "command": "markdown.extension.printToHtml",
-                "title": "Markdown: Print current document to HTML"
-            },
-            {
-                "command": "markdown.extension.editing.toggleCodeSpan",
-                "title": "Markdown: Toggle code span"
-            },
-            {
-                "command": "markdown.extension.editing.toggleMath",
-                "title": "Markdown: Toggle math environment"
-            },
-            {
-                "command": "markdown.extension.editing.toggleUnorderedList",
-                "title": "Markdown: Toggle unordered list"
-            },
-            {
-                "command": "markdown.extension.copySlug",
-                "title": "Markdown: Copy Slugified Heading"
-            }
-        ],
-        "keybindings": [
-            {
-                "command": "markdown.extension.editing.toggleBold",
-                "key": "ctrl+b",
-                "mac": "cmd+b",
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.editing.toggleItalic",
-                "key": "ctrl+i",
-                "mac": "cmd+i",
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.editing.toggleStrikethrough",
-                "key": "alt+s",
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.editing.toggleHeadingUp",
-                "key": "ctrl+shift+]",
-                "mac": "ctrl+shift+]",
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.editing.toggleHeadingDown",
-                "key": "ctrl+shift+[",
-                "mac": "ctrl+shift+[",
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.editing.toggleMath",
-                "key": "ctrl+m",
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.onEnterKey",
-                "key": "enter",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
-            },
-            {
-                "command": "markdown.extension.onCtrlEnterKey",
-                "key": "ctrl+enter",
-                "mac": "cmd+enter",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
-            },
-            {
-                "command": "markdown.extension.onTabKey",
-                "key": "tab",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !editorTabMovesFocus && !editorReadonly"
-            },
-            {
-                "command": "markdown.extension.onBackspaceKey",
-                "key": "backspace",
-                "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
-            },
-            {
-                "command": "markdown.extension.onMoveLineUp",
-                "key": "alt+up",
-                "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
-            },
-            {
-                "command": "markdown.extension.onMoveLineDown",
-                "key": "alt+down",
-                "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
-            },
-            {
-                "command": "markdown.extension.checkTaskList",
-                "key": "alt+c",
-                "when": "editorTextFocus && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.togglePreview",
-                "key": "ctrl+shift+v",
-                "when": "!terminalFocus"
-            },
-            {
-                "command": "markdown.extension.togglePreviewToSide",
-                "key": "ctrl+k v",
-                "when": "!terminalFocus"
-            }
-        ],
-        "configuration": {
-            "type": "object",
-            "title": "Markdown All in One",
-            "properties": {
-                "markdown.extension.toc.levels": {
-                    "type": "string",
-                    "default": "1..6",
-                    "description": "Range of levels for table of contents. Use `x..y` for level x to y"
-                },
-                "markdown.extension.toc.orderedList": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Use ordered list (1. ..., 2. ...)"
-                },
-                "markdown.extension.toc.unorderedList.marker": {
-                    "type": "string",
-                    "default": "-",
-                    "description": "Use `-`, `*` or `+` in the table of contents (for unordered list)",
-                    "enum": [
-                        "-",
-                        "*",
-                        "+"
-                    ]
-                },
-                "markdown.extension.toc.plaintext": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Just plain text"
-                },
-                "markdown.extension.toc.updateOnSave": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Auto update on save"
-                },
-                "markdown.extension.toc.githubCompatibility": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "GitHub Compatibility"
-                },
-                "markdown.extension.preview.autoShowPreviewToSide": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Auto show preview to side"
-                },
-                "markdown.extension.orderedList.marker": {
-                    "type": "string",
-                    "default": "ordered",
-                    "description": "`one`: always use `1.` as ordered list marker; `ordered`",
-                    "enum": [
-                        "one",
-                        "ordered"
-                    ]
-                },
-                "markdown.extension.italic.indicator": {
-                    "type": "string",
-                    "default": "*",
-                    "description": "Use `*` or `_` to wrap italic text",
-                    "enum": [
-                        "*",
-                        "_"
-                    ]
-                },
-                "markdown.extension.quickStyling": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Toggle italic/bold without selecting text"
-                },
-                "markdown.extension.showExplorer": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Show outline view in explorer panel"
-                },
-                "markdown.extension.tableFormatter.enabled": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable GFM table formatter"
-                },
-                "markdown.extension.tableFormatter.normalizeIndentation": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Normalize table indentation to closest multiple of configured tabSize"
-                },
-                "markdown.extension.print.absoluteImgPath": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Convert image path to absolute path",
-                    "scope": "resource"
-                }
-            }
-        },
-        "menus": {
-            "editor/context": [
-                {
-                    "when": "mdContext",
-                    "command": "markdown.extension.copySlug",
-                    "group": "9_cutcopypaste@4"
-                }
-            ],
-            "view/item/context": [
-                {
-                    "when": "mdContext",
-                    "command": "markdown.extension.copySlug",
-                    "group": "5_cutcopypaste"
-                }
-            ]
-        },
-        "views": {
-            "explorer": [
-                {
-                    "id": "mdOutline",
-                    "name": "Outline",
-                    "when": "config.markdown.extension.showExplorer == true && mdContext"
-                }
-            ]
-        },
-        "markdown.markdownItPlugins": true,
-        "markdown.previewStyles": [
-            "./media/checkbox.css",
-            "./media/katex-0.9.0.min.css"
-        ]
-    },
-    "scripts": {
-        "vscode:prepublish": "tsc -p ./",
-        "compile": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
-    },
-    "extensionDependencies": [
-        "vscode.markdown-language-features"
-    ],
-    "dependencies": {
-        "markdown-it-task-lists": "^2.0.1",
-        "@iktakahiro/markdown-it-katex": "^3.0.3"
-    },
-    "devDependencies": {
-        "typescript": "^2.8.3",
-        "vscode": "^1.1.17",
-        "mocha": "^5.1.1",
-        "@types/node": "^10.0.0",
-        "@types/mocha": "^5.2.0"
-    }
+	"name": "markdown-all-in-one",
+	"displayName": "Markdown All in One",
+	"description": "All you need to write Markdown (keyboard shortcuts, table of contents, auto preview and more)",
+	"icon": "images/Markdown-mark.png",
+	"version": "1.3.0",
+	"publisher": "yzhang",
+	"engines": {
+		"vscode": "^1.20.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"markdown"
+	],
+	"bugs": {
+		"url": "https://github.com/neilsustc/vscode-markdown/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/neilsustc/vscode-markdown"
+	},
+	"license": "MIT",
+	"activationEvents": [
+		"onLanguage:markdown",
+		"workspaceContains:README.md"
+	],
+	"main": "./out/src/extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "markdown.extension.toc.create",
+				"title": "Markdown: Create Table of Contents"
+			},
+			{
+				"command": "markdown.extension.toc.update",
+				"title": "Markdown: Update Table of Contents"
+			},
+			{
+				"command": "markdown.extension.printToHtml",
+				"title": "Markdown: Print current document to HTML"
+			},
+			{
+				"command": "markdown.extension.editing.toggleCodeSpan",
+				"title": "Markdown: Toggle code span"
+			},
+			{
+				"command": "markdown.extension.editing.toggleMath",
+				"title": "Markdown: Toggle math environment"
+			},
+			{
+				"command": "markdown.extension.editing.toggleUnorderedList",
+				"title": "Markdown: Toggle unordered list"
+			},
+			{
+				"command": "markdown.extension.copySlug",
+				"title": "Markdown: Copy Slugified Heading"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "markdown.extension.editing.toggleBold",
+				"key": "ctrl+b",
+				"mac": "cmd+b",
+				"when": "editorTextFocus && editorLangId == markdown"
+			},
+			{
+				"command": "markdown.extension.editing.toggleItalic",
+				"key": "ctrl+i",
+				"mac": "cmd+i",
+				"when": "editorTextFocus && editorLangId == markdown"
+			},
+			{
+				"command": "markdown.extension.editing.toggleStrikethrough",
+				"key": "alt+s",
+				"when": "editorTextFocus && editorLangId == markdown"
+			},
+			{
+				"command": "markdown.extension.editing.toggleHeadingUp",
+				"key": "ctrl+shift+]",
+				"mac": "ctrl+shift+]",
+				"when": "editorTextFocus && editorLangId == markdown"
+			},
+			{
+				"command": "markdown.extension.editing.toggleHeadingDown",
+				"key": "ctrl+shift+[",
+				"mac": "ctrl+shift+[",
+				"when": "editorTextFocus && editorLangId == markdown"
+			},
+			{
+				"command": "markdown.extension.editing.toggleMath",
+				"key": "ctrl+m",
+				"when": "editorTextFocus && editorLangId == markdown"
+			},
+			{
+				"command": "markdown.extension.onEnterKey",
+				"key": "enter",
+				"when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+			},
+			{
+				"command": "markdown.extension.onCtrlEnterKey",
+				"key": "ctrl+enter",
+				"mac": "cmd+enter",
+				"when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+			},
+			{
+				"command": "markdown.extension.onTabKey",
+				"key": "tab",
+				"when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !editorTabMovesFocus && !editorReadonly"
+			},
+			{
+				"command": "markdown.extension.onBackspaceKey",
+				"key": "backspace",
+				"when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+			},
+			{
+				"command": "markdown.extension.onMoveLineUp",
+				"key": "alt+up",
+				"when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+			},
+			{
+				"command": "markdown.extension.onMoveLineDown",
+				"key": "alt+down",
+				"when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+			},
+			{
+				"command": "markdown.extension.checkTaskList",
+				"key": "alt+c",
+				"when": "editorTextFocus && editorLangId == markdown"
+			},
+			{
+				"command": "markdown.extension.togglePreview",
+				"key": "ctrl+shift+v",
+				"when": "!terminalFocus"
+			},
+			{
+				"command": "markdown.extension.togglePreviewToSide",
+				"key": "ctrl+k v",
+				"when": "!terminalFocus"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Markdown All in One",
+			"properties": {
+				"markdown.extension.toc.levels": {
+					"type": "string",
+					"default": "1..6",
+					"description": "Range of levels for table of contents. Use `x..y` for level x to y"
+				},
+				"markdown.extension.toc.orderedList": {
+					"type": "boolean",
+					"default": false,
+					"description": "Use ordered list (1. ..., 2. ...)"
+				},
+				"markdown.extension.toc.unorderedList.marker": {
+					"type": "string",
+					"default": "-",
+					"description": "Use `-`, `*` or `+` in the table of contents (for unordered list)",
+					"enum": [
+						"-",
+						"*",
+						"+"
+					]
+				},
+				"markdown.extension.toc.plaintext": {
+					"type": "boolean",
+					"default": false,
+					"description": "Just plain text"
+				},
+				"markdown.extension.toc.updateOnSave": {
+					"type": "boolean",
+					"default": true,
+					"description": "Auto update on save"
+				},
+				"markdown.extension.toc.githubCompatibility": {
+					"type": "boolean",
+					"default": false,
+					"description": "GitHub Compatibility"
+				},
+				"markdown.extension.preview.autoShowPreviewToSide": {
+					"type": "boolean",
+					"default": false,
+					"description": "Auto show preview to side"
+				},
+				"markdown.extension.orderedList.marker": {
+					"type": "string",
+					"default": "ordered",
+					"description": "`one`: always use `1.` as ordered list marker; `ordered`",
+					"enum": [
+						"one",
+						"ordered"
+					]
+				},
+				"markdown.extension.italic.indicator": {
+					"type": "string",
+					"default": "*",
+					"description": "Use `*` or `_` to wrap italic text",
+					"enum": [
+						"*",
+						"_"
+					]
+				},
+				"markdown.extension.quickStyling": {
+					"type": "boolean",
+					"default": false,
+					"description": "Toggle italic/bold without selecting text"
+				},
+				"markdown.extension.showExplorer": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show outline view in explorer panel"
+				},
+				"markdown.extension.tableFormatter.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable GFM table formatter"
+				},
+				"markdown.extension.tableFormatter.normalizeIndentation": {
+					"type": "boolean",
+					"default": false,
+					"description": "Normalize table indentation to closest multiple of configured tabSize"
+				},
+				"markdown.extension.print.absoluteImgPath": {
+					"type": "boolean",
+					"default": true,
+					"description": "Convert image path to absolute path",
+					"scope": "resource"
+				},
+				"markdown.extension.print.imgToBase64": {
+					"type": "boolean",
+					"default": false,
+					"description": "Convert images to base64 when printing to HTML",
+					"scope": "resource"
+				}
+			}
+		},
+		"menus": {
+			"editor/context": [
+				{
+					"when": "mdContext",
+					"command": "markdown.extension.copySlug",
+					"group": "9_cutcopypaste@4"
+				}
+			],
+			"view/item/context": [
+				{
+					"when": "mdContext",
+					"command": "markdown.extension.copySlug",
+					"group": "5_cutcopypaste"
+				}
+			]
+		},
+		"views": {
+			"explorer": [
+				{
+					"id": "mdOutline",
+					"name": "Outline",
+					"when": "config.markdown.extension.showExplorer == true && mdContext"
+				}
+			]
+		},
+		"markdown.markdownItPlugins": true,
+		"markdown.previewStyles": [
+			"./media/checkbox.css",
+			"./media/katex-0.9.0.min.css"
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "tsc -p ./",
+		"compile": "tsc -watch -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "node ./node_modules/vscode/bin/test"
+	},
+	"extensionDependencies": [
+		"vscode.markdown-language-features"
+	],
+	"dependencies": {
+		"markdown-it-task-lists": "^2.0.1",
+		"@iktakahiro/markdown-it-katex": "^3.0.3"
+	},
+	"devDependencies": {
+		"typescript": "^2.8.3",
+		"vscode": "^1.1.17",
+		"mocha": "^5.1.1",
+		"@types/node": "^10.0.0",
+		"@types/mocha": "^5.2.0"
+	},
+	"__metadata": {
+		"id": "98790d67-10fa-497c-9113-f6c7489207b2",
+		"publisherDisplayName": "Yu Zhang",
+		"publisherId": "36c8b41c-6ef6-4bf5-a5b7-65bef29b606f"
+	}
 }

@@ -63,6 +63,19 @@ function print(type: string) {
 
     if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("absoluteImgPath")) {
         body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
+            if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("imgToBase64")) {
+                try {
+                    let root;
+                    const imgPath = (root = vscode.workspace.getWorkspaceFolder(doc.uri))
+                        ? path.join(root.uri.fsPath, p2)
+                        : path.join(path.dirname(doc.uri.fsPath), p2);
+                    const imgExt = path.extname(imgPath).slice(1);
+                    const file = fs.readFileSync(imgPath).toString('base64');
+                    return `${p1}data:image/${imgExt};base64,${file}${p3}`;
+                } catch (e) {
+                    vscode.window.showWarningMessage('Unable to read one or more images in file. Reverting to image paths instead of base64 encoding');
+                }
+            }
             return `${p1}${fixHref(doc.uri, p2)}${p3}`;
         });
     }
