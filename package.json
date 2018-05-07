@@ -286,10 +286,5 @@
         "mocha": "^5.1.1",
         "@types/node": "^10.0.0",
         "@types/mocha": "^5.2.0"
-    },
-    "__metadata": {
-        "id": "98790d67-10fa-497c-9113-f6c7489207b2",
-        "publisherDisplayName": "Yu Zhang",
-        "publisherId": "36c8b41c-6ef6-4bf5-a5b7-65bef29b606f"
     }
 }
