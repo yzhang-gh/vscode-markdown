@@ -5,7 +5,7 @@
 - **New**: Command `toggleUnorderedList`, switching between non-list, <code>- </code>, <code>* </code> and <code>+ </code> ([#145](https://github.com/neilsustc/vscode-markdown/issues/145))
 - **Fix**: Tables inside list item will be also formatted now ([#107](https://github.com/neilsustc/vscode-markdown/issues/107)). Thanks, [Stefan Zi (@StefanZi)](https://github.com/StefanZi)
 - **Fix**: Keybinding (<kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>) conflicts with command `workbench.action.terminal.clear` ([#161](https://github.com/neilsustc/vscode-markdown/issues/161))
-- **Other**: Handle Japanese characters when formatting tables ([#153](https://github.com/neilsustc/vscode-markdown/issues/153)). Thanks, [@Matsuyanagi (@Matsuyanagi)](https://github.com/Matsuyanagi)
+- **Other**: Handle Japanese characters when formatting tables ([#153](https://github.com/neilsustc/vscode-markdown/issues/153)). Thanks, [Matsuyanagi (@Matsuyanagi)](https://github.com/Matsuyanagi)
 - **Other**: Smartly set collapse states when showing outline view ([#149](https://github.com/neilsustc/vscode-markdown/issues/149))
 
 #### List Renumbering
