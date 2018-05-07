@@ -89,9 +89,12 @@ function onEnterKey(modifiers?: string) {
         trailingSpace = " ".repeat(Math.max(1, textIndent - (marker + delimiter).length));
 
         const toBeAdded = leadingSpace + marker + delimiter + trailingSpace + gfmCheckbox;
-        return editor.edit(editBuilder => {
-            editBuilder.insert(lineBreakPos, `\n${toBeAdded}`);
-        }, { undoStopBefore: true, undoStopAfter: false }).then(() => {
+        return editor.edit(
+            editBuilder => {
+                editBuilder.insert(lineBreakPos, `\n${toBeAdded}`);
+            },
+            { undoStopBefore: true, undoStopAfter: false }
+        ).then(() => {
             // Fix cursor position
             if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
                 let newCursorPos = cursorPos.with(line.lineNumber + 1, toBeAdded.length);
@@ -203,10 +206,13 @@ function fixMarker(line?: number) {
             let marker = matches[2];
             let fixedMarker = lookUpwardForMarker(editor, line, leadingSpace.length);
 
-            return editor.edit(editBuilder => {
-                if (Number(marker) === fixedMarker) return;
-                editBuilder.replace(new Range(line, leadingSpace.length, line, leadingSpace.length + marker.length), String(fixedMarker));
-            }, { undoStopBefore: false, undoStopAfter: false }).then(() => {
+            return editor.edit(
+                editBuilder => {
+                    if (Number(marker) === fixedMarker) return;
+                    editBuilder.replace(new Range(line, leadingSpace.length, line, leadingSpace.length + marker.length), String(fixedMarker));
+                },
+                { undoStopBefore: false, undoStopAfter: false }
+            ).then(() => {
                 let nextLine = line + 1;
                 while (editor.document.lineCount > nextLine) {
                     const nextLineText = editor.document.lineAt(nextLine).text;

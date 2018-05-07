@@ -44,9 +44,8 @@ function autoPreviewToSide(editor: TextEditor) {
 
     let doc = editor.document;
     if (doc != currentDoc) {
-        commands.executeCommand('markdown.showPreviewToSide').then(() => {
-            commands.executeCommand('workbench.action.navigateBack');
-        });
+        commands.executeCommand('markdown.showPreviewToSide')
+            .then(() => { commands.executeCommand('workbench.action.navigateBack'); });
         currentDoc = doc;
     }
 }

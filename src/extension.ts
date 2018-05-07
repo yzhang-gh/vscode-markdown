@@ -62,15 +62,14 @@ function newVersionMessage(extensionPath: string) {
     }
     const featureMsg = getNewFeatureMsg(currentVersion);
     if (featureMsg === undefined) return;
-    window.showInformationMessage(featureMsg, 'See a GIF', 'Dismiss')
-        .then(option => {
-            switch (option) {
-                case 'See a GIF':
-                    showChangelog();
-                case 'Dismiss':
-                    break;
-            }
-        });
+    window.showInformationMessage(featureMsg, 'See a GIF', 'Dismiss').then(option => {
+        switch (option) {
+            case 'See a GIF':
+                showChangelog();
+            case 'Dismiss':
+                break;
+        }
+    });
 }
 
 export function deactivate() { }
