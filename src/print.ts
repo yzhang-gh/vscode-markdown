@@ -63,17 +63,17 @@ function print(type: string) {
 
     if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("absoluteImgPath")) {
         body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
+            const imgUri = fixHref(doc.uri, p2);
             if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("imgToBase64")) {
-                const imgPath = fixHref(doc.uri, p2).fsPath;
                 try {
-                    const imgExt = path.extname(imgPath).slice(1);
-                    const file = fs.readFileSync(imgPath).toString('base64');
+                    const imgExt = path.extname(imgUri.fsPath).slice(1);
+                    const file = fs.readFileSync(imgUri.fsPath).toString('base64');
                     return `${p1}data:image/${imgExt};base64,${file}${p3}`;
                 } catch (e) {
-                    vscode.window.showWarningMessage(`Unable to read file "${imgPath}". Reverting to image paths instead of base64 encoding`);
+                    vscode.window.showWarningMessage(`Unable to read file "${imgUri.fsPath}". Reverting to image paths instead of base64 encoding`);
                 }
             }
-            return `${p1}${fixHref(doc.uri, p2).toString()}${p3}`;
+            return `${p1}${imgUri.toString()}${p3}`;
         });
     }
 
