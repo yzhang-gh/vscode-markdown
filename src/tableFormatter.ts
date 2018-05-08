@@ -55,6 +55,21 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         return spaces;
     }
 
+    /**
+     * Checks whether the necessary column width `current` has to be increased to `minimum`.
+     * This is required to provide the necessary minimum width for the dash-line formats.
+     * 
+     * @param current measured width of the column
+     * @param minimum minimum required width of the column
+     */
+    private checkColWidth(current: number, minimum: number) {
+        if (current >= minimum) {
+            return current;
+        } else {
+            return minimum;
+        }
+    }
+
     private formatTable(text: string, doc: TextDocument, options: FormattingOptions) {
         let indentation = this.getTableIndentation(text, options);
 
@@ -72,7 +87,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         let fieldRegExp = new RegExp(/(?:\|?((?:\\\||`.*?`|[^\|])+))/gu);
         let cjkRegex = /[\u3000-\u9fff\uff01-\uff60‘“’”—]/g;
 
-        let lines = rows.map(row => {
+        let lines = rows.map((row, num) => {
             let field = null;
             let values = [];
             let i = 0;
@@ -80,9 +95,12 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 let cell = field[1].trim();
                 values.push(cell);
 
-                // Treat CJK characters as 2 English ones because of Unicode stuff
-                let length = cjkRegex.test(cell) ? cell.length + cell.match(cjkRegex).length : cell.length;
-                colWidth[i] = colWidth[i] > length ? colWidth[i] : length;
+                // Ignore length of dash-line to enable width reduction
+                if (num != 1) {
+                    // Treat CJK characters as 2 English ones because of Unicode stuff
+                    let length = cjkRegex.test(cell) ? cell.length + cell.match(cjkRegex).length : cell.length;
+                    colWidth[i] = colWidth[i] > length ? colWidth[i] : length;
+                }
 
                 i++;
             }
@@ -93,15 +111,19 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         lines[1] = lines[1].map((cell, i) => {
             if (/:-+:/.test(cell)) {
                 //:---:
+                colWidth[i] = this.checkColWidth(colWidth[i], 5)
                 return ':' + '-'.repeat(colWidth[i] - 2) + ':';
             } else if (/:-+/.test(cell)) {
                 //:---
+                colWidth[i] = this.checkColWidth(colWidth[i], 4)
                 return ':' + '-'.repeat(colWidth[i] - 1);
             } else if (/-+:/.test(cell)) {
                 //---:
+                colWidth[i] = this.checkColWidth(colWidth[i], 4)
                 return '-'.repeat(colWidth[i] - 1) + ':';
             } else if (/-+/.test(cell)) {
                 //---
+                colWidth[i] = this.checkColWidth(colWidth[i], 3)
                 return '-'.repeat(colWidth[i]);
             }
         });
