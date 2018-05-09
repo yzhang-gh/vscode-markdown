@@ -2,7 +2,7 @@
 
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { officialExtPath, slugify, TocProvider, mdDocSelector } from './util';
+import { officialExtPath, slugify, TocProvider, mdDocSelector, unescapeHtmlEntities } from './util';
 
 const MdEngine = require(path.join(officialExtPath, 'out', 'markdownEngine')).MarkdownEngine;
 
@@ -342,7 +342,7 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
      * @param idx Array index, starts from 0
      */
     private getTreeItemByIdx(idx: number): vscode.TreeItem {
-        let treeItem = new vscode.TreeItem(this.toc[idx].text);
+        let treeItem = new vscode.TreeItem(unescapeHtmlEntities(this.toc[idx].text));
         if (idx === this.toc.length - 1) { // The last item
             treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
         } else if (this.toc[idx].level < this.toc[idx + 1].level) {
