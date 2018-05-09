@@ -55,21 +55,6 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         return spaces;
     }
 
-    /**
-     * Checks whether the necessary column width `current` has to be increased to `minimum`.
-     * This is required to provide the necessary minimum width for the dash-line formats.
-     * 
-     * @param current measured width of the column
-     * @param minimum minimum required width of the column
-     */
-    private checkColWidth(current: number, minimum: number) {
-        if (current >= minimum) {
-            return current;
-        } else {
-            return minimum;
-        }
-    }
-
     private formatTable(text: string, doc: TextDocument, options: FormattingOptions) {
         let indentation = this.getTableIndentation(text, options);
 
@@ -107,23 +92,23 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
             return (values)
         });
 
-        // Normalize the num of hyphen
+        // Normalize the num of hyphen, use Math.max to determine minimum length based on dash-line format
         lines[1] = lines[1].map((cell, i) => {
             if (/:-+:/.test(cell)) {
                 //:---:
-                colWidth[i] = this.checkColWidth(colWidth[i], 5)
+                colWidth[i] = Math.max(colWidth[i], 5)
                 return ':' + '-'.repeat(colWidth[i] - 2) + ':';
             } else if (/:-+/.test(cell)) {
                 //:---
-                colWidth[i] = this.checkColWidth(colWidth[i], 4)
+                colWidth[i] = Math.max(colWidth[i], 4)
                 return ':' + '-'.repeat(colWidth[i] - 1);
             } else if (/-+:/.test(cell)) {
                 //---:
-                colWidth[i] = this.checkColWidth(colWidth[i], 4)
+                colWidth[i] = Math.max(colWidth[i], 4)
                 return '-'.repeat(colWidth[i] - 1) + ':';
             } else if (/-+/.test(cell)) {
                 //---
-                colWidth[i] = this.checkColWidth(colWidth[i], 3)
+                colWidth[i] = Math.max(colWidth[i], 3)
                 return '-'.repeat(colWidth[i]);
             }
         });
