@@ -63,7 +63,17 @@ function print(type: string) {
 
     if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("absoluteImgPath")) {
         body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
-            return `${p1}${fixHref(doc.uri, p2)}${p3}`;
+            const imgUri = fixHref(doc.uri, p2);
+            if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("imgToBase64")) {
+                try {
+                    const imgExt = path.extname(imgUri.fsPath).slice(1);
+                    const file = fs.readFileSync(imgUri.fsPath).toString('base64');
+                    return `${p1}data:image/${imgExt};base64,${file}${p3}`;
+                } catch (e) {
+                    vscode.window.showWarningMessage(`Unable to read file "${imgUri.fsPath}". Reverting to image paths instead of base64 encoding`);
+                }
+            }
+            return `${p1}${imgUri.toString()}${p3}`;
         });
     }
 
@@ -132,7 +142,7 @@ function getCustomStyleSheets(resource: vscode.Uri): string[] {
     const styles = vscode.workspace.getConfiguration('markdown')['styles'];
     if (styles && Array.isArray(styles) && styles.length > 0) {
         return styles.map(s => {
-            let uri = vscode.Uri.parse(fixHref(resource, s));
+            let uri = fixHref(resource, s);
             if (uri.scheme === 'file') {
                 return uri.fsPath;
             }
@@ -142,30 +152,30 @@ function getCustomStyleSheets(resource: vscode.Uri): string[] {
     return [];
 }
 
-function fixHref(resource: vscode.Uri, href: string): string {
+function fixHref(resource: vscode.Uri, href: string): vscode.Uri {
     if (!href) {
-        return href;
+        return vscode.Uri.file(href);
     }
 
     // Use href if it is already an URL
     const hrefUri = vscode.Uri.parse(href);
     if (['http', 'https'].indexOf(hrefUri.scheme) >= 0) {
-        return hrefUri.toString();
+        return hrefUri;
     }
 
     // Use href as file URI if it is absolute
     if (path.isAbsolute(href) || hrefUri.scheme === 'file') {
-        return vscode.Uri.file(href).toString();
+        return vscode.Uri.file(href);
     }
 
     // Use a workspace relative path if there is a workspace
     let root = vscode.workspace.getWorkspaceFolder(resource);
     if (root) {
-        return vscode.Uri.file(path.join(root.uri.fsPath, href)).toString();
+        return vscode.Uri.file(path.join(root.uri.fsPath, href));
     }
 
     // Otherwise look relative to the markdown file
-    return vscode.Uri.file(path.join(path.dirname(resource.fsPath), href)).toString();
+    return vscode.Uri.file(path.join(path.dirname(resource.fsPath), href));
 }
 
 function getSettingsOverrideStyles(): string {
