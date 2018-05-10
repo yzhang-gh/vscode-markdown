@@ -72,7 +72,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         let fieldRegExp = new RegExp(/(?:\|?((?:\\\||`.*?`|[^\|])+))/gu);
         let cjkRegex = /[\u3000-\u9fff\uff01-\uff60‘“’”—]/g;
 
-        let lines = rows.map(row => {
+        let lines = rows.map((row, num) => {
             let field = null;
             let values = [];
             let i = 0;
@@ -80,28 +80,35 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 let cell = field[1].trim();
                 values.push(cell);
 
-                // Treat CJK characters as 2 English ones because of Unicode stuff
-                let length = cjkRegex.test(cell) ? cell.length + cell.match(cjkRegex).length : cell.length;
-                colWidth[i] = colWidth[i] > length ? colWidth[i] : length;
+                // Ignore length of dash-line to enable width reduction
+                if (num != 1) {
+                    // Treat CJK characters as 2 English ones because of Unicode stuff
+                    let length = cjkRegex.test(cell) ? cell.length + cell.match(cjkRegex).length : cell.length;
+                    colWidth[i] = colWidth[i] > length ? colWidth[i] : length;
+                }
 
                 i++;
             }
             return (values)
         });
 
-        // Normalize the num of hyphen
+        // Normalize the num of hyphen, use Math.max to determine minimum length based on dash-line format
         lines[1] = lines[1].map((cell, i) => {
             if (/:-+:/.test(cell)) {
                 //:---:
+                colWidth[i] = Math.max(colWidth[i], 5)
                 return ':' + '-'.repeat(colWidth[i] - 2) + ':';
             } else if (/:-+/.test(cell)) {
                 //:---
+                colWidth[i] = Math.max(colWidth[i], 4)
                 return ':' + '-'.repeat(colWidth[i] - 1);
             } else if (/-+:/.test(cell)) {
                 //---:
+                colWidth[i] = Math.max(colWidth[i], 4)
                 return '-'.repeat(colWidth[i] - 1) + ':';
             } else if (/-+/.test(cell)) {
                 //---
+                colWidth[i] = Math.max(colWidth[i], 3)
                 return '-'.repeat(colWidth[i]);
             }
         });

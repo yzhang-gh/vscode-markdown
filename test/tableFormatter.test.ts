@@ -217,4 +217,20 @@ suite("Table formatter.", () => {
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
+
+    test("Reduced width table", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '| a       | b    |',
+                '| ------- | ---- |',
+                '| c | d   |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| a   | b   |',
+                '| --- | --- |',
+                '| c   | d   |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
 });
