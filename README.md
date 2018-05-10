@@ -13,7 +13,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   - Tip: in normal mode, `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
   - *Quick styling mode*: toggle bold/italic without selecting words
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
-  - To make TOC compatible with GitHub, you might need to set options `encodeUri` and `toLowerCase` to `false`
+  - To make TOC compatible with GitHub, you need to set option `githubCompatibility` to `true`
 - **Outline view** in explorer panel
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
 - **Print Markdown to HTML**
