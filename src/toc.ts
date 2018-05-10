@@ -2,7 +2,7 @@
 
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { officialExtPath, slugify, TocProvider, mdDocSelector, unescapeHtmlEntities } from './util';
+import { officialExtPath, slugify, TocProvider, mdDocSelector, extractText } from './util';
 
 const MdEngine = require(path.join(officialExtPath, 'out', 'markdownEngine')).MarkdownEngine;
 
@@ -107,14 +107,11 @@ async function generateTocText(document: vscode.TextDocument): Promise<string> {
     tocEntry.forEach(entry => {
         if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
             let relativeLvl = entry.level - startDepth;
-            // [text](link) -> text. In case there are links in heading (#83)
-            let entryText = entry.text.replace(/\[([^\]]+?)\]\([^\)]+?\)/g, function (match, g1) {
-                return g1;
-            });
+            let entryText = extractText(entry.text);
             let row = [
                 docConfig.tab.repeat(relativeLvl),
                 (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLvl]) + '.' : tocConfig.listMarker) + ' ',
-                tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(entryText)})`
+                tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(entry.text)})`
             ];
             toc.push(row.join(''));
             if (tocConfig.orderedList) order.fill(0, relativeLvl + 1);
@@ -342,7 +339,7 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
      * @param idx Array index, starts from 0
      */
     private getTreeItemByIdx(idx: number): vscode.TreeItem {
-        let treeItem = new vscode.TreeItem(unescapeHtmlEntities(this.toc[idx].text));
+        let treeItem = new vscode.TreeItem(extractText(this.toc[idx].text));
         if (idx === this.toc.length - 1) { // The last item
             treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
         } else if (this.toc[idx].level < this.toc[idx + 1].level) {

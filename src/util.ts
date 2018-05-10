@@ -9,9 +9,25 @@ export const officialExtPath = extensions.getExtension("vscode.markdown-language
 const tocModule = require(path.join(officialExtPath, 'out', 'tableOfContentsProvider'));
 export const TocProvider = tocModule.TableOfContentsProvider;
 
-// Targeted fix for #175
-export function unescapeHtmlEntities(text) {
-    return text.replace(/(&emsp;)/g, e => ' ');
+export function extractText(text: string) {
+    return textInHtml(textInMd(text));
+}
+
+// [text](link) -> text. In case there are links in heading (#83)
+// 💩
+function textInMd(text: string) {
+    return text.replace(/\[([^\]]+?)\]\([^\)]+?\)/g, function (match, g1) {
+        return g1;
+    });
+}
+
+// Convert HTML entities (#175)
+// Strip HTML tags (#179)
+// 💩
+function textInHtml(text: string) {
+    return text.replace(/(&emsp;)/g, e => ' ')
+        .replace(/(<!--[^>]*?-->)/g, '')
+        .replace(/ +/g, ' ');
 }
 
 // Converted from `/[^\p{Word}\- ]/u`
@@ -22,7 +38,7 @@ const PUNCTUATION_REGEXP = /[^0-9A-Z_a-z\- ª²-³µ¹-º¼-¾À-ÖØ-öø-ˁˆ-
 export function slugify(heading: string) {
     if (workspace.getConfiguration('markdown.extension.toc').get<boolean>('githubCompatibility')) {
         // GitHub slugify function: <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
-        let slug = unescapeHtmlEntities(heading.trim())
+        let slug = extractText(heading.trim())
             .replace(/[A-Z]/g, match => match.toLowerCase()) // only downcase ASCII region
             .replace(PUNCTUATION_REGEXP, '')
             .replace(/ /g, '-');
