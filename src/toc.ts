@@ -36,6 +36,15 @@ export function activate(context: vscode.ExtensionContext) {
             // TODO:
         }
     });
+
+    vscode.commands.registerCommand('markdown.outline.fold', (args) => {
+        // TODO: fold all
+    });
+
+    vscode.commands.registerCommand('markdown.outline.refresh', (args) => {
+        mdOutlineProvider.update();
+    });
+
 }
 
 async function createToc() {
