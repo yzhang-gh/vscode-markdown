@@ -16,17 +16,16 @@ export function extractText(text: string) {
 // [text](link) -> text. In case there are links in heading (#83)
 // 💩
 function textInMd(text: string) {
-    return text.replace(/\[([^\]]+?)\]\([^\)]+?\)/g, function (match, g1) {
-        return g1;
-    });
+    return text.replace(/\[([^\]]+?)\]\([^\)]+?\)/g, (_, g1) => g1);
 }
 
 // Convert HTML entities (#175)
 // Strip HTML tags (#179)
 // 💩
 function textInHtml(text: string) {
-    return text.replace(/(&emsp;)/g, e => ' ')
-        .replace(/(<!--[^>]*?-->)/g, '')
+    return text.replace(/(&emsp;)/g, _ => ' ')
+        .replace(/(<!--[^>]*?-->)/g, '') // remove <!-- HTML comments -->
+        .replace(/<span[^>]*>(.*?)<\/span>/g, (_, g1) => g1) // remove <span>
         .replace(/ +/g, ' ');
 }
 
