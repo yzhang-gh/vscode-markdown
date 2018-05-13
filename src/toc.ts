@@ -2,7 +2,7 @@
 
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { officialExtPath, slugify, TocProvider, mdDocSelector, extractText } from './util';
+import { officialExtPath, slugify, TocProvider, mdDocSelector, extractText, isMdEditor } from './util';
 
 const MdEngine = require(path.join(officialExtPath, 'out', 'markdownEngine')).MarkdownEngine;
 
@@ -89,18 +89,12 @@ async function updateToc() {
     }
 }
 
-function deleteToc() {
-    // Pass
-}
-
 async function generateTocText(document: vscode.TextDocument): Promise<string> {
     loadTocConfig();
     const orderedListMarkerIsOne: boolean = vscode.workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
 
-    const tocProvider = new TocProvider(engine, document);
-
     let toc = [];
-    let tocEntry = await tocProvider.getToc();
+    let tocEntry = await buildToc();
     let startDepth = tocConfig.startDepth;
     let order = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
 
@@ -123,10 +117,8 @@ async function generateTocText(document: vscode.TextDocument): Promise<string> {
 async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> {
     loadTocConfig();
 
-    const tocProvider = new TocProvider(engine, doc);
-
     let start, end: vscode.Position;
-    let headings = await tocProvider.getToc();
+    let headings = await buildToc();
 
     if (headings.length == 0) {
         // No headings
@@ -216,6 +208,18 @@ function getText(range: vscode.Range): string {
     return vscode.window.activeTextEditor.document.getText(range);
 }
 
+async function buildToc() {
+    let toc;
+    let editor = vscode.window.activeTextEditor;
+    if (isMdEditor(editor)) {
+        const tocProvider = new TocProvider(engine, editor.document);
+        toc = await tocProvider.getToc();
+    } else {
+        toc = null;
+    }
+    return toc;
+}
+
 class TocCodeLensProvider implements vscode.CodeLensProvider {
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken):
         vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
@@ -279,7 +283,7 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
 
     constructor() {
         vscode.window.onDidChangeActiveTextEditor(editor => {
-            if (this.isMdEditor(editor)) {
+            if (isMdEditor(editor)) {
                 vscode.commands.executeCommand('setContext', 'mdContext', true);
             } else {
                 vscode.commands.executeCommand('setContext', 'mdContext', false);
@@ -292,7 +296,7 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
         });
 
         // First time
-        if (this.isMdEditor(vscode.window.activeTextEditor)) {
+        if (isMdEditor(vscode.window.activeTextEditor)) {
             vscode.commands.executeCommand('setContext', 'mdContext', true);
         } else {
             vscode.commands.executeCommand('setContext', 'mdContext', false);
@@ -300,21 +304,10 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
         this.update();
     }
 
-    private isMdEditor(editor: vscode.TextEditor) {
-        return editor && editor.document && editor.document.uri.scheme === 'file' && editor.document.languageId === 'markdown';
-    }
-
     public async update() {
-        await this.buildToc();
-        this._onDidChangeTreeData.fire();
-    }
+        this.toc = await buildToc();
 
-    private async buildToc() {
-        this.editor = vscode.window.activeTextEditor;
-        if (this.isMdEditor(this.editor)) {
-            const tocProvider = new TocProvider(engine, this.editor.document);
-            this.toc = await tocProvider.getToc();
-
+        if (this.toc !== null) {
             // Better to have <= 10 expanded items in the outline view
             let maxInitItems = 10;
             this.maxExpandedLvl = 6;
@@ -325,9 +318,9 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
                     break;
                 }
             }
-        } else {
-            this.toc = null;
         }
+
+        this._onDidChangeTreeData.fire();
     }
 
     /**

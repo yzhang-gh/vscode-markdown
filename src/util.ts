@@ -1,13 +1,17 @@
 'use strict'
 
 import * as path from 'path';
-import { extensions, workspace, Uri, commands } from 'vscode';
+import { TextEditor, Uri, commands, extensions, workspace } from 'vscode';
 
 export const mdDocSelector = [{ language: 'markdown', scheme: 'file' }, { language: 'markdown', scheme: 'untitled' }];
 
 export const officialExtPath = extensions.getExtension("vscode.markdown-language-features").extensionPath;
 const tocModule = require(path.join(officialExtPath, 'out', 'tableOfContentsProvider'));
 export const TocProvider = tocModule.TableOfContentsProvider;
+
+export function isMdEditor(editor: TextEditor) {
+    return editor && editor.document && editor.document.uri.scheme === 'file' && editor.document.languageId === 'markdown';
+}
 
 export function extractText(text: string) {
     return textInHtml(textInMd(text));
