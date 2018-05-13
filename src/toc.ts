@@ -214,6 +214,10 @@ async function buildToc() {
     if (isMdEditor(editor)) {
         const tocProvider = new TocProvider(engine, editor.document);
         toc = await tocProvider.getToc();
+        if (toc !== undefined && toc.length > 0) {
+            // Omit heading using comments
+            toc = toc.filter(entry => !entry.text.toLowerCase().includes('<!-- omit in toc -->'));
+        }
     } else {
         toc = null;
     }
