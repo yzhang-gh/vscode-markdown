@@ -1,8 +1,9 @@
 'use strict';
 
-import * as path from 'path';
 import * as fs from 'fs';
-import { ExtensionContext, languages, workspace, window, commands, Uri } from 'vscode';
+import * as path from 'path';
+import { ExtensionContext, languages, window, workspace } from 'vscode';
+import * as completion from './completion';
 import * as formatting from './formatting';
 import * as listEditing from './listEditing';
 import * as preview from './preview';
@@ -29,14 +30,16 @@ function activateMdExt(context: ExtensionContext) {
     formatting.activate(context);
     // Toc
     toc.activate(context);
-    // Auto show preview to side
-    preview.activate(context);
+    // Images paths and math commands completions
+    completion.activate(context);
     // Print to PDF
     print.activate(context);
     // Table formatter
     if (workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('enabled')) {
         tableFormatter.activate(context);
     }
+    // Auto show preview to side
+    preview.activate(context);
 
     // Allow `*` in word pattern for quick styling
     languages.setLanguageConfiguration('markdown', {
