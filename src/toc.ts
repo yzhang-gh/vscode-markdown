@@ -233,11 +233,6 @@ class TocCodeLensProvider implements vscode.CodeLensProvider {
             });
         });
     }
-
-    // public resolveCodeLens?(codeLens: CodeLens, token: CancellationToken):
-    //     CodeLens | Thenable<CodeLens> {
-
-    // }
 }
 
 class MdOutlineProvider implements vscode.TreeDataProvider<number> {
