@@ -24,18 +24,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     const mdOutlineProvider = new MdOutlineProvider();
     vscode.window.registerTreeDataProvider('mdOutline', mdOutlineProvider);
-
-    // Context menu for copying slugified heading
-    vscode.commands.registerCommand('markdown.extension.copySlug', async args => {
-        if (typeof args === "number") {
-            // Source: outline view
-            // TODO: copy to clipboard
-            console.log(slugify((await mdOutlineProvider.getTreeItem(args)).label));
-        } else {
-            // Source: editor
-            // TODO:
-        }
-    });
 }
 
 async function createToc() {

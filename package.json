@@ -52,10 +52,6 @@
             {
                 "command": "markdown.extension.editing.toggleUnorderedList",
                 "title": "Markdown: Toggle unordered list"
-            },
-            {
-                "command": "markdown.extension.copySlug",
-                "title": "Markdown: Copy Slugified Heading"
             }
         ],
         "keybindings": [
@@ -235,22 +231,6 @@
                     "scope": "resource"
                 }
             }
-        },
-        "menus": {
-            "editor/context": [
-                {
-                    "when": "mdContext",
-                    "command": "markdown.extension.copySlug",
-                    "group": "9_cutcopypaste@4"
-                }
-            ],
-            "view/item/context": [
-                {
-                    "when": "mdContext",
-                    "command": "markdown.extension.copySlug",
-                    "group": "5_cutcopypaste"
-                }
-            ]
         },
         "views": {
             "explorer": [
