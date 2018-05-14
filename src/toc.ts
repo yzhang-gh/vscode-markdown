@@ -108,7 +108,7 @@ async function generateTocText(): Promise<string> {
 async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> | null {
     let newTocText = await generateTocText();
     let fullText = doc.getText();
-    let listRegex = /(?:^|\r?\n)((?:[-+*]|[0-9]+[.)]).*(?:\r?\n[ \t]*(?:[-+*]|[0-9]+[.)]).*)*)/g;
+    let listRegex = /(?:^|\r?\n)((?:[-+*]|[0-9]+[.)]) .*(?:\r?\n[ \t]*(?:[-+*]|[0-9]+[.)]) .*)*)/g;
     let match;
     while ((match = listRegex.exec(fullText)) !== null) {
         let listText = match[1];
