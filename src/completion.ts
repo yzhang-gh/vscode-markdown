@@ -19,7 +19,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     fractions = ['frac'];
     mathOperaters = ['sin', 'cos', 'exp', 'tan', 'tanh', 'ln', 'lg', 'log', 'det', 'inf', 'lim', 'max', 'min', 'Pr', 'sup']; // plus \operatorname{...}
     sqrt = ['sqrt'];
-    relations = ['coloneq', 'equiv', 'ge', 'gt', 'gg', 'le', 'lt', 'll', 'prec', 'succ', 'sim', 'simeq', 'ne']; // inclusing negated relations
+    relations = ['coloneq', 'equiv', 'ge', 'gt', 'gg', 'le', 'lt', 'll', 'prec', 'succ', 'sim', 'simeq', 'ne']; // including negated relations
     font = ['rm', 'bf', 'it', 'sf', 'tt', 'mathrm', 'mathbf', 'mathit', 'mathsf', 'mathtt', 'mathbb', 'mathcal', 'mathscr', 'mathfrak'];
     size = ['Huge', 'huge', 'LARGE', 'Large', 'large', 'normalsize', 'small', 'footnotesize', 'scriptsize', 'tiny'];
     symbolsAndPunctuation = ['dots', 'cdots', 'ddots', 'ldots', 'vdots', 'checkmark', 'infty']
@@ -27,16 +27,19 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     mathCompletions: CompletionItem[];
 
     constructor() {
-        let c1 = [...this.accents, ...this.sqrt, ...this.font].map(cmd => {
-            let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
-            item.insertText = new SnippetString(`${cmd}\{$0\}`);
-            return item;
-        });
-        let c2 = [...this.delimeterSizing, ...this.greekLetters, ...this.otherLetters, ...this.logicAndSetTheory, ...this.bigOperators, ...this.binaryOperators, ...this.mathOperaters, ...this.relations, ...this.size, ...this.symbolsAndPunctuation].map(cmd => {
+        // \cmd
+        let c1 = [...this.delimeterSizing, ...this.greekLetters, ...this.otherLetters, ...this.logicAndSetTheory, ...this.bigOperators, ...this.binaryOperators, ...this.mathOperaters, ...this.relations, ...this.size, ...this.symbolsAndPunctuation].map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
             item.insertText = cmd;
             return item;
         });
+        // \cmd{$0}
+        let c2 = [...this.accents, ...this.sqrt, ...this.font, 'operatorname'].map(cmd => {
+            let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
+            item.insertText = new SnippetString(`${cmd}\{$0\}`);
+            return item;
+        });
+        // \cmd{$1}{$2}
         let c3 = this.fractions.map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
             item.insertText = new SnippetString(`${cmd}\{$1\}\{$2\}`);
@@ -44,7 +47,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         });
         let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
         envSnippet.insertText = new SnippetString('begin{${1|aligned,array,bmatrix,Bmatrix,cases,gathered,matrix,pmatrix,vmatrix,Vmatrix|}}\n\t$0\n\\end{$1}');
-        this.mathCompletions = [...c1, ...c2, ...c3, envSnippet];
+        this.mathCompletions = Array.from(new Set([...c1, ...c2, ...c3, envSnippet]));
     }
 
     provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList> {
