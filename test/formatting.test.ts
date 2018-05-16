@@ -23,32 +23,36 @@ suite("Formatting.", () => {
         }
     });
 
-    test("Toggle bold. No selection (no quick styling). Toggle on", done => {
-        testCommand('markdown.extension.editing.toggleBold', {}, ['text'], new Selection(0, 4, 0, 4), ['text****'], new Selection(0, 6, 0, 6)).then(done, done);
+    test("Toggle bold. `text |` -> `text **|**`", done => {
+        testCommand('markdown.extension.editing.toggleBold', {}, ['text '], new Selection(0, 5, 0, 5), ['text ****'], new Selection(0, 7, 0, 7)).then(done, done);
     });
 
-    test("Toggle bold. No selection (no quick styling). Toggle off", done => {
+    test("Toggle bold. `text **|**` -> `text |`", done => {
+        testCommand('markdown.extension.editing.toggleBold', {}, ['text ****'], new Selection(0, 7, 0, 7), ['text '], new Selection(0, 5, 0, 5)).then(done, done);
+    });
+
+    test("Toggle bold. `text**|**` -> `text|`", done => {
         testCommand('markdown.extension.editing.toggleBold', {}, ['text****'], new Selection(0, 6, 0, 6), ['text'], new Selection(0, 4, 0, 4)).then(done, done);
     });
 
-    test("Toggle bold. No selection (no quick styling). `**text|**` -> `**text**|`", done => {
+    test("Toggle bold. `**text|**` -> `**text**|`", done => {
         testCommand('markdown.extension.editing.toggleBold', {}, ['**text**'], new Selection(0, 6, 0, 6), ['**text**'], new Selection(0, 8, 0, 8)).then(done, done);
     });
 
-    test("Toggle bold. No selection (quick styling). Toggle on (1)", done => {
-        testCommand('markdown.extension.editing.toggleBold', { "markdown.extension.quickStyling": true }, ['text'], new Selection(0, 4, 0, 4), ['**text**'], new Selection(0, 8, 0, 8)).then(done, done);
+    test("Toggle bold. `text|` -> `**text**|`", done => {
+        testCommand('markdown.extension.editing.toggleBold', {}, ['text'], new Selection(0, 4, 0, 4), ['**text**'], new Selection(0, 8, 0, 8)).then(done, done);
     });
 
-    test("Toggle bold. No selection (quick styling). Toggle on (2)", done => {
-        testCommand('markdown.extension.editing.toggleBold', { "markdown.extension.quickStyling": true }, ['text'], new Selection(0, 2, 0, 2), ['**text**'], new Selection(0, 4, 0, 4)).then(done, done);
+    test("Toggle bold. `te|xt` -> `**te|xt**`", done => {
+        testCommand('markdown.extension.editing.toggleBold', {}, ['text'], new Selection(0, 2, 0, 2), ['**text**'], new Selection(0, 4, 0, 4)).then(done, done);
     });
 
-    test("Toggle bold. No selection (quick styling). Toggle off (1)", done => {
-        testCommand('markdown.extension.editing.toggleBold', { "markdown.extension.quickStyling": true }, ['**text**'], new Selection(0, 8, 0, 8), ['text'], new Selection(0, 4, 0, 4)).then(done, done);
+    test("Toggle bold. `**text**|` -> `text|`", done => {
+        testCommand('markdown.extension.editing.toggleBold', {}, ['**text**'], new Selection(0, 8, 0, 8), ['text'], new Selection(0, 4, 0, 4)).then(done, done);
     });
 
-    test("Toggle bold. No selection (quick styling). Toggle off (2)", done => {
-        testCommand('markdown.extension.editing.toggleBold', { "markdown.extension.quickStyling": true }, ['**text**'], new Selection(0, 4, 0, 4), ['text'], new Selection(0, 2, 0, 2)).then(done, done);
+    test("Toggle bold. `**te|xt**` -> `te|xt`", done => {
+        testCommand('markdown.extension.editing.toggleBold', {}, ['**text**'], new Selection(0, 4, 0, 4), ['text'], new Selection(0, 2, 0, 2)).then(done, done);
     });
 
     test("Toggle bold. With selection. Toggle on", done => {
@@ -65,5 +69,17 @@ suite("Formatting.", () => {
 
     test("Toggle italic. Use `_`", done => {
         testCommand('markdown.extension.editing.toggleItalic', { 'markdown.extension.italic.indicator': '_' }, ['text'], new Selection(0, 0, 0, 4), ['_text_'], new Selection(0, 0, 0, 6)).then(done, done);
+    });
+
+    test("Toggle strikethrough. `text|` -> `~~text~~|`", done => {
+        testCommand('markdown.extension.editing.toggleStrikethrough', {}, ['text'], new Selection(0, 4, 0, 4), ['~~text~~'], new Selection(0, 8, 0, 8)).then(done, done);
+    });
+
+    test("Toggle strikethrough. List item", done => {
+        testCommand('markdown.extension.editing.toggleStrikethrough', {}, ['- text text'], new Selection(0, 11, 0, 11), ['- ~~text text~~'], new Selection(0, 15, 0, 15)).then(done, done);
+    });
+
+    test("Toggle strikethrough. Task list item", done => {
+        testCommand('markdown.extension.editing.toggleStrikethrough', {}, ['- [ ] text text'], new Selection(0, 15, 0, 15), ['- [ ] ~~text text~~'], new Selection(0, 19, 0, 19)).then(done, done);
     });
 });

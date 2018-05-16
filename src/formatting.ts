@@ -115,7 +115,7 @@ function toggleUnorderedList() {
     }
 }
 
-async function styleByWrapping(startPattern, endPattern?) {
+function styleByWrapping(startPattern, endPattern?) {
     if (endPattern == undefined) {
         endPattern = startPattern;
     }
@@ -140,43 +140,39 @@ async function styleByWrapping(startPattern, endPattern?) {
         }
 
         if (selection.isEmpty) { // No selected text
-            // Quick styling
-            if (workspace.getConfiguration('markdown.extension').get<boolean>('quickStyling')) {
+            if (startPattern !== '~~' && getContext(startPattern) === `${startPattern}text|${endPattern}`) {
+                // `**text|**` to `**text**|`
+                let newCursorPos = cursorPos.with({ character: cursorPos.character + endPattern.length });
+                editor.selection = new Selection(newCursorPos, newCursorPos);
+                return;
+            } else if (getContext(startPattern) === `${startPattern}|${endPattern}`) {
+                // `**|**` to `|`
+                let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
+                let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
+                return wrapRange(editor, options, cursorPos, new Range(start, end), false, startPattern);
+            } else {
+                // Select word under cursor
                 let wordRange = editor.document.getWordRangeAtPosition(cursorPos);
                 if (wordRange == undefined) {
-                    wordRange = new Range(cursorPos, cursorPos);
+                    wordRange = selection;
                 }
                 // One special case: toggle strikethrough in task list
-                const currentTextLine = editor.document.lineAt(selection.start.line);
-                if (startPattern === '~~' && /^\s*[\*\+\-] \[[ x]\]\s+/g.test(currentTextLine.text.trim())) {
-                    wordRange = currentTextLine.range.with(new Position(selection.start.line, currentTextLine.text.match(/^\s*[\*\+\-] \[[ x]\]\s+/g)[0].length));
+                const currentTextLine = editor.document.lineAt(cursorPos.line);
+                if (startPattern === '~~' && /^\s*[\*\+\-] (\[[ x]\] )? */g.test(currentTextLine.text)) {
+                    wordRange = currentTextLine.range.with(new Position(cursorPos.line, currentTextLine.text.match(/^\s*[\*\+\-] (\[[ x]\] )? */g)[0].length));
                 }
-                await wrapRange(editor, options, cursorPos, wordRange, false, startPattern);
-            } else {
-                switch (getContext(startPattern)) {
-                    case `${startPattern}text|${endPattern}`:
-                        let newCursorPos = cursorPos.with({ character: cursorPos.character + endPattern.length });
-                        editor.selection = new Selection(newCursorPos, newCursorPos);
-                        break;
-                    case `${startPattern}|${endPattern}`:
-                        let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
-                        let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
-                        await wrapRange(editor, options, cursorPos, new Range(start, end), false, startPattern);
-                        break;
-                    default:
-                        await wrapRange(editor, options, cursorPos, new Range(cursorPos, cursorPos), false, startPattern);
-                        break;
-                }
+                return wrapRange(editor, options, cursorPos, wordRange, false, startPattern);
             }
-        }
-        else { // Text selected
-            await wrapRange(editor, options, cursorPos, selection, true, startPattern);
+        } else { // Text selected
+            return wrapRange(editor, options, cursorPos, selection, true, startPattern);
         }
     }
 }
 
 /**
  * Add or remove `startPattern`/`endPattern` according to the context
+ * @param editor 
+ * @param options The undo/redo behavior
  * @param cursor cursor position
  * @param range range to be replaced
  * @param isSelected is this range selected

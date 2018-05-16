@@ -10,8 +10,8 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 ## Features
 
 - **Keyboard shortcuts** (toggle bold, italic, code span, strikethrough and heading)
-  - Tip: in normal mode, `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
-  - *Quick styling mode*: toggle bold/italic without selecting words
+  - Tip: `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
+  - If there is no text selected, *the word under cursor* be styled (or *the entire list item* if you are toggling strikethrough)
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
   - To make TOC compatible with GitHub, you need to set option `githubCompatibility` to `true`
 - **Outline view** in explorer panel
@@ -95,7 +95,6 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.preview.autoShowPreviewToSide` | `false`   | Automatically show preview when opening a Markdown file.          |
 | `markdown.extension.orderedList.marker`            | `ordered` | Or `one`: always use `1.` as ordered list marker                  |
 | `markdown.extension.italic.indicator`              | `*`       | Use `*` or `_` to wrap italic text                                |
-| `markdown.extension.quickStyling`                  | `false`   | Toggle bold/italic without selecting words                        |
 | `markdown.extension.showExplorer`                  | `true`    | Show outline view in explorer panel                               |
 | `markdown.extension.print.absoluteImgPath`         | `true`    | Convert image path to absolute path                               |
 

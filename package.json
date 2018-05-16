@@ -198,11 +198,6 @@
                         "_"
                     ]
                 },
-                "markdown.extension.quickStyling": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Toggle italic/bold without selecting text"
-                },
                 "markdown.extension.showExplorer": {
                     "type": "boolean",
                     "default": true,
