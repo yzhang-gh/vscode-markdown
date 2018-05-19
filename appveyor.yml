@@ -3,7 +3,11 @@ install:
 
 build_script:
   - npm install
-  - npm run vscode:prepublish
+  - npm install -g vsce
+  - vsce package
 
 test_script:
   - npm test
+
+artifacts:
+  - path: '*.vsix'
