@@ -102,6 +102,10 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
+## Latest CI Build
+
+Download it [here](https://ci.appveyor.com/project/neilsustc/vscode-markdown/build/artifacts)
+
 ## Contributing
 
 Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc/vscode-markdown/issues).
