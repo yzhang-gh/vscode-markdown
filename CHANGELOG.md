@@ -10,11 +10,11 @@
 
 ### Auto Completions
 
-![image completion](images\image-completion.png) ![math completion](images\math-completion.png)
+![image completion](images/image-completion.png) ![math completion](images/math-completion.png)
 
 ### Magic Comment
 
-![toc omit](images\omit-in-toc.png)
+![toc omit](images/omit-in-toc.png)
 
 ---
 
