@@ -58,7 +58,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         let matches;
         if (/!\[[^\]]*?\]\([^\)]*$/.test(textBefore)) {
             // Complete image paths
-            matches = textBefore.match(/!\[[^\]]*?\]\(([^\)]*?)[\\\/]?[^\\\/]*$/);
+            matches = textBefore.match(/!\[[^\]]*?\]\(([^\)]*?)[\\\/]?[^\\\/\)]*$/);
             let dir = matches[1].replace(/\\/g, '/');
 
             return workspace.findFiles((dir.length == 0 ? '' : dir + '/') + '**/*.{png,jpg,jpeg,svg,gif}', '**/node_modules/**').then(uris =>
