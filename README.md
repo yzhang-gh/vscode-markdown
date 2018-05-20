@@ -14,6 +14,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   - If there is no text selected, *the word under cursor* be styled (or *the entire list item* if you are toggling strikethrough)
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
   - To make TOC compatible with GitHub, you need to set option `githubCompatibility` to `true`
+  - Use `<!-- omit in toc -->` to ignore specific heading in TOC
 - **Outline view** in explorer panel
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
 - **Print Markdown to HTML**
@@ -27,7 +28,9 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   - Table formatter (<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd>)
   - Task list (use <kbd>Alt</kbd> + <kbd>C</kbd> to check/uncheck a list item)
 - **Math rendering** (see screenshot below)
-- **Word completion** (moved to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion))
+- **Auto completions**
+  - Images paths
+  - Math commands
 - **Others**
   - Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
 
@@ -97,6 +100,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.italic.indicator`              | `*`       | Use `*` or `_` to wrap italic text                                |
 | `markdown.extension.showExplorer`                  | `true`    | Show outline view in explorer panel                               |
 | `markdown.extension.print.absoluteImgPath`         | `true`    | Convert image path to absolute path                               |
+| `markdown.extension.print.imgToBase64`             | `false`   | Convert images to base64 when printing to HTML                    |
 
 ## Changelog
 
@@ -104,7 +108,7 @@ See [CHANGELOG](CHANGELOG.md) for more information.
 
 ## Latest CI Build
 
-Download it [here](https://ci.appveyor.com/project/neilsustc/vscode-markdown/build/artifacts)
+Download it [here](https://ci.appveyor.com/project/neilsustc/vscode-markdown/build/artifacts).
 
 ## Contributing
 
