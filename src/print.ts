@@ -48,16 +48,19 @@ function print(type: string) {
         doc.save();
     }
 
-    let statusBarMsg = vscode.window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}' to ${type.toUpperCase()} ...`, 1000);
+    vscode.window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}' to ${type.toUpperCase()} ...`, 1000);
 
     /**
      * Modified from <https://github.com/Microsoft/vscode/tree/master/extensions/markdown>
      * src/previewContentProvider MDDocumentContentProvider provideTextDocumentContent
      */
-    let outPath = doc.fileName.replace(/\.(md|MD|markdown)$/, `.${type}`);
+    let outPath = doc.fileName.replace(/\.\w+?$/, `.${type}`);
     outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
         return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
     });
+    if (!outPath.endsWith(`.${type}`)) {
+        outPath += `.${type}`;
+    }
 
     let body = render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
 
