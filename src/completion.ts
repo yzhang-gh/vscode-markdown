@@ -64,7 +64,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             return workspace.findFiles((dir.length == 0 ? '' : dir + '/') + '**/*.{png,jpg,jpeg,svg,gif}', '**/node_modules/**').then(uris =>
                 uris.map(uri => {
                     let relPath = path.relative(path.join(workspace.getWorkspaceFolder(uri).uri.fsPath, dir), uri.fsPath);
-                    relPath.replace(/\\/g, '/');
+                    relPath = relPath.replace(/\\/g, '/');
                     return new CompletionItem(relPath, CompletionItemKind.File);
                 })
             );
