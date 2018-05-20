@@ -37,41 +37,21 @@ async function createToc() {
 
 async function updateToc() {
     let editor = vscode.window.activeTextEditor;
-    let tocRange = await detectTocRange(editor.document);
+    let doc = editor.document;
+    let tocRange = await detectTocRange(doc);
     if (tocRange != null) {
         let oldToc = getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol);
         let newToc = await generateTocText();
-        if (oldToc != newToc) {
-            // Keep the unchanged lines. (to prevent codeLens from re-emergence in UI)
-            let oldTocArr = oldToc.split(docConfig.eol);
-            let newTocArr = newToc.split(docConfig.eol);
-            let firstChangedLine = 0;
-            for (let i = 0; i < newTocArr.length; i++) {
-                if (newTocArr[i] != oldTocArr[i]) {
-                    firstChangedLine = i;
-                    break;
+        if (oldToc !== newToc) {
+            let unchangedLength = commonPrefixLength(oldToc, newToc);
+            let newStart = doc.positionAt(doc.offsetAt(tocRange.start) + unchangedLength);
+            let replaceRange = tocRange.with(newStart);
+            await editor.edit(editBuilder => {
+                if (replaceRange.isEmpty) {
+                    editBuilder.insert(replaceRange.start, newToc.substring(unchangedLength));
+                } else {
+                    editBuilder.replace(replaceRange, newToc.substring(unchangedLength));
                 }
-            }
-
-            let text = newTocArr.slice(firstChangedLine).join(docConfig.eol);
-            let justAppending = false;
-            let rangeToBeDel;
-            let location;
-            if (firstChangedLine + 1 > oldTocArr.length) { // Append to old TOC, no deletion
-                justAppending = true;
-                location = tocRange.end;
-                text = docConfig.eol + text;
-            } else { // Delete and then append
-                let delPosition = new vscode.Position(tocRange.start.line + firstChangedLine, tocRange.start.character);
-                rangeToBeDel = new vscode.Range(delPosition, tocRange.end);
-                location = rangeToBeDel.start;
-            }
-
-            await vscode.window.activeTextEditor.edit(editBuilder => {
-                if (!justAppending) {
-                    editBuilder.delete(rangeToBeDel);
-                }
-                editBuilder.insert(location, text);
             });
         }
     }
@@ -112,26 +92,46 @@ async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> |
     let match;
     while ((match = listRegex.exec(fullText)) !== null) {
         let listText = match[1];
-        if (radioOfSamePrefix(newTocText, listText) + similarity(newTocText, listText) > 0.5) {
+
+        let firstLine: string = listText.split(/\r?\n/)[0];
+        if (vscode.workspace.getConfiguration('markdown.extension.toc').get<boolean>('plaintext')) {
+            // A lazy way to check whether it is a link
+            if (firstLine.includes('](')) {
+                continue;
+            }
+        } else {
+            if (!firstLine.includes('](')) {
+                continue;
+            }
+        }
+
+        if (radioOfCommonPrefix(newTocText, listText) + similarity(newTocText, listText) > 0.5) {
             return new vscode.Range(doc.positionAt(fullText.indexOf(listText)), doc.positionAt(fullText.indexOf(listText) + listText.length));
         }
     }
     return null;
 }
 
-function radioOfSamePrefix(s1, s2) {
-    let minLength = s1.length;
-    let maxLength = s2.length;
-    if (minLength > maxLength) {
-        minLength = maxLength;
-        maxLength = s1.length;
-    }
+function commonPrefixLength(s1, s2) {
+    let minLength = Math.min(s1.length, s2.length);
     for (let i = 0; i < minLength; i++) {
         if (s1[i] !== s2[i]) {
-            return i / minLength;
+            return i;
         }
     }
-    return minLength / maxLength;
+    return minLength;
+}
+
+function radioOfCommonPrefix(s1, s2) {
+    let minLength = Math.min(s1.length, s2.length);
+    let maxLength = Math.max(s1.length, s2.length);
+
+    let prefixLength = commonPrefixLength(s1, s2);
+    if (prefixLength < minLength) {
+        return prefixLength / minLength;
+    } else {
+        return minLength / maxLength;
+    }
 }
 
 function similarity(s1, s2) {
