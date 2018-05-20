@@ -11,7 +11,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 - **Keyboard shortcuts** (toggle bold, italic, code span, strikethrough and heading)
   - Tip: `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
-  - If there is no text selected, *the word under cursor* be styled (or *the entire list item* if you are toggling strikethrough)
+  - If there is no text selected, *the word under cursor* will be styled (or *the entire list item* if you are toggling strikethrough)
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
   - To make TOC compatible with GitHub, you need to set option `githubCompatibility` to `true`
   - Use `<!-- omit in toc -->` to ignore specific heading in TOC
