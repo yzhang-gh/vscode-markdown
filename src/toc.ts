@@ -63,6 +63,8 @@ async function generateTocText(): Promise<string> {
 
     let toc = [];
     let tocEntries = await buildToc();
+    if (tocEntries === null || tocEntries === undefined || tocEntries.length < 1) return '';
+
     let startDepth = Math.max(tocConfig.startDepth, Math.min.apply(null, tocEntries.map(h => h.level)));
     let order = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
 

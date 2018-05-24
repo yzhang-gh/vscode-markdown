@@ -62,7 +62,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         let rowsNoIndentPattern = new RegExp(/^\s*(\S.*)$/gum);
         let match = null;
         while ((match = rowsNoIndentPattern.exec(text)) !== null) {
-            rows.push(match[1]);
+            rows.push(match[1].trim());
         }
 
         // Desired width of each column
@@ -89,7 +89,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
 
                 i++;
             }
-            return (values)
+            return values;
         });
 
         // Normalize the num of hyphen, use Math.max to determine minimum length based on dash-line format
