@@ -8,6 +8,7 @@ import * as formatting from './formatting';
 import * as listEditing from './listEditing';
 import * as preview from './preview';
 import * as print from './print';
+import * as decorations from './syntaxDecorations';
 import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
 import { getNewFeatureMsg, showChangelog } from './util';
@@ -30,6 +31,8 @@ function activateMdExt(context: ExtensionContext) {
     formatting.activate(context);
     // Toc
     toc.activate(context);
+    // Syntax decorations
+    decorations.activiate(context);
     // Images paths and math commands completions
     completion.activate(context);
     // Print to PDF

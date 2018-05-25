@@ -224,6 +224,11 @@
                     "default": false,
                     "description": "Convert images to base64 when printing to HTML",
                     "scope": "resource"
+                },
+                "markdown.extension.syntax.decorations": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Add syntax decorations if you have `Highlight` extension installed"
                 }
             }
         },
