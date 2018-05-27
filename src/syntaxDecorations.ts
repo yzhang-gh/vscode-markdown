@@ -45,7 +45,7 @@ export function activiate(context: ExtensionContext) {
     if (workspace.getConfiguration('markdown.extension.syntax').get<boolean>('decorations')) {
         if (extensions.getExtension('fabiospampinato.vscode-highlight') !== undefined) {
             const config = workspace.getConfiguration('highlight');
-            let regexes = config.get<object>('regexes');
+            let regexes = config.get<object>('regexes', {});
             for (const key in decorations) {
                 if (decorations.hasOwnProperty(key)) {
                     if (!regexes.hasOwnProperty(key)) {
