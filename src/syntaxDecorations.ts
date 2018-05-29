@@ -1,45 +1,44 @@
 'use strict'
 
-import { ExtensionContext, workspace, extensions, window, ConfigurationTarget } from "vscode";
+import { ExtensionContext, workspace, extensions, window, ConfigurationTarget, DecorationRangeBehavior } from "vscode";
 
 export function activiate(context: ExtensionContext) {
     const decorations = {
-        "(~~.+?~~)": [
-            {
-                "textDecoration": "line-through"
-            }
-        ],
-        "(`[^`\\n]+?`)": [
-            {
-                "borderRadius": "3px",
-                "dark": {
-                    "backgroundColor": "#3D474C"
-                },
-                "light": {
-                    "backgroundColor": "#DDDDDD"
+        "(~~.+?~~)": {
+            "regexFlags": "g",
+            "filterLanguageRegex": "markdown",
+            "decorations": [
+                { "textDecoration": "line-through" }
+            ]
+        },
+        "(`[^`\\n]+?`)": {
+            "regexFlags": "g",
+            "filterLanguageRegex": "markdown",
+            "decorations": [
+                {
+                    "border": "1px solid #3D474C",
+                    "borderRadius": "3px",
+                    "dark": { "backgroundColor": "#30383D" },
+                    "light": { "backgroundColor": "#DDDDDD" }
                 }
-            }
-        ],
-        "(^|[^!])(\\[)(.+)(\\]\\(.+?\\))": [
-            {},
-            {
-                "dark": {
-                    "color": "#636363"
+            ]
+        },
+        "(^|[^!\\r\\n])(\\[)([^\\]]*(?!\\].*\\[)[^\\[]*)(\\]\\(.+?\\))": {
+            "regexFlags": "gm",
+            "filterLanguageRegex": "markdown",
+            "decorations": [
+                {},
+                {
+                    "dark": { "color": "#636363" },
+                    "light": { "color": "#CCC" }
                 },
-                "light": {
-                    "color": "#CCC"
+                {},
+                {
+                    "dark": { "color": "#636363" },
+                    "light": { "color": "#CCC" }
                 }
-            },
-            {},
-            {
-                "dark": {
-                    "color": "#636363"
-                },
-                "light": {
-                    "color": "#CCC"
-                }
-            }
-        ]
+            ]
+        }
     }
 
     if (workspace.getConfiguration('markdown.extension.syntax').get<boolean>('decorations')) {
@@ -48,9 +47,7 @@ export function activiate(context: ExtensionContext) {
             let regexes = config.get<object>('regexes', {});
             for (const key in decorations) {
                 if (decorations.hasOwnProperty(key)) {
-                    if (!regexes.hasOwnProperty(key)) {
-                        regexes[key] = decorations[key];
-                    }
+                    regexes[key] = decorations[key];
                 }
             }
             config.update('regexes', regexes, ConfigurationTarget.Global);
