@@ -23,11 +23,10 @@ export function activiate(context: ExtensionContext) {
                 }
             ]
         },
-        "(^|[^!\\r\\n])(\\[)([^\\]]*(?!\\].*\\[)[^\\[]*)(\\]\\(.+?\\))": {
+        "(\\!?\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": {
             "regexFlags": "gm",
             "filterLanguageRegex": "markdown",
             "decorations": [
-                {},
                 {
                     "dark": { "color": "#636363" },
                     "light": { "color": "#CCC" }
@@ -60,7 +59,7 @@ export function activiate(context: ExtensionContext) {
                 }
             ]
         };
-        decorations["(^|[^!\\r\\n])(\\[)([^\\]]*(?!\\].*\\[)[^\\[]*)(\\]\\(.+?\\))"].decorations[2]["color"] = "#EEFFFF";
+        decorations["(\\!?\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))"].decorations[1]["color"] = "#99EEFF";
         decorations["(\\*\\*)([^\\s].*?[^\\s])(\\*\\*)"] = {
             "regexFlags": "g",
             "filterLanguageRegex": "markdown",
