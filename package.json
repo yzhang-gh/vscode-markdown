@@ -228,7 +228,7 @@
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Add syntax decorations if you have `Highlight` extension installed"
+                    "description": "Add syntax decorations"
                 }
             }
         },
