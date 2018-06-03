@@ -13,7 +13,10 @@ let decorTypes = {
         "light": { "color": "#CCC" }
     }),
     "lightBlue": window.createTextEditorDecorationType({
-        "color": "#99EEFF"
+        "color": "#4080D0"
+    }),
+    "orange": window.createTextEditorDecorationType({
+        "color": "#D2B640"
     }),
     "strikethrough": window.createTextEditorDecorationType({
         "textDecoration": "line-through"
@@ -26,7 +29,7 @@ let decorTypes = {
     })
 };
 
-let decors = {};
+let decors = {}
 
 for (const decorTypeName in decorTypes) {
     if (decorTypes.hasOwnProperty(decorTypeName)) {
@@ -36,8 +39,12 @@ for (const decorTypeName in decorTypes) {
 
 let regexDecorTypeMapping = {
     "(~~.+?~~)": ["strikethrough"],
-    "(`[^`\\n]+?`)": ["codeSpan"]
-    // , "(\\!?\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": ["gray", "baseColor", "gray"]
+    "(`[^`\\n]+?`)": ["codeSpan"],
+    "(^|[^!])(\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": ["", "gray", "lightBlue", "gray"],
+    "(\\!\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": ["gray", "orange", "gray"],
+    "(\\*)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(\\*)": ["gray", "baseColor", "gray"],
+    "(_)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(_)": ["gray", "baseColor", "gray"],
+    "(\\*\\*)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(\\*\\*)": ["gray", "baseColor", "gray"]
 };
 
 export function activiate(context: ExtensionContext) {
@@ -57,7 +64,7 @@ export function activiate(context: ExtensionContext) {
         if (timeout) {
             clearTimeout(timeout);
         }
-        timeout = setTimeout(() => updateDecorations(editor), 500);
+        timeout = setTimeout(() => updateDecorations(editor), 100);
     }
 
     let editor = window.activeTextEditor;
@@ -94,13 +101,17 @@ function updateDecorations(editor?: TextEditor) {
                         let range = new Range(lineNum, startIndex, lineNum, startIndex + match[i + 1].length);
                         startIndex += match[i + 1].length;
 
+                        const decorTypeName = decorTypeNames[i];
+                        if (decorTypeName.length === 0) {
+                            continue;
+                        }
                         decors[decorTypeNames[i]].push(range);
                     }
                 }
             }
         }
     });
-    
+
     for (const decorTypeName in decors) {
         if (decors.hasOwnProperty(decorTypeName)) {
             editor.setDecorations(decorTypes[decorTypeName], decors[decorTypeName]);
