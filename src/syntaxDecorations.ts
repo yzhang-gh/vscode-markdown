@@ -9,6 +9,7 @@ let decorTypes = {
         "light": { "color": "000000" }
     }),
     "gray": window.createTextEditorDecorationType({
+        "rangeBehavior": 1,
         "dark": { "color": "#636363" },
         "light": { "color": "#CCC" }
     }),
@@ -19,9 +20,11 @@ let decorTypes = {
         "color": "#D2B640"
     }),
     "strikethrough": window.createTextEditorDecorationType({
+        "rangeBehavior": 1,
         "textDecoration": "line-through"
     }),
     "codeSpan": window.createTextEditorDecorationType({
+        "rangeBehavior": 1,
         "border": "1px solid #3D474C",
         "borderRadius": "3px",
         "dark": { "backgroundColor": "#30383D" },
@@ -51,7 +54,7 @@ let regexDecorTypeMapping = {
 export function activiate(context: ExtensionContext) {
     if (!workspace.getConfiguration('markdown.extension.syntax').get<boolean>('decorations')) return;
 
-    window.onDidChangeActiveTextEditor(triggerUpdateDecorations);
+    window.onDidChangeActiveTextEditor(updateDecorations);
 
     workspace.onDidChangeTextDocument(event => {
         let editor = window.activeTextEditor;
@@ -61,16 +64,16 @@ export function activiate(context: ExtensionContext) {
     });
 
     var timeout = null;
-    function triggerUpdateDecorations(editor?) {
+    function triggerUpdateDecorations(editor) {
         if (timeout) {
             clearTimeout(timeout);
         }
-        timeout = setTimeout(() => updateDecorations(editor), 100);
+        timeout = setTimeout(() => updateDecorations(editor), 200);
     }
 
     let editor = window.activeTextEditor;
     if (editor) {
-        triggerUpdateDecorations(editor);
+        updateDecorations(editor);
     }
 }
 
