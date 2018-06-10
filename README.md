@@ -13,6 +13,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   - Tip: `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
   - If there is no text selected, *the word under cursor* will be styled (or *the entire list item* if you are toggling strikethrough)
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
+  - The indentation rules (tab or spaces) of TOC will be the same of your current file (find it in the right bottom corner)
   - To make TOC compatible with GitHub, you need to set option `githubCompatibility` to `true`
   - Use `<!-- omit in toc -->` to ignore specific heading in TOC
 - **Outline view** in explorer panel
