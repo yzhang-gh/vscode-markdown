@@ -1,15 +1,8 @@
-ul.contains-task-list {
-    padding-left: 0;
-}
-
-ul ul.contains-task-list {
-    padding-left: 40px;
-}
-
 .task-list-item {
     list-style-type: none;
 }
 
 .task-list-item-checkbox {
+    margin-left: -20px;
     vertical-align: middle;
 }
