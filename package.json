@@ -200,7 +200,7 @@
                 },
                 "markdown.extension.showExplorer": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Show outline view in explorer panel"
                 },
                 "markdown.extension.tableFormatter.enabled": {
