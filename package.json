@@ -244,7 +244,7 @@
         "markdown.markdownItPlugins": true,
         "markdown.previewStyles": [
             "./media/checkbox.css",
-            "./media/katex-0.9.0.min.css"
+            "./media/katex-0.10.0-alpha.min.css"
         ]
     },
     "scripts": {

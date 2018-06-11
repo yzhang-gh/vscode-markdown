@@ -87,7 +87,7 @@ function print(type: string) {
     <html>
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-alpha/dist/katex.min.css" integrity="sha384-BTL0nVi8DnMrNdMQZG1Ww6yasK9ZGnUxL1ZWukXQ7fygA1py52yPp9W4wrR00VML" crossorigin="anonymous">
         ${styleSheets.map(css => wrapWithStyleTag(css)).join('\n')}
         ${getSettingsOverrideStyles()}
     </head>
