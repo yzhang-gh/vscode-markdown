@@ -227,7 +227,7 @@
                 },
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Add syntax decorations"
                 }
             }
