@@ -10,7 +10,7 @@ import { officialExtPath, slugify } from './util';
 const hljs = require(path.join(officialExtPath, 'node_modules', 'highlight.js'));
 const mdnh = require(path.join(officialExtPath, 'node_modules', 'markdown-it-named-headers'));
 const mdtl = require('markdown-it-task-lists');
-const mdkt = require('@iktakahiro/markdown-it-katex');
+const mdkt = require('@neilsustc/markdown-it-katex');
 const md = require(path.join(officialExtPath, 'node_modules', 'markdown-it'))({
     html: true,
     highlight: (str: string, lang: string) => {

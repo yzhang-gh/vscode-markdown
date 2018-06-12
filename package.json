@@ -258,7 +258,7 @@
     ],
     "dependencies": {
         "markdown-it-task-lists": "^2.0.1",
-        "@iktakahiro/markdown-it-katex": "^3.0.3"
+        "@neilsustc/markdown-it-katex": "^0.1.0"
     },
     "devDependencies": {
         "typescript": "^2.8.3",

@@ -19,7 +19,7 @@ export function activate(context: ExtensionContext) {
     return {
         extendMarkdownIt(md) {
             return md.use(require('markdown-it-task-lists'))
-                .use(require('@iktakahiro/markdown-it-katex'));
+                .use(require('@neilsustc/markdown-it-katex'));
         }
     }
 }
