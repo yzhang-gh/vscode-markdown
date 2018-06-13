@@ -189,6 +189,11 @@
                         "ordered"
                     ]
                 },
+                "markdown.extension.orderedList.autoRenumber": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Auto fix ordered list markers"
+                },
                 "markdown.extension.italic.indicator": {
                     "type": "string",
                     "default": "*",

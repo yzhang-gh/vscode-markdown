@@ -187,6 +187,8 @@ function lookUpwardForMarker(editor: vscode.TextEditor, line: number, numOfSpace
  * Fix ordered list marker *iteratively* starting from current line
  */
 function fixMarker(line?: number) {
+    if (!workspace.getConfiguration('markdown.extension.orderedList').get<boolean>('autoRenumber')) return;
+
     let editor = vscode.window.activeTextEditor;
     if (line === undefined) {
         line = editor.selection.active.line;
