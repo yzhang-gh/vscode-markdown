@@ -1,48 +1,45 @@
 'use strict';
 
-/**
- * Modified from <https://github.com/mdickin/vscode-markdown-shortcuts>
- */
-
-import { commands, window, ExtensionContext, Position, Range, Selection } from 'vscode';
-
-const prefix = 'markdown.extension.editing.';
+import { commands, window, workspace, ExtensionContext, Position, Range, Selection, TextEditor, TextEdit } from 'vscode';
 
 export function activate(context: ExtensionContext) {
-    const cmds: Command[] = [
-        { command: 'toggleBold', callback: toggleBold },
-        { command: 'toggleItalic', callback: toggleItalic },
-        { command: 'toggleCodeSpan', callback: toggleCodeSpan },
-        { command: 'toggleHeadingUp', callback: toggleHeadingUp },
-        { command: 'toggleHeadingDown', callback: toggleHeadingDown }
-    ].map(cmd => {
-        cmd.command = prefix + cmd.command;
-        return cmd;
-    });
-
-    cmds.forEach(cmd => {
-        context.subscriptions.push(commands.registerCommand(cmd.command, cmd.callback));
-    });
+    context.subscriptions.push(
+        commands.registerCommand('markdown.extension.editing.toggleBold', toggleBold),
+        commands.registerCommand('markdown.extension.editing.toggleItalic', toggleItalic),
+        commands.registerCommand('markdown.extension.editing.toggleCodeSpan', toggleCodeSpan),
+        commands.registerCommand('markdown.extension.editing.toggleStrikethrough', toggleStrikethrough),
+        commands.registerCommand('markdown.extension.editing.toggleMath', toggleMath),
+        commands.registerCommand('markdown.extension.editing.toggleHeadingUp', toggleHeadingUp),
+        commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown),
+        commands.registerCommand('markdown.extension.editing.toggleUnorderedList', toggleUnorderedList)
+    );
 }
 
+// Return Promise because need to chain operations in unit tests
+
 function toggleBold() {
-    styleByWrapping('**');
+    return styleByWrapping('**');
 }
 
 function toggleItalic() {
-    styleByWrapping('*');
+    let indicator = workspace.getConfiguration('markdown.extension.italic').get<string>('indicator');
+    return styleByWrapping(indicator);
 }
 
 function toggleCodeSpan() {
-    styleByWrapping('`');
+    return styleByWrapping('`');
 }
 
-function toggleHeadingUp() {
+function toggleStrikethrough() {
+    return styleByWrapping('~~');
+}
+
+async function toggleHeadingUp() {
     let editor = window.activeTextEditor;
     let lineIndex = editor.selection.active.line;
     let lineText = editor.document.lineAt(lineIndex).text;
 
-    editor.edit((editBuilder) => {
+    return await editor.edit((editBuilder) => {
         if (!lineText.startsWith('#')) { // Not a heading
             editBuilder.insert(new Position(lineIndex, 0), '# ');
         }
@@ -67,55 +64,181 @@ function toggleHeadingDown() {
     });
 }
 
+function toggleMath() {
+    let editor = window.activeTextEditor;
+    if (!editor.selection.isEmpty) return;
+    let cursor = editor.selection.active;
+
+    if (getContext('$') === '$|$') {
+        return editor.edit(editBuilder => {
+            editBuilder.replace(new Range(cursor.line, cursor.character - 1, cursor.line, cursor.character + 1), '$$  $$');
+        }).then(() => {
+            let pos = cursor.with({ character: cursor.character + 2 });
+            editor.selection = new Selection(pos, pos);
+        });
+    } else if (getContext('$$ ', ' $$') === '$$ | $$') {
+        return editor.edit(editBuilder => {
+            editBuilder.delete(new Range(cursor.line, cursor.character - 3, cursor.line, cursor.character + 3));
+        });
+    } else {
+        return commands.executeCommand('editor.action.insertSnippet', { snippet: '$$0$' });
+    }
+}
+
+function toggleUnorderedList() {
+    let editor = window.activeTextEditor;
+    if (!editor.selection.isEmpty) return;
+    let cursor = editor.selection.active;
+    let textBeforeCursor = editor.document.lineAt(cursor.line).text.substr(0, cursor.character);
+
+    let indentation = 0;
+    switch (textBeforeCursor.trim()) {
+        case '':
+            return editor.edit(editBuilder => {
+                editBuilder.insert(cursor, '- ');
+            });
+        case '-':
+            indentation = textBeforeCursor.indexOf('-');
+            return editor.edit(editBuilder => {
+                editBuilder.replace(new Range(cursor.line, indentation, cursor.line, cursor.character), '*' + ' '.repeat(textBeforeCursor.length - indentation - 1));
+            });
+        case '*':
+            indentation = textBeforeCursor.indexOf('*');
+            return editor.edit(editBuilder => {
+                editBuilder.replace(new Range(cursor.line, indentation, cursor.line, cursor.character), '+' + ' '.repeat(textBeforeCursor.length - indentation - 1));
+            });
+        case '+':
+            indentation = textBeforeCursor.indexOf('+');
+            return editor.edit(editBuilder => {
+                editBuilder.delete(new Range(cursor.line, indentation, cursor.line, cursor.character));
+            });
+    }
+}
+
 function styleByWrapping(startPattern, endPattern?) {
     if (endPattern == undefined) {
         endPattern = startPattern;
     }
 
     let editor = window.activeTextEditor;
-    let selection = editor.selection;
 
-    if (selection.isEmpty) { // No selected text
-        let position = selection.active;
-        let newPosition = position;
-        switch (getContext(startPattern)) {
-            case `${startPattern}|${endPattern}`:
-                newPosition = position.with(position.line, position.character - startPattern.length);
-                editor.edit((editBuilder) => {
-                    editBuilder.delete(new Range(newPosition, position.with({ character: position.character + endPattern.length })));
-                });
-                break;
-            case `${startPattern}some text|${endPattern}`:
-                newPosition = position.with({ character: position.character + endPattern.length });
-                break;
-            case '|':
-                editor.edit((editBuilder) => {
-                    editBuilder.insert(selection.start, startPattern + endPattern);
-                });
-                newPosition = position.with({ character: position.character + startPattern.length });
-                break;
+    let selections = editor.selections;
+
+    for (let i = 0; i < selections.length; i++) {
+        var selection = editor.selections[i]; // 💩 get the latest selection range
+        let cursorPos = selection.active;
+
+        let options = {
+            undoStopBefore: false,
+            undoStopAfter: false
         }
-        editor.selection = new Selection(newPosition, newPosition);
-    }
-    else { // Text selected
-        wrapSelection(startPattern);
+
+        if (i === 0) {
+            options.undoStopBefore = true
+        } else if (i === selections.length - 1) {
+            options.undoStopAfter = true
+        }
+
+        if (selection.isEmpty) { // No selected text
+            if (startPattern !== '~~' && getContext(startPattern) === `${startPattern}text|${endPattern}`) {
+                // `**text|**` to `**text**|`
+                let newCursorPos = cursorPos.with({ character: cursorPos.character + endPattern.length });
+                editor.selection = new Selection(newCursorPos, newCursorPos);
+                return;
+            } else if (getContext(startPattern) === `${startPattern}|${endPattern}`) {
+                // `**|**` to `|`
+                let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
+                let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
+                return wrapRange(editor, options, cursorPos, new Range(start, end), false, startPattern);
+            } else {
+                // Select word under cursor
+                let wordRange = editor.document.getWordRangeAtPosition(cursorPos);
+                if (wordRange == undefined) {
+                    wordRange = selection;
+                }
+                // One special case: toggle strikethrough in task list
+                const currentTextLine = editor.document.lineAt(cursorPos.line);
+                if (startPattern === '~~' && /^\s*[\*\+\-] (\[[ x]\] )? */g.test(currentTextLine.text)) {
+                    wordRange = currentTextLine.range.with(new Position(cursorPos.line, currentTextLine.text.match(/^\s*[\*\+\-] (\[[ x]\] )? */g)[0].length));
+                }
+                return wrapRange(editor, options, cursorPos, wordRange, false, startPattern);
+            }
+        } else { // Text selected
+            return wrapRange(editor, options, cursorPos, selection, true, startPattern);
+        }
     }
 }
 
-function wrapSelection(startPattern, endPattern?) {
+/**
+ * Add or remove `startPattern`/`endPattern` according to the context
+ * @param editor 
+ * @param options The undo/redo behavior
+ * @param cursor cursor position
+ * @param range range to be replaced
+ * @param isSelected is this range selected
+ * @param startPattern 
+ * @param endPattern 
+ */
+function wrapRange(editor: TextEditor, options, cursor: Position, range: Range, isSelected: boolean, startPattern: string, endPattern?: string) {
     if (endPattern == undefined) {
         endPattern = startPattern;
     }
 
-    let editor = window.activeTextEditor;
-    let selection = editor.selection;
-    let text = editor.document.getText(selection);
+    /**
+     * 💩 IMHO, it makes more sense to use `await` to chain these two operations
+     *     1. replace text
+     *     2. fix cursor position
+     * But using `await` will cause noticeable cursor moving from `|` to `****|` to `**|**`.
+     * Since using promise here can also pass the unit tests, I choose this "bad codes"(?)
+     */
+    let promise: Thenable<boolean>;
+
+    let text = editor.document.getText(range);
+    let newCursorPos: Position;
     if (isWrapped(text, startPattern)) {
-        replaceWith(selection, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length));
+        // remove start/end patterns from range
+        promise = replaceWith(range, text.substr(startPattern.length, text.length - startPattern.length - endPattern.length), options);
+
+        // Fix cursor position
+        if (!isSelected) {
+            if (!range.isEmpty) { // means quick styling
+                if (cursor.character == range.start.character) {
+                    newCursorPos = cursor
+                } else if (cursor.character == range.end.character) {
+                    newCursorPos = cursor.with({ character: cursor.character - startPattern.length - endPattern.length });
+                } else {
+                    newCursorPos = cursor.with({ character: cursor.character - startPattern.length });
+                }
+            } else { // means `**|**` -> `|`
+                newCursorPos = cursor.with({ character: cursor.character + startPattern.length });
+            }
+        }
     }
     else {
-        replaceWith(selection, startPattern + text + endPattern);
+        // add start/end patterns around range
+        promise = replaceWith(range, startPattern + text + endPattern, options);
+
+        // Fix cursor position
+        if (!isSelected) {
+            if (!range.isEmpty) { // means quick styling
+                if (cursor.character == range.start.character) {
+                    newCursorPos = cursor
+                } else if (cursor.character == range.end.character) {
+                    newCursorPos = cursor.with({ character: cursor.character + startPattern.length + endPattern.length });
+                } else {
+                    newCursorPos = cursor.with({ character: cursor.character + startPattern.length });
+                }
+            } else { // means `|` -> `**|**`
+                newCursorPos = cursor.with({ character: cursor.character + startPattern.length });
+            }
+        }
     }
+
+    if (!isSelected) {
+        editor.selection = new Selection(newCursorPos, newCursorPos);
+    }
+
+    return promise;
 }
 
 function isWrapped(text, startPattern, endPattern?): boolean {
@@ -125,11 +248,11 @@ function isWrapped(text, startPattern, endPattern?): boolean {
     return text.startsWith(startPattern) && text.endsWith(endPattern);
 }
 
-function replaceWith(selection, newText) {
+function replaceWith(range: Range, newText: string, options) {
     let editor = window.activeTextEditor;
-    editor.edit((edit) => {
-        edit.replace(selection, newText);
-    });
+    return editor.edit(edit => {
+        edit.replace(range, newText);
+    }, options);
 }
 
 function getContext(startPattern, endPattern?): string {
@@ -153,9 +276,9 @@ function getContext(startPattern, endPattern?): string {
 
     if (rightText == endPattern) {
         if (leftText == startPattern) {
-            return `${startPattern}|${endPattern}`
+            return `${startPattern}|${endPattern}`;
         } else {
-            return `${startPattern}some text|${endPattern}`
+            return `${startPattern}text|${endPattern}`;
         }
     }
     return '|';

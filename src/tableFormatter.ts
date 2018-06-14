@@ -1,11 +1,12 @@
 'use strict';
 
-// https://help.github.com/articles/organizing-information-with-tables/
+// https://github.github.com/gfm/#tables-extension-
 
 import { languages, workspace, CancellationToken, DocumentFormattingEditProvider, ExtensionContext, FormattingOptions, Range, TextDocument, TextEdit } from 'vscode';
+import { mdDocSelector } from './util';
 
 export function activate(context: ExtensionContext) {
-    context.subscriptions.push(languages.registerDocumentFormattingEditProvider('markdown', new MarkdownDocumentFormatter))
+    context.subscriptions.push(languages.registerDocumentFormattingEditProvider(mdDocSelector, new MarkdownDocumentFormatter));
 }
 
 export function deactivate() { }
@@ -14,16 +15,20 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     public provideDocumentFormattingEdits(document: TextDocument, options: FormattingOptions, token: CancellationToken): TextEdit[] | Thenable<TextEdit[]> {
         let edits: TextEdit[] = [];
         let tables = this.detectTables(document.getText());
-        tables.forEach(table => {
-            edits.push(new TextEdit(this.getRange(document, table), this.formatTable(table)));
-        });
-        return edits;
+        if (tables !== null) {
+            tables.forEach(table => {
+                edits.push(new TextEdit(this.getRange(document, table), this.formatTable(table, document, options)));
+            });
+            return edits;
+        } else {
+            return [];
+        }
     }
 
     private detectTables(text: string) {
         const lineBreak = '\\r?\\n';
         const contentLine = '\\|?.*\\|.*\\|?';
-        const hyphenLine = '\\|?[- :\\|]{3,}\\|?';
+        const hyphenLine = '[ \\t]*\\|?( *:?-{3,}:? *\\|)+( *:?-{3,}:? *\\|?)[ \\t]*';
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
         return text.match(tableRegex);
     }
@@ -35,48 +40,88 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         return new Range(start, end);
     }
 
-    private formatTable(text: string) {
-        let rows = text.split(/\r?\n/g);
-        let content = rows.map(row => {
-            return row.trim().replace(/^\|/g, '').replace(/\|$/g, '').trim().split(/\s*\|\s*/g);
-        });
-        // Normalize the num of hyphen
-        content[1] = content[1].map(cell => {
-            if (/:-+:/.test(cell)) {
-                return ':---:';
-            } else if (/:-+/.test(cell)) {
-                return ':---';
-            } else if (/-+:/.test(cell)) {
-                return '---:';
-            } else if (/-+/.test(cell)) {
-                return '---';
-            }
-        });
-        let colWidth = Array(content[0].length).fill(3);
-        content.forEach(row => {
-            row.forEach((cell, i) => {
-                if (colWidth[i] < cell.length) {
-                    colWidth[i] = cell.length;
+    /**
+     * Return the indentation of a table as a string of spaces by reading it from the first line.
+     * In case of `markdown.extension.table.normalizeIndentation` is `enabled` it is rounded to the closest multiple of
+     * the configured `tabSize`.
+     */
+    private getTableIndentation(text: string, options: FormattingOptions) {
+        let doNormalize = workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('normalizeIndentation');
+        let indentRegex = new RegExp(/^(\s*)\S/u);
+        let match = text.match(indentRegex);
+        let spacesInFirstLine = match[1].length;
+        let tabStops = Math.round(spacesInFirstLine / options.tabSize);
+        let spaces = doNormalize ? " ".repeat(options.tabSize * tabStops) : " ".repeat(spacesInFirstLine);
+        return spaces;
+    }
+
+    private formatTable(text: string, doc: TextDocument, options: FormattingOptions) {
+        let indentation = this.getTableIndentation(text, options);
+
+        let rows = [];
+        let rowsNoIndentPattern = new RegExp(/^\s*(\S.*)$/gum);
+        let match = null;
+        while ((match = rowsNoIndentPattern.exec(text)) !== null) {
+            rows.push(match[1].trim());
+        }
+
+        // Desired width of each column
+        let colWidth = [];
+        // Regex to extract cell content.
+        // Known issue: `\\|` is not correctly parsed as a valid delimiter
+        let fieldRegExp = new RegExp(/(?:\|?((?:\\\||`.*?`|[^\|])+))/gu);
+        let cjkRegex = /[\u3000-\u9fff\uff01-\uff60‘“’”—]/g;
+
+        let lines = rows.map((row, num) => {
+            let field = null;
+            let values = [];
+            let i = 0;
+            while ((field = fieldRegExp.exec(row)) !== null) {
+                let cell = field[1].trim();
+                values.push(cell);
+
+                // Ignore length of dash-line to enable width reduction
+                if (num != 1) {
+                    // Treat CJK characters as 2 English ones because of Unicode stuff
+                    let length = cjkRegex.test(cell) ? cell.length + cell.match(cjkRegex).length : cell.length;
+                    colWidth[i] = colWidth[i] > length ? colWidth[i] : length;
                 }
-            });
+
+                i++;
+            }
+            return values;
         });
-        // Format
-        content[1] = content[1].map((cell, i) => {
-            if (cell == ':---:') {
+
+        // Normalize the num of hyphen, use Math.max to determine minimum length based on dash-line format
+        lines[1] = lines[1].map((cell, i) => {
+            if (/:-+:/.test(cell)) {
+                //:---:
+                colWidth[i] = Math.max(colWidth[i], 5)
                 return ':' + '-'.repeat(colWidth[i] - 2) + ':';
-            } else if (cell == ':---') {
+            } else if (/:-+/.test(cell)) {
+                //:---
+                colWidth[i] = Math.max(colWidth[i], 4)
                 return ':' + '-'.repeat(colWidth[i] - 1);
-            } else if (cell == '---:') {
+            } else if (/-+:/.test(cell)) {
+                //---:
+                colWidth[i] = Math.max(colWidth[i], 4)
                 return '-'.repeat(colWidth[i] - 1) + ':';
-            } else if (cell == '---') {
+            } else if (/-+/.test(cell)) {
+                //---
+                colWidth[i] = Math.max(colWidth[i], 3)
                 return '-'.repeat(colWidth[i]);
             }
         });
-        return content.map(row => {
+
+        return lines.map(row => {
             let cells = row.map((cell, i) => {
-                return (cell + ' '.repeat(colWidth[i])).slice(0, colWidth[i]);
+                let cellLength = colWidth[i];
+                if (cjkRegex.test(cell)) {
+                    cellLength -= cell.match(cjkRegex).length;
+                }
+                return (cell + ' '.repeat(cellLength)).slice(0, cellLength);
             });
-            return '| ' + cells.join(' | ') + ' |';
-        }).join(<string>workspace.getConfiguration("files").get("eol"));
+            return indentation + '| ' + cells.join(' | ') + ' |';
+        }).join(workspace.getConfiguration('files', doc.uri).get('eol'));
     }
 }

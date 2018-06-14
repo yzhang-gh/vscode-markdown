@@ -3,10 +3,10 @@
     "displayName": "Markdown All in One",
     "description": "All you need to write Markdown (keyboard shortcuts, table of contents, auto preview and more)",
     "icon": "images/Markdown-mark.png",
-    "version": "0.7.4",
+    "version": "1.4.0",
     "publisher": "yzhang",
     "engines": {
-        "vscode": "^1.6.0"
+        "vscode": "^1.20.0"
     },
     "categories": [
         "Other"
@@ -14,7 +14,6 @@
     "keywords": [
         "markdown"
     ],
-    "preview": true,
     "bugs": {
         "url": "https://github.com/neilsustc/vscode-markdown/issues"
     },
@@ -24,7 +23,8 @@
     },
     "license": "MIT",
     "activationEvents": [
-        "*"
+        "onLanguage:markdown",
+        "workspaceContains:README.md"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -38,8 +38,20 @@
                 "title": "Markdown: Update Table of Contents"
             },
             {
-                "command": "markdown.extension.print",
-                "title": "Markdown: Print to PDF"
+                "command": "markdown.extension.printToHtml",
+                "title": "Markdown: Print current document to HTML"
+            },
+            {
+                "command": "markdown.extension.editing.toggleCodeSpan",
+                "title": "Markdown: Toggle code span"
+            },
+            {
+                "command": "markdown.extension.editing.toggleMath",
+                "title": "Markdown: Toggle math environment"
+            },
+            {
+                "command": "markdown.extension.editing.toggleUnorderedList",
+                "title": "Markdown: Toggle unordered list"
             }
         ],
         "keybindings": [
@@ -56,21 +68,25 @@
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
-                "command": "markdown.extension.editing.toggleCodeSpan",
-                "key": "ctrl+`",
-                "mac": "cmd+`",
+                "command": "markdown.extension.editing.toggleStrikethrough",
+                "key": "alt+s",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
                 "command": "markdown.extension.editing.toggleHeadingUp",
                 "key": "ctrl+shift+]",
-                "mac": "cmd+shift+]",
+                "mac": "ctrl+shift+]",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
                 "command": "markdown.extension.editing.toggleHeadingDown",
                 "key": "ctrl+shift+[",
-                "mac": "cmd+shift+[",
+                "mac": "ctrl+shift+[",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "markdown.extension.editing.toggleMath",
+                "key": "ctrl+m",
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
@@ -87,27 +103,62 @@
             {
                 "command": "markdown.extension.onTabKey",
                 "key": "tab",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !editorTabMovesFocus && !editorReadonly"
             },
             {
                 "command": "markdown.extension.onBackspaceKey",
                 "key": "backspace",
                 "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.onMoveLineUp",
+                "key": "alt+up",
+                "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.onMoveLineDown",
+                "key": "alt+down",
+                "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.checkTaskList",
+                "key": "alt+c",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "markdown.extension.togglePreview",
+                "key": "ctrl+shift+v",
+                "when": "!terminalFocus"
+            },
+            {
+                "command": "markdown.extension.togglePreviewToSide",
+                "key": "ctrl+k v",
+                "when": "!terminalFocus"
             }
         ],
         "configuration": {
             "type": "object",
             "title": "Markdown All in One",
             "properties": {
-                "markdown.extension.toc.depth": {
-                    "type": "number",
-                    "default": 6,
-                    "description": "Depth control [1-6]"
+                "markdown.extension.toc.levels": {
+                    "type": "string",
+                    "default": "1..6",
+                    "description": "Range of levels for table of contents. Use `x..y` for level x to y"
                 },
                 "markdown.extension.toc.orderedList": {
                     "type": "boolean",
                     "default": false,
                     "description": "Use ordered list (1. ..., 2. ...)"
+                },
+                "markdown.extension.toc.unorderedList.marker": {
+                    "type": "string",
+                    "default": "-",
+                    "description": "Use `-`, `*` or `+` in the table of contents (for unordered list)",
+                    "enum": [
+                        "-",
+                        "*",
+                        "+"
+                    ]
                 },
                 "markdown.extension.toc.plaintext": {
                     "type": "boolean",
@@ -119,6 +170,11 @@
                     "default": true,
                     "description": "Auto update on save"
                 },
+                "markdown.extension.toc.githubCompatibility": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "GitHub Compatibility"
+                },
                 "markdown.extension.preview.autoShowPreviewToSide": {
                     "type": "boolean",
                     "default": false,
@@ -126,27 +182,94 @@
                 },
                 "markdown.extension.orderedList.marker": {
                     "type": "string",
-                    "default": "one",
-                    "description": "Start a list item always with '1.' or in increasing numerical order",
+                    "default": "ordered",
+                    "description": "`one`: always use `1.` as ordered list marker; `ordered`",
                     "enum": [
                         "one",
                         "ordered"
                     ]
+                },
+                "markdown.extension.orderedList.autoRenumber": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Auto fix ordered list markers"
+                },
+                "markdown.extension.italic.indicator": {
+                    "type": "string",
+                    "default": "*",
+                    "description": "Use `*` or `_` to wrap italic text",
+                    "enum": [
+                        "*",
+                        "_"
+                    ]
+                },
+                "markdown.extension.showExplorer": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Show outline view in explorer panel"
+                },
+                "markdown.extension.tableFormatter.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable GFM table formatter"
+                },
+                "markdown.extension.tableFormatter.normalizeIndentation": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Normalize table indentation to closest multiple of configured tabSize"
+                },
+                "markdown.extension.print.absoluteImgPath": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Convert image path to absolute path",
+                    "scope": "resource"
+                },
+                "markdown.extension.print.imgToBase64": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Convert images to base64 when printing to HTML",
+                    "scope": "resource"
+                },
+                "markdown.extension.syntax.decorations": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Add syntax decorations"
                 }
             }
-        }
+        },
+        "views": {
+            "explorer": [
+                {
+                    "id": "mdOutline",
+                    "name": "Outline",
+                    "when": "config.markdown.extension.showExplorer == true && mdContext"
+                }
+            ]
+        },
+        "markdown.markdownItPlugins": true,
+        "markdown.previewStyles": [
+            "./media/checkbox.css",
+            "./media/katex-0.10.0-alpha.min.css"
+        ]
     },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
         "compile": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install"
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
     },
-    "dependencies": {},
+    "extensionDependencies": [
+        "vscode.markdown-language-features"
+    ],
+    "dependencies": {
+        "markdown-it-task-lists": "^2.0.1",
+        "@neilsustc/markdown-it-katex": "^0.1.0"
+    },
     "devDependencies": {
-        "typescript": "^2.0.3",
-        "vscode": "^1.0.0",
-        "mocha": "^2.3.3",
-        "@types/node": "^6.0.40",
-        "@types/mocha": "^2.2.32"
+        "typescript": "^2.8.3",
+        "vscode": "^1.1.17",
+        "mocha": "^5.1.1",
+        "@types/node": "^10.0.0",
+        "@types/mocha": "^5.2.0"
     }
 }

@@ -1,6 +1,6 @@
 out
 node_modules
-
+VERSION
 *.vsix
 ROADMAP.md
 *.log

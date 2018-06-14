@@ -2,12 +2,16 @@
 
 // See https://github.com/Microsoft/vscode/tree/master/extensions/markdown/src
 
-import { commands, window, workspace, Disposable, ExtensionContext, TextDocument, Uri } from 'vscode';
+import * as fs from "fs";
 import * as path from 'path';
+import * as vscode from 'vscode';
+import { officialExtPath, slugify } from './util';
 
-const hljs = require('highlight.js');
-const mdnh = require('markdown-it-named-headers');
-const md = require('markdown-it')({
+const hljs = require(path.join(officialExtPath, 'node_modules', 'highlight.js'));
+const mdnh = require(path.join(officialExtPath, 'node_modules', 'markdown-it-named-headers'));
+const mdtl = require('markdown-it-task-lists');
+const mdkt = require('@neilsustc/markdown-it-katex');
+const md = require(path.join(officialExtPath, 'node_modules', 'markdown-it'))({
     html: true,
     highlight: (str: string, lang: string) => {
         if (lang && hljs.getLanguage(lang)) {
@@ -18,42 +22,25 @@ const md = require('markdown-it')({
         // return `<pre class="hljs"><code><div>${this.engine.utils.escapeHtml(str)}</div></code></pre>`;
         return str;
     }
-}).use(mdnh, {});
-const htmlPdf = require('html-pdf');
-const fs = require('fs');
+}).use(mdnh, {
+    slugify: (header: string) => slugify(header)
+}).use(mdtl).use(mdkt);
 
-let options = {
-    "format": "A4",
-    "orientation": "portrait",
-    "border": {
-        "top": "1in",
-        "right": "0.8in",
-        "bottom": "1in",
-        "left": "0.8in"
-    }
-};
+let thisContext: vscode.ExtensionContext;
 
-let thisContext: ExtensionContext;
-// let disposables: Disposable[] = [];
-
-export function activate(context: ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
     thisContext = context;
-    context.subscriptions.push(commands.registerCommand('markdown.extension.print', print));
+    context.subscriptions.push(vscode.commands.registerCommand('markdown.extension.printToHtml', () => { print('html'); }));
 }
 
-export function deactivate() {
-    // disposables.forEach(d => {
-    //     d.dispose();
-    // });
-}
+export function deactivate() { }
 
-function print() {
-    let editor = window.activeTextEditor;
+function print(type: string) {
+    let editor = vscode.window.activeTextEditor;
     let doc = editor.document;
-    let uri = doc.uri;
 
     if (!editor || doc.languageId != 'markdown') {
-        window.showErrorMessage('No valid Markdown file');
+        vscode.window.showErrorMessage('No valid Markdown file');
         return;
     }
 
@@ -61,55 +48,70 @@ function print() {
         doc.save();
     }
 
-    window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}'...`, printToPdf(doc));
-}
+    vscode.window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}' to ${type.toUpperCase()} ...`, 1000);
 
-function printToPdf(doc: TextDocument) {
-    return new Promise((resolve, reject) => {
-        let outPath = doc.fileName.replace(/\.md$/, '.pdf');
-        outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
-            return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
-        });
-
-        let body = render(doc.getText());
-        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]+>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
-            return `${p1}${fixHref(doc.fileName, p2)}${p3}`;
-        });
-        let html = `<!DOCTYPE html>
-        <html>
-        <head>
-            <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-            <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('github.css')).toString()}">
-            <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('tomorrow.css')).toString()}">
-            <link rel="stylesheet" type="text/css" href="${Uri.file(getMediaPath('fix.css')).toString()}">
-            ${computeCustomStyleSheetIncludes(doc.fileName)}
-            ${getSettingsOverrideStyles()}
-        </head>
-        <body>
-            ${body}
-        </body>
-        </html>`;
-        // Print HTML to debug
-        // fs.writeFile(outPath.replace(/.pdf$/, '.html'), html, 'utf-8', function (err) {
-        //     if (err) {
-        //         console.log(err);
-        //     }
-        // });
-        htmlPdf.create(html, options).toBuffer(function (err, buffer) {
-            fs.writeFile(outPath, buffer, function (err) {
-                if (err) {
-                    window.showErrorMessage(err.message);
-                    reject();
-                } else {
-                    window.setStatusBarMessage(`Output written on '${outPath}'`, 3000);
-                    resolve();
-                }
-            });
-        });
+    /**
+     * Modified from <https://github.com/Microsoft/vscode/tree/master/extensions/markdown>
+     * src/previewContentProvider MDDocumentContentProvider provideTextDocumentContent
+     */
+    let outPath = doc.fileName.replace(/\.\w+?$/, `.${type}`);
+    outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
+        return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
     });
+    if (!outPath.endsWith(`.${type}`)) {
+        outPath += `.${type}`;
+    }
+
+    let body = render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
+
+    if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("absoluteImgPath")) {
+        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
+            const imgUri = fixHref(doc.uri, p2);
+            if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("imgToBase64")) {
+                try {
+                    const imgExt = path.extname(imgUri.fsPath).slice(1);
+                    const file = fs.readFileSync(imgUri.fsPath).toString('base64');
+                    return `${p1}data:image/${imgExt};base64,${file}${p3}`;
+                } catch (e) {
+                    vscode.window.showWarningMessage(`Unable to read file "${imgUri.fsPath}". Reverting to image paths instead of base64 encoding`);
+                }
+            }
+            return `${p1}${imgUri.toString()}${p3}`;
+        });
+    }
+
+    let styleSheets = ['markdown.css', 'tomorrow.css', 'checkbox.css'].map(s => getMediaPath(s))
+        .concat(getCustomStyleSheets(doc.uri));
+
+    let html = `<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-alpha/dist/katex.min.css" integrity="sha384-BTL0nVi8DnMrNdMQZG1Ww6yasK9ZGnUxL1ZWukXQ7fygA1py52yPp9W4wrR00VML" crossorigin="anonymous">
+        ${styleSheets.map(css => wrapWithStyleTag(css)).join('\n')}
+        ${getSettingsOverrideStyles()}
+    </head>
+    <body>
+        ${body}
+    </body>
+    </html>`;
+
+    switch (type) {
+        case 'html':
+            fs.writeFile(outPath, html, 'utf-8', function (err) {
+                if (err) { console.log(err); }
+            });
+            break;
+        case 'pdf':
+            break;
+    }
 }
 
-function render(text: string) {
+function render(text: string, config: vscode.WorkspaceConfiguration) {
+    md.set({
+        breaks: config.get<boolean>('breaks', false),
+        linkify: config.get<boolean>('linkify', true)
+    });
     return md.render(text);
 }
 
@@ -117,50 +119,74 @@ function getMediaPath(mediaFile: string): string {
     return thisContext.asAbsolutePath(path.join('media', mediaFile));
 }
 
-function computeCustomStyleSheetIncludes(fileName: string): string {
-    const styles = workspace.getConfiguration('markdown')['styles'];
+function wrapWithStyleTag(src: string) {
+    let uri = vscode.Uri.parse(src);
+    if (uri.scheme.includes('http')) {
+        return `<link rel="stylesheet" href="${src}">`;
+    } else {
+        return `<style>\n${readCss(src)}\n</style>`;
+    }
+}
+
+function readCss(fileName: string) {
+    try {
+        return fs.readFileSync(fileName).toString().replace(/\s+/g, ' ');
+    } catch (error) {
+        let msg = error.message.replace('ENOENT: no such file or directory, open', 'Custom style') + ' not found.';
+        msg = msg.replace(/'([c-z]):/, function (match, g1) {
+            return `'${g1.toUpperCase()}:`;
+        });
+        vscode.window.showWarningMessage(msg);
+        return '';
+    }
+}
+
+function getCustomStyleSheets(resource: vscode.Uri): string[] {
+    const styles = vscode.workspace.getConfiguration('markdown')['styles'];
     if (styles && Array.isArray(styles) && styles.length > 0) {
-        return styles.map((style) => {
-            return `<link rel="stylesheet" href="${fixHref(fileName, style)}" type="text/css" media="screen">`;
-        }).join('\n');
+        return styles.map(s => {
+            let uri = fixHref(resource, s);
+            if (uri.scheme === 'file') {
+                return uri.fsPath;
+            }
+            return s;
+        });
     }
-    return '';
+    return [];
 }
 
-function fixHref(activeFileName: string, href: string): string {
-    if (href) {
-        // Use href if it is already an URL
-        if (Uri.parse(href).scheme) {
-            return href;
-        }
-
-        // Use href as file URI if it is absolute
-        if (isAbsolute(href)) {
-            return Uri.file(href).toString();
-        }
-
-        // use a workspace relative path if there is a workspace
-        // let rootPath = workspace.rootPath;
-        // if (rootPath) {
-        //     return Uri.file(path.join(rootPath, href)).toString();
-        // }
-
-        // otherwise look relative to the markdown file
-        return Uri.file(path.join(path.dirname(activeFileName), href)).toString();
+function fixHref(resource: vscode.Uri, href: string): vscode.Uri {
+    if (!href) {
+        return vscode.Uri.file(href);
     }
-    return href;
-}
 
-function isAbsolute(p: string): boolean {
-    return path.normalize(p + '/') === path.normalize(path.resolve(p) + '/');
+    // Use href if it is already an URL
+    const hrefUri = vscode.Uri.parse(href);
+    if (['http', 'https'].indexOf(hrefUri.scheme) >= 0) {
+        return hrefUri;
+    }
+
+    // Use href as file URI if it is absolute
+    if (path.isAbsolute(href) || hrefUri.scheme === 'file') {
+        return vscode.Uri.file(href);
+    }
+
+    // Use a workspace relative path if there is a workspace
+    let root = vscode.workspace.getWorkspaceFolder(resource);
+    if (root) {
+        return vscode.Uri.file(path.join(root.uri.fsPath, href));
+    }
+
+    // Otherwise look relative to the markdown file
+    return vscode.Uri.file(path.join(path.dirname(resource.fsPath), href));
 }
 
 function getSettingsOverrideStyles(): string {
-    const previewSettings = workspace.getConfiguration('markdown')['preview'];
+    const previewSettings = vscode.workspace.getConfiguration('markdown')['preview'];
     if (!previewSettings) {
         return '';
     }
-    const {fontFamily, fontSize, lineHeight} = previewSettings;
+    const { fontFamily, fontSize, lineHeight } = previewSettings;
     return `<style>
             body {
                 ${fontFamily ? `font-family: ${fontFamily};` : ''}

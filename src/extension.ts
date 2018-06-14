@@ -1,34 +1,81 @@
 'use strict';
 
-import { languages, workspace, ExtensionContext, IndentAction } from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
+import { ExtensionContext, languages, window, workspace } from 'vscode';
+import * as completion from './completion';
 import * as formatting from './formatting';
-import * as toc from './toc';
+import * as listEditing from './listEditing';
 import * as preview from './preview';
 import * as print from './print';
-import * as listEditing from './listEditing'
-import * as tableFormatter from './tableFormatter'
+import * as decorations from './syntaxDecorations';
+import * as tableFormatter from './tableFormatter';
+import * as toc from './toc';
+import { getNewFeatureMsg, showChangelog } from './util';
 
 export function activate(context: ExtensionContext) {
-    workspace.findFiles('**/*.md', '**/node_modules/**', 1).then((files) => {
-        if (files !== undefined && files.length !== 0) {
-            activateMdExt(context);
+    activateMdExt(context);
+
+    return {
+        extendMarkdownIt(md) {
+            return md.use(require('markdown-it-task-lists'))
+                .use(require('@neilsustc/markdown-it-katex'));
         }
-    });
+    }
 }
 
 function activateMdExt(context: ExtensionContext) {
+    // Override `Enter`, `Tab` and `Backspace` keys
+    listEditing.activate(context);
     // Shortcuts
     formatting.activate(context);
     // Toc
     toc.activate(context);
+    // Syntax decorations
+    decorations.activiate(context);
+    // Images paths and math commands completions
+    completion.activate(context);
+    // Print to PDF
+    print.activate(context);
+    // Table formatter
+    if (workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('enabled')) {
+        tableFormatter.activate(context);
+    }
     // Auto show preview to side
     preview.activate(context);
-    // Print to PDF
-    // print.activate(context);
-    // Override `Enter`, `Tab` and `Backspace` keys
-    listEditing.activate(context);
-    // Table formatter
-    tableFormatter.activate(context);
+
+    // Allow `*` in word pattern for quick styling
+    languages.setLanguageConfiguration('markdown', {
+        wordPattern: /(-?\d*\.\d\w*)|([^\`\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s\，\。\《\》\？\；\：\‘\“\’\”\（\）\【\】\、]+)/g
+    });
+
+    newVersionMessage(context.extensionPath);
+}
+
+function newVersionMessage(extensionPath: string) {
+    let data, currentVersion;
+    try {
+        data = fs.readFileSync(`${extensionPath}${path.sep}package.json`).toString();
+        currentVersion = JSON.parse(data).version;
+        if (fs.existsSync(`${extensionPath}${path.sep}VERSION`) &&
+            fs.readFileSync(`${extensionPath}${path.sep}VERSION`).toString() === currentVersion) {
+            return;
+        }
+        fs.writeFileSync(`${extensionPath}${path.sep}VERSION`, currentVersion);
+    } catch (error) {
+        console.log(error);
+        return;
+    }
+    const featureMsg = getNewFeatureMsg(currentVersion);
+    if (featureMsg === undefined) return;
+    window.showInformationMessage(featureMsg, 'See Pictures', 'Dismiss').then(option => {
+        switch (option) {
+            case 'See Pictures':
+                showChangelog();
+            case 'Dismiss':
+                break;
+        }
+    });
 }
 
 export function deactivate() { }

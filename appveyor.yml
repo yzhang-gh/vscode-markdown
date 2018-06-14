@@ -1,0 +1,12 @@
+install:
+  - npm install
+  - npm install -g vsce
+
+build_script:
+  - vsce package
+
+test_script:
+  - npm test
+
+artifacts:
+  - path: '*.vsix'

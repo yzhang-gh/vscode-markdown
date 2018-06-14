@@ -1,39 +1,47 @@
 # Markdown Support for Visual Studio Code
 
-[![version](https://vsmarketplacebadge.apphb.com/version/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)  
-[![installs](https://vsmarketplacebadge.apphb.com/installs/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
+[![version](https://img.shields.io/vscode-marketplace/v/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)  
+[![installs](https://img.shields.io/vscode-marketplace/d/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)  
+[![AppVeyor](https://img.shields.io/appveyor/ci/neilsustc/vscode-markdown.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/neilsustc/vscode-markdown)  
+[![GitHub stars](https://img.shields.io/github/stars/neilsustc/vscode-markdown.svg?style=flat-square&label=github%20stars)](https://github.com/neilsustc/vscode-markdown)
 
 All you need for Markdown (keyboard shortcuts, table of contents, auto preview and more).
 
 ## Features
 
-- **Keyboard shortcuts** (toggle bold, italic, code span and heading)
-  - Different behaviors depending on the context (see instruction below)
+- **Keyboard shortcuts** (toggle bold, italic, code span, strikethrough and heading)
+  - Tip: `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
+  - If there is no text selected, *the word under cursor* will be styled (or *the entire list item* if you are toggling strikethrough)
 - **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
+  - The indentation rules (tab or spaces) of TOC will be the same of your current file (find it in the right bottom corner)
+  - To make TOC compatible with GitHub, you need to set option `githubCompatibility` to `true`
+  - Use `<!-- omit in toc -->` to ignore specific heading in TOC
+- **Outline view** in explorer panel
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
-  - ~~Automatically close preview when changing editor~~
-- ~~**Print your Markdown to PDF**~~ (not satisfied with the current solution)
-- **List editing** (when pressing <kbd>Enter</kbd> at the end of a list item) (also work for quote block)
+- **Print Markdown to HTML**
+  - It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others
+- **List editing** (continue list when pressing <kbd>Enter</kbd> at the end of a list item) (also works for quote block)
   - Pressing <kbd>Tab</kbd> at the beginning of a list item will indent it
   - Pressing <kbd>Backspace</kbd> at the beginning of a list item will unindent it (or delete the list marker)
-  - Blank list item won't be continued
-  - *Note*: there is an option to choose ordered list marker: always `1.` or ordered number.
-- **Document formatter** (only format GFM table now)
-- **Word completion** (moved to a standalone extension [Dictionary Completion](https://marketplace.visualstudio.com/items?itemName=yzhang.dictionary-completion))
+  - Blank list item will be remove on <kbd>Enter</kbd>
+  - Ordered list markers will be automatically fixed after you indent/outdent a line or move a line up/down
+- **GitHub Flavored Markdown**
+  - Table formatter (<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd>)
+  - Task list (use <kbd>Alt</kbd> + <kbd>C</kbd> to check/uncheck a list item)
+- **Math rendering** (see screenshot below)
+- **Auto completions**
+  - Images paths
+  - Math commands
+- **Others**
+  - Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
 
 ### Keyboard Shortcuts
 
-- When toggling bold or italic,
-  - If there is NO selection, pressing the hotkey will **turn on** or **off** the style
-    - `|` becomes `**|**` or `*|*` (turn on the style)
-    - `**|**` or `*|*` becomes `|` (turn off the style)
-    - `**bold|**` or `*italic|*` becomes `**bold**|` or `*italic*|` (turn off the style, if the cursor is at the end of a **bold** or *italic* block)
-  - If there is a selection, pressing the hotkey will add or remove asterisk (`*`) depending on the selected text
-- When toggling heading,
-  - the same logic with indenting/unindenting one line (<kbd>ctrl</kbd> + <kbd>]</kbd>/<kbd>[</kbd>)
-  - easily adjusting the heading level without moving cursor to the beginning of the line (<kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>]</kbd>/<kbd>[</kbd>)
+<!-- ![shortcuts1](images/gifs/bold-normal.gif) -->
 
-![shortcuts](images/gifs/shortcuts.gif)
+![shortcuts2](images/gifs/bold-quick.gif)
+
+![shortcuts3](images/gifs/heading.gif)
 
 ### Table of Contents
 
@@ -47,57 +55,64 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ![table formatter](images/gifs/table-formatter.gif)
 
-<!-- ### Print to PDF
+### Outline
 
-![print to pdf](images/gifs/pdf.gif) -->
+![outline](images/outline.png)
+
+### Task Lists
+
+![task lists](images/gifs/tasklists.gif)
+
+### Math Rendering
+
+![math rendering](images/math.png)
 
 ## Shortcuts
 
-| Key | Command |
-| --- | --- |
-| <kbd>ctrl</kbd> + <kbd>b</kbd> | Toggle bold |
-| <kbd>ctrl</kbd> + <kbd>i</kbd> | Toggle italic |
-| <kbd>ctrl</kbd> + <kbd>`</kbd> | Toggle code span |
-| <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel) |
-| <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel) |
+| Key                                               | Command                      |
+| ------------------------------------------------- | ---------------------------- |
+| <kbd>Ctrl</kbd> + <kbd>B</kbd>                    | Toggle bold                  |
+| <kbd>Ctrl</kbd> + <kbd>I</kbd>                    | Toggle italic                |
+| <kbd>Alt</kbd> + <kbd>S</kbd>                     | Toggle strikethrough         |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel)     |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel)   |
+| <kbd>Ctrl</kbd> + <kbd>M</kbd>                    | Toggle math environment      |
+| <kbd>Alt</kbd> + <kbd>C</kbd>                     | Check/Uncheck task list item |
 
 ## Available Commands
 
 - Markdown: Create Table of Contents
 - Markdown: Update Table of Contents
-- ~~Markdown: Print to PDF~~
+- Markdown: Toggle code span
+- Markdown: Print current document to HTML
 
 ## Supported Settings
 
-| Name | Default | Description |
-| --- | --- | --- |
-| `markdown.extension.toc.depth` | `6` | Control the heading level to show in the table of contents. |
-| `markdown.extension.toc.orderedList` | `false` | Use ordered list in the table of contents. |
-| `markdown.extension.toc.plaintext` | `false` | Just plain text. |
-| `markdown.extension.toc.updateOnSave` | `false` | Automatically update the table of contents on save. |
-| `markdown.extension.preview.autoShowPreviewToSide` | `false` | Automatically show preview when opening a Markdown file. |
-| `markdown.extension.orderedList.marker` | `one` | Start a list item always with '1.' or in increasing numerical order (using option `ordered`) |
+| Name                                               | Default   | Description                                                       |
+| -------------------------------------------------- | --------- | ----------------------------------------------------------------- |
+| `markdown.extension.toc.levels`                    | `1..6`    | Control the heading levels to show in the table of contents.      |
+| `markdown.extension.toc.unorderedList.marker`      | `-`       | Use `-`, `*` or `+` in the table of contents (for unordered list) |
+| `markdown.extension.toc.orderedList`               | `false`   | Use ordered list in the table of contents.                        |
+| `markdown.extension.toc.plaintext`                 | `false`   | Just plain text.                                                  |
+| `markdown.extension.toc.updateOnSave`              | `true`    | Automatically update the table of contents on save.               |
+| `markdown.extension.toc.githubCompatibility`       | `false`   | GitHub compatibility                                              |
+| `markdown.extension.preview.autoShowPreviewToSide` | `false`   | Automatically show preview when opening a Markdown file.          |
+| `markdown.extension.orderedList.marker`            | `ordered` | Or `one`: always use `1.` as ordered list marker                  |
+| `markdown.extension.italic.indicator`              | `*`       | Use `*` or `_` to wrap italic text                                |
+| `markdown.extension.showExplorer`                  | `true`    | Show outline view in explorer panel                               |
+| `markdown.extension.print.absoluteImgPath`         | `true`    | Convert image path to absolute path                               |
+| `markdown.extension.print.imgToBase64`             | `false`   | Convert images to base64 when printing to HTML                    |
 
 ## Changelog
 
-### Latest 0.7.4 (2017.07.14)
-
-- **Fix**: Fix activation events ([#12](https://github.com/neilsustc/vscode-markdown/issues/12))
-
-### 0.7.3 (2017.07.11)
-
-- **Fix**: Chinese TOC ([#11](https://github.com/neilsustc/vscode-markdown/issues/11))
-
 See [CHANGELOG](CHANGELOG.md) for more information.
+
+## Latest CI Build
+
+Download it [here](https://ci.appveyor.com/project/neilsustc/vscode-markdown/build/artifacts).
 
 ## Contributing
 
 Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc/vscode-markdown/issues).
 
-## If You Would Like to ...
-
-Vote for prospective vscode features (Add 👍 to GitHub issues):
-
-- Open `.pdf`, `.xlsx` etc. in vscode [#12176](https://github.com/Microsoft/vscode/issues/12176)
-- Print Markdown to PDF using electron `printToPdf` [#20869](https://github.com/Microsoft/vscode/issues/20869)
-- Support setting font-size in Decoration [#9078](https://github.com/Microsoft/vscode/issues/9078)
+Or leave a review on [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one#review-details) 😉.
