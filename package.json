@@ -59,66 +59,98 @@
                 "command": "markdown.extension.editing.toggleBold",
                 "key": "ctrl+b",
                 "mac": "cmd+b",
-                "when": "editorTextFocus && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
             },
             {
                 "command": "markdown.extension.editing.toggleItalic",
                 "key": "ctrl+i",
                 "mac": "cmd+i",
-                "when": "editorTextFocus && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
             },
             {
                 "command": "markdown.extension.editing.toggleStrikethrough",
                 "key": "alt+s",
-                "when": "editorTextFocus && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
             },
             {
                 "command": "markdown.extension.editing.toggleHeadingUp",
                 "key": "ctrl+shift+]",
                 "mac": "ctrl+shift+]",
-                "when": "editorTextFocus && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
             },
             {
                 "command": "markdown.extension.editing.toggleHeadingDown",
                 "key": "ctrl+shift+[",
                 "mac": "ctrl+shift+[",
-                "when": "editorTextFocus && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
             },
             {
                 "command": "markdown.extension.editing.toggleMath",
                 "key": "ctrl+m",
-                "when": "editorTextFocus && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
             },
             {
                 "command": "markdown.extension.onEnterKey",
                 "key": "enter",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.onCtrlEnterKey",
                 "key": "ctrl+enter",
                 "mac": "cmd+enter",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.onShiftEnterKey",
+                "key": "shift+enter",
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.onTabKey",
                 "key": "tab",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !editorTabMovesFocus && !editorReadonly"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions"
+            },
+            {
+                "command": "markdown.extension.onShiftTabKey",
+                "key": "shift+tab",
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions"
             },
             {
                 "command": "markdown.extension.onBackspaceKey",
                 "key": "backspace",
-                "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.onMoveLineUp",
                 "key": "alt+up",
-                "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.onMoveLineDown",
                 "key": "alt+down",
-                "when": "editorTextFocus && !editorHasSelection && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.onCopyLineUp",
+                "key": "shift+alt+up",
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.onCopyLineDown",
+                "key": "shift+alt+down",
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.onIndentLines",
+                "key": "ctrl+]",
+                "mac": "cmd+]",
+                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+            },
+            {
+                "command": "markdown.extension.onOutdentLines",
+                "key": "ctrl+[",
+                "mac": "cmd+[",
+                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.checkTaskList",
