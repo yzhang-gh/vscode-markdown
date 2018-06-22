@@ -1,7 +1,8 @@
 'use strict'
 
+import * as sizeOf from 'image-size';
 import * as path from 'path';
-import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, Position, ProviderResult, TextDocument, languages, workspace, SnippetString, Range } from 'vscode';
+import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerCompletionItemProvider({ scheme: 'file', language: 'markdown' }, new MdCompletionItemProvider(), '(', '\\', '/'));
@@ -65,7 +66,18 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 uris.map(uri => {
                     let relPath = path.relative(path.join(workspace.getWorkspaceFolder(uri).uri.fsPath, dir), uri.fsPath);
                     relPath = relPath.replace(/\\/g, '/');
-                    return new CompletionItem(relPath, CompletionItemKind.File);
+                    let item = new CompletionItem(relPath, CompletionItemKind.File);
+
+                    // Add image preview
+                    let dimensions = sizeOf(uri.fsPath);
+                    const maxWidth = 318;
+                    if (dimensions.width > maxWidth) {
+                        dimensions.height = Number(dimensions.height * maxWidth / dimensions.width);
+                        dimensions.width = maxWidth;
+                    }
+                    item.documentation = new MarkdownString(`![${relPath}](${uri.fsPath}|width=${dimensions.width},height=${dimensions.height})`);
+
+                    return item;
                 })
             );
         } else if (/(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(textBefore)) {
