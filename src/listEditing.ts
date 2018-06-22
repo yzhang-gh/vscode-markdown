@@ -43,10 +43,13 @@ function onEnterKey(modifiers?: string) {
 
     // If it's an empty list item, remove it
     if (/^(>|([-+*]|[0-9]+[.)])(| \[[ x]\]))$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
-        return editor.edit(editBuilder => {
-            editBuilder.delete(line.range);
-            editBuilder.insert(line.range.end, '\n');
-        }).then(() => fixMarker(line.lineNumber + 1));
+        return editor.edit(
+            editBuilder => {
+                editBuilder.delete(line.range);
+                editBuilder.insert(line.range.end, '\n');
+            },
+            { undoStopBefore: true, undoStopAfter: false }
+        ).then(() => fixMarker(line.lineNumber + 1));
     }
 
     let matches;
@@ -238,9 +241,13 @@ function fixMarker(line?: number) {
 }
 
 function deleteRange(editor: vscode.TextEditor, range: Range): Thenable<boolean> {
-    return editor.edit(editBuilder => {
-        editBuilder.delete(range);
-    });
+    return editor.edit(
+        editBuilder => {
+            editBuilder.delete(range);
+        },
+        // We will enable undoStop after fixing markers
+        { undoStopBefore: true, undoStopAfter: false }
+    );
 }
 
 function checkTaskList() {
