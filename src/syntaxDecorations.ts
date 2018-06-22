@@ -25,10 +25,8 @@ let decorTypes = {
     }),
     "codeSpan": window.createTextEditorDecorationType({
         "rangeBehavior": 1,
-        "border": "1px solid #3D474C",
-        "borderRadius": "3px",
-        "dark": { "backgroundColor": "#30383D" },
-        "light": { "backgroundColor": "#DDDDDD" }
+        "border": "1px solid #454D51",
+        "borderRadius": "3px"
     })
 };
 
