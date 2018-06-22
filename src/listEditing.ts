@@ -176,7 +176,9 @@ function lookUpwardForMarker(editor: vscode.TextEditor, line: number, numOfSpace
                 || !editor.options.insertSpaces && matches[1].length + 1 <= numOfSpaces) {
                 return 1;
             }
-        } else if (!lineText.startsWith(' ') && !lineText.startsWith('\\t')) {
+        } else if (lineText.startsWith(' ') || lineText.startsWith('\\t') || lineText.trim().length === 0) {
+            continue;
+        } else {
             break;
         }
     }
