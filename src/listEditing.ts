@@ -46,7 +46,7 @@ function onEnterKey(modifiers?: string) {
         return editor.edit(editBuilder => {
             editBuilder.delete(line.range);
             editBuilder.insert(line.range.end, '\n');
-        });
+        }).then(() => fixMarker(line.lineNumber + 1));
     }
 
     let matches;
@@ -205,14 +205,16 @@ function fixMarker(line?: number) {
         return editor.edit(() => { }, { undoStopBefore: false, undoStopAfter: true });
     } else {
         let matches;
-        if ((matches = /^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(currentLineText)) !== null) {
+        if (currentLineText.trim().length === 0) {
+            return fixMarker(line + 1);
+        } else if ((matches = /^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(currentLineText)) !== null) { // ordered list
             let leadingSpace = matches[1];
             let marker = matches[2];
             let fixedMarker = lookUpwardForMarker(editor, line, leadingSpace.length);
 
             return editor.edit(
                 editBuilder => {
-                    if (Number(marker) === fixedMarker) return;
+                    if (Number(marker) === fixedMarker) return editor.edit(() => { }, { undoStopBefore: false, undoStopAfter: true });
                     editBuilder.replace(new Range(line, leadingSpace.length, line, leadingSpace.length + marker.length), String(fixedMarker));
                 },
                 { undoStopBefore: false, undoStopAfter: false }
