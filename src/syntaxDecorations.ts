@@ -42,18 +42,25 @@ for (const decorTypeName in decorTypes) {
 
 let regexDecorTypeMapping = {
     "(~~.+?~~)": ["strikethrough"],
-    "(`[^`\\n]+?`)": ["codeSpan"],
-    "(`)([^`\\n]+?)(`)": ["gray", "baseColor", "gray"],
-    "(^|[^!])(\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": ["", "gray", "lightBlue", "gray"],
-    "(\\!\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": ["gray", "orange", "gray"],
-    "(\\*)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(\\*)": ["gray", "baseColor", "gray"],
-    "(_)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(_)": ["gray", "baseColor", "gray"],
-    "(\\*\\*)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(\\*\\*)": ["gray", "baseColor", "gray"]
+    "(`[^`\\n]+?`)": ["codeSpan"]
 };
 
-export function activiate(context: ExtensionContext) {
-    if (!workspace.getConfiguration('markdown.extension.syntax').get<boolean>('decorations')) return;
+let regexDecorTypeMappingPlainTheme = {
+    // `code`
+    "(`)([^`\\n]+?)(`)": ["gray", "baseColor", "gray"],
+    // [alt](link)
+    "(^|[^!])(\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": ["", "gray", "lightBlue", "gray"],
+    // ![alt](link)
+    "(\\!\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": ["gray", "orange", "gray"],
+    // *italic*
+    "(\\*)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(\\*)": ["gray", "baseColor", "gray"],
+    // _italic_
+    "(_)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(_)": ["gray", "baseColor", "gray"],
+    // **bold**
+    "(\\*\\*)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(\\*\\*)": ["gray", "baseColor", "gray"]
+}
 
+export function activiate(context: ExtensionContext) {
     window.onDidChangeActiveTextEditor(updateDecorations);
 
     workspace.onDidChangeTextDocument(event => {
@@ -78,6 +85,8 @@ export function activiate(context: ExtensionContext) {
 }
 
 function updateDecorations(editor?: TextEditor) {
+    if (!workspace.getConfiguration('markdown.extension.syntax').get<boolean>('decorations')) return;
+
     if (editor === undefined) {
         editor = window.activeTextEditor;
     }
@@ -94,9 +103,13 @@ function updateDecorations(editor?: TextEditor) {
     }
 
     editor.document.getText().split(/\r?\n/g).forEach((lineText, lineNum) => {
-        for (const reText in regexDecorTypeMapping) {
-            if (regexDecorTypeMapping.hasOwnProperty(reText)) {
-                const decorTypeNames = regexDecorTypeMapping[reText];
+        let appliedMappings = workspace.getConfiguration('markdown.extension.syntax').get<boolean>('plainTheme') ?
+            { ...regexDecorTypeMapping, ...regexDecorTypeMappingPlainTheme } :
+            regexDecorTypeMapping;
+
+        for (const reText in appliedMappings) {
+            if (appliedMappings.hasOwnProperty(reText)) {
+                const decorTypeNames = appliedMappings[reText];
                 const regex = new RegExp(reText, 'g');
                 let match;
                 while ((match = regex.exec(lineText)) !== null) {

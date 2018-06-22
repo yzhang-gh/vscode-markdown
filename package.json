@@ -232,8 +232,13 @@
                 },
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
-                    "default": false,
+                    "default": true,
                     "description": "Add syntax decorations"
+                },
+                "markdown.extension.syntax.plainTheme": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Only take effect when `extension.syntax.decorations` is enabled"
                 }
             }
         },
