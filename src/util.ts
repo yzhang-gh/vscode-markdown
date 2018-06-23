@@ -74,6 +74,8 @@ export function getNewFeatureMsg(version: string) {
             return 'Introduce an exciting feature! Auto renumbering ordered list.';
         case '1.4.0':
             return 'Many new features of Markdown-All-in-One v1.4.0';
+        case '1.5.0':
+            return 'Long time no see. Welcome to Markdown-All-in-One v1.5.0.';
     }
     return undefined;
 }

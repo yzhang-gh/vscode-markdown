@@ -68,9 +68,9 @@ function newVersionMessage(extensionPath: string) {
     }
     const featureMsg = getNewFeatureMsg(currentVersion);
     if (featureMsg === undefined) return;
-    window.showInformationMessage(featureMsg, 'See Pictures', 'Dismiss').then(option => {
+    window.showInformationMessage(featureMsg, 'Show Me', 'Dismiss').then(option => {
         switch (option) {
-            case 'See Pictures':
+            case 'Show Me':
                 showChangelog();
             case 'Dismiss':
                 break;
