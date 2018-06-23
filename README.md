@@ -98,10 +98,13 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.toc.githubCompatibility`       | `false`   | GitHub compatibility                                              |
 | `markdown.extension.preview.autoShowPreviewToSide` | `false`   | Automatically show preview when opening a Markdown file.          |
 | `markdown.extension.orderedList.marker`            | `ordered` | Or `one`: always use `1.` as ordered list marker                  |
+| `markdown.extension.orderedList.autoRenumber`      | `true`    | Auto fix list markers as you edits                                |
 | `markdown.extension.italic.indicator`              | `*`       | Use `*` or `_` to wrap italic text                                |
 | `markdown.extension.showExplorer`                  | `true`    | Show outline view in explorer panel                               |
 | `markdown.extension.print.absoluteImgPath`         | `true`    | Convert image path to absolute path                               |
 | `markdown.extension.print.imgToBase64`             | `false`   | Convert images to base64 when printing to HTML                    |
+| `markdown.extension.syntax.decorations`            | `true`    | Add decorations to strikethrough and code spans                   |
+| `markdown.extension.syntax.plainTheme`             | `false`   | A distraction-free theme                                          |
 
 ## Changelog
 
