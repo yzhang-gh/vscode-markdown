@@ -4,3 +4,4 @@ VERSION
 *.vsix
 ROADMAP.md
 *.log
+/.vscode-test
