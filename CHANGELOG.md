@@ -1,10 +1,14 @@
-### 1.5.0 (2018.06.??) TODO
+### 1.5.0 (2018.06.24)
 
 - **New**: Additional syntax decorations (for strikethrough, code span etc.) and a new plain theme ([#185](https://github.com/neilsustc/vscode-markdown/issues/185)).
 - **New**: Show image preview along with path intellisense ([#188](https://github.com/neilsustc/vscode-markdown/issues/188)).
 - **Fix**: Multi-line task list indentation ([#203](https://github.com/neilsustc/vscode-markdown/issues/203)).
 - **Fix**: Add unique ids to duplicate headings (only when `githubCompatibility` is `true`) ([#211](https://github.com/neilsustc/vscode-markdown/issues/211)).
 - **Other**: Upgrade KaTeX version ([#196](https://github.com/neilsustc/vscode-markdown/issues/196)).
+
+![v1.5.0 release note](images/v1.5.0.png)
+
+---
 
 ### 1.4.0 (2018.05.20)
 
