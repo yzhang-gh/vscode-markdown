@@ -68,14 +68,27 @@ async function generateTocText(): Promise<string> {
     let startDepth = Math.max(tocConfig.startDepth, Math.min.apply(null, tocEntries.map(h => h.level)));
     let order = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
 
+    let anchorOccurances = {};
+
     tocEntries.forEach(entry => {
         if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
             let relativeLvl = entry.level - startDepth;
             let entryText = extractText(entry.text);
+            let anchorText = entryText;
+
+            if (vscode.workspace.getConfiguration('markdown.extension.toc').get<boolean>('githubCompatibility')) {
+                if (anchorOccurances.hasOwnProperty(anchorText)) {
+                    anchorOccurances[anchorText] += 1;
+                    anchorText += ' ' + String(anchorOccurances[anchorText]);
+                } else {
+                    anchorOccurances[anchorText] = 0;
+                }
+            }
+
             let row = [
                 docConfig.tab.repeat(relativeLvl),
                 (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLvl]) + '.' : tocConfig.listMarker) + ' ',
-                tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(entry.text)})`
+                tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(anchorText)})`
             ];
             toc.push(row.join(''));
             if (tocConfig.orderedList) order.fill(0, relativeLvl + 1);

@@ -17,6 +17,10 @@ export function isMdEditor(editor: TextEditor) {
     return editor && editor.document && editor.document.uri.scheme === 'file' && editor.document.languageId === 'markdown';
 }
 
+/**
+ * For example: [text](link) -> text
+ * @param text
+ */
 export function extractText(text: string) {
     return textInHtml(textInMd(text));
 }
