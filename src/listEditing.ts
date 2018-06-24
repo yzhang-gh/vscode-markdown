@@ -48,7 +48,7 @@ function onEnterKey(modifiers?: string) {
     }
 
     // If it's an empty list item, remove it
-    if (/^(>|([-+*]|[0-9]+[.)])(| \[[ x]\]))$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
+    if (/^(>|([-+*]|[0-9]+[.)])( +\[[ x]\])?)$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
         return editor.edit(editBuilder => {
             editBuilder.delete(line.range);
             editBuilder.insert(line.range.end, '\n');
@@ -67,7 +67,7 @@ function onEnterKey(modifiers?: string) {
                 editor.selection = new Selection(newCursorPos, newCursorPos);
             }
         }).then(() => { editor.revealRange(editor.selection) });
-    } else if ((matches = /^(\s*[-+*] +(|\[[ x]\] +))(?!\[[ x]\]).*$/.exec(textBeforeCursor)) !== null) {
+    } else if ((matches = /^(\s*[-+*] +(\[[ x]\] +)?)/.exec(textBeforeCursor)) !== null) {
         // Unordered list
         return editor.edit(editBuilder => {
             editBuilder.insert(lineBreakPos, `\n${matches[1].replace('[x]', '[ ]')}`);
@@ -78,7 +78,7 @@ function onEnterKey(modifiers?: string) {
                 editor.selection = new Selection(newCursorPos, newCursorPos);
             }
         }).then(() => { editor.revealRange(editor.selection) });
-    } else if ((matches = /^(\s*)([0-9]+)([.)])( +)(|\[[ x]\] +)(?!\[[ x]\]).*$/.exec(textBeforeCursor)) !== null) {
+    } else if ((matches = /^(\s*)([0-9]+)([.)])( +)((\[[ x]\] +)?)/.exec(textBeforeCursor)) !== null) {
         // Ordered list
         let config = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker');
         let marker = '1';
@@ -126,7 +126,7 @@ function onTabKey(modifiers?: string) {
     // 2.  When the shift key is held (it should always outdent)
     // 3.  When the cursor is placed anywhere before the text that follows an ordered list marker
     let match;
-    if (!editor.selection.isEmpty || modifiers === 'shift' || ( match = /^\s*([-+*]|[0-9]+[.)]) +(|\[[ x]\] +)/.exec(lineText)) != null && cursorPos.character <= match[0].length) {
+    if (!editor.selection.isEmpty || modifiers === 'shift' || ( match = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.exec(lineText)) != null && cursorPos.character <= match[0].length) {
         let command = 'editor.action.indentLines';
         if (modifiers === 'shift') {
             command = 'editor.action.outdentLines';
@@ -149,7 +149,7 @@ function onBackspaceKey() {
 
     if (!editor.selection.isEmpty) {
         return asNormal('backspace').then(() => fixMarker(findNextMarkerLineNumber()));
-    } else if (/^\s+([-+*]|[0-9]+[.)]) (|\[[ x]\] )$/.test(textBeforeCursor)) {
+    } else if (/^\s+([-+*]|[0-9]+[.)]) (\[[ x]\] )?$/.test(textBeforeCursor)) {
         return commands.executeCommand('editor.action.outdentLines').then(() => fixMarker());
     } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- ', '1. '
@@ -183,9 +183,6 @@ function asNormal(key: string, modifiers?: string) {
     }
 }
 
-const orderedListRegex = /^(\s*)([0-9]+)([.)])( +).*/;
-const listContinuationRegex = /^(\s*)\S/;
-
 /**
  * Returns the line number of the next ordered list item starting either from
  * the specified line or the beginning of the current selection.
@@ -199,7 +196,7 @@ function findNextMarkerLineNumber(line?: number): number {
     }
     while (line < editor.document.lineCount) {
         const lineText = editor.document.lineAt(line).text;
-        if (orderedListRegex.exec(lineText) !== null) {
+        if (/^\s*[0-9]+[.)] +/.exec(lineText) !== null) {
             return line;
         }
         line++
@@ -215,7 +212,7 @@ function lookUpwardForMarker(editor: vscode.TextEditor, line: number, numOfSpace
     while (--line >= 0) {
         let matches;
         const lineText = editor.document.lineAt(line).text;
-        if ((matches = orderedListRegex.exec(lineText)) !== null) {
+        if ((matches = /^(\s*)([0-9]+)[.)] +/.exec(lineText)) !== null) {
             let leadingSpace = matches[1];
             let marker = matches[2];
             if (leadingSpace.length === numOfSpaces) {
@@ -224,7 +221,7 @@ function lookUpwardForMarker(editor: vscode.TextEditor, line: number, numOfSpace
                 || !editor.options.insertSpaces && leadingSpace.length + 1 <= numOfSpaces) {
                 return 1;
             }
-        } else if ((matches = listContinuationRegex.exec(lineText)) !== null) {
+        } else if ((matches = /^(\s*)\S/.exec(lineText)) !== null) {
             if (matches[1].length <= numOfSpaces) {
                 break;
             }
@@ -238,6 +235,7 @@ function lookUpwardForMarker(editor: vscode.TextEditor, line: number, numOfSpace
  */
 function fixMarker(line?: number) {
     if (!workspace.getConfiguration('markdown.extension.orderedList').get<boolean>('autoRenumber')) return;
+    if (workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'one') return;
 
     let editor = vscode.window.activeTextEditor;
     if (line === undefined) {
@@ -248,50 +246,47 @@ function fixMarker(line?: number) {
         }
     }
     if (line < 0 || editor.document.lineCount <= line) {
-        return editor.edit(() => { }, { undoStopBefore: false, undoStopAfter: true });
+        return;
     }
 
     let currentLineText = editor.document.lineAt(line).text;
-    if (/^(\s*[-+*] +(|\[[ x]\] +))(?!\[[ x]\]).*$/.test(currentLineText) // unordered list
-        || workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'one') {
-        return editor.edit(() => { }, { undoStopBefore: false, undoStopAfter: true });
-    } else {
-        let matches;
-        if (currentLineText.trim().length === 0) {
-            return fixMarker(line + 1);
-        } else if ((matches = /^(\s*)([0-9]+)([.)])( +)(?:|\[[x]\] +)(?!\[[x]\]).*$/.exec(currentLineText)) !== null) { // ordered list
-            let leadingSpace = matches[1];
-            let marker = matches[2];
-            let delimiter = matches[3];
-            let trailingSpace = matches[4];
-            let fixedMarker = lookUpwardForMarker(editor, line, leadingSpace.length);
-            let textIndent = marker.length + delimiter.length + trailingSpace.length;
+    let matches;
+    if ((matches = /^(\s*)([0-9]+)([.)])( +)/.exec(currentLineText)) !== null) { // ordered list
+        let leadingSpace = matches[1];
+        let marker = matches[2];
+        let delimiter = matches[3];
+        let trailingSpace = matches[4];
+        let fixedMarker = lookUpwardForMarker(editor, line, leadingSpace.length);
+        let listIndent = marker.length + delimiter.length + trailingSpace.length;
+        let fixedMarkerString = String(fixedMarker);
 
-            return editor.edit(
-                editBuilder => {
-                    let fixedMarkerString = String(fixedMarker);
-                    if (marker === fixedMarkerString) return editor.edit(() => { }, { undoStopBefore: false, undoStopAfter: true });
-                    // Add enough trailing spaces so that the text is still aligned at the same indentation level as it was previously, but always keep at least one space
-                    fixedMarkerString += delimiter + " ".repeat(Math.max(1, textIndent - (fixedMarkerString + delimiter).length));
-                    editBuilder.replace(new Range(line, leadingSpace.length, line, leadingSpace.length + textIndent), fixedMarkerString);
-                },
-                { undoStopBefore: false, undoStopAfter: false }
-            ).then(() => {
-                let nextLine = line + 1;
-                while (editor.document.lineCount > nextLine) {
-                    const nextLineText = editor.document.lineAt(nextLine).text;
-                    if (/^\s*$/.test(nextLineText) || nextLineText.startsWith(leadingSpace) && /[ \t]/.test(nextLineText.charAt(leadingSpace.length))) {
-                        nextLine++;
-                    } else if (/^(\s*)([0-9]+)[.)] +(?:|\[[x]\] +)(?!\[[x]\]).*$/.test(nextLineText)) {
-                        return fixMarker(nextLine);
-                    } else {
-                        return editor.edit(() => { }, { undoStopBefore: false, undoStopAfter: true });
-                    }
+        return editor.edit(
+            editBuilder => {
+                if (marker === fixedMarkerString) {
+                    return;
                 }
-            });
-        } else {
-            return editor.edit(() => { }, { undoStopBefore: false, undoStopAfter: true });
-        }
+                // Add enough trailing spaces so that the text is still aligned at the same indentation level as it was previously, but always keep at least one space
+                fixedMarkerString += delimiter + " ".repeat(Math.max(1, listIndent - (fixedMarkerString + delimiter).length));
+
+                editBuilder.replace(new Range(line, leadingSpace.length, line, leadingSpace.length + listIndent), fixedMarkerString);
+            },
+            { undoStopBefore: false, undoStopAfter: false }
+        ).then(() => {
+            let nextLine = line + 1;
+            let indentString = " ".repeat(listIndent);
+            while (editor.document.lineCount > nextLine) {
+                const nextLineText = editor.document.lineAt(nextLine).text;
+                if (/^\s*[0-9]+[.)] +/.test(nextLineText)) {
+                    return fixMarker(nextLine);
+                } else if (/^\s*$/.test(nextLineText)) {
+                    nextLine++;
+                } else if (listIndent <= 4 && !nextLineText.startsWith(indentString)) {
+                    return;
+                } else {
+                    nextLine++;
+                }
+            }
+        });
     }
 }
 
