@@ -126,7 +126,7 @@ function onTabKey(modifiers?: string) {
     // 2.  When the shift key is held (it should always outdent)
     // 3.  When the cursor is placed anywhere before the text that follows an ordered list marker
     let match;
-    if (!editor.selection.isEmpty || modifiers === 'shift' || ( match = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.exec(lineText)) != null && cursorPos.character <= match[0].length) {
+    if (!editor.selection.isEmpty || modifiers === 'shift' || (match = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.exec(lineText)) !== null && cursorPos.character <= match[0].length) {
         let command = 'editor.action.indentLines';
         if (modifiers === 'shift') {
             command = 'editor.action.outdentLines';
@@ -199,7 +199,7 @@ function findNextMarkerLineNumber(line?: number): number {
         if (/^\s*[0-9]+[.)] +/.exec(lineText) !== null) {
             return line;
         }
-        line++
+        line++;
     }
     return undefined;
 }
