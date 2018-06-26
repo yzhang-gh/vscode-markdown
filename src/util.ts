@@ -14,7 +14,7 @@ export const TocProvider = tocModule.TableOfContentsProvider;
 const slugifier = require(path.join(officialExtPath, 'out', 'slugify')).githubSlugifier;
 
 export function isMdEditor(editor: TextEditor) {
-    return editor && editor.document && editor.document.uri.scheme === 'file' && editor.document.languageId === 'markdown';
+    return editor && editor.document && editor.document.languageId === 'markdown';
 }
 
 /**
