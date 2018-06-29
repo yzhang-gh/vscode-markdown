@@ -20,7 +20,7 @@ if (versionNum < 12400) {
 }
 
 export function isMdEditor(editor: TextEditor) {
-    return editor && editor.document && editor.document.uri.scheme === 'file' && editor.document.languageId === 'markdown';
+    return editor && editor.document && editor.document.languageId === 'markdown';
 }
 
 /**
