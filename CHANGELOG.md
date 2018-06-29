@@ -1,3 +1,7 @@
+### 1.5.1 (2018.06.29)
+
+- **Fix**: Handle activation error for vscode earlier than v1.24.0.
+
 ### 1.5.0 (2018.06.24)
 
 - **New**: Additional syntax decorations (for strikethrough, code span etc.) and a new plain theme ([#185](https://github.com/neilsustc/vscode-markdown/issues/185)).

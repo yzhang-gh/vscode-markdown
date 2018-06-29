@@ -30,7 +30,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   - Task list (use <kbd>Alt</kbd> + <kbd>C</kbd> to check/uncheck a list item)
 - **Math rendering** (see screenshot below)
 - **Auto completions**
-  - Images paths
+  - Images paths (and previews)
   - Math commands
 - **Others**
   - Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
