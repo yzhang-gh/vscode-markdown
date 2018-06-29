@@ -10,8 +10,14 @@ export const mdDocSelector = [{ language: 'markdown', scheme: 'file' }, { langua
 export const officialExtPath = extensions.getExtension("vscode.markdown-language-features").extensionPath;
 const tocModule = require(path.join(officialExtPath, 'out', 'tableOfContentsProvider'));
 export const TocProvider = tocModule.TableOfContentsProvider;
-// Starting from v1.24.0
-const slugifier = require(path.join(officialExtPath, 'out', 'slugify')).githubSlugifier;
+
+let fromHeading: (string) => { value: string };
+if (versionNum < 12400) {
+    // <https://github.com/Microsoft/vscode/blob/b6417424521559acb9a5088111fb0ed70de7ccf2/extensions/markdown-language-features/src/tableOfContentsProvider.ts#L13>
+    fromHeading = tocModule.Slug.fromHeading;
+} else {
+    fromHeading = require(path.join(officialExtPath, 'out', 'slugify')).githubSlugifier.fromHeading;
+}
 
 export function isMdEditor(editor: TextEditor) {
     return editor && editor.document && editor.document.uri.scheme === 'file' && editor.document.languageId === 'markdown';
@@ -49,16 +55,10 @@ const PUNCTUATION_REGEXP = /[^0-9A-Z_a-z\- ª²-³µ¹-º¼-¾À-ÖØ-öø-ˁˆ-
 export function slugify(heading: string) {
     try {
         if (!workspace.getConfiguration('markdown.extension.toc').get<boolean>('githubCompatibility')) {
-            // VSCode slugify function
-            if (versionNum < 12400) {
-                // <https://github.com/Microsoft/vscode/blob/b6417424521559acb9a5088111fb0ed70de7ccf2/extensions/markdown-language-features/src/tableOfContentsProvider.ts#L13>
-                return tocModule.Slug.fromHeading(heading).value;
-            } else {
-                return slugifier.fromHeading(heading).value;
-            }
+            return fromHeading(heading).value;
         }
     } catch (error) {
-        window.showWarningMessage('Cannot use VSCode built-in slugify function, fall back to GitHub slugify funtion.');
+        window.showWarningMessage('Cannot use VSCode built-in slugify function, fall back to GitHub slugify funtion. Try to update VSCode to the latest version or set setting `githubCompatibility` to `true`');
     }
     // GitHub slugify function: <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
     let slug = extractText(heading.trim())
