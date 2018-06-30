@@ -5,7 +5,7 @@
 import * as fs from "fs";
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { officialExtPath, slugify } from './util';
+import { isMdEditor, officialExtPath, slugify } from './util';
 
 const hljs = require(path.join(officialExtPath, 'node_modules', 'highlight.js'));
 const mdnh = require(path.join(officialExtPath, 'node_modules', 'markdown-it-named-headers'));
@@ -37,13 +37,13 @@ export function deactivate() { }
 
 function print(type: string) {
     let editor = vscode.window.activeTextEditor;
-    let doc = editor.document;
 
-    if (!editor || doc.languageId != 'markdown') {
+    if (!isMdEditor(editor)) {
         vscode.window.showErrorMessage('No valid Markdown file');
         return;
     }
 
+    let doc = editor.document;
     if (doc.isDirty || doc.isUntitled) {
         doc.save();
     }
