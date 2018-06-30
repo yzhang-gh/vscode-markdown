@@ -15,7 +15,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     greekLetters = ['Gamma', 'Delta', 'Theta', 'Lambda', 'Pi', 'Sigma', 'Phi', 'Psi', 'Omega', 'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi', 'pi', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega', 'varepsilon', 'varphi'];
     otherLetters = ['ell', 'Re', 'nabla'];
     logicAndSetTheory = ['forall', 'exists', 'in', 'notin', 'subset', 'supset', 'mid', 'land', 'lor', 'neg', 'therefore', 'because', 'mapsto', 'to', 'gets', 'leftrightarrow', 'implies', 'impliedby', 'iff'];
-    bigOperators = ['sum', 'prod', 'int'];
+    bigOperators = ['sum', 'prod', 'bigvee', 'bigotimes', 'int', 'bigwedge', 'bigoplus', 'iint', 'bigcap', 'bigodot', 'iiint', 'bigcup', 'oint'];
     binaryOperators = ['cdot', 'times'];
     fractions = ['frac'];
     mathOperaters = ['sin', 'cos', 'exp', 'tan', 'tanh', 'ln', 'lg', 'log', 'det', 'inf', 'lim', 'max', 'min', 'Pr', 'sup']; // plus \operatorname{...}
