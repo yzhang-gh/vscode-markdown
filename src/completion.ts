@@ -10,44 +10,66 @@ export function activate(context: ExtensionContext) {
 
 class MdCompletionItemProvider implements CompletionItemProvider {
 
-    accents = ['bar', 'hat', 'widehat', 'tilde', 'widetilde', 'vec', 'overline', 'underline'];
-    delimeterSizing = ['left', 'middle', 'right', 'big', 'Big'];
-    greekLetters = ['Gamma', 'Delta', 'Theta', 'Lambda', 'Pi', 'Sigma', 'Phi', 'Psi', 'Omega', 'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi', 'pi', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega', 'varepsilon', 'varphi'];
-    otherLetters = ['ell', 'Re', 'nabla'];
-    logicAndSetTheory = ['forall', 'exists', 'in', 'notin', 'subset', 'supset', 'mid', 'land', 'lor', 'neg', 'therefore', 'because', 'mapsto', 'to', 'gets', 'leftrightarrow', 'implies', 'impliedby', 'iff'];
-    bigOperators = ['sum', 'prod', 'bigvee', 'bigotimes', 'int', 'bigwedge', 'bigoplus', 'iint', 'bigcap', 'bigodot', 'iiint', 'bigcup', 'oint'];
-    binaryOperators = ['cdot', 'times'];
-    fractions = ['frac'];
-    mathOperaters = ['sin', 'cos', 'exp', 'tan', 'tanh', 'ln', 'lg', 'log', 'det', 'inf', 'lim', 'max', 'min', 'Pr', 'sup']; // plus \operatorname{...}
-    sqrt = ['sqrt'];
-    relations = ['coloneq', 'equiv', 'ge', 'gt', 'gg', 'le', 'lt', 'll', 'prec', 'succ', 'sim', 'simeq', 'ne']; // including negated relations
-    font = ['rm', 'bf', 'it', 'sf', 'tt', 'mathrm', 'mathbf', 'mathit', 'mathsf', 'mathtt', 'mathbb', 'mathcal', 'mathscr', 'mathfrak'];
-    size = ['Huge', 'huge', 'LARGE', 'Large', 'large', 'normalsize', 'small', 'footnotesize', 'scriptsize', 'tiny'];
-    symbolsAndPunctuation = ['dots', 'cdots', 'ddots', 'ldots', 'vdots', 'checkmark', 'infty']
+    // Suffixes explained:
+    // \cmd         -> 0
+    // \cmd{$1}     -> 1
+    // \cmd{$1}{$2} -> 2
+    accents1 = ['grave', 'overleftarrow', 'overrightarrow', 'hat', 'underleftarrow', 'underrightarrow', 'widehat', 'overleftrightarrow', 'overbrace', 'acute', 'mathring', 'underleftrightarrow', 'underbrace', 'bar', 'tilde', 'overgroup', 'overlinesegment', 'breve', 'widetilde', 'undergroup', 'underlinesegment', 'check', 'vec', 'overleftharpoon', 'overrightharpoon', 'dot', 'overline', 'Overrightarrow', 'utilde', 'ddot', 'underline', 'widecheck'];
+    delimiters0 = ['lgroup', 'rgroup', 'lceil', 'rceil', 'uparrow', 'lbrack', 'rbrack', 'lfloor', 'rfloor', 'downarrow', 'lbrace', 'rbrace', 'lmoustache', 'rmoustache', 'updownarrow', 'langle', 'rangle', 'lt', 'gt', 'Uparrow', 'vert', 'ulcorner', 'urcorner', 'Downarrow', 'Vert', 'llcorner', 'lrcorner', 'Updownarrow', 'lvert', 'rvert', 'lVert', 'rVert', 'left.', 'right.', 'backslash'];
+    delimeterSizing0 = ['left', 'big', 'bigl', 'bigr', 'middle', 'Big', 'Bigl', 'Bigr', 'right', 'bigg', 'biggl', 'biggr', 'Bigg', 'Biggl', 'Biggr'];
+    greekLetters0 = ['Gamma', 'Delta', 'Theta', 'Lambda', 'Xi', 'Pi', 'Sigma', 'Upsilon', 'Phi', 'Psi', 'Omega', 'varGamma', 'varDelta', 'varTheta', 'varLambda', 'varXi', 'varPi', 'varSigma', 'varUpsilon', 'varPhi', 'varPsi', 'varOmega', 'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi', 'omicron', 'pi', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega', 'varepsilon', 'varkappa', 'vartheta', 'varpi', 'varrho', 'varsigma', 'varphi', 'digamma'];
+    otherLetters0 = ['imath', 'eth', 'Im', 'text{\\aa}', 'text{\\o}', 'jmath', 'Finv', 'Re', 'text{\\AA}', 'text{\\O}', 'aleph', 'Game', 'wp', 'text{\\ae}', 'text{\\ss}', 'beth', 'ell', 'partial', 'text{\\AE}', 'text{\\i}', 'gimel', 'hbar', 'nabla', 'text{\\oe}', 'text{\\j}', 'daleth', 'hslash', 'Bbbk', 'text{\\OE}'];
+    annotation1 = ['cancel', 'bcancel', 'xcancel', 'sout', 'overbrace', 'underbrace', 'boxed', 'not', 'tag', 'tag*'];
+    overlap1 = ['mathllap', 'mathrlap', 'mathclap', 'llap', 'rlap', 'clap', 'smash'];
+    verticalLayout0 = ['atop']
+    verticalLayout2 = ['stackrel', 'overset', 'underset', 'raisebox'];
+    logicAndSetTheory0 = ['forall', 'complement', 'therefore', 'neg', 'lnot', 'exists', 'subset', 'because', 'emptyset', 'varnothing', 'nexists', 'supset', 'mapsto', 'in', 'mid', 'to', 'implies', 'notin', 'land', 'gets', 'impliedby', 'ni', 'lor', 'leftrightarrow', 'iff', 'notni'];
+    bigOperators0 = ['sum', 'prod', 'bigvee', 'bigotimes', 'int', 'coprod', 'bigwedge', 'bigoplus', 'iint', 'intop', 'bigcap', 'bigodot', 'iiint', 'smallint', 'bigcup', 'biguplus', 'oint', 'bigsqcup'];
+    binaryOperators0 = ['cdot', 'gtrdot', 'pmod', 'cdotp', 'intercal', 'pod', 'centerdot', 'land', 'rhd', 'circ', 'leftthreetimes', 'rightthreetimes', 'amalg', 'circledast', 'ldotp', 'rtimes', 'And', 'circledcirc', 'lor', 'setminus', 'ast', 'circleddash', 'lessdot', 'smallsetminus', 'barwedge', 'Cup', 'lhd', 'sqcap', 'bigcirc', 'cup', 'ltimes', 'sqcup', 'bmod', 'curlyvee', 'mod', 'times', 'boxdot', 'curlywedge', 'mp', 'unlhd', 'boxminus', 'div', 'odot', 'unrhd', 'boxplus', 'divideontimes', 'ominus', 'uplus', 'boxtimes', 'dotplus', 'oplus', 'vee', 'bullet', 'doublebarwedge', 'otimes', 'veebar', 'Cap', 'doublecap', 'oslash', 'wedge', 'cap', 'doublecup', 'pm', 'wr'];
+    binomialCoefficients0 = ['choose'];
+    binomialCoefficients2 = ['binom', 'dbinom', 'tbinom'];
+    fractions0 = ['over'];
+    fractions2 = ['frac', 'dfrac', 'tfrac', 'cfrac'];
+    mathOperators0 = ['arcsin', 'cotg', 'ln', 'det', 'arccos', 'coth', 'log', 'gcd', 'arctan', 'csc', 'sec', 'inf', 'arctg', 'ctg', 'sin', 'lim', 'arcctg', 'cth', 'sinh', 'liminf', 'arg', 'deg', 'sh', 'limsup', 'ch', 'dim', 'tan', 'max', 'cos', 'exp', 'tanh', 'min', 'cosec', 'hom', 'tg', 'Pr', 'cosh', 'ker', 'th', 'sup', 'cot', 'lg', 'limits'];
+    mathOperators1 = ['operatorname'];
+    sqrt1 = ['sqrt'];
+    relations0 = ['curlyeqsucc', 'gtrapprox', 'perp', 'succapprox', 'dashv', 'gtreqless', 'pitchfork', 'succcurlyeq', 'dblcolon', 'gtreqqless', 'prec', 'succeq', 'doteq', 'gtrless', 'precapprox', 'succsim', 'approx', 'Doteq', 'gtrsim', 'preccurlyeq', 'Supset', 'approxeq', 'doteqdot', 'in', 'preceq', 'supset', 'asymp', 'eqcirc', 'Join', 'precsim', 'supseteq', 'backepsilon', 'eqcolon', 'le', 'propto', 'supseteqq', 'backsim', 'Eqcolon', 'leq', 'risingdotseq', 'thickapprox', 'backsimeq', 'eqqcolon', 'leqq', 'shortmid', 'thicksim', 'between', 'Eqqcolon', 'leqslant', 'shortparallel', 'trianglelefteq', 'bowtie', 'eqsim', 'lessapprox', 'sim', 'triangleq', 'bumpeq', 'eqslantgtr', 'lesseqgtr', 'simeq', 'trianglerighteq', 'Bumpeq', 'eqslantless', 'lesseqqgtr', 'smallfrown', 'varpropto', 'circeq', 'equiv', 'lessgtr', 'smallsmile', 'vartriangle', 'colonapprox', 'fallingdotseq', 'lesssim', 'smile', 'vartriangleleft', 'Colonapprox', 'frown', 'll', 'sqsubset', 'vartriangleright', 'coloneq', 'ge', 'lll', 'sqsubseteq', 'vcentcolon', 'Coloneq', 'geq', 'llless', 'sqsupset', 'vdash', 'coloneqq', 'geqq', 'lt', 'sqsupseteq', 'vDash', 'Coloneqq', 'geqslant', 'mid', 'Subset', 'Vdash', 'colonsim', 'gg', 'models', 'subset', 'Vvdash', 'Colonsim', 'ggg', 'multimap', 'subseteq', 'cong', 'gggtr', 'owns', 'subseteqq', 'curlyeqprec', 'gt', 'parallel', 'succ'];
+    negatedRelations0 = ['not', 'gnapprox', 'ngeqslant', 'nsubseteq', 'precneqq', 'gneq', 'ngtr', 'nsubseteqq', 'precnsim', 'gneqq', 'nleq', 'nsucc', 'subsetneq', 'gnsim', 'nleqq', 'nsucceq', 'subsetneqq', 'gvertneqq', 'nleqslant', 'nsupseteq', 'succnapprox', 'lnapprox', 'nless', 'nsupseteqq', 'succneqq', 'lneq', 'nmid', 'ntriangleleft', 'succnsim', 'lneqq', 'notin', 'ntrianglelefteq', 'supsetneq', 'lnsim', 'notni', 'ntriangleright', 'supsetneqq', 'lvertneqq', 'nparallel', 'ntrianglerighteq', 'varsubsetneq', 'ncong', 'nprec', 'nvdash', 'varsubsetneqq', 'ne', 'npreceq', 'nvDash', 'varsupsetneq', 'neq', 'nshortmid', 'nVDash', 'varsupsetneqq', 'ngeq', 'nshortparallel', 'nVdash', 'ngeqq', 'nsim', 'precnapprox'];
+    arrows0 = ['circlearrowleft', 'Leftarrow ', 'looparrowright', 'rightrightarrows', 'circlearrowright', 'leftarrowtail', 'Lsh', 'rightsquigarrow', 'curvearrowleft', 'leftharpoondown', 'mapsto', 'Rrightarrow', 'curvearrowright', 'leftharpoonup', 'nearrow', 'Rsh', 'dashleftarrow', 'leftleftarrows', 'nleftarrow', 'searrow', 'dashrightarrow', 'leftrightarrow', 'nLeftarrow', 'swarrow', 'downarrow', 'Leftrightarrow', 'nleftrightarrow', 'to', 'Downarrow', 'leftrightarrows', 'nLeftrightarrow', 'twoheadleftarrow', 'downdownarrows', 'leftrightharpoons', 'nrightarrow', 'twoheadrightarrow', 'downharpoonleft', 'leftrightsquigarrow', 'nRightarrow', 'uparrow', 'downharpoonright', 'Lleftarrow', 'nwarrow', 'Uparrow', 'gets', 'longleftarrow', 'restriction', 'updownarrow', 'hookleftarrow', 'Longleftarrow', 'rightarrow', 'Updownarrow', 'hookrightarrow', 'longleftrightarrow', 'Rightarrow', 'upharpoonleft', 'iff', 'Longleftrightarrow', 'rightarrowtail', 'upharpoonright', 'impliedby', 'longmapsto', 'rightharpoondown', 'upuparrows', 'implies', 'longrightarrow', 'rightharpoonu', 'leadsto', 'Longrightarrow', 'rightleftarrows', 'leftarrow', 'looparrowleft', 'rightleftharpoons'];
+    extensibleArrows1 = ['xrightarrow', 'xRightarrow', 'xrightharpoonup', 'xrightarrow', 'xmapsto', 'xrightharpoondown', 'xleftarrow', 'xLeftarrow', 'xleftharpoonup', 'xleftrightarrow', 'xLeftrightarrow', 'xleftharpoondown', 'xhookleftarrow', 'xhookrightarrow', 'xrightleftharpoons', 'xtwoheadrightarrow', 'xlongequal', 'xleftrightharpoons', 'xtwoheadleftarrow', 'xtofrom'];
+    classAssignment0 = ['mathbin', 'mathclose', 'mathinner', 'mathop', 'mathopen', 'mathord', 'mathpunct', 'mathrel'];
+    color2 = ['color', 'textcolor', 'colorbox'];
+    font0 = ['rm', 'bf', 'it', 'sf', 'tt'];
+    font1 = ['mathrm', 'mathbf', 'mathit', 'mathsf', 'mathtt', 'textrm', 'textbf', 'textit', 'textsf', 'texttt', 'textnormal', 'bold', 'Bbb', 'mathcal', 'frak', 'text', 'boldsymbol', 'mathbb', 'mathscr', 'mathfrak', 'bm'];
+    size0 = ['Huge', 'huge', 'LARGE', 'Large', 'large', 'normalsize', 'small', 'footnotesize', 'scriptsize', 'tiny'];
+    style0 = ['displaystyle', 'textstyle', 'scriptstyle', 'scriptscriptstyle', 'limits', 'nolimits', 'verb', 'text'];
+    style1 = ['text'];
+    symbolsAndPunctuation0 = ['Box', 'dots', 'checkmark', 'square', 'cdots', 'dag', 'blacksquare', 'ddots', 'dagger', 'triangle', 'ldots', 'textdagger', 'triangledown', 'vdots', 'ddag', 'textunderscore', 'triangleleft', 'mathellipsis', 'ddagger', 'triangleright', 'textellipsis', 'textdaggerdbl', 'textendash', 'bigtriangledown', 'flat', 'bigtriangleup', 'natural', 'textdollar', 'textemdash', 'blacktriangle', 'sharp', 'pounds', 'blacktriangledown', 'circledR', 'textsterling', 'textquoteleft', 'blacktriangleleft', 'circledS', 'yen', 'text{\\lq}', 'blacktriangleright', 'clubsuit', 'surd', 'textquoteright', 'diamond', 'diamondsuit', 'degree', 'text{\\rq}', 'Diamond', 'heartsuit', 'diagdown', 'textquotedblleft', 'lozenge', 'spadesuit', 'diagup', 'blacklozenge', 'angle', 'mho', 'textquotedblright', 'star', 'measuredangle', 'maltese', 'colon', 'bigstar', 'sphericalangle', 'text{\\P}', 'backprime', 'textbar', 'top', 'text{\\S}', 'prime', 'textbardbl', 'bot', 'nabla', 'textless', 'textbraceleft', 'textbraceright', 'infty', 'textgreater', 'KaTeX', 'LaTeX', 'TeX'];
 
     mathCompletions: CompletionItem[];
 
     constructor() {
         // \cmd
-        let c1 = [...this.delimeterSizing, ...this.greekLetters, ...this.otherLetters, ...this.logicAndSetTheory, ...this.bigOperators, ...this.binaryOperators, ...this.mathOperaters, ...this.relations, ...this.size, ...this.symbolsAndPunctuation].map(cmd => {
+        let c1 = [...this.delimiters0, ...this.delimeterSizing0, ...this.greekLetters0, ...this.otherLetters0, ...this.verticalLayout0, ...this.logicAndSetTheory0, ...this.bigOperators0, ...this.binaryOperators0, ...this.binomialCoefficients0, ...this.fractions0, ...this.mathOperators0, ...this.relations0, ...this.negatedRelations0, ...this.arrows0, ...this.classAssignment0, ...this.font0, ...this.size0, ...this.style0, ...this.symbolsAndPunctuation0].map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
             item.insertText = cmd;
             return item;
         });
-        // \cmd{$0}
-        let c2 = [...this.accents, ...this.sqrt, ...this.font, 'operatorname'].map(cmd => {
+        // \cmd{$1}
+        let c2 = [...this.accents1, ...this.annotation1, ...this.overlap1, ...this.mathOperators1, ...this.sqrt1, ...this.extensibleArrows1, ...this.font1, ...this.style1].map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
             item.insertText = new SnippetString(`${cmd}\{$0\}`);
             return item;
         });
         // \cmd{$1}{$2}
-        let c3 = this.fractions.map(cmd => {
+        let c3 = [...this.verticalLayout2, ...this.binomialCoefficients2, ...this.fractions2, ...this.color2].map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
             item.insertText = new SnippetString(`${cmd}\{$1\}\{$2\}`);
             return item;
         });
         let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
-        envSnippet.insertText = new SnippetString('begin{${1|aligned,array,bmatrix,Bmatrix,cases,gathered,matrix,pmatrix,vmatrix,Vmatrix|}}\n\t$0\n\\end{$1}');
+        envSnippet.insertText = new SnippetString('begin{${1|matrix,aligned,array,pmatrix,bmatrix,alignedat,vmatrix,Vmatrix,gathered,Bmatrix,cases|}}\n\t$0\n\\end{$1}');
+
         this.mathCompletions = Array.from(new Set([...c1, ...c2, ...c3, envSnippet]));
     }
 
