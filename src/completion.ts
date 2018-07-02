@@ -76,12 +76,12 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList> {
         if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
-        let textBefore = document.lineAt(position.line).text.substring(0, position.character);
+        let lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
 
         let matches;
-        if (/!\[[^\]]*?\]\([^\)]*$/.test(textBefore)) {
+        if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
             // Complete image paths
-            matches = textBefore.match(/!\[[^\]]*?\]\(([^\)]*?)[\\\/]?[^\\\/\)]*$/);
+            matches = lineTextBefore.match(/!\[[^\]]*?\]\(([^\)]*?)[\\\/]?[^\\\/\)]*$/);
             let dir = matches[1].replace(/\\/g, '/');
 
             return workspace.findFiles((dir.length == 0 ? '' : dir + '/') + '**/*.{png,jpg,jpeg,svg,gif}', '**/node_modules/**').then(uris =>
@@ -102,12 +102,22 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     return item;
                 })
             );
-        } else if (/(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(textBefore)) {
-            // Complete math functions (inline math)
-            return this.mathCompletions;
-        } else if ((matches = document.getText(new Range(new Position(0, 0), position)).match(/\$\$/g)) !== null && matches.length % 2 !== 0) {
-            // Complete math functions
-            return this.mathCompletions;
+        } else if (lineTextBefore.endsWith('\\')) {
+            if (/(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(lineTextBefore)) {
+                // Complete math functions (inline math)
+                return this.mathCompletions;
+            } else {
+                const textBefore = document.getText(new Range(new Position(0, 0), position));
+                const textAfter = document.getText().substr(document.offsetAt(position));
+                let matches2;
+                if ((matches = textBefore.match(/\$\$/g)) !== null && matches.length % 2 !== 0
+                    && (matches2 = textAfter.match(/\$\$/g)) !== null && matches2.length % 2 !== 0) {
+                    // Complete math functions
+                    return this.mathCompletions;
+                } else {
+                    return [];
+                }
+            }
         } else {
             return [];
         }
