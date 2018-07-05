@@ -58,7 +58,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         // \cmd{$1}
         let c2 = Array.from(new Set([...this.accents1, ...this.annotation1, ...this.overlap1, ...this.mathOperators1, ...this.sqrt1, ...this.extensibleArrows1, ...this.font1, ...this.style1])).map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
-            item.insertText = new SnippetString(`${cmd}\{$1\}$0`);
+            item.insertText = new SnippetString(`${cmd}\{$1\}`);
             return item;
         });
         // \cmd{$1}{$2}
@@ -68,7 +68,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             return item;
         });
         let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
-        envSnippet.insertText = new SnippetString('begin{${1|matrix,aligned,array,pmatrix,bmatrix,alignedat,vmatrix,Vmatrix,gathered,Bmatrix,cases|}}\n\t$2\n\\end{$1}$0');
+        envSnippet.insertText = new SnippetString('begin{${1|matrix,aligned,array,pmatrix,bmatrix,alignedat,vmatrix,Vmatrix,gathered,Bmatrix,cases|}}\n\t$2\n\\end{$1}');
 
         this.mathCompletions = [...c1, ...c2, ...c3, envSnippet];
     }
