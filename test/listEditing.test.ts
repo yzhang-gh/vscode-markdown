@@ -68,7 +68,7 @@ suite("List editing.", () => {
     });
 
     test("Backspace key. 1: '- |'", done => {
-        testCommand('markdown.extension.onBackspaceKey', {}, ['- item1'], new Selection(0, 2, 0, 2), ['item1'], new Selection(0, 0, 0, 0)).then(done, done);
+        testCommand('markdown.extension.onBackspaceKey', {}, ['- item1'], new Selection(0, 2, 0, 2), ['  item1'], new Selection(0, 2, 0, 2)).then(done, done);
     });
 
     test("Backspace key. 2: '-  |'", done => {

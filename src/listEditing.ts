@@ -153,7 +153,9 @@ function onBackspaceKey() {
         return commands.executeCommand('editor.action.outdentLines').then(() => fixMarker());
     } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- ', '1. '
-        return deleteRange(editor, new Range(cursor.with({ character: 0 }), cursor)).then(() => fixMarker(findNextMarkerLineNumber()));
+        return editor.edit(editBuilder => {
+            editBuilder.replace(new Range(cursor.with({ character: 0 }), cursor), ' '.repeat(textBeforeCursor.length))
+        }).then(() => fixMarker(findNextMarkerLineNumber()));
     } else if (/^([-+*]|[0-9]+[.)]) (\[[ x]\] )$/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- [ ]', '1. [x]'
         return deleteRange(editor, new Range(cursor.with({ character: textBeforeCursor.length - 4 }), cursor)).then(() => fixMarker(findNextMarkerLineNumber()));
