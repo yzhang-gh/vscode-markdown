@@ -118,7 +118,7 @@ function onTabKey(modifiers?: string) {
     let lineText = editor.document.lineAt(cursorPos.line).text;
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
-        return asNormal('tab');
+        return asNormal('tab', modifiers);
     }
 
     // Cases where indent/outdent should occur, followed by fixing the ordered list markers:
