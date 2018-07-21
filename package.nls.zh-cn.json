@@ -8,7 +8,6 @@
     "command.editing.toggleMath.title": "Markdown: 触发数学环境",
     "command.editing.toggleUnorderedList.title": "Markdown: 触发无序列表",
     "title": "Markdown All in One",
-<<<<<<< HEAD
     "config.toc.levels.description": "目录级别的范围. 使用 `x..y` 表示 x 到 y 级",
     "config.toc.orderedList.description": "使用有序列表 (1. ..., 2. ...)",
     "config.toc.unorderedList.marker.description": "在目录中使用 `-`, `*` 或 `+` （对于无序列表）",
@@ -38,9 +37,7 @@
     "cannotUseSlugify.text": "无法使用 VSCode 内置的 slugify 函数，已使用 GitHub 的 slugify 函数替代。请尝试更新 VSCode 到最新版本或将 `githubCompatibility` 设置为 `true`",
     "1.3.0.text": "介绍一个令人兴奋的功能！自动为有序列表重新编号。",
     "1.4.0.text": "Markdown-All-in-One v1.4.0 带来很多新功能",
-    "1.5.0.text": "好久不见。欢迎使用 Markdown-All-in-One v1.5.0."
-}
-=======
+    "1.5.0.text": "好久不见。欢迎使用 Markdown-All-in-One v1.5.0.",
     "markdown.extension.toc.levels.description": "目录级别的范围. 使用 `x..y` 表示 x 到 y 级",
     "markdown.extension.toc.orderedList.description": "使用有序列表 (1. ..., 2. ...)",
     "markdown.extension.toc.unorderedList.marker.description": "在目录中使用 `-`, `*` 或 `+` （对于无序列表）",
@@ -73,4 +70,3 @@
     "util.1.4.0.text": "Markdown-All-in-One v1.4.0 带来很多新功能",
     "util.1.5.0.text": "好久不见。欢迎使用 Markdown-All-in-One v1.5.0."
 }
->>>>>>> ad8c3e58465a30d110895541fd8767a8dfd912a5
