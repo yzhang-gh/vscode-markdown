@@ -40,7 +40,7 @@ function print(type: string) {
     let editor = vscode.window.activeTextEditor;
 
     if (!isMdEditor(editor)) {
-        vscode.window.showErrorMessage(localize("noValidMarkdownFile.text"));
+        vscode.window.showErrorMessage(localize("noValidMarkdownFile"));
         return;
     }
 
@@ -49,10 +49,7 @@ function print(type: string) {
         doc.save();
     }
 
-    vscode.window.setStatusBarMessage(
-        localize("printingTo1.text") + ` '${path.basename(doc.fileName)}' ` 
-        + localize("printingTo2.text") + ` '${type.toUpperCase()}' ...`, 1000
-    );
+    vscode.window.setStatusBarMessage(localize("printing") + ` '${path.basename(doc.fileName)}' ` + localize("to") + ` '${type.toUpperCase()}' ...`, 1000);
 
     /**
      * Modified from <https://github.com/Microsoft/vscode/tree/master/extensions/markdown>
@@ -77,9 +74,7 @@ function print(type: string) {
                     const file = fs.readFileSync(imgUri.fsPath).toString('base64');
                     return `${p1}data:image/${imgExt};base64,${file}${p3}`;
                 } catch (e) {
-                    vscode.window.showWarningMessage(
-                        localize("unableToReadFile.text") + ` ${imgUri.fsPath}` + localize("revertingToImagePaths.text")
-                    );
+                    vscode.window.showWarningMessage(localize("unableToReadFile") + ` ${imgUri.fsPath}, ` + localize("revertingToImagePaths"));
                 }
             }
             return `${p1}${imgUri.toString()}${p3}`;
@@ -138,7 +133,7 @@ function readCss(fileName: string) {
     try {
         return fs.readFileSync(fileName).toString().replace(/\s+/g, ' ');
     } catch (error) {
-        let msg = error.message.replace('ENOENT: no such file or directory, open', localize("customStyle.text")) + localize("notFound.text");
+        let msg = error.message.replace('ENOENT: no such file or directory, open', localize("customStyle")) + localize("notFound");
         msg = msg.replace(/'([c-z]):/, function (match, g1) {
             return `'${g1.toUpperCase()}:`;
         });

@@ -59,9 +59,7 @@ export function slugify(heading: string) {
             return fromHeading(heading).value;
         }
     } catch (error) {
-        window.showWarningMessage(
-            localize("cannotUseSlugify.text")
-        );
+        window.showWarningMessage(localize("cannotUseBuiltinSlugifyFunc"));
     }
     // GitHub slugify function: <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
     let slug = extractText(heading.trim())
@@ -74,11 +72,11 @@ export function slugify(heading: string) {
 export function getNewFeatureMsg(version: string) {
     switch (version) {
         case '1.3.0':
-            return localize("1.3.0.text");
+            return localize("1.3.0 msg");
         case '1.4.0':
-            return localize("1.4.0.text");
+            return localize("1.4.0 msg");
         case '1.5.0':
-            return localize("1.5.0.text");
+            return localize("1.5.0 msg");
     }
     return undefined;
 }

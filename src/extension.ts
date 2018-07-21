@@ -69,8 +69,8 @@ function newVersionMessage(extensionPath: string) {
     }
     const featureMsg = getNewFeatureMsg(currentVersion);
     if (featureMsg === undefined) return;
-    const message1 = localize("showMe.text");
-    const message2 = localize("dismiss.text");
+    const message1 = localize("showMe");
+    const message2 = localize("dismiss");
     window.showInformationMessage(featureMsg, message1, message2).then(option => {
         switch (option) {
             case message1:

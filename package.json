@@ -1,7 +1,7 @@
 {
     "name": "markdown-all-in-one",
-    "displayName": "%displayName%",
-    "description": "%description%",
+    "displayName": "%ext.displayName%",
+    "description": "%ext.description%",
     "icon": "images/Markdown-mark.png",
     "version": "1.5.1",
     "publisher": "yzhang",
@@ -170,7 +170,7 @@
         ],
         "configuration": {
             "type": "object",
-            "title": "%title%",
+            "title": "%config.title%",
             "properties": {
                 "markdown.extension.toc.levels": {
                     "type": "string",
