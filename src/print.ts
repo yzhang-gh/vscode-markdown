@@ -6,6 +6,7 @@ import * as fs from "fs";
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { isMdEditor, officialExtPath, slugify } from './util';
+import localize from './localize';
 
 const hljs = require(path.join(officialExtPath, 'node_modules', 'highlight.js'));
 const mdnh = require(path.join(officialExtPath, 'node_modules', 'markdown-it-named-headers'));
@@ -39,7 +40,7 @@ function print(type: string) {
     let editor = vscode.window.activeTextEditor;
 
     if (!isMdEditor(editor)) {
-        vscode.window.showErrorMessage('No valid Markdown file');
+        vscode.window.showErrorMessage(localize("noValidMarkdownFile.text"));
         return;
     }
 
@@ -48,7 +49,10 @@ function print(type: string) {
         doc.save();
     }
 
-    vscode.window.setStatusBarMessage(`Printing '${path.basename(doc.fileName)}' to ${type.toUpperCase()} ...`, 1000);
+    vscode.window.setStatusBarMessage(
+        localize("printingTo1.text") + ` '${path.basename(doc.fileName)}' ` 
+        + localize("printingTo2.text") + ` '${type.toUpperCase()}' ...`, 1000
+    );
 
     /**
      * Modified from <https://github.com/Microsoft/vscode/tree/master/extensions/markdown>
@@ -73,7 +77,9 @@ function print(type: string) {
                     const file = fs.readFileSync(imgUri.fsPath).toString('base64');
                     return `${p1}data:image/${imgExt};base64,${file}${p3}`;
                 } catch (e) {
-                    vscode.window.showWarningMessage(`Unable to read file "${imgUri.fsPath}". Reverting to image paths instead of base64 encoding`);
+                    vscode.window.showWarningMessage(
+                        localize("unableToReadFile.text") + ` ${imgUri.fsPath}` + localize("revertingToImagePaths.text")
+                    );
                 }
             }
             return `${p1}${imgUri.toString()}${p3}`;
@@ -132,7 +138,7 @@ function readCss(fileName: string) {
     try {
         return fs.readFileSync(fileName).toString().replace(/\s+/g, ' ');
     } catch (error) {
-        let msg = error.message.replace('ENOENT: no such file or directory, open', 'Custom style') + ' not found.';
+        let msg = error.message.replace('ENOENT: no such file or directory, open', localize("customStyle.text")) + localize("notFound.text");
         msg = msg.replace(/'([c-z]):/, function (match, g1) {
             return `'${g1.toUpperCase()}:`;
         });
