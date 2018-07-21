@@ -31,27 +31,27 @@
         "commands": [
             {
                 "command": "markdown.extension.toc.create",
-                "title": "%markdown.extension.toc.create.title%"
+                "title": "%command.toc.create.title%"
             },
             {
                 "command": "markdown.extension.toc.update",
-                "title": "%markdown.extension.toc.update.title%"
+                "title": "%command.toc.update.title%"
             },
             {
                 "command": "markdown.extension.printToHtml",
-                "title": "%markdown.extension.printToHtml.title%"
+                "title": "%command.printToHtml.title%"
             },
             {
                 "command": "markdown.extension.editing.toggleCodeSpan",
-                "title": "%markdown.extension.editing.toggleCodeSpan.title%"
+                "title": "%command.editing.toggleCodeSpan.title%"
             },
             {
                 "command": "markdown.extension.editing.toggleMath",
-                "title": "%markdown.extension.editing.toggleMath.title%"
+                "title": "%command.editing.toggleMath.title%"
             },
             {
                 "command": "markdown.extension.editing.toggleUnorderedList",
-                "title": "%markdown.extension.editing.toggleUnorderedList.title%"
+                "title": "%command.editing.toggleUnorderedList.title%"
             }
         ],
         "keybindings": [
@@ -175,17 +175,17 @@
                 "markdown.extension.toc.levels": {
                     "type": "string",
                     "default": "1..6",
-                    "description": "%markdown.extension.toc.levels.description%"
+                    "description": "%config.toc.levels.description%"
                 },
                 "markdown.extension.toc.orderedList": {
                     "type": "boolean",
                     "default": false,
-                    "description": "%markdown.extension.toc.orderedList.description%"
+                    "description": "%config.toc.orderedList.description%"
                 },
                 "markdown.extension.toc.unorderedList.marker": {
                     "type": "string",
                     "default": "-",
-                    "description": "%markdown.extension.toc.unorderedList.marker.description%",
+                    "description": "%config.toc.unorderedList.marker.description%",
                     "enum": [
                         "-",
                         "*",
@@ -195,27 +195,27 @@
                 "markdown.extension.toc.plaintext": {
                     "type": "boolean",
                     "default": false,
-                    "description": "%markdown.extension.toc.plaintext.description%"
+                    "description": "%config.toc.plaintext.description%"
                 },
                 "markdown.extension.toc.updateOnSave": {
                     "type": "boolean",
                     "default": true,
-                    "description": "%markdown.extension.toc.updateOnSave.description%"
+                    "description": "%config.toc.updateOnSave.description%"
                 },
                 "markdown.extension.toc.githubCompatibility": {
                     "type": "boolean",
                     "default": false,
-                    "description": "%markdown.extension.toc.githubCompatibility.description%"
+                    "description": "%config.toc.githubCompatibility.description%"
                 },
                 "markdown.extension.preview.autoShowPreviewToSide": {
                     "type": "boolean",
                     "default": false,
-                    "description": "%markdown.extension.preview.autoShowPreviewToSide.description%"
+                    "description": "%config.preview.autoShowPreviewToSide.description%"
                 },
                 "markdown.extension.orderedList.marker": {
                     "type": "string",
                     "default": "ordered",
-                    "description": "%markdown.extension.orderedList.marker.description%",
+                    "description": "%config.orderedList.marker.description%",
                     "enum": [
                         "one",
                         "ordered"
@@ -224,12 +224,12 @@
                 "markdown.extension.orderedList.autoRenumber": {
                     "type": "boolean",
                     "default": true,
-                    "description": "%markdown.extension.orderedList.autoRenumber.description%"
+                    "description": "%config.orderedList.autoRenumber.description%"
                 },
                 "markdown.extension.italic.indicator": {
                     "type": "string",
                     "default": "*",
-                    "description": "%markdown.extension.italic.indicator.description%",
+                    "description": "%config.italic.indicator.description%",
                     "enum": [
                         "*",
                         "_"
@@ -238,39 +238,39 @@
                 "markdown.extension.showExplorer": {
                     "type": "boolean",
                     "default": false,
-                    "description": "%markdown.extension.showExplorer.description%"
+                    "description": "%config.showExplorer.description%"
                 },
                 "markdown.extension.tableFormatter.enabled": {
                     "type": "boolean",
                     "default": true,
-                    "description": "%markdown.extension.tableFormatter.enabled.description%"
+                    "description": "%config.tableFormatter.enabled.description%"
                 },
                 "markdown.extension.tableFormatter.normalizeIndentation": {
                     "type": "boolean",
                     "default": false,
-                    "description": "%markdown.extension.tableFormatter.normalizeIndentation.description%"
+                    "description": "%config.tableFormatter.normalizeIndentation.description%"
                 },
                 "markdown.extension.print.absoluteImgPath": {
                     "type": "boolean",
                     "default": true,
-                    "description": "%markdown.extension.print.absoluteImgPath.description%",
+                    "description": "%config.print.absoluteImgPath.description%",
                     "scope": "resource"
                 },
                 "markdown.extension.print.imgToBase64": {
                     "type": "boolean",
                     "default": false,
-                    "description": "%markdown.extension.print.imgToBase64.description%",
+                    "description": "%config.print.imgToBase64.description%",
                     "scope": "resource"
                 },
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
                     "default": true,
-                    "description": "%markdown.extension.syntax.decorations.description%"
+                    "description": "%config.syntax.decorations.description%"
                 },
                 "markdown.extension.syntax.plainTheme": {
                     "type": "boolean",
                     "default": false,
-                    "description": "%markdown.extension.syntax.plainTheme.description%"
+                    "description": "%config.syntax.plainTheme.description%"
                 }
             }
         },

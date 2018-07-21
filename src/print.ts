@@ -40,7 +40,7 @@ function print(type: string) {
     let editor = vscode.window.activeTextEditor;
 
     if (!isMdEditor(editor)) {
-        vscode.window.showErrorMessage(localize("print.noValidMarkdownFile.text"));
+        vscode.window.showErrorMessage(localize("noValidMarkdownFile.text"));
         return;
     }
 
@@ -50,8 +50,8 @@ function print(type: string) {
     }
 
     vscode.window.setStatusBarMessage(
-        localize("print.printing.text") + ` '${path.basename(doc.fileName)}' ` 
-        + localize("print.to.text") + ` '${type.toUpperCase()}' ...`, 1000
+        localize("printingTo1.text") + ` '${path.basename(doc.fileName)}' ` 
+        + localize("printingTo2.text") + ` '${type.toUpperCase()}' ...`, 1000
     );
 
     /**
@@ -78,7 +78,7 @@ function print(type: string) {
                     return `${p1}data:image/${imgExt};base64,${file}${p3}`;
                 } catch (e) {
                     vscode.window.showWarningMessage(
-                        localize("print.unableToReadFile.text") + ` ${imgUri.fsPath}` + localize("print.revertingToImagePaths.text")
+                        localize("unableToReadFile.text") + ` ${imgUri.fsPath}` + localize("revertingToImagePaths.text")
                     );
                 }
             }
@@ -138,9 +138,7 @@ function readCss(fileName: string) {
     try {
         return fs.readFileSync(fileName).toString().replace(/\s+/g, ' ');
     } catch (error) {
-        let msg = error.message.replace(
-            localize("print.ENOENT.text"), localize("print.customStyle.text")) 
-            + localize("print.notFound.text");
+        let msg = error.message.replace('ENOENT: no such file or directory, open', localize("customStyle.text")) + localize("notFound.text");
         msg = msg.replace(/'([c-z]):/, function (match, g1) {
             return `'${g1.toUpperCase()}:`;
         });

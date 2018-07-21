@@ -60,7 +60,7 @@ export function slugify(heading: string) {
         }
     } catch (error) {
         window.showWarningMessage(
-            localize("util.cannotUse.text")
+            localize("cannotUseSlugify.text")
         );
     }
     // GitHub slugify function: <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
@@ -74,11 +74,11 @@ export function slugify(heading: string) {
 export function getNewFeatureMsg(version: string) {
     switch (version) {
         case '1.3.0':
-            return localize("util.1.3.0.text");
+            return localize("1.3.0.text");
         case '1.4.0':
-            return localize("util.1.4.0.text");
+            return localize("1.4.0.text");
         case '1.5.0':
-            return localize("util.1.5.0.text");
+            return localize("1.5.0.text");
     }
     return undefined;
 }
