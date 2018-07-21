@@ -1,7 +1,7 @@
 {
-    "name": "markdown-all-in-one",
-    "displayName": "Markdown All in One",
-    "description": "All you need to write Markdown (keyboard shortcuts, table of contents, auto preview and more)",
+    "name": "markdown-all-in-one-nls",
+    "displayName": "%displayName%",
+    "description": "%description%",
     "icon": "images/Markdown-mark.png",
     "version": "1.5.1",
     "publisher": "yzhang",
@@ -31,27 +31,27 @@
         "commands": [
             {
                 "command": "markdown.extension.toc.create",
-                "title": "Markdown: Create Table of Contents"
+                "title": "%markdown.extension.toc.create.title%"
             },
             {
                 "command": "markdown.extension.toc.update",
-                "title": "Markdown: Update Table of Contents"
+                "title": "%markdown.extension.toc.update.title%"
             },
             {
                 "command": "markdown.extension.printToHtml",
-                "title": "Markdown: Print current document to HTML"
+                "title": "%markdown.extension.printToHtml.title%"
             },
             {
                 "command": "markdown.extension.editing.toggleCodeSpan",
-                "title": "Markdown: Toggle code span"
+                "title": "%markdown.extension.editing.toggleCodeSpan.title%"
             },
             {
                 "command": "markdown.extension.editing.toggleMath",
-                "title": "Markdown: Toggle math environment"
+                "title": "%markdown.extension.editing.toggleMath.title%"
             },
             {
                 "command": "markdown.extension.editing.toggleUnorderedList",
-                "title": "Markdown: Toggle unordered list"
+                "title": "%markdown.extension.editing.toggleUnorderedList.title%"
             }
         ],
         "keybindings": [
@@ -170,22 +170,22 @@
         ],
         "configuration": {
             "type": "object",
-            "title": "Markdown All in One",
+            "title": "%title%",
             "properties": {
                 "markdown.extension.toc.levels": {
                     "type": "string",
                     "default": "1..6",
-                    "description": "Range of levels for table of contents. Use `x..y` for level x to y"
+                    "description": "%markdown.extension.toc.levels.description%"
                 },
                 "markdown.extension.toc.orderedList": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Use ordered list (1. ..., 2. ...)"
+                    "description": "%markdown.extension.toc.orderedList.description%"
                 },
                 "markdown.extension.toc.unorderedList.marker": {
                     "type": "string",
                     "default": "-",
-                    "description": "Use `-`, `*` or `+` in the table of contents (for unordered list)",
+                    "description": "%markdown.extension.toc.unorderedList.marker.description%",
                     "enum": [
                         "-",
                         "*",
@@ -195,27 +195,27 @@
                 "markdown.extension.toc.plaintext": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Just plain text"
+                    "description": "%markdown.extension.toc.plaintext.description%"
                 },
                 "markdown.extension.toc.updateOnSave": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Auto update on save"
+                    "description": "%markdown.extension.toc.updateOnSave.description%"
                 },
                 "markdown.extension.toc.githubCompatibility": {
                     "type": "boolean",
                     "default": false,
-                    "description": "GitHub Compatibility"
+                    "description": "%markdown.extension.toc.githubCompatibility.description%"
                 },
                 "markdown.extension.preview.autoShowPreviewToSide": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Auto show preview to side"
+                    "description": "%markdown.extension.preview.autoShowPreviewToSide.description%"
                 },
                 "markdown.extension.orderedList.marker": {
                     "type": "string",
                     "default": "ordered",
-                    "description": "`one`: always use `1.` as ordered list marker; `ordered`",
+                    "description": "%markdown.extension.orderedList.marker.description%",
                     "enum": [
                         "one",
                         "ordered"
@@ -224,12 +224,12 @@
                 "markdown.extension.orderedList.autoRenumber": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Auto fix ordered list markers"
+                    "description": "%markdown.extension.orderedList.autoRenumber.description%"
                 },
                 "markdown.extension.italic.indicator": {
                     "type": "string",
                     "default": "*",
-                    "description": "Use `*` or `_` to wrap italic text",
+                    "description": "%markdown.extension.italic.indicator.description%",
                     "enum": [
                         "*",
                         "_"
@@ -238,39 +238,39 @@
                 "markdown.extension.showExplorer": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Show outline view in explorer panel"
+                    "description": "%markdown.extension.showExplorer.description%"
                 },
                 "markdown.extension.tableFormatter.enabled": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Enable GFM table formatter"
+                    "description": "%markdown.extension.tableFormatter.enabled.description%"
                 },
                 "markdown.extension.tableFormatter.normalizeIndentation": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Normalize table indentation to closest multiple of configured tabSize"
+                    "description": "%markdown.extension.tableFormatter.normalizeIndentation.description%"
                 },
                 "markdown.extension.print.absoluteImgPath": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Convert image path to absolute path",
+                    "description": "%markdown.extension.print.absoluteImgPath.description%",
                     "scope": "resource"
                 },
                 "markdown.extension.print.imgToBase64": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Convert images to base64 when printing to HTML",
+                    "description": "%markdown.extension.print.imgToBase64.description%",
                     "scope": "resource"
                 },
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Add syntax decorations"
+                    "description": "%markdown.extension.syntax.decorations.description%"
                 },
                 "markdown.extension.syntax.plainTheme": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Only take effect when `extension.syntax.decorations` is enabled"
+                    "description": "%markdown.extension.syntax.plainTheme.description%"
                 }
             }
         },

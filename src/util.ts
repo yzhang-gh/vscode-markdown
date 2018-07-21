@@ -2,6 +2,7 @@
 
 import * as path from 'path';
 import { commands, extensions, TextEditor, Uri, version, window, workspace } from 'vscode';
+import localize from './localize';
 
 const versionNum = eval(version.replace('.', ' * 10000 + ').replace('.', ' * 100 + ').replace('-insider', ' - 1'));
 
@@ -58,7 +59,9 @@ export function slugify(heading: string) {
             return fromHeading(heading).value;
         }
     } catch (error) {
-        window.showWarningMessage('Cannot use VSCode built-in slugify function, fall back to GitHub slugify funtion. Try to update VSCode to the latest version or set setting `githubCompatibility` to `true`');
+        window.showWarningMessage(
+            localize("util.cannotUse.text")
+        );
     }
     // GitHub slugify function: <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
     let slug = extractText(heading.trim())
@@ -71,11 +74,11 @@ export function slugify(heading: string) {
 export function getNewFeatureMsg(version: string) {
     switch (version) {
         case '1.3.0':
-            return 'Introduce an exciting feature! Auto renumbering ordered list.';
+            return localize("util.1.3.0.text");
         case '1.4.0':
-            return 'Many new features of Markdown-All-in-One v1.4.0';
+            return localize("util.1.4.0.text");
         case '1.5.0':
-            return 'Long time no see. Welcome to Markdown-All-in-One v1.5.0.';
+            return localize("util.1.5.0.text");
     }
     return undefined;
 }

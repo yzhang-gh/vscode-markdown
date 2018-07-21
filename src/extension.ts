@@ -12,6 +12,7 @@ import * as decorations from './syntaxDecorations';
 import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
 import { getNewFeatureMsg, showChangelog } from './util';
+import localize from './localize';
 
 export function activate(context: ExtensionContext) {
     activateMdExt(context);
@@ -68,11 +69,13 @@ function newVersionMessage(extensionPath: string) {
     }
     const featureMsg = getNewFeatureMsg(currentVersion);
     if (featureMsg === undefined) return;
-    window.showInformationMessage(featureMsg, 'Show Me', 'Dismiss').then(option => {
+    const message1 = localize("extension.showMe.text");
+    const message2 = localize("extension.dismiss.text");
+    window.showInformationMessage(featureMsg, message1, message2).then(option => {
         switch (option) {
-            case 'Show Me':
+            case message1:
                 showChangelog();
-            case 'Dismiss':
+            case message2:
                 break;
         }
     });
