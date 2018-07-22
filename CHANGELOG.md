@@ -1,3 +1,11 @@
+### 1.6.0 (2018.07.22)
+
+- **New**: Add Chinese language support ([#240](https://github.com/neilsustc/vscode-markdown/issues/240)). Thanks, [@linsui](https://github.com/linsui).
+- **Fix**: Some minor bugs ([#205](https://github.com/neilsustc/vscode-markdown/issues/205), [#223](https://github.com/neilsustc/vscode-markdown/issues/223), [#231](https://github.com/neilsustc/vscode-markdown/issues/231)). Thanks, [Tom Bresson (@tombresson)](https://github.com/tombresson) for #231.
+- **Other**: More math completions (in fact, all KaTeX function) ([#219](https://github.com/neilsustc/vscode-markdown/issues/219)).
+
+---
+
 ### 1.5.1 (2018.06.29)
 
 - **Fix**: Handle activation error for vscode earlier than v1.24.0.
@@ -18,11 +26,11 @@
 
 - **New**: Auto completions! Images paths and math commands
 - **New**: Use comment `<!-- omit in toc -->` to omit specific heading in TOC ([#177](https://github.com/neilsustc/vscode-markdown/issues/177)).
-- **New**: Option `print.imgToBase64`, encoding images into HTML file ([#73](https://github.com/neilsustc/vscode-markdown/issues/73)). Thanks, [Eric Yancey Dauenhauer (@ericyd)](https://github.com/ericyd)
-- **Fix**: Regression on table formatting ([#171](https://github.com/neilsustc/vscode-markdown/issues/171)). Thanks, [Stefan Zi (@StefanZi)](https://github.com/StefanZi)
+- **New**: Option `print.imgToBase64`, encoding images into HTML file ([#73](https://github.com/neilsustc/vscode-markdown/issues/73)). Thanks, [Eric Yancey Dauenhauer (@ericyd)](https://github.com/ericyd).
+- **Fix**: Regression on table formatting ([#171](https://github.com/neilsustc/vscode-markdown/issues/171)). Thanks, [Stefan Zi (@StefanZi)](https://github.com/StefanZi).
 - **Fix**: Problem of losing track of TOC after editing the first heading ([#48](https://github.com/neilsustc/vscode-markdown/issues/48)).
 - **Other**: Remove `quickStylingMode` option. (It's default behavior now)
-- **Other**: Provide latest CI build ([here](https://ci.appveyor.com/project/neilsustc/vscode-markdown/build/artifacts))
+- **Other**: Provide latest CI build ([here](https://ci.appveyor.com/project/neilsustc/vscode-markdown/build/artifacts)).
 
 ### Auto Completions
 
