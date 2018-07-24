@@ -52,6 +52,8 @@ function onEnterKey(modifiers?: string) {
         return editor.edit(editBuilder => {
             editBuilder.delete(line.range);
             editBuilder.insert(line.range.end, '\n');
+        }).then(() => {
+            editor.revealRange(editor.selection);
         }).then(() => fixMarker(findNextMarkerLineNumber()));
     }
 
