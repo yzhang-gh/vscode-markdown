@@ -92,7 +92,7 @@
             {
                 "command": "markdown.extension.onEnterKey",
                 "key": "enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && vim.mode != 'CommandlineInProgress'"
             },
             {
                 "command": "markdown.extension.onCtrlEnterKey",
