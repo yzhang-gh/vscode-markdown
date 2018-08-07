@@ -1,0 +1,28 @@
+{
+	"fileTypes": [],
+	"injectionSelector": "meta.paragraph.markdown - markup.inserted",
+	"patterns": [
+		{
+			"include": "#math-inline"
+		}
+	],
+	"repository": {
+		"math-inline": {
+			"name": "markup.inserted.math.inline.markdown",
+            "begin": "(?<![\\\\\\$])(\\$)(?![\\s\\$])(?=([^\\$]*(\\\\\\$)*)*(?<![^\\\\]\\\\)(\\$))",
+            "end": "(?<![^\\\\][\\s\\$\\\\])(\\$)(?![0-9])",
+			"captures": {
+				"1": {
+					"name": "punctuation.definition.math.inline.markdown"
+				}
+            },
+            "contentName": "meta.embedded.block.katex",
+            "patterns": [
+                {
+                    "include": "text.katex"
+                }
+            ]
+		}
+    },
+    "scopeName": "markdown.math_inline"
+}

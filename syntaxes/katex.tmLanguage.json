@@ -1,0 +1,76 @@
+{
+    "fileTypes": [],
+    "patterns": [
+        {
+            "include": "#environment"
+        },
+        {
+            "include": "#function"
+        },
+        {
+            "include": "#align"
+        },
+        {
+            "include": "#group"
+        },
+        {
+            "include": "#character"
+        }
+    ],
+    "repository": {
+        "align": {
+            "name": "meta.type.new.expr.table.cell.katex",
+            "match": "((?<!\\\\)&|\\\\\\\\)"
+        },
+        "group": {
+            "name": "meta.type.new.expr.group.katex",
+            "match": "(?<!\\\\)(\\{|\\})"
+        },
+        "character": {
+            "name": "constant.character.katex",
+            "match": "(\\\\)([!,:;~=^.\"#$%_&*\\s\\{\\}])",
+            "captures": {
+                "1": {
+                    "name": "string.tag.katex"
+                },
+                "2": {
+                    "name": "constant.character.function.katex"
+                }
+            }
+        },
+        "function": {
+            "name": "constant.character.katex",
+            "match": "(\\\\)(?!(begin)|(end))([a-zA-Z@]+)(((?<=tag)\\*)?)",
+            "captures": {
+                "1": {
+                    "name": "string.tag.katex"
+                },
+                "2": {
+                    "name": "constant.character.function.katex"
+                }
+            }
+        },
+        "environment": {
+            "name": "keyword.katex",
+            "match": "(\\\\)((begin)|(end))(\\{)([^\\}]+)(\\})",
+            "captures": {
+                "1": {
+                    "name":"string.tag.katex"
+                },
+                "2": {
+                    "name": "keyword.control.katex"
+                },
+                "5": {
+                    "name": "meta.type.new.expr.group.katex"
+                },
+                "6": {
+                    "name": "meta.selector.katex"
+                },
+                "7": {
+                    "name": "meta.type.new.expr.group.katex"
+                }
+            }
+        }
+    },
+    "scopeName": "text.katex"
+}  
