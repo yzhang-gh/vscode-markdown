@@ -77,6 +77,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
         let lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
+        let lineTextAfter = document.lineAt(position.line).text.substring(position.character);
 
         let matches;
         if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
@@ -103,15 +104,16 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 })
             );
         } else if ((matches = lineTextBefore.match(/\\+$/)) !== null && matches[0].length % 2 !== 0) {
-            if (/(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(lineTextBefore)) {
+            if (/(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(lineTextBefore)
+                && lineTextAfter.includes('$')) {
                 // Complete math functions (inline math)
                 return this.mathCompletions;
             } else {
                 const textBefore = document.getText(new Range(new Position(0, 0), position));
                 const textAfter = document.getText().substr(document.offsetAt(position));
-                let matches2;
-                if ((matches = textBefore.match(/\$\$/g)) !== null && matches.length % 2 !== 0
-                    && (matches2 = textAfter.match(/\$\$/g)) !== null && matches2.length % 2 !== 0) {
+                if ((matches = textBefore.match(/\$\$/g)) !== null
+                    && matches.length % 2 !== 0
+                    && textAfter.includes('\$\$')) {
                     // Complete math functions
                     return this.mathCompletions;
                 } else {
