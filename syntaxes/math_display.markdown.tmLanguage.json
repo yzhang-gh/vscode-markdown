@@ -1,6 +1,6 @@
 {
 	"fileTypes": [],
-	"injectionSelector": "L:(text.html.markdown - meta)",
+	"injectionSelector": "L:(text.html.markdown - meta - comment.block)",
 	"patterns": [
 		{
 			"include": "#math-display"
@@ -9,7 +9,7 @@
 	"repository": {
 		"math-display": {
 			"name": "markup.inserted.math.display.markdown",
-			"begin": "(^)([\\s]*)((?<![^\\\\]\\\\)\\$\\$)",
+			"begin": "(^|\\G)([\\s]*)((?<![^\\\\]\\\\)\\$\\$)",
 			"end": "(?<![^\\\\]\\\\)(?<![^\\\\]\\$)(\\$\\$)([\\s]*)$",
 			"beginCaptures": {
 				"0": {
