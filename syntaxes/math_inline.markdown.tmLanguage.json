@@ -1,6 +1,6 @@
 {
 	"fileTypes": [],
-	"injectionSelector": "meta.paragraph.markdown - markup.inserted",
+	"injectionSelector": "meta.paragraph.markdown - markup.inserted - meta.embedded",
 	"patterns": [
 		{
 			"include": "#math-inline"
@@ -9,8 +9,8 @@
 	"repository": {
 		"math-inline": {
 			"name": "markup.inserted.math.inline.markdown",
-            "begin": "(?<![\\\\\\$])(\\$)(?![\\s\\$])(?=([^\\$]*(\\\\\\$)*)*(?<![^\\\\]\\\\)(\\$))",
-            "end": "(?<![^\\\\][\\s\\$\\\\])(\\$)(?![0-9])",
+            "begin": "(?x) #turn on extended mode\n  (?<!^\\\\)(?<![^\\\\][\\$\\\\]) #without '$' and '\\' on the left\n  (\\$) #a '$'\n  (?![\\s\\$]) #without whitespace and '$' on the right\n  (?=((?!\\s\\$).)+ #not match ' $'\n  (?<![^\\\\][\\$\\\\])(?<!\\s)(\\$)(?![0-9]) #match the end '$'\n  ) #ensure math closed\n",
+            "end": "(?x) #turn on extended mode\n  (?<![^\\\\][\\$\\\\])(?<!\\s) #without '$' '\\' and whitespace on the left\n  (\\$) #a '$'\n  (?![0-9]) #without number on the right\n  (?!((\\$)(?![\\s\\$])(?=((?!\\s\\$).)+((?<![^\\\\][\\$\\\\])(?<!\\s)(\\$)(?![0-9]))))) #without a begin '$' on the right\n",
 			"captures": {
 				"1": {
 					"name": "punctuation.definition.math.inline.markdown"
@@ -18,6 +18,16 @@
             },
             "contentName": "meta.embedded.block.katex",
             "patterns": [
+				{
+					"name": "markup.inserted.math.inline.markdown",
+					"match": "(?<![^\\\\][\\$\\\\])(?<!\\s)(\\$\\$)",
+					"comment": "match a end '$' and a begin '$'",
+					"captures": {
+						"1": {
+							"name": "punctuation.definition.math.inline.markdown"
+						}
+					}
+				},
                 {
                     "include": "text.katex"
                 }
