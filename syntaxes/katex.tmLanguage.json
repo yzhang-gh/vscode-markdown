@@ -11,66 +11,77 @@
             "include": "#align"
         },
         {
-            "include": "#group"
-        },
-        {
             "include": "#character"
         }
     ],
     "repository": {
         "align": {
-            "name": "meta.type.new.expr.table.cell.katex",
+            "name": "keyword.control.table.cell.katex",
             "match": "((?<!\\\\)&|\\\\\\\\)"
         },
-        "group": {
-            "name": "meta.type.new.expr.group.katex",
-            "match": "(?<!\\\\)(\\{|\\})"
-        },
         "character": {
-            "name": "constant.character.katex",
-            "match": "(\\\\)([!,:;~=^.\"#$%_&*\\s\\{\\}])",
-            "captures": {
-                "1": {
-                    "name": "string.tag.katex"
+            "name": "constant.character.escape.katex",
+            "match": "\\\\[!,:;#$%_&]"
                 },
-                "2": {
-                    "name": "constant.character.function.katex"
-                }
-            }
-        },
         "function": {
-            "name": "constant.character.katex",
-            "match": "(\\\\)(?!(begin)|(end))([a-zA-Z@]+)(((?<=tag)\\*)?)",
+            "name": "meta.function",
+            "match": "(\\\\)(?!begin|end)(tag\\*|[a-zA-Z@]+)(?:(\\{)(\\w*)(\\}))?(?:(\\{)(\\w*)(\\}))?",
             "captures": {
                 "1": {
-                    "name": "string.tag.katex"
+                    "name": "punctuation.definition.function.katex"
                 },
                 "2": {
-                    "name": "constant.character.function.katex"
+                    "name": "support.function.katex"
+                },
+                "3": {
+                    "name": "punctuation.definition.parameters.begin.katex"
+                },
+                "4": {
+                    "name": "variable.parameter.function.katex"
+                },
+                "5": {
+                    "name": "punctuation.definition.parameters.end.katex"
+                },
+                "6": {
+                    "name": "punctuation.definition.parameters.begin.katex"
+                },
+                "7": {
+                    "name": "variable.parameter.function.katex"
+                },
+                "8": {
+                    "name": "punctuation.definition.parameters.end.katex"
                 }
             }
         },
         "environment": {
-            "name": "keyword.katex",
-            "match": "(\\\\)((begin)|(end))(\\{)([^\\}]+)(\\})",
+            "match": "(\\\\)(begin|end)(\\{)([^\\}]*)(\\})(?:(\\{)([^\\}]*)(\\}))?",
             "captures": {
                 "1": {
-                    "name":"string.tag.katex"
+                    "name":"punctuation.definition.function.latex"
                 },
                 "2": {
-                    "name": "keyword.control.katex"
+                    "name": "entity.name.function.katex"
+                },
+                "3": {
+                    "name": "punctuation.definition.parameters.begin.katex"
+                },
+                "4": {
+                    "name": "support.constant.katex"
                 },
                 "5": {
-                    "name": "meta.type.new.expr.group.katex"
+                    "name": "punctuation.definition.parameters.end.katex"
                 },
                 "6": {
-                    "name": "meta.selector.katex"
+                    "name": "punctuation.definition.parameters.begin.katex"
                 },
                 "7": {
-                    "name": "meta.type.new.expr.group.katex"
+                    "name": "variable.parameter.function.katex"
+                },
+                "8": {
+                    "name": "punctuation.definition.parameters.end.katex"
                 }
             }
         }
     },
     "scopeName": "text.katex"
-}  
+}
