@@ -5,8 +5,8 @@
 import * as fs from "fs";
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { isMdEditor, officialExtPath, slugify } from './util';
 import localize from './localize';
+import { isMdEditor, officialExtPath, slugify } from './util';
 
 const hljs = require(path.join(officialExtPath, 'node_modules', 'highlight.js'));
 const mdnh = require(path.join(officialExtPath, 'node_modules', 'markdown-it-named-headers'));

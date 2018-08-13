@@ -2,7 +2,7 @@
 
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { officialExtPath, slugify, TocProvider, mdDocSelector, extractText, isMdEditor } from './util';
+import { extractText, isMdEditor, mdDocSelector, officialExtPath, slugify, TocProvider } from './util';
 
 const MdEngine = require(path.join(officialExtPath, 'out', 'markdownEngine')).MarkdownEngine;
 

@@ -1,6 +1,6 @@
 'use strict';
 
-import { commands, window, workspace, ExtensionContext, Position, Range, Selection, TextEditor, TextEdit } from 'vscode';
+import { commands, ExtensionContext, Position, Range, Selection, TextEditor, window, workspace } from 'vscode';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(

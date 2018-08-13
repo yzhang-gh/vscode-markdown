@@ -6,13 +6,13 @@ import { ExtensionContext, languages, window, workspace } from 'vscode';
 import * as completion from './completion';
 import * as formatting from './formatting';
 import * as listEditing from './listEditing';
+import localize from './localize';
 import * as preview from './preview';
 import * as print from './print';
 import * as decorations from './syntaxDecorations';
 import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
 import { getNewFeatureMsg, showChangelog } from './util';
-import localize from './localize';
 
 export function activate(context: ExtensionContext) {
     activateMdExt(context);

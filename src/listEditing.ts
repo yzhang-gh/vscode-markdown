@@ -1,7 +1,6 @@
 'use strict'
 
-import { commands, window, workspace, ExtensionContext, Position, Range, Selection, TextDocument, TextLine } from 'vscode';
-import * as vscode from 'vscode';
+import { commands, ExtensionContext, Position, Range, Selection, TextDocument, TextEditor, window, workspace } from 'vscode';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
@@ -192,7 +191,7 @@ function asNormal(key: string, modifiers?: string) {
  * the specified line or the beginning of the current selection.
  */
 function findNextMarkerLineNumber(line?: number): number {
-    let editor = vscode.window.activeTextEditor;
+    let editor = window.activeTextEditor;
     if (line === undefined) {
         // Use start.line instead of active.line so that we can find the first
         // marker following either the cursor or the entire selected range
@@ -212,7 +211,7 @@ function findNextMarkerLineNumber(line?: number): number {
  * Looks for the previous ordered list marker at the same indentation level
  * and returns the marker number that should follow it.
  */
-function lookUpwardForMarker(editor: vscode.TextEditor, line: number, numOfSpaces: number): number {
+function lookUpwardForMarker(editor: TextEditor, line: number, numOfSpaces: number): number {
     while (--line >= 0) {
         let matches;
         const lineText = editor.document.lineAt(line).text;
@@ -241,7 +240,7 @@ function fixMarker(line?: number) {
     if (!workspace.getConfiguration('markdown.extension.orderedList').get<boolean>('autoRenumber')) return;
     if (workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'one') return;
 
-    let editor = vscode.window.activeTextEditor;
+    let editor = window.activeTextEditor;
     if (line === undefined) {
         // Use either the first line containing an ordered list marker within the selection or the active line
         line = findNextMarkerLineNumber();
@@ -294,7 +293,7 @@ function fixMarker(line?: number) {
     }
 }
 
-function deleteRange(editor: vscode.TextEditor, range: Range): Thenable<boolean> {
+function deleteRange(editor: TextEditor, range: Range): Thenable<boolean> {
     return editor.edit(
         editBuilder => {
             editBuilder.delete(range);
@@ -328,7 +327,7 @@ function onMoveLineUp() {
 
 function onMoveLineDown() {
     return commands.executeCommand('editor.action.moveLinesDownAction')
-        .then(() => fixMarker(findNextMarkerLineNumber(vscode.window.activeTextEditor.selection.start.line - 1)));
+        .then(() => fixMarker(findNextMarkerLineNumber(window.activeTextEditor.selection.start.line - 1)));
 }
 
 function onCopyLineUp() {

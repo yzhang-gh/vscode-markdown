@@ -2,7 +2,7 @@
 
 // https://github.github.com/gfm/#tables-extension-
 
-import { languages, workspace, CancellationToken, DocumentFormattingEditProvider, ExtensionContext, FormattingOptions, Range, TextDocument, TextEdit } from 'vscode';
+import { CancellationToken, DocumentFormattingEditProvider, ExtensionContext, FormattingOptions, languages, Range, TextDocument, TextEdit, workspace } from 'vscode';
 import { mdDocSelector } from './util';
 
 export function activate(context: ExtensionContext) {
