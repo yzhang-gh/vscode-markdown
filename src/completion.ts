@@ -89,7 +89,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 uris.map(uri => {
                     let relPath = path.relative(path.join(workspace.getWorkspaceFolder(uri).uri.fsPath, dir), uri.fsPath);
                     relPath = relPath.replace(/\\/g, '/');
-                    let item = new CompletionItem(relPath, CompletionItemKind.File);
+                    let item = new CompletionItem(relPath.replace(/ /g, '&#32;'), CompletionItemKind.File);
 
                     // Add image preview
                     let dimensions = sizeOf(uri.fsPath);
@@ -98,7 +98,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                         dimensions.height = Number(dimensions.height * maxWidth / dimensions.width);
                         dimensions.width = maxWidth;
                     }
-                    item.documentation = new MarkdownString(`![${relPath}](${uri.fsPath}|width=${dimensions.width},height=${dimensions.height})`);
+                    item.documentation = new MarkdownString(`![${relPath}](${uri.fsPath.replace(/ /g, '&#32;')}|width=${dimensions.width},height=${dimensions.height})`);
 
                     return item;
                 })
