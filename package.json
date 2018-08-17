@@ -92,7 +92,7 @@
             {
                 "command": "markdown.extension.onEnterKey",
                 "key": "enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && vim.mode != 'CommandlineInProgress'"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
             },
             {
                 "command": "markdown.extension.onCtrlEnterKey",
