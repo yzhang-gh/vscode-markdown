@@ -8,23 +8,21 @@ suite("TOC.", () => {
         // 💩 Preload file to prevent the first test to be treated timeout
         await workspace.openTextDocument(testMdFile);
 
+        const workspaceConfig = workspace.getConfiguration('', null);
         for (let key in previousConfigs) {
-            if (previousConfigs.hasOwnProperty(key)) {
-                previousConfigs[key] = workspace.getConfiguration('', null).get(key);
-            }
+            previousConfigs[key] = workspaceConfig.get(key);
         }
     });
 
-    suiteTeardown(async () => {
+    suiteTeardown(() => {
+        const workspaceConfig = workspace.getConfiguration('', null);
         for (let key in previousConfigs) {
-            if (previousConfigs.hasOwnProperty(key)) {
-                await workspace.getConfiguration('', null).update(key, previousConfigs[key], true);
-            }
+            workspaceConfig.update(key, previousConfigs[key], true);
         }
     });
 
     test("Create", done => {
-        testCommand('markdown.extension.toc.create', {},
+        testCommand('markdown.extension.toc.create',
             [
                 '# Section 1',
                 '',
@@ -50,7 +48,7 @@ suite("TOC.", () => {
     });
 
     test("Update", done => {
-        testCommand('markdown.extension.toc.update', {},
+        testCommand('markdown.extension.toc.update',
             [
                 '# Section 1',
                 '',
@@ -84,9 +82,6 @@ suite("TOC.", () => {
 
     test("Create (levels 2..3)", done => {
         testCommand('markdown.extension.toc.create',
-            {
-                "markdown.extension.toc.levels": "2..3"
-            },
             [
                 '# Section 1',
                 '',
@@ -129,14 +124,14 @@ suite("TOC.", () => {
                 '- [Section 2.1](#section-21)',
                 '    - [Section 2.1.1](#section-211)',
             ],
-            new Selection(19, 35, 19, 35)).then(done, done);
+            new Selection(19, 35, 19, 35),
+            {
+                "markdown.extension.toc.levels": "2..3"
+            }).then(done, done);
     });
 
     test("Update (levels 2..3)", done => {
         testCommand('markdown.extension.toc.update',
-            {
-                "markdown.extension.toc.levels": "2..3"
-            },
             [
                 '# Section 1',
                 '',
@@ -173,11 +168,14 @@ suite("TOC.", () => {
                 '    - [Section 1.1.1](#section-111)',
                 '- [Section 2.1](#section-21)'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0),
+            {
+                "markdown.extension.toc.levels": "2..3"
+            }).then(done, done);
     });
 
     test("Create 中文", done => {
-        testCommand('markdown.extension.toc.create', {},
+        testCommand('markdown.extension.toc.create',
             [
                 '# Section 中文',
                 '',
@@ -203,7 +201,7 @@ suite("TOC.", () => {
     });
 
     test("Slugify. `a.b` c => ab-c", done => {
-        testCommand('markdown.extension.toc.create', {},
+        testCommand('markdown.extension.toc.create',
             [
                 '# `a.b` c',
                 '',
@@ -219,7 +217,7 @@ suite("TOC.", () => {
     });
 
     test("Setext heading syntax", done => {
-        testCommand('markdown.extension.toc.create', {},
+        testCommand('markdown.extension.toc.create',
             [
                 'Section 1',
                 '===',
@@ -245,9 +243,6 @@ suite("TOC.", () => {
 
     test("Non-Latin symbols", done => {
         testCommand('markdown.extension.toc.create',
-            {
-                "markdown.extension.toc.githubCompatibility": true
-            },
             [
                 'Секция 1',
                 '===',
@@ -268,6 +263,9 @@ suite("TOC.", () => {
                 '- [Секция 1](#Секция-1)',
                 '    - [Секция 1.1](#Секция-11)'
             ],
-            new Selection(7, 30, 7, 30)).then(done, done);
+            new Selection(7, 30, 7, 30),
+            {
+                "markdown.extension.toc.githubCompatibility": true
+            }).then(done, done);
     });
 });

@@ -8,23 +8,22 @@ suite("Table formatter.", () => {
         // 💩 Preload file to prevent the first test to be treated timeout
         await workspace.openTextDocument(testMdFile);
 
+        const workspaceConfig = workspace.getConfiguration('', null);
         for (let key in previousConfigs) {
-            if (previousConfigs.hasOwnProperty(key)) {
-                previousConfigs[key] = workspace.getConfiguration('', null).get(key);
-            }
+            previousConfigs[key] = workspaceConfig.get(key);
         }
     });
 
-    suiteTeardown(async () => {
+    suiteTeardown(() => {
+        // TODO: extract as function
+        const workspaceConfig = workspace.getConfiguration('', null);
         for (let key in previousConfigs) {
-            if (previousConfigs.hasOwnProperty(key)) {
-                await workspace.getConfiguration('', null).update(key, previousConfigs[key], true);
-            }
+            workspaceConfig.update(key, previousConfigs[key], true);
         }
     });
 
     test("Normal", done => {
-        testCommand('editor.action.formatDocument', {},
+        testCommand('editor.action.formatDocument',
             [
                 '| a | b |',
                 '| --- | --- |',
@@ -40,7 +39,7 @@ suite("Table formatter.", () => {
     });
 
     test("Normal 2", done => {
-        testCommand('editor.action.formatDocument', {},
+        testCommand('editor.action.formatDocument',
             [
                 '',
                 'a |b',
@@ -58,7 +57,7 @@ suite("Table formatter.", () => {
     });
 
     test("Contains `|`", done => {
-        testCommand('editor.action.formatDocument', {},
+        testCommand('editor.action.formatDocument',
             [
                 '| a | b |',
                 '| --- | --- |',
@@ -74,7 +73,7 @@ suite("Table formatter.", () => {
     });
 
     test("Contains ` |`", done => {
-        testCommand('editor.action.formatDocument', {},
+        testCommand('editor.action.formatDocument',
             [
                 '| a | b |',
                 '| --- | --- |',
@@ -90,7 +89,7 @@ suite("Table formatter.", () => {
     });
 
     test("Contains \\|", done => {
-        testCommand('editor.action.formatDocument', {},
+        testCommand('editor.action.formatDocument',
             [
                 '| a | b |',
                 '| --- | --- |',
@@ -106,7 +105,7 @@ suite("Table formatter.", () => {
     });
 
     test("中文", done => {
-        testCommand('editor.action.formatDocument', {},
+        testCommand('editor.action.formatDocument',
             [
                 '| a | b |',
                 '| --- | --- |',
@@ -122,7 +121,7 @@ suite("Table formatter.", () => {
     });
 
     test("No table", done => {
-        testCommand('editor.action.formatDocument', {},
+        testCommand('editor.action.formatDocument',
             [
                 'a | b',
                 '---'
@@ -136,7 +135,7 @@ suite("Table formatter.", () => {
     });
 
     test("Indented table", done => {
-        testCommand('editor.action.formatDocument', {},
+        testCommand('editor.action.formatDocument',
             [
                 '    | a | b |',
                 '    | --- | --- |',
@@ -152,7 +151,7 @@ suite("Table formatter.", () => {
     });
 
     test("Mixed-indented table (no normalization)", done => {
-        testCommand('editor.action.formatDocument', {},
+        testCommand('editor.action.formatDocument',
             [
                 '   | a | b |',
                 '  | --- | --- |',
@@ -169,7 +168,6 @@ suite("Table formatter.", () => {
 
     test("Mixed-indented table (normalization)", done => {
         testCommand('editor.action.formatDocument',
-            { "markdown.extension.tableFormatter.normalizeIndentation": true },
             [
                 '   | a | b |',
                 '  | --- | --- |',
@@ -181,11 +179,12 @@ suite("Table formatter.", () => {
                 '    | --- | --- |',
                 '    | c   | d   |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done)
+            new Selection(0, 0, 0, 0),
+            { "markdown.extension.tableFormatter.normalizeIndentation": true }).then(done, done)
     });
 
     test("Mixed ugly table", done => {
-        testCommand('editor.action.formatDocument', {},
+        testCommand('editor.action.formatDocument',
             [
                 '| a | b | c ',
                 ' --- | --- | :---:',
@@ -201,7 +200,7 @@ suite("Table formatter.", () => {
     });
 
     test("Contains \\| in last open cell", done => {
-        testCommand('editor.action.formatDocument', {},
+        testCommand('editor.action.formatDocument',
             [
                 '', // Changing the first expected char somehow crashes the selection logic and the test fails
                 'a|b',
@@ -219,7 +218,7 @@ suite("Table formatter.", () => {
     });
 
     test("Reduced width table", done => {
-        testCommand('editor.action.formatDocument', {},
+        testCommand('editor.action.formatDocument',
             [
                 '| a       | b    |',
                 '| ------- | ---- |',
