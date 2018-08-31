@@ -9,7 +9,7 @@
 	"repository": {
 		"math-display": {
 			"name": "markup.inserted.math.display.markdown",
-			"begin": "(^|\\G)([ ]{0,3})((?<![^\\\\]\\\\)\\$\\$)",
+			"begin": "(^|\\G)([ ]{0,3})((?<![^\\\\]\\\\)\\$\\$(?!\\$))",
 			"end": "(?<![^\\\\]\\\\)(?<![^\\\\]\\$)(\\$\\$)([\\s]*)$",
 			"beginCaptures": {
 				"0": {
