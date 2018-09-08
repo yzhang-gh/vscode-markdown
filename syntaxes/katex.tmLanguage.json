@@ -27,7 +27,7 @@
         },
         "function": {
             "name": "meta.function",
-            "match": "(\\\\)(?!begin|end)(tag\\*|[a-zA-Z@]+|[!,:;#$%_&])",
+            "match": "(\\\\)(?!begin|end)(tag\\*|[a-zA-Z@]+|[!,:;#$%_&{}|^*])",
             "captures": {
                 "1": {
                     "name": "punctuation.definition.function.katex"
@@ -44,13 +44,13 @@
                     "name":"punctuation.definition.function.latex"
                 },
                 "2": {
-                    "name": "entity.name.function.katex"
+                    "name": "keyword.control.katex"
                 },
                 "3": {
                     "name": "punctuation.definition.parameters.begin.katex"
                 },
                 "4": {
-                    "name": "support.constant.katex"
+                    "name": "variable.parameter.function.katex"
                 },
                 "5": {
                     "name": "punctuation.definition.parameters.end.katex"
@@ -68,7 +68,7 @@
         },
         "comment": {
             "name": "comment.line.percentage.katex",
-            "begin": "(%)\\s[^\\$]*",
+            "begin": "(%)[^\\$]*",
             "end": "(?=(?<!\\$\\$)$|\\$\\$\\s*$)",
             "captures": {
                 "1": {
