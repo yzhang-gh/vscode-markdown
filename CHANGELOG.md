@@ -1,3 +1,7 @@
+### 1.6.1 (2018.09.10)
+
+- **Other**: Fix for VSCode v1.28.0-insider
+
 ### 1.6.0 (2018.07.22)
 
 - **New**: Add Chinese language support ([#240](https://github.com/neilsustc/vscode-markdown/issues/240)). Thanks, [@linsui](https://github.com/linsui).

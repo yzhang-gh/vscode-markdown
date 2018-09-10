@@ -6,13 +6,14 @@ import * as fs from "fs";
 import * as path from 'path';
 import * as vscode from 'vscode';
 import localize from './localize';
-import { isMdEditor, officialExtPath, slugify } from './util';
+import { isMdEditor, slugify } from './util';
 
-const hljs = require(path.join(officialExtPath, 'node_modules', 'highlight.js'));
-const mdnh = require(path.join(officialExtPath, 'node_modules', 'markdown-it-named-headers'));
+// Cannot reuse these modules since vscode packs them using webpack
+const hljs = require('highlight.js');
+const mdnh = require('markdown-it-named-headers');
 const mdtl = require('markdown-it-task-lists');
 const mdkt = require('@neilsustc/markdown-it-katex');
-const md = require(path.join(officialExtPath, 'node_modules', 'markdown-it'))({
+const md = require('markdown-it')({
     html: true,
     highlight: (str: string, lang: string) => {
         if (lang && hljs.getLanguage(lang)) {
