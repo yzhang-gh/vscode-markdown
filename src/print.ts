@@ -8,25 +8,32 @@ import * as vscode from 'vscode';
 import localize from './localize';
 import { isMdEditor, slugify } from './util';
 
-// Cannot reuse these modules since vscode packs them using webpack
-const hljs = require('highlight.js');
-const mdnh = require('markdown-it-named-headers');
-const mdtl = require('markdown-it-task-lists');
-const mdkt = require('@neilsustc/markdown-it-katex');
-const md = require('markdown-it')({
-    html: true,
-    highlight: (str: string, lang: string) => {
-        if (lang && hljs.getLanguage(lang)) {
-            try {
-                return `<pre class="hljs"><code><div>${hljs.highlight(lang, str, true).value}</div></code></pre>`;
-            } catch (error) { }
+let md;
+
+async function initMdIt() {
+    // takes ~0.5s
+
+    // Cannot reuse these modules since vscode packs them using webpack
+    const hljs = await import('highlight.js');
+    const mdnh = await import('markdown-it-named-headers');
+    const mdtl = await import('markdown-it-task-lists');
+    const mdkt = await import('@neilsustc/markdown-it-katex');
+
+    md = (await import('markdown-it'))({
+        html: true,
+        highlight: (str: string, lang: string) => {
+            if (lang && hljs.getLanguage(lang)) {
+                try {
+                    return `<pre class="hljs"><code><div>${hljs.highlight(lang, str, true).value}</div></code></pre>`;
+                } catch (error) { }
+            }
+            // return `<pre class="hljs"><code><div>${this.engine.utils.escapeHtml(str)}</div></code></pre>`;
+            return str;
         }
-        // return `<pre class="hljs"><code><div>${this.engine.utils.escapeHtml(str)}</div></code></pre>`;
-        return str;
-    }
-}).use(mdnh, {
-    slugify: (header: string) => slugify(header)
-}).use(mdtl).use(mdkt);
+    }).use(mdnh, {
+        slugify: (header: string) => slugify(header)
+    }).use(mdtl).use(mdkt);
+}
 
 let thisContext: vscode.ExtensionContext;
 
@@ -37,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() { }
 
-function print(type: string) {
+async function print(type: string) {
     let editor = vscode.window.activeTextEditor;
 
     if (!isMdEditor(editor)) {
@@ -64,7 +71,7 @@ function print(type: string) {
         outPath += `.${type}`;
     }
 
-    let body = render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
+    let body = await render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
 
     if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("absoluteImgPath")) {
         body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
@@ -109,7 +116,11 @@ function print(type: string) {
     }
 }
 
-function render(text: string, config: vscode.WorkspaceConfiguration) {
+async function render(text: string, config: vscode.WorkspaceConfiguration) {
+    if (md === undefined) {
+        await initMdIt();
+    }
+
     md.set({
         breaks: config.get<boolean>('breaks', false),
         linkify: config.get<boolean>('linkify', true)
