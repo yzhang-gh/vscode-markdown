@@ -1,7 +1,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import { extractText, isMdEditor, mdDocSelector, MockMarkdownEngine, slugify, TocProvider } from './util';
+import { extractText, isMdEditor, mdDocSelector, SkinnyMarkdownEngine, slugify, TocProvider } from './util';
 
 /**
  * Workspace config
@@ -226,7 +226,7 @@ async function buildToc() {
     let toc;
     let editor = vscode.window.activeTextEditor;
     if (isMdEditor(editor)) {
-        const tocProvider = new TocProvider(new MockMarkdownEngine(), editor.document);
+        const tocProvider = new TocProvider(new SkinnyMarkdownEngine(), editor.document);
         toc = await tocProvider.getToc();
         if (toc !== undefined && toc.length > 0) {
             // Omit heading using comments
