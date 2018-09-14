@@ -1,12 +1,7 @@
 'use strict';
 
-import * as path from 'path';
 import * as vscode from 'vscode';
-import { extractText, isMdEditor, mdDocSelector, officialExtPath, slugify, TocProvider } from './util';
-
-const MdEngine = require(path.join(officialExtPath, 'out', 'markdownEngine')).MarkdownEngine;
-
-const engine = new MdEngine();
+import { extractText, isMdEditor, mdDocSelector, MockMarkdownEngine, slugify, TocProvider } from './util';
 
 /**
  * Workspace config
@@ -231,7 +226,7 @@ async function buildToc() {
     let toc;
     let editor = vscode.window.activeTextEditor;
     if (isMdEditor(editor)) {
-        const tocProvider = new TocProvider(engine, editor.document);
+        const tocProvider = new TocProvider(new MockMarkdownEngine(), editor.document);
         toc = await tocProvider.getToc();
         if (toc !== undefined && toc.length > 0) {
             // Omit heading using comments

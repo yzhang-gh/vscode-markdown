@@ -1,5 +1,6 @@
 'use strict'
 
+import { MarkdownIt, Token } from 'markdown-it';
 import * as path from 'path';
 import { commands, extensions, TextEditor, Uri, version, window, workspace } from 'vscode';
 import localize from './localize';
@@ -94,4 +95,67 @@ export function showChangelog() {
 
 function previewChangelog() {
     commands.executeCommand('markdown.showPreview', Uri.file(path.join(__dirname, '../../CHANGELOG.md')));
+}
+
+export class MockMarkdownEngine {
+    private md?: MarkdownIt;
+    private currentDocument?: Uri;
+
+    FrontMatterRegex = /^---\s*[^]*?(-{3}|\.{3})\s*/;
+
+    private async getEngine(resource: Uri): Promise<MarkdownIt> {
+        if (!this.md) {
+            const hljs = await import('highlight.js');
+            const mdnh = await import('markdown-it-named-headers');
+            this.md = (await import('markdown-it'))({
+                html: true,
+                highlight: (str: string, lang: string) => {
+                    // Workaround for highlight not supporting tsx: https://github.com/isagalaev/highlight.js/issues/1155
+                    if (lang && ['tsx', 'typescriptreact'].indexOf(lang.toLocaleLowerCase()) >= 0) {
+                        lang = 'jsx';
+                    }
+                    if (lang && hljs.getLanguage(lang)) {
+                        try {
+                            return `<div>${hljs.highlight(lang, str, true).value}</div>`;
+                        } catch (error) { }
+                    }
+                    return `<code><div>${this.md!.utils.escapeHtml(str)}</div></code>`;
+                }
+            }).use(mdnh, {
+                slugify: (header: string) => slugify(header)
+            });
+        }
+
+        const config = workspace.getConfiguration('markdown', resource);
+        this.md.set({
+            breaks: config.get<boolean>('preview.breaks', false),
+            linkify: config.get<boolean>('preview.linkify', true)
+        });
+        return this.md;
+    }
+
+    public async parse(document: Uri, source: string): Promise<Token[]> {
+        const { text, offset } = this.stripFrontmatter(source);
+        this.currentDocument = document;
+        const engine = await this.getEngine(document);
+
+        return engine.parse(text, {}).map(token => {
+            if (token.map) {
+                token.map[0] += offset;
+                token.map[1] += offset;
+            }
+            return token;
+        });
+    }
+
+    private stripFrontmatter(text: string): { text: string, offset: number } {
+        let offset = 0;
+        const frontMatterMatch = this.FrontMatterRegex.exec(text);
+        if (frontMatterMatch) {
+            const frontMatter = frontMatterMatch[0];
+            offset = frontMatter.split(/\r\n|\n|\r/g).length - 1;
+            text = text.substr(frontMatter.length);
+        }
+        return { text, offset };
+    }
 }
