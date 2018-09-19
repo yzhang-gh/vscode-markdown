@@ -286,9 +286,6 @@
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/vscode/bin/test"
     },
-    "extensionDependencies": [
-        "vscode.markdown-language-features"
-    ],
     "dependencies": {
         "@neilsustc/markdown-it-katex": "^0.1.0",
         "highlight.js": "^9.12.0",
