@@ -16,9 +16,6 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onWillSaveTextDocument(onWillSave),
         vscode.languages.registerCodeLensProvider(mdDocSelector, new TocCodeLensProvider())
     );
-
-    const mdOutlineProvider = new MdOutlineProvider();
-    vscode.window.registerTreeDataProvider('mdOutline', mdOutlineProvider);
 }
 
 async function createToc() {
@@ -257,113 +254,5 @@ class TocCodeLensProvider implements vscode.CodeLensProvider {
                 return lenses;
             });
         });
-    }
-}
-
-class MdOutlineProvider implements vscode.TreeDataProvider<number> {
-
-    private _onDidChangeTreeData: vscode.EventEmitter<number | null> = new vscode.EventEmitter<number | null>();
-    readonly onDidChangeTreeData: vscode.Event<number | null> = this._onDidChangeTreeData.event;
-
-    private toc;
-    private editor: vscode.TextEditor;
-    private maxExpandedLvl = 6;
-
-    /**
-     * @param realIndex starts from 1
-     */
-    getTreeItem(realIndex: number): vscode.TreeItem | Thenable<vscode.TreeItem> {
-        return this.getTreeItemByIdx(realIndex - 1);
-    }
-
-    getChildren(realIndex?: number): number[] | Thenable<number[]> {
-        if (this.toc == null) {
-            return [];
-        } else if (realIndex == undefined) { // Get root nodes
-            let minHeadingLevel = Math.min.apply(null, this.toc.map(h => h.level));
-            return this.toc.filter(h => {
-                return h.level === minHeadingLevel;
-            }).map(h => {
-                return this.toc.indexOf(h) + 1;
-            });
-        } else if (realIndex < this.toc.length) {
-            let childLevel = this.toc[realIndex - 1].level + 1;
-            let children = [];
-            for (var i = realIndex; i < this.toc.length; i++) {
-                if (this.toc[i].level === childLevel) {
-                    children.push(i + 1);
-                } else if (this.toc[i].level < childLevel) {
-                    break;
-                }
-            }
-            return children;
-        } else {
-            return [];
-        }
-    }
-
-    constructor() {
-        vscode.window.onDidChangeActiveTextEditor(editor => {
-            if (isMdEditor(editor)) {
-                vscode.commands.executeCommand('setContext', 'mdContext', true);
-            } else {
-                vscode.commands.executeCommand('setContext', 'mdContext', false);
-            }
-            this.update();
-        });
-
-        vscode.workspace.onDidSaveTextDocument(doc => {
-            this.update();
-        });
-
-        // First time
-        if (isMdEditor(vscode.window.activeTextEditor)) {
-            vscode.commands.executeCommand('setContext', 'mdContext', true);
-        } else {
-            vscode.commands.executeCommand('setContext', 'mdContext', false);
-        }
-        this.update();
-    }
-
-    public async update() {
-        this.toc = buildToc();
-
-        if (this.toc !== null) {
-            // Better to have <= 10 expanded items in the outline view
-            let maxInitItems = 10;
-            this.maxExpandedLvl = 6;
-            for (let i = 1; i <= 6; i++) {
-                maxInitItems -= this.toc.filter(h => h.level === i).length;
-                if (maxInitItems < 0) {
-                    this.maxExpandedLvl = i - 1;
-                    break;
-                }
-            }
-        }
-
-        this._onDidChangeTreeData.fire();
-    }
-
-    /**
-     * @param idx Array index, starts from 0
-     */
-    private getTreeItemByIdx(idx: number): vscode.TreeItem {
-        let treeItem = new vscode.TreeItem(extractText(this.toc[idx].text));
-        if (idx === this.toc.length - 1) { // The last item
-            treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
-        } else if (this.toc[idx].level < this.toc[idx + 1].level) {
-            if (this.toc[idx].level < this.maxExpandedLvl) {
-                treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
-            } else {
-                treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
-            }
-        } // else -> vscode.TreeItemCollapsibleState.None
-
-        treeItem.command = {
-            command: 'revealLine',
-            title: '',
-            arguments: [{ lineNumber: this.toc[idx].line, at: 'top' }]
-        };
-        return treeItem;
     }
 }

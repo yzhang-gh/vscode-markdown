@@ -274,15 +274,6 @@
                 }
             }
         },
-        "views": {
-            "explorer": [
-                {
-                    "id": "mdOutline",
-                    "name": "Outline",
-                    "when": "config.markdown.extension.showExplorer == true && mdContext"
-                }
-            ]
-        },
         "markdown.markdownItPlugins": true,
         "markdown.previewStyles": [
             "./media/checkbox.css",
