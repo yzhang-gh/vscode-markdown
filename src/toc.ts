@@ -1,7 +1,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import { extractText, isMdEditor, mdDocSelector, SkinnyMarkdownEngine, slugify, TocProvider } from './util';
+import { extractText, isMdEditor, mdDocSelector, slugify } from './util';
 
 /**
  * Workspace config
@@ -57,7 +57,7 @@ async function generateTocText(): Promise<string> {
     const orderedListMarkerIsOne: boolean = vscode.workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
 
     let toc = [];
-    let tocEntries = await buildToc();
+    let tocEntries = buildToc();
     if (tocEntries === null || tocEntries === undefined || tocEntries.length < 1) return '';
 
     let startDepth = Math.max(tocConfig.startDepth, Math.min.apply(null, tocEntries.map(h => h.level)));
@@ -222,16 +222,19 @@ function getText(range: vscode.Range): string {
     return vscode.window.activeTextEditor.document.getText(range);
 }
 
-async function buildToc() {
+function buildToc() {
     let toc;
     let editor = vscode.window.activeTextEditor;
     if (isMdEditor(editor)) {
-        const tocProvider = new TocProvider(new SkinnyMarkdownEngine(), editor.document);
-        toc = await tocProvider.getToc();
-        if (toc !== undefined && toc.length > 0) {
-            // Omit heading using comments
-            toc = toc.filter(entry => !entry.text.toLowerCase().includes('<!-- omit in toc -->'));
-        }
+        toc = editor.document.getText().split(/\r?\n/g)
+            .filter(lineText => lineText.startsWith('#') && !lineText.toLowerCase().includes('<!-- omit in toc -->'))
+            .map(lineText => {
+                let entry = { "level": 0, "text": "" };
+                let matches = /^(#+) (.*)/.exec(lineText);
+                entry['level'] = matches[1].length;
+                entry['text'] = matches[2].replace(/#+$/, '').trim();
+                return entry;
+            });
     } else {
         toc = null;
     }
@@ -323,7 +326,7 @@ class MdOutlineProvider implements vscode.TreeDataProvider<number> {
     }
 
     public async update() {
-        this.toc = await buildToc();
+        this.toc = buildToc();
 
         if (this.toc !== null) {
             // Better to have <= 10 expanded items in the outline view
