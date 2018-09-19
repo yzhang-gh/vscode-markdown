@@ -226,7 +226,7 @@ function buildToc() {
         toc = editor.document.getText().split(/\r?\n/g)
             .filter(lineText => lineText.startsWith('#') && !lineText.toLowerCase().includes('<!-- omit in toc -->'))
             .map(lineText => {
-                let entry = { "level": 0, "text": "" };
+                let entry = {};
                 let matches = /^(#+) (.*)/.exec(lineText);
                 entry['level'] = matches[1].length;
                 entry['text'] = matches[2].replace(/#+$/, '').trim();

@@ -16,7 +16,6 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   - The indentation rules (tab or spaces) of TOC will be the same of your current file (find it in the right bottom corner)
   - To make TOC compatible with GitHub, you need to set option `githubCompatibility` to `true`
   - Use `<!-- omit in toc -->` to ignore specific heading in TOC
-- **Outline view** in explorer panel
 - **Automatically show preview** when opening a Markdown file (Disabled by default)
 - **Print Markdown to HTML**
   - It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others

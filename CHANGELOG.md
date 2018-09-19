@@ -1,6 +1,7 @@
-### 1.6.1 (2018.09.10)
+### 1.6.1 (2018.09.10), 1.6.2 (2018.09.19)
 
-- **Other**: Fix for VSCode v1.28.0-insider
+- **Fix**: for VSCode v1.28.0-insider (and again)
+- **Other**: Remove outline view feature
 
 ### 1.6.0 (2018.07.22)
 
