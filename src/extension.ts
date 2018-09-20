@@ -47,7 +47,7 @@ function activateMdExt(context: ExtensionContext) {
 
     // Allow `*` in word pattern for quick styling
     languages.setLanguageConfiguration('markdown', {
-        wordPattern: /(-?\d*\.\d\w*)|([^\`\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s\，\。\《\》\？\；\：\‘\“\’\”\（\）\【\】\、]+)/g
+        wordPattern: /(-?\d*\.\d\w*)|([^\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s\，\。\《\》\？\；\：\‘\“\’\”\（\）\【\】\、]+)/g
     });
 
     newVersionMessage(context.extensionPath);
