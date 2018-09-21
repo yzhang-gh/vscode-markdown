@@ -73,18 +73,23 @@ async function print(type: string) {
 
     let body = await render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
 
-    if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("absoluteImgPath")) {
-        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (match, p1, p2, p3) { // Match '<img...src="..."...>'
+    const config = vscode.workspace.getConfiguration('markdown.extension');
+
+    if (config.get<boolean>("print.imgToBase64")) {
+        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (_, p1, p2, p3) { // Match '<img...src="..."...>'
             const imgUri = fixHref(doc.uri, p2);
-            if (vscode.workspace.getConfiguration("markdown.extension.print", doc.uri).get<boolean>("imgToBase64")) {
-                try {
-                    const imgExt = path.extname(imgUri.fsPath).slice(1);
-                    const file = fs.readFileSync(imgUri.fsPath).toString('base64');
-                    return `${p1}data:image/${imgExt};base64,${file}${p3}`;
-                } catch (e) {
-                    vscode.window.showWarningMessage(localize("unableToReadFile") + ` ${imgUri.fsPath}, ` + localize("revertingToImagePaths"));
-                }
+            try {
+                const imgExt = path.extname(imgUri.fsPath).slice(1);
+                const file = fs.readFileSync(imgUri.fsPath).toString('base64');
+                return `${p1}data:image/${imgExt};base64,${file}${p3}`;
+            } catch (e) {
+                vscode.window.showWarningMessage(localize("unableToReadFile") + ` ${imgUri.fsPath}, ` + localize("revertingToImagePaths"));
             }
+            return `${p1}${imgUri.toString()}${p3}`;
+        });
+    } else if (config.get<boolean>('print.absoluteImgPath')) {
+        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (_, p1, p2, p3) { // Match '<img...src="..."...>'
+            const imgUri = fixHref(doc.uri, p2);
             return `${p1}${imgUri.toString()}${p3}`;
         });
     }
@@ -181,13 +186,7 @@ function fixHref(resource: vscode.Uri, href: string): vscode.Uri {
 
     // Use href as file URI if it is absolute
     if (path.isAbsolute(href) || hrefUri.scheme === 'file') {
-        return vscode.Uri.file(href);
-    }
-
-    // Use a workspace relative path if there is a workspace
-    let root = vscode.workspace.getWorkspaceFolder(resource);
-    if (root) {
-        return vscode.Uri.file(path.join(root.uri.fsPath, href));
+        return hrefUri;
     }
 
     // Otherwise look relative to the markdown file
