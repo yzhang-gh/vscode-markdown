@@ -71,8 +71,17 @@ async function print(type: string) {
         outPath += `.${type}`;
     }
 
+    let title = doc.getText().split(/\r?\n/g).find(lineText => lineText.startsWith('#'));
+    if (title) {
+        title = title.replace(/^#+/, '').replace(/#+$/, '').trim();
+    }
+
+    let styleSheets = ['markdown.css', 'tomorrow.css', 'checkbox.css'].map(s => getMediaPath(s))
+        .concat(getCustomStyleSheets(doc.uri));
+
     let body = await render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
 
+    // Image paths
     const config = vscode.workspace.getConfiguration('markdown.extension');
 
     if (config.get<boolean>("print.imgToBase64")) {
@@ -94,13 +103,11 @@ async function print(type: string) {
         });
     }
 
-    let styleSheets = ['markdown.css', 'tomorrow.css', 'checkbox.css'].map(s => getMediaPath(s))
-        .concat(getCustomStyleSheets(doc.uri));
-
     let html = `<!DOCTYPE html>
     <html>
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <title>${title ? title : ''}</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-alpha/dist/katex.min.css" integrity="sha384-BTL0nVi8DnMrNdMQZG1Ww6yasK9ZGnUxL1ZWukXQ7fygA1py52yPp9W4wrR00VML" crossorigin="anonymous">
         ${styleSheets.map(css => wrapWithStyleTag(css)).join('\n')}
         ${getSettingsOverrideStyles()}
