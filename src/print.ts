@@ -82,7 +82,7 @@ async function print(type: string) {
     let body = await render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
 
     // Image paths
-    const config = vscode.workspace.getConfiguration('markdown.extension');
+    const config = vscode.workspace.getConfiguration('markdown.extension', doc.uri);
 
     if (config.get<boolean>("print.imgToBase64")) {
         body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (_, p1, p2, p3) { // Match '<img...src="..."...>'
