@@ -30,19 +30,8 @@ export function getNewFeatureMsg(version: string) {
 }
 
 export function showChangelog() {
-    // let mdExt = extensions.getExtension('vscode.markdown');
-    // if (mdExt.isActive) {
-    //     previewChangelog();
-    // } else {
-    //     mdExt.activate().then(previewChangelog);
-    // }
-
     commands.executeCommand('vscode.open', Uri.parse('https://github.com/neilsustc/vscode-markdown/blob/master/CHANGELOG.md'));
 }
-
-// function previewChangelog() {
-//     commands.executeCommand('markdown.showPreview', Uri.file(path.join(__dirname, '../../CHANGELOG.md')));
-// }
 
 /* ┌─────────────────┐
    │ Text Extraction │
