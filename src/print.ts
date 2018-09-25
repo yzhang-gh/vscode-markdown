@@ -22,13 +22,16 @@ async function initMdIt() {
     md = (await import('markdown-it'))({
         html: true,
         highlight: (str: string, lang: string) => {
+            // Workaround for highlight not supporting tsx: https://github.com/isagalaev/highlight.js/issues/1155
+            if (lang && ['tsx', 'typescriptreact'].indexOf(lang.toLocaleLowerCase()) >= 0) {
+                lang = 'jsx';
+            }
             if (lang && hljs.getLanguage(lang)) {
                 try {
-                    return `<pre class="hljs"><code><div>${hljs.highlight(lang, str, true).value}</div></code></pre>`;
+                    return `<div>${hljs.highlight(lang, str, true).value}</div>`;
                 } catch (error) { }
             }
-            // return `<pre class="hljs"><code><div>${this.engine.utils.escapeHtml(str)}</div></code></pre>`;
-            return str;
+            return `<div>${md.utils.escapeHtml(str)}</div>`;
         }
     }).use(mdnh, {
         slugify: (header: string) => slugify(header)
@@ -80,6 +83,7 @@ async function print(type: string) {
         .concat(getCustomStyleSheets(doc.uri));
 
     let body = await render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
+    console.log('body', body);
 
     // Image paths
     const config = vscode.workspace.getConfiguration('markdown.extension', doc.uri);
