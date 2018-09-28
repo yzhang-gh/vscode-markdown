@@ -1,0 +1,33 @@
+{
+	"fileTypes": [],
+	"injectionSelector": "L:(text.html.markdown - meta - comment.block - markup.raw)",
+	"patterns": [
+		{
+			"include": "#math-display"
+		}
+	],
+	"repository": {
+		"math-display": {
+			"name": "markup.inserted.math.display.markdown",
+			"begin": "(^|\\G)([ ]{0,3})((?<![^\\\\]\\\\)\\$\\$(?!\\$))",
+			"end": "(?<![^\\\\]\\\\)(?<![^\\\\]\\$)(\\$\\$)([\\s]*)$",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.math.display.markdown"
+				}
+			},
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.math.display.markdown"
+				}
+			},
+			"contentName": "meta.embedded.block.katex",
+			"patterns": [
+				{
+					"include": "text.katex"
+				}
+			]
+		}
+	},
+	"scopeName": "markdown.math_display"
+}

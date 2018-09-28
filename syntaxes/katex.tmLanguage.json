@@ -1,0 +1,85 @@
+{
+    "fileTypes": [],
+    "patterns": [
+        {
+            "include": "#environment"
+        },
+        {
+            "include": "#function"
+        },
+        {
+            "include": "#align"
+        },
+        {
+            "include": "#character"
+        },
+        {
+            "include": "#comment"
+        },
+        {
+            "include": "#macros"
+        }
+    ],
+    "repository": {
+        "align": {
+            "name": "keyword.control.table.cell.katex",
+            "match": "((?<!\\\\)&|\\\\\\\\)"
+        },
+        "function": {
+            "name": "meta.function",
+            "match": "(\\\\)(?!begin|end)(tag\\*|[a-zA-Z@]+|[!,:;#$%_&{}|^*])",
+            "captures": {
+                "1": {
+                    "name": "punctuation.definition.function.katex"
+                },
+                "2": {
+                    "name": "support.function.katex"
+                }
+            }
+        },
+        "environment": {
+            "match": "(\\\\)(begin|end)(\\{)([^\\}]*)(\\})(?:(\\{)([^\\}]*)(\\}))?",
+            "captures": {
+                "1": {
+                    "name":"punctuation.definition.function.latex"
+                },
+                "2": {
+                    "name": "keyword.control.katex"
+                },
+                "3": {
+                    "name": "punctuation.definition.parameters.begin.katex"
+                },
+                "4": {
+                    "name": "variable.parameter.function.katex"
+                },
+                "5": {
+                    "name": "punctuation.definition.parameters.end.katex"
+                },
+                "6": {
+                    "name": "punctuation.definition.parameters.begin.katex"
+                },
+                "7": {
+                    "name": "variable.parameter.function.katex"
+                },
+                "8": {
+                    "name": "punctuation.definition.parameters.end.katex"
+                }
+            }
+        },
+        "comment": {
+            "name": "comment.line.percentage.katex",
+            "begin": "(%)[^\\$]*",
+            "end": "(?=(?<!\\$\\$)$|\\$\\$\\s*$)",
+            "captures": {
+                "1": {
+                    "name": "punctuation.definition.comment.katex"
+                }
+            }
+        },
+        "macros": {
+            "name": "variable.parameter.katex",
+            "match": "#\\d"
+        }
+    },
+    "scopeName": "text.katex"
+}

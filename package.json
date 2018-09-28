@@ -278,6 +278,26 @@
         "markdown.previewStyles": [
             "./media/checkbox.css",
             "./media/katex-0.10.0-alpha.min.css"
+        ],
+        "grammars": [
+            {
+                "scopeName": "markdown.math_display",
+                "path": "./syntaxes/math_display.markdown.tmLanguage.json",
+                "injectTo": [
+                    "text.html.markdown"
+                ]
+            },
+            {
+                "scopeName": "markdown.math_inline",
+                "path": "./syntaxes/math_inline.markdown.tmLanguage.json",
+                "injectTo": [
+                    "text.html.markdown"
+                ]
+            },
+            {
+                "scopeName": "text.katex",
+                "path": "./syntaxes/katex.tmLanguage.json"
+            }
         ]
     },
     "scripts": {
