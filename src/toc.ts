@@ -223,8 +223,10 @@ function buildToc() {
     let toc;
     let editor = vscode.window.activeTextEditor;
     if (isMdEditor(editor)) {
-        toc = editor.document.getText().split(/\r?\n/g)
-            .filter(lineText => lineText.startsWith('#') && !lineText.toLowerCase().includes('<!-- omit in toc -->'))
+        toc = editor.document.getText()
+            .replace(/(^|\r?\n)```[\W\w]+?(```|$)/g, '') // Remove code blocks
+            .split(/\r?\n/g)
+            .filter(lineText => lineText.startsWith('#') && lineText.includes('# ') && !lineText.toLowerCase().includes('<!-- omit in toc -->'))
             .map(lineText => {
                 let entry = {};
                 let matches = /^(#+) (.*)/.exec(lineText);
