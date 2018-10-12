@@ -277,7 +277,7 @@
         "markdown.markdownItPlugins": true,
         "markdown.previewStyles": [
             "./media/checkbox.css",
-            "./media/katex-0.10.0-alpha.min.css"
+            "./media/katex-0.10.0-rc.1.min.css"
         ],
         "grammars": [
             {
@@ -308,7 +308,7 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "dependencies": {
-        "@neilsustc/markdown-it-katex": "^0.1.0",
+        "@neilsustc/markdown-it-katex": "^0.2.0",
         "highlight.js": "^9.12.0",
         "image-size": "^0.6.3",
         "markdown-it-named-headers": "^0.0.4",
