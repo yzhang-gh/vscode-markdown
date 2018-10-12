@@ -68,13 +68,11 @@ async function generateTocText(): Promise<string> {
             let entryText = extractText(entry.text);
             let anchorText = entryText;
 
-            if (vscode.workspace.getConfiguration('markdown.extension.toc').get<boolean>('githubCompatibility')) {
-                if (anchorOccurances.hasOwnProperty(anchorText)) {
-                    anchorOccurances[anchorText] += 1;
-                    anchorText += ' ' + String(anchorOccurances[anchorText]);
-                } else {
-                    anchorOccurances[anchorText] = 0;
-                }
+            if (anchorOccurances.hasOwnProperty(anchorText)) {
+                anchorOccurances[anchorText] += 1;
+                anchorText += ' ' + String(anchorOccurances[anchorText]);
+            } else {
+                anchorOccurances[anchorText] = 0;
             }
 
             let row = [

@@ -9,13 +9,13 @@ import localize from './localize';
 import { isMdEditor, slugify } from './util';
 
 let md;
+let slugCounts = {};
 
 async function initMdIt() {
     // takes ~0.5s
 
     // Cannot reuse these modules since vscode packs them using webpack
     const hljs = await import('highlight.js');
-    const mdnh = await import('markdown-it-named-headers');
     const mdtl = await import('markdown-it-task-lists');
     const mdkt = await import('@neilsustc/markdown-it-katex');
 
@@ -33,9 +33,36 @@ async function initMdIt() {
             }
             return `<div>${md.utils.escapeHtml(str)}</div>`;
         }
-    }).use(mdnh, {
-        slugify: (header: string) => slugify(header)
     }).use(mdtl).use(mdkt);
+
+    addNamedHeaders(md);
+}
+
+// Adapted from <https://github.com/leff/markdown-it-named-headers/blob/master/index.js>
+// and <https://github.com/Microsoft/vscode/blob/cadd6586c6656e0c7df3b15ad01c5c4030da5d46/extensions/markdown-language-features/src/markdownEngine.ts#L225>
+function addNamedHeaders(md: any): void {
+    const originalHeadingOpen = md.renderer.rules.heading_open;
+
+    md.renderer.rules.heading_open = function (tokens, idx, options, env, self) {
+        const title = tokens[idx + 1].children.reduce((acc: string, t: any) => acc + t.content, '');
+        let slug = slugify(title);
+
+        if (slugCounts.hasOwnProperty(slug)) {
+            slugCounts[slug] += 1;
+            slug += '-' + slugCounts[slug];
+        } else {
+            slugCounts[slug] = 0;
+        }
+
+        tokens[idx].attrs = tokens[idx].attrs || [];
+        tokens[idx].attrs.push(['id', slug]);
+
+        if (originalHeadingOpen) {
+            return originalHeadingOpen(tokens, idx, options, env, self);
+        } else {
+            return self.renderToken(tokens, idx, options, env, self);
+        }
+    };
 }
 
 let thisContext: vscode.ExtensionContext;
@@ -83,7 +110,6 @@ async function print(type: string) {
         .concat(getCustomStyleSheets(doc.uri));
 
     let body = await render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
-    console.log('body', body);
 
     // Image paths
     const config = vscode.workspace.getConfiguration('markdown.extension', doc.uri);
@@ -141,6 +167,9 @@ async function render(text: string, config: vscode.WorkspaceConfiguration) {
         breaks: config.get<boolean>('breaks', false),
         linkify: config.get<boolean>('linkify', true)
     });
+
+    slugCounts = {};
+
     return md.render(text);
 }
 

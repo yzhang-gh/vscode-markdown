@@ -311,7 +311,6 @@
         "@neilsustc/markdown-it-katex": "^0.2.0",
         "highlight.js": "^9.12.0",
         "image-size": "^0.6.3",
-        "markdown-it-named-headers": "^0.0.4",
         "markdown-it-task-lists": "^2.1.1",
         "markdown-it": "^8.4.2"
     },
