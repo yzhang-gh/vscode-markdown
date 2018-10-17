@@ -105,7 +105,7 @@ async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> |
                 continue;
             }
         } else {
-            if (!firstLine.includes('](')) {
+            if (!firstLine.includes('](#')) {
                 continue;
             }
         }
