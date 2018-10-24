@@ -2,7 +2,7 @@
 
 // https://github.github.com/gfm/#tables-extension-
 
-import { CancellationToken, DocumentFormattingEditProvider, ExtensionContext, FormattingOptions, languages, Range, TextDocument, TextEdit, workspace } from 'vscode';
+import { CancellationToken, DocumentFormattingEditProvider, ExtensionContext, FormattingOptions, languages, Range, TextDocument, TextEdit, workspace, EndOfLine } from 'vscode';
 import { mdDocSelector } from './util';
 
 export function activate(context: ExtensionContext) {
@@ -122,6 +122,6 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 return (cell + ' '.repeat(cellLength)).slice(0, cellLength);
             });
             return indentation + '| ' + cells.join(' | ') + ' |';
-        }).join(workspace.getConfiguration('files', doc.uri).get('eol'));
+        }).join(doc.eol === EndOfLine.LF ? '\n' : '\r\n');
     }
 }
