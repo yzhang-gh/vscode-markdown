@@ -1,7 +1,15 @@
+### 1.6.3 (2018.10.24)
+
+- **Fix**: Table formatter
+
+---
+
 ### 1.6.1 (2018.09.10), 1.6.2 (2018.09.19)
 
 - **Fix**: for VSCode v1.28.0-insider (and again)
 - **Other**: Remove outline view feature
+
+---
 
 ### 1.6.0 (2018.07.22)
 
@@ -14,6 +22,8 @@
 ### 1.5.1 (2018.06.29)
 
 - **Fix**: Handle activation error for vscode earlier than v1.24.0.
+
+---
 
 ### 1.5.0 (2018.06.24)
 
@@ -37,11 +47,11 @@
 - **Other**: Remove `quickStylingMode` option. (It's default behavior now)
 - **Other**: Provide latest CI build ([here](https://ci.appveyor.com/project/neilsustc/vscode-markdown/build/artifacts)).
 
-### Auto Completions
+#### Auto Completions
 
 ![image completion](images/image-completion.png) ![math completion](images/math-completion.png)
 
-### Magic Comment
+#### Magic Comment
 
 ![toc omit](images/omit-in-toc.png)
 
