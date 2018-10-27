@@ -1,3 +1,15 @@
+### 1.7.0 (2018.10.??)
+
+- **New**: Math syntax highlight ([#254](https://github.com/neilsustc/vscode-markdown/issues/254)). Many thanks, [@linsui](https://github.com/linsui).
+- **Fix**: `imgToBase64` option doesn't apply to relative image paths ([#266](https://github.com/neilsustc/vscode-markdown/issues/266)).
+- **Fix**: TOC generation error `Cannot read property '1' of null` ([#275](https://github.com/neilsustc/vscode-markdown/issues/275)).
+- **Fix**: Escape HTML markup in code blocks ([#285](https://github.com/neilsustc/vscode-markdown/issues/285)).
+- **Fix**: Fix false positive TOC detection ([#304](https://github.com/neilsustc/vscode-markdown/issues/304)).
+- **Other**: Generate HTML with `title` field ([#280](https://github.com/neilsustc/vscode-markdown/issues/280)).
+- **Other**: Upgrade `KaTeX` to `v0.10.0-rc.1`
+
+---
+
 ### 1.6.3 (2018.10.24)
 
 - **Fix**: Table formatter
@@ -46,14 +58,6 @@
 - **Fix**: Problem of losing track of TOC after editing the first heading ([#48](https://github.com/neilsustc/vscode-markdown/issues/48)).
 - **Other**: Remove `quickStylingMode` option. (It's default behavior now)
 - **Other**: Provide latest CI build ([here](https://ci.appveyor.com/project/neilsustc/vscode-markdown/build/artifacts)).
-
-#### Auto Completions
-
-![image completion](images/image-completion.png) ![math completion](images/math-completion.png)
-
-#### Magic Comment
-
-![toc omit](images/omit-in-toc.png)
 
 ---
 

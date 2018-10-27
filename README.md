@@ -10,63 +10,75 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 ## Features
 
 - **Keyboard shortcuts** (toggle bold, italic, code span, strikethrough and heading)
-  - Tip: `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
-  - If there is no text selected, *the word under cursor* will be styled (or *the entire list item* if you are toggling strikethrough)
-- **Table of contents** (No additional annoying tags like `<!-- TOC -->`)
+  
+  ![toggle bold](images/gifs/keybinding.gif) (toggle bold)
+  
+  ![toggle bold 2](images/gifs/keybinding2.gif) (even when there is no word selected)
+  
+  ![check task list](images/gifs/keybinding-tasklist.gif) (check/uncheck task list)
+  
+  See full key binding list in [keyboard shortcuts](#keyboard-shortcuts) section
+
+- **Table of contents**
+
+  ![toc](images/toc.png)
+
   - The indentation rules (tab or spaces) of TOC will be the same of your current file (find it in the right bottom corner)
+  
   - To make TOC compatible with GitHub, you need to set option `githubCompatibility` to `true`
+  
   - Use `<!-- omit in toc -->` to ignore specific heading in TOC
-- **Automatically show preview** when opening a Markdown file (Disabled by default)
+
+- **List editing**
+  
+  ![on enter key 1](images/gifs/on-enter-key1.gif) (<kbd>Enter</kbd>)
+
+  ![on enter key 2](images/gifs/on-enter-key2.gif) (<kbd>Enter</kbd>)
+
+  ![on tab key](images/gifs/on-tab-key.gif) (<kbd>Tab</kbd>)
+
+  ![on backspace key](images/gifs/on-backspace-key.gif) (<kbd>Backspace</kbd>)
+
+  ![marker fixing](images/gifs/marker-fixing.gif) (auto fix ordered list markers)
+
 - **Print Markdown to HTML**
+  
+  - Command `Markdown: Print current document to HTML`
+  
   - It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others
-- **List editing** (continue list when pressing <kbd>Enter</kbd> at the end of a list item) (also works for quote block)
-  - Pressing <kbd>Tab</kbd> at the beginning of a list item will indent it
-  - Pressing <kbd>Backspace</kbd> at the beginning of a list item will unindent it (or delete the list marker)
-  - Blank list item will be remove on <kbd>Enter</kbd>
-  - Ordered list markers will be automatically fixed after you indent/outdent a line or move a line up/down
+
 - **GitHub Flavored Markdown**
-  - Table formatter (<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd>)
-  - Task list (use <kbd>Alt</kbd> + <kbd>C</kbd> to check/uncheck a list item)
-- **Math rendering** (see screenshot below)
+  
+  - Table formatter
+  
+    ![table-formatter](images/gifs/table-formatter.gif)
+
+  - Task list
+
+- **Math**
+  
+  ![math](images/math.png)
+
 - **Auto completions**
-  - Images paths (and previews)
-  - Math commands
+
+  ![image paths](images/image-completions.png) (images paths)
+
+  ![math completions](images/math-completions.png) (math commands)
+
 - **Others**
+  
   - Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
 
-### Keyboard Shortcuts
+## Available Commands
 
-<!-- ![shortcuts1](images/gifs/bold-normal.gif) -->
+- Markdown: Create Table of Contents
+- Markdown: Update Table of Contents
+- Markdown: Toggle code span
+- Markdown: Print current document to HTML
+- Markdown: Toggle math environment
+- Markdown: Toggle unordered list
 
-![shortcuts2](images/gifs/bold-quick.gif)
-
-![shortcuts3](images/gifs/heading.gif)
-
-### Table of Contents
-
-![toc](images/gifs/toc.gif)
-
-### List Editing
-
-![list editing](images/gifs/list-editing.gif)
-
-### Table Formatter
-
-![table formatter](images/gifs/table-formatter.gif)
-
-### Outline
-
-![outline](images/outline.png)
-
-### Task Lists
-
-![task lists](images/gifs/tasklists.gif)
-
-### Math Rendering
-
-![math rendering](images/math.png)
-
-## Shortcuts
+## Keyboard Shortcuts
 
 | Key                                               | Command                      |
 | ------------------------------------------------- | ---------------------------- |
@@ -78,12 +90,8 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | <kbd>Ctrl</kbd> + <kbd>M</kbd>                    | Toggle math environment      |
 | <kbd>Alt</kbd> + <kbd>C</kbd>                     | Check/Uncheck task list item |
 
-## Available Commands
 
-- Markdown: Create Table of Contents
-- Markdown: Update Table of Contents
-- Markdown: Toggle code span
-- Markdown: Print current document to HTML
+Tip: `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
 
 ## Supported Settings
 
