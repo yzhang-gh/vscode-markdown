@@ -221,17 +221,30 @@ function buildToc() {
     let toc;
     let editor = vscode.window.activeTextEditor;
     if (isMdEditor(editor)) {
-        toc = editor.document.getText()
+        let lines = editor.document.getText()
             .replace(/(^|\r?\n)```[\W\w]+?(```|$)/g, '') // Remove code blocks
-            .split(/\r?\n/g)
-            .filter(lineText => lineText.startsWith('#') && lineText.includes('# ') && !lineText.toLowerCase().includes('<!-- omit in toc -->'))
-            .map(lineText => {
-                let entry = {};
-                let matches = /^(#+) (.*)/.exec(lineText);
-                entry['level'] = matches[1].length;
-                entry['text'] = matches[2].replace(/#+$/, '').trim();
-                return entry;
-            });
+            .split(/\r?\n/g);
+        // Transform setext headings to ATX headings
+        lines.forEach((lineText, i, arr) => {
+            if (
+                i < arr.length - 1
+                && lineText.match(/^ {0,3}\S.*$/)
+                && arr[i + 1].match(/^ {0,3}(=+|-{2,}) *$/)
+            ) {
+                arr[i] = (arr[i + 1].includes('=') ? '# ' : '## ') + lineText;
+            }
+        });
+        toc = lines.filter(lineText => {
+            return lineText.startsWith('#')
+                && lineText.includes('# ')
+                && !lineText.toLowerCase().includes('<!-- omit in toc -->')
+        }).map(lineText => {
+            let entry = {};
+            let matches = /^(#+) (.*)/.exec(lineText);
+            entry['level'] = matches[1].length;
+            entry['text'] = matches[2].replace(/#+$/, '').trim();
+            return entry;
+        });
     } else {
         toc = null;
     }

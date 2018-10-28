@@ -218,32 +218,30 @@ suite("TOC.", () => {
             new Selection(2, 18, 2, 18)).then(done, done);
     });
 
-    // // Not implemented
-    
-    // test("Setext heading syntax", done => {
-    //     testCommand('markdown.extension.toc.create', {},
-    //         [
-    //             'Section 1',
-    //             '===',
-    //             '',
-    //             'Section 1.1',
-    //             '---',
-    //             '',
-    //             ''
-    //         ],
-    //         new Selection(6, 0, 6, 0),
-    //         [
-    //             'Section 1',
-    //             '===',
-    //             '',
-    //             'Section 1.1',
-    //             '---',
-    //             '',
-    //             '- [Section 1](#section-1)',
-    //             '    - [Section 1.1](#section-11)'
-    //         ],
-    //         new Selection(7, 32, 7, 32)).then(done, done);
-    // });
+    test("Setext headings", done => {
+        testCommand('markdown.extension.toc.create', {},
+            [
+                'Section 1',
+                '===',
+                '',
+                'Section 1.1',
+                '---',
+                '',
+                ''
+            ],
+            new Selection(6, 0, 6, 0),
+            [
+                'Section 1',
+                '===',
+                '',
+                'Section 1.1',
+                '---',
+                '',
+                '- [Section 1](#section-1)',
+                '    - [Section 1.1](#section-11)'
+            ],
+            new Selection(7, 32, 7, 32)).then(done, done);
+    });
 
     test("Non-Latin symbols", done => {
         testCommand('markdown.extension.toc.create',
