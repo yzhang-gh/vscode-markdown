@@ -1,4 +1,4 @@
-### 1.7.0 (2018.10.??)
+### 1.7.0 (2018.10.27)
 
 - **New**: Math syntax highlight ([#254](https://github.com/neilsustc/vscode-markdown/issues/254)). Many thanks, [@linsui](https://github.com/linsui).
 - **Fix**: `imgToBase64` option doesn't apply to relative image paths ([#266](https://github.com/neilsustc/vscode-markdown/issues/266)).
