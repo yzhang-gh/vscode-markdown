@@ -207,6 +207,11 @@
                     "default": false,
                     "description": "%config.toc.githubCompatibility.description%"
                 },
+                "markdown.extension.toc.tabSize": {
+                    "type": ["number", "string"],
+                    "default": "auto",
+                    "description": "%config.toc.tabSize.description%"
+                },
                 "markdown.extension.preview.autoShowPreviewToSide": {
                     "type": "boolean",
                     "default": false,

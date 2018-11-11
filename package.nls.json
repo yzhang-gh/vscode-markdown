@@ -14,6 +14,7 @@
     "config.toc.plaintext.description": "Just plain text",
     "config.toc.updateOnSave.description": "Auto update on save",
     "config.toc.githubCompatibility.description": "GitHub Compatibility",
+    "config.toc.tabSize.description": "Number of spaces for toc indentation. With 'auto', it is set to 2 for unordered list toc (MD007 convention) and 3 for unordered list toc (no convention)",
     "config.preview.autoShowPreviewToSide.description": "Auto show preview to side",
     "config.orderedList.marker.description": "`one`: always use `1.` as ordered list marker; `ordered`",
     "config.orderedList.autoRenumber.description": "Auto fix ordered list markers",

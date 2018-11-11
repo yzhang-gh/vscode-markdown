@@ -6,8 +6,8 @@ import { extractText, isMdEditor, mdDocSelector, slugify } from './util';
 /**
  * Workspace config
  */
-let docConfig = { tab: '    ', eol: '\r\n' };
-let tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false };
+let docConfig = { tab: '  ', eol: '\r\n' };
+let tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false, tabSize: 2 };
 
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
@@ -204,11 +204,13 @@ function loadTocConfig() {
     // Load workspace config
     let activeEditor = vscode.window.activeTextEditor;
     docConfig.eol = activeEditor.document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
-    let tabSize = Number(activeEditor.options.tabSize);
+    let tabSize = tocSectionCfg.get<number | 'auto'>('tabSize');
     let insertSpaces = activeEditor.options.insertSpaces;
 
-    docConfig.tab = '\t';
-    if (insertSpaces && tabSize > 0) {
+    
+    if (tabSize === "auto") {
+        docConfig.tab = insertSpaces ? " ".repeat(tocConfig.orderedList ? 3 : 2) : '\t';
+    } else {
         docConfig.tab = " ".repeat(tabSize);
     }
 }
