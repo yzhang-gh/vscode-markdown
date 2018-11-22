@@ -106,9 +106,6 @@ async function print(type: string) {
         title = title.replace(/^#+/, '').replace(/#+$/, '').trim();
     }
 
-    let styleSheets = ['markdown.css', 'tomorrow.css', 'checkbox.css'].map(s => getMediaPath(s))
-        .concat(getCustomStyleSheets(doc.uri));
-
     let body = await render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
 
     // Image paths
@@ -138,9 +135,7 @@ async function print(type: string) {
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
         <title>${title ? title : ''}</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.css" integrity="sha384-D+9gmBxUQogRLqvARvNLmA9hS2x//eK1FhVb9PiU86gmcrBrJAQT8okdJ4LMp2uv" crossorigin="anonymous">
-        ${styleSheets.map(css => wrapWithStyleTag(css)).join('\n')}
-        ${getSettingsOverrideStyles()}
+        ${getStyles(doc.uri)}
     </head>
     <body>
         ${body}
@@ -199,6 +194,17 @@ function readCss(fileName: string) {
     }
 }
 
+function getStyles(uri: vscode.Uri) {
+    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.css" integrity="sha384-D+9gmBxUQogRLqvARvNLmA9hS2x//eK1FhVb9PiU86gmcrBrJAQT8okdJ4LMp2uv" crossorigin="anonymous">';
+
+    const cssPaths = ['markdown.css', 'highlight.css', 'checkbox.css'].map(s => getMediaPath(s))
+        .concat(getCustomStyleSheets(uri));
+
+    return `${katexCss}
+        ${getPreviewSettingStyles()}
+        ${cssPaths.map(css => wrapWithStyleTag(css)).join('\n')}`;
+}
+
 function getCustomStyleSheets(resource: vscode.Uri): string[] {
     const styles = vscode.workspace.getConfiguration('markdown')['styles'];
     if (styles && Array.isArray(styles) && styles.length > 0) {
@@ -233,7 +239,7 @@ function fixHref(resource: vscode.Uri, href: string): vscode.Uri {
     return vscode.Uri.file(path.join(path.dirname(resource.fsPath), href));
 }
 
-function getSettingsOverrideStyles(): string {
+function getPreviewSettingStyles(): string {
     const previewSettings = vscode.workspace.getConfiguration('markdown')['preview'];
     if (!previewSettings) {
         return '';
