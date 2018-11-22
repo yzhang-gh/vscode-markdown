@@ -197,12 +197,13 @@ function readCss(fileName: string) {
 function getStyles(uri: vscode.Uri) {
     const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.css" integrity="sha384-D+9gmBxUQogRLqvARvNLmA9hS2x//eK1FhVb9PiU86gmcrBrJAQT8okdJ4LMp2uv" crossorigin="anonymous">';
 
-    const cssPaths = ['markdown.css', 'highlight.css', 'checkbox.css'].map(s => getMediaPath(s))
-        .concat(getCustomStyleSheets(uri));
+    const baseCssPaths = ['markdown.css', 'highlight.css', 'checkbox.css'].map(s => getMediaPath(s));
+    const customCssPaths = getCustomStyleSheets(uri);
 
     return `${katexCss}
+        ${baseCssPaths.map(css => wrapWithStyleTag(css)).join('\n')}
         ${getPreviewSettingStyles()}
-        ${cssPaths.map(css => wrapWithStyleTag(css)).join('\n')}`;
+        ${customCssPaths.map(css => wrapWithStyleTag(css)).join('\n')}`;
 }
 
 function getCustomStyleSheets(resource: vscode.Uri): string[] {
