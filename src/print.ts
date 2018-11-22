@@ -75,14 +75,14 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() { }
 
 async function print(type: string) {
-    let editor = vscode.window.activeTextEditor;
+    const editor = vscode.window.activeTextEditor;
 
     if (!isMdEditor(editor)) {
         vscode.window.showErrorMessage(localize("noValidMarkdownFile"));
         return;
     }
 
-    let doc = editor.document;
+    const doc = editor.document;
     if (doc.isDirty || doc.isUntitled) {
         doc.save();
     }
@@ -130,7 +130,7 @@ async function print(type: string) {
         });
     }
 
-    let html = `<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
     <html>
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
@@ -173,7 +173,7 @@ function getMediaPath(mediaFile: string): string {
 }
 
 function wrapWithStyleTag(src: string) {
-    let uri = vscode.Uri.parse(src);
+    const uri = vscode.Uri.parse(src);
     if (uri.scheme.includes('http')) {
         return `<link rel="stylesheet" href="${src}">`;
     } else {
@@ -209,7 +209,7 @@ function getCustomStyleSheets(resource: vscode.Uri): string[] {
     const styles = vscode.workspace.getConfiguration('markdown')['styles'];
     if (styles && Array.isArray(styles) && styles.length > 0) {
         return styles.map(s => {
-            let uri = fixHref(resource, s);
+            const uri = fixHref(resource, s);
             if (uri.scheme === 'file') {
                 return uri.fsPath;
             }
