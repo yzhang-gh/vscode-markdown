@@ -86,19 +86,19 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             let dir = matches[1].replace(/\\/g, '/');
 
             return workspace.findFiles((dir.length == 0 ? '' : dir + '/') + '**/*.{png,jpg,jpeg,svg,gif}', '**/node_modules/**').then(uris =>
-                uris.map(uri => {
-                    let relPath = path.relative(path.join(workspace.getWorkspaceFolder(uri).uri.fsPath, dir), uri.fsPath);
+                uris.map(imgUri => {
+                    let relPath = path.relative(path.join(path.dirname(document.uri.fsPath), dir), imgUri.fsPath);
                     relPath = relPath.replace(/\\/g, '/');
                     let item = new CompletionItem(relPath.replace(/ /g, '&#32;'), CompletionItemKind.File);
 
                     // Add image preview
-                    let dimensions = sizeOf(uri.fsPath);
+                    let dimensions = sizeOf(imgUri.fsPath);
                     const maxWidth = 318;
                     if (dimensions.width > maxWidth) {
                         dimensions.height = Number(dimensions.height * maxWidth / dimensions.width);
                         dimensions.width = maxWidth;
                     }
-                    item.documentation = new MarkdownString(`![${relPath}](${uri.fsPath.replace(/ /g, '&#32;')}|width=${dimensions.width},height=${dimensions.height})`);
+                    item.documentation = new MarkdownString(`![${relPath}](${imgUri.fsPath.replace(/ /g, '&#32;')}|width=${dimensions.width},height=${dimensions.height})`);
 
                     return item;
                 })
