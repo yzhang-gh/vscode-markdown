@@ -76,8 +76,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList> {
         if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
-        let lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
-        let lineTextAfter = document.lineAt(position.line).text.substring(position.character);
+        const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
+        const lineTextAfter = document.lineAt(position.line).text.substring(position.character);
 
         let matches;
         if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
@@ -103,18 +103,25 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     return item;
                 })
             );
-        } else if ((matches = lineTextBefore.match(/\\+$/)) !== null && matches[0].length % 2 !== 0) {
-            if (/(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(lineTextBefore)
-                && lineTextAfter.includes('$')) {
+        } else if (
+            (matches = lineTextBefore.match(/\\+$/)) !== null
+            && matches[0].length % 2 !== 0
+        ) {
+            if (
+                /(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(lineTextBefore)
+                && lineTextAfter.includes('$')
+            ) {
                 // Complete math functions (inline math)
                 return this.mathCompletions;
             } else {
                 const textBefore = document.getText(new Range(new Position(0, 0), position));
                 const textAfter = document.getText().substr(document.offsetAt(position));
-                if ((matches = textBefore.match(/\$\$/g)) !== null
+                if (
+                    (matches = textBefore.match(/\$\$/g)) !== null
                     && matches.length % 2 !== 0
-                    && textAfter.includes('\$\$')) {
-                    // Complete math functions
+                    && textAfter.includes('\$\$')
+                ) {
+                    // Complete math functions ($$ ... $$)
                     return this.mathCompletions;
                 } else {
                     return [];
