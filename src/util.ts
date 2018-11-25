@@ -7,6 +7,7 @@ import localize from './localize';
    │ Others │
    └────────┘ */
 
+/** Scheme `File` or `Untitled` */
 export const mdDocSelector = [{ language: 'markdown', scheme: 'file' }, { language: 'markdown', scheme: 'untitled' }];
 
 export function isMdEditor(editor: TextEditor) {

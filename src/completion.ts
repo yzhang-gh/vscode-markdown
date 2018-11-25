@@ -3,9 +3,10 @@
 import * as sizeOf from 'image-size';
 import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
+import { mdDocSelector } from './util';
 
 export function activate(context: ExtensionContext) {
-    context.subscriptions.push(languages.registerCompletionItemProvider({ scheme: 'file', language: 'markdown' }, new MdCompletionItemProvider(), '(', '\\', '/'));
+    context.subscriptions.push(languages.registerCompletionItemProvider(mdDocSelector, new MdCompletionItemProvider(), '(', '\\', '/'));
 }
 
 class MdCompletionItemProvider implements CompletionItemProvider {
@@ -74,14 +75,18 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     }
 
     provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList> {
-        if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
-
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
+        console.log('lineTextBefore', lineTextBefore);
         const lineTextAfter = document.lineAt(position.line).text.substring(position.character);
+        console.log('lineTextAfter', lineTextAfter);
 
         let matches;
+        matches = lineTextBefore.match(/\\+$/);
         if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
+            console.log(1);
             // Complete image paths
+            if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
+
             matches = lineTextBefore.match(/!\[[^\]]*?\]\(([^\)]*?)[\\\/]?[^\\\/\)]*$/);
             let dir = matches[1].replace(/\\/g, '/');
 
@@ -107,6 +112,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             (matches = lineTextBefore.match(/\\+$/)) !== null
             && matches[0].length % 2 !== 0
         ) {
+            console.log(2);
             if (
                 /(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(lineTextBefore)
                 && lineTextAfter.includes('$')
