@@ -97,7 +97,13 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     let item = new CompletionItem(relPath.replace(/ /g, '&#32;'), CompletionItemKind.File);
 
                     // Add image preview
-                    let dimensions = sizeOf(imgUri.fsPath);
+                    let dimensions: { width: number; height: number; };
+                    try {
+                        dimensions = sizeOf(imgUri.fsPath);
+                    } catch (error) {
+                        console.error(error);
+                        return item;
+                    }
                     const maxWidth = 318;
                     if (dimensions.width > maxWidth) {
                         dimensions.height = Number(dimensions.height * maxWidth / dimensions.width);
