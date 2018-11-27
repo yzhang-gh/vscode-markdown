@@ -76,14 +76,11 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
     provideCompletionItems(document: TextDocument, position: Position, _token: CancellationToken, _context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList> {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
-        console.log('lineTextBefore', lineTextBefore);
         const lineTextAfter = document.lineAt(position.line).text.substring(position.character);
-        console.log('lineTextAfter', lineTextAfter);
 
         let matches;
         matches = lineTextBefore.match(/\\+$/);
         if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
-            console.log(1);
             // Complete image paths
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
@@ -118,7 +115,6 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             (matches = lineTextBefore.match(/\\+$/)) !== null
             && matches[0].length % 2 !== 0
         ) {
-            console.log(2);
             if (
                 /(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(lineTextBefore)
                 && lineTextAfter.includes('$')
