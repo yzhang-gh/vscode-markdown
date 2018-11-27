@@ -74,7 +74,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         this.mathCompletions = [...c1, ...c2, ...c3, envSnippet];
     }
 
-    provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList> {
+    provideCompletionItems(document: TextDocument, position: Position, _token: CancellationToken, _context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList> {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
         console.log('lineTextBefore', lineTextBefore);
         const lineTextAfter = document.lineAt(position.line).text.substring(position.character);
