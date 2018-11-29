@@ -87,6 +87,7 @@
             {
                 "command": "markdown.extension.editing.toggleMath",
                 "key": "ctrl+m",
+                "mac": "cmd+m",
                 "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
             },
             {
@@ -160,11 +161,13 @@
             {
                 "command": "markdown.extension.togglePreview",
                 "key": "ctrl+shift+v",
+                "mac": "cmd+shift+v",
                 "when": "!terminalFocus"
             },
             {
                 "command": "markdown.extension.togglePreviewToSide",
                 "key": "ctrl+k v",
+                "mac": "cmd+k v",
                 "when": "!terminalFocus"
             }
         ],
@@ -208,7 +211,10 @@
                     "description": "%config.toc.githubCompatibility.description%"
                 },
                 "markdown.extension.toc.tabSize": {
-                    "type": ["number", "string"],
+                    "type": [
+                        "number",
+                        "string"
+                    ],
                     "default": "auto",
                     "description": "%config.toc.tabSize.description%"
                 },
