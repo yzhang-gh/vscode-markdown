@@ -89,6 +89,8 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel)   |
 | <kbd>Ctrl</kbd> + <kbd>M</kbd>                    | Toggle math environment      |
 | <kbd>Alt</kbd> + <kbd>C</kbd>                     | Check/Uncheck task list item |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> | Toggle preview               |
+| <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>       | Toggle preview to side       |
 
 
 Tip: `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
