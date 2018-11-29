@@ -112,8 +112,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 })
             );
         } else if (
-            (matches = lineTextBefore.match(/\\+$/)) !== null
-            && matches[0].length % 2 !== 0
+            (matches = lineTextBefore.match(/(\\+)\w*$/)) !== null
+            && matches[1].length % 2 !== 0
         ) {
             if (
                 /(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(lineTextBefore)
