@@ -1,6 +1,6 @@
 'use strict'
 
-import { commands, ExtensionContext, Position, Range, Selection, TextDocument, TextEditor, window, workspace } from 'vscode';
+import { commands, ExtensionContext, Position, Range, Selection, TextDocument, TextEditor, window, workspace, TextEdit, WorkspaceEdit } from 'vscode';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
@@ -132,11 +132,11 @@ function onTabKey(modifiers?: string) {
         || modifiers === 'shift'
         || (match && cursorPos.character <= match[0].length)
     ) {
-        let command = 'editor.action.indentLines';
         if (modifiers === 'shift') {
-            command = 'editor.action.outdentLines';
+            return outdent(editor).then(() => fixMarker());
+        } else {
+            return indent(editor).then(() => fixMarker());
         }
-        return commands.executeCommand(command).then(() => fixMarker());
     } else {
         return asNormal('tab', modifiers);
     }
@@ -155,7 +155,7 @@ function onBackspaceKey() {
     if (!editor.selection.isEmpty) {
         return asNormal('backspace').then(() => fixMarker(findNextMarkerLineNumber()));
     } else if (/^\s+([-+*]|[0-9]+[.)]) (\[[ x]\] )?$/.test(textBeforeCursor)) {
-        return commands.executeCommand('editor.action.outdentLines').then(() => fixMarker());
+        return outdent(editor).then(() => fixMarker());
     } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- ', '1. '
         return editor.edit(editBuilder => {
@@ -188,6 +188,56 @@ function asNormal(key: string, modifiers?: string) {
         case 'backspace':
             return commands.executeCommand('deleteLeft');
     }
+}
+
+/**
+ * If
+ * 
+ * 1. it is not the first line
+ * 2. the previous line is a Markdown list item
+ * 
+ * then indent the current line to align with the previous line.
+ */
+function indent(editor: TextEditor) {
+    try {
+        const aboveLineText = editor.document.lineAt(editor.selection.start.line - 1).text;
+        const match = /^\s*(([-+*]|[0-9]+[.)]) +)(\[[ x]\] +)?/.exec(aboveLineText);
+        if (match) {
+            const indentationSize = match[1].length;
+            let edit = new WorkspaceEdit()
+            for (let i = editor.selection.start.line; i <= editor.selection.end.line; i++) {
+                if (editor.document.lineAt(i).text.length !== 0) {
+                    edit.insert(editor.document.uri, new Position(i, 0), ' '.repeat(indentationSize));
+                }
+            }
+            return workspace.applyEdit(edit);
+        }
+    } catch (error) { }
+
+    return commands.executeCommand('editor.action.indentLines');
+}
+
+/**
+ * Similar to `indent`-function
+ */
+function outdent(editor: TextEditor) {
+    try {
+        const aboveLineText = editor.document.lineAt(editor.selection.start.line - 1).text;
+        const match = /^\s*(([-+*]|[0-9]+[.)]) +)(\[[ x]\] +)?/.exec(aboveLineText);
+        if (match) {
+            const indentationSize = match[1].length;
+            let edit = new WorkspaceEdit()
+            for (let i = editor.selection.start.line; i <= editor.selection.end.line; i++) {
+                const maxOutdentSize = editor.document.lineAt(i).firstNonWhitespaceCharacterIndex;
+                if (maxOutdentSize > 0) {
+                    edit.delete(editor.document.uri, new Range(i, 0, i, Math.min(indentationSize, maxOutdentSize)));
+                }
+            }
+            return workspace.applyEdit(edit);
+        }
+    } catch (error) { }
+
+    return commands.executeCommand('editor.action.outdentLines');
 }
 
 /**
