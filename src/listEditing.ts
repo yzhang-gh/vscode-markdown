@@ -115,7 +115,7 @@ function onEnterKey(modifiers?: string) {
 
 function onTabKey(modifiers?: string) {
     let editor = window.activeTextEditor;
-    let cursorPos = editor.selection.active;
+    let cursorPos = editor.selection.start;
     let lineText = editor.document.lineAt(cursorPos.line).text;
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
@@ -250,12 +250,14 @@ function outdent(editor?: TextEditor) {
     return commands.executeCommand('editor.action.outdentLines');
 }
 
-function tryDetermineIndentationSize(editor: TextEditor, line: number) {
+function tryDetermineIndentationSize(editor: TextEditor, line: number, currentIndentation: number) {
     while (--line >= 0) {
         const lineText = editor.document.lineAt(line).text;
         let matches;
         if ((matches = /^(\s*)(([-+*]|[0-9]+[.)]) +)(\[[ x]\] +)?/.exec(lineText)) !== null) {
-            return matches[2].length;
+            if (matches[1].length <= currentIndentation) {
+                return matches[2].length;
+            }
         }
     }
     throw "No previous Markdown list item";
