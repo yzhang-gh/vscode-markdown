@@ -286,22 +286,26 @@ function findNextMarkerLineNumber(line?: number): number {
 /**
  * Looks for the previous ordered list marker at the same indentation level
  * and returns the marker number that should follow it.
+ * 
+ * @returns the fixed marker number
  */
-function lookUpwardForMarker(editor: TextEditor, line: number, numOfSpaces: number): number {
+function lookUpwardForMarker(editor: TextEditor, line: number, currentIndentation: number): number {
     while (--line >= 0) {
-        let matches;
         const lineText = editor.document.lineAt(line).text;
+        let matches;
         if ((matches = /^(\s*)([0-9]+)[.)] +/.exec(lineText)) !== null) {
             let leadingSpace = matches[1];
             let marker = matches[2];
-            if (leadingSpace.length === numOfSpaces) {
+            if (leadingSpace.length === currentIndentation) {
                 return Number(marker) + 1;
-            } else if ((editor.options.insertSpaces && leadingSpace.length + editor.options.tabSize <= numOfSpaces)
-                || !editor.options.insertSpaces && leadingSpace.length + 1 <= numOfSpaces) {
+            } else if (
+                (editor.options.insertSpaces && leadingSpace.length + editor.options.tabSize <= currentIndentation)
+                || !editor.options.insertSpaces && leadingSpace.length + 1 <= currentIndentation
+            ) {
                 return 1;
             }
         } else if ((matches = /^(\s*)\S/.exec(lineText)) !== null) {
-            if (matches[1].length <= numOfSpaces) {
+            if (matches[1].length <= currentIndentation) {
                 break;
             }
         }
