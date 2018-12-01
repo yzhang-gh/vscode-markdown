@@ -2,7 +2,7 @@
 
 import * as sizeOf from 'image-size';
 import * as path from 'path';
-import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
+import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace, CompletionTriggerKind, TextEdit } from 'vscode';
 import { mdDocSelector } from './util';
 
 export function activate(context: ExtensionContext) {
@@ -43,7 +43,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     font0 = ['rm', 'bf', 'it', 'sf', 'tt'];
     font1 = ['mathrm', 'mathbf', 'mathit', 'mathsf', 'mathtt', 'textrm', 'textbf', 'textit', 'textsf', 'texttt', 'textnormal', 'bold', 'Bbb', 'mathcal', 'frak', 'text', 'boldsymbol', 'mathbb', 'mathscr', 'mathfrak', 'bm'];
     size0 = ['Huge', 'huge', 'LARGE', 'Large', 'large', 'normalsize', 'small', 'footnotesize', 'scriptsize', 'tiny'];
-    style0 = ['displaystyle', 'textstyle', 'scriptstyle', 'scriptscriptstyle', 'limits', 'nolimits', 'verb', 'text'];
+    style0 = ['displaystyle', 'textstyle', 'scriptstyle', 'scriptscriptstyle', 'limits', 'nolimits', 'verb'];
     style1 = ['text'];
     symbolsAndPunctuation0 = ['Box', 'dots', 'checkmark', 'square', 'cdots', 'dag', 'blacksquare', 'ddots', 'dagger', 'triangle', 'ldots', 'textdagger', 'triangledown', 'vdots', 'ddag', 'textunderscore', 'triangleleft', 'mathellipsis', 'ddagger', 'triangleright', 'textellipsis', 'textdaggerdbl', 'textendash', 'bigtriangledown', 'flat', 'bigtriangleup', 'natural', 'textdollar', 'textemdash', 'blacktriangle', 'sharp', 'pounds', 'blacktriangledown', 'circledR', 'textsterling', 'textquoteleft', 'blacktriangleleft', 'circledS', 'yen', 'text{\\lq}', 'blacktriangleright', 'clubsuit', 'surd', 'textquoteright', 'diamond', 'diamondsuit', 'degree', 'text{\\rq}', 'Diamond', 'heartsuit', 'diagdown', 'textquotedblleft', 'lozenge', 'spadesuit', 'diagup', 'blacklozenge', 'angle', 'mho', 'textquotedblright', 'star', 'measuredangle', 'maltese', 'colon', 'bigstar', 'sphericalangle', 'text{\\P}', 'backprime', 'textbar', 'top', 'text{\\S}', 'prime', 'textbardbl', 'bot', 'nabla', 'textless', 'textbraceleft', 'textbraceright', 'infty', 'textgreater', 'KaTeX', 'LaTeX', 'TeX'];
 
@@ -112,31 +112,64 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 })
             );
         } else if (
-            (matches = lineTextBefore.match(/(\\+)\w*$/)) !== null
-            && matches[1].length % 2 !== 0
+            // Suggest math completion after \ trigger character.
+            _context.triggerKind === CompletionTriggerKind.TriggerCharacter
+            && this.hasBackslash(lineTextBefore)
+            && this.inScopeMath(document, position)
         ) {
-            if (
-                /(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(lineTextBefore)
-                && lineTextAfter.includes('$')
-            ) {
-                // Complete math functions (inline math)
+            this.mathCompletions.map(completion => completion.additionalTextEdits = []);
+            return this.mathCompletions;
+        } else if (
+            // Suggest math completions after manual trigger suggest.
+            _context.triggerKind === CompletionTriggerKind.Invoke
+            && this.inScopeMath(document, position)
+        ) {
+            if (this.hasBackslash(lineTextBefore)) {
                 return this.mathCompletions;
             } else {
-                const textBefore = document.getText(new Range(new Position(0, 0), position));
-                const textAfter = document.getText().substr(document.offsetAt(position));
-                if (
-                    (matches = textBefore.match(/\$\$/g)) !== null
-                    && matches.length % 2 !== 0
-                    && textAfter.includes('\$\$')
-                ) {
-                    // Complete math functions ($$ ... $$)
-                    return this.mathCompletions;
-                } else {
-                    return [];
-                }
+                // This requires an extra \ at the start of each snippet.
+                const insertBackslash: TextEdit = TextEdit.insert(position, '\\');
+                this.mathCompletions.map(completion => completion.additionalTextEdits = [insertBackslash]);
+                return this.mathCompletions;
             }
-        } else {
-            return [];
         }
+
+        return [];
+    }
+
+    protected hasBackslash(lineTextBefore: string) {
+        const leadingBackslashes = lineTextBefore.match(/(\\+)\w*$/));
+        return leadingBackslashes !== null && leadingBackslashes[1].length % 2 !== 0;
+    }
+
+    protected inScopeMath(document: TextDocument, position: Position): boolean {
+        const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
+        const lineTextAfter = document.lineAt(position.line).text.substring(position.character);
+
+        return this.inScopeInlineMath(lineTextBefore, lineTextAfter)
+            || this.inScopeDisplayMath(document, position);
+    }
+
+    /**
+     * Check if inside inline math environment ($ .. $).
+     */
+    protected inScopeInlineMath(lineTextBefore: string, lineTextAfter: string): boolean {
+        return /(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(lineTextBefore)
+            && lineTextAfter.includes('$');
+    }
+
+    /**
+     * Check if inside display math environment ($$ .. $$).
+     */
+    protected inScopeDisplayMath(document: TextDocument, position: Position): boolean {
+        // FIXME: This scans the whole document so it will be slow on long documents.
+        // Maybe at some point VSCode will provide the Textmate scopes of the current position.
+        const textBefore = document.getText(new Range(new Position(0, 0), position));
+        const textAfter = document.getText().substr(document.offsetAt(position));
+        const mathDelimitersBefore = textBefore.match(/\$\$/g);
+
+        return mathDelimitersBefore !== null
+            && mathDelimitersBefore.length % 2 !== 0
+            && textAfter.includes('\$\$');
     }
 }
