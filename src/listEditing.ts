@@ -127,11 +127,7 @@ function onTabKey(modifiers?: string) {
     // 2.  When the shift key is held (it should always outdent)
     // 3.  When the cursor is placed anywhere before the text that follows an ordered list marker
     let match = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.exec(lineText);
-    if (
-        !editor.selection.isEmpty
-        || modifiers === 'shift'
-        || (match && cursorPos.character <= match[0].length)
-    ) {
+    if (match && cursorPos.character <= match[0].length) {
         if (modifiers === 'shift') {
             return outdent(editor).then(() => fixMarker());
         } else {
@@ -194,9 +190,9 @@ function asNormal(key: string, modifiers?: string) {
  * If
  * 
  * 1. it is not the first line
- * 2. the previous line is a Markdown list item
+ * 2. there is a Markdown list item before this line
  * 
- * then indent the current line to align with the previous line.
+ * then indent the current line to align with the previous list item.
  */
 function indent(editor?: TextEditor) {
     if (!editor) {
@@ -205,21 +201,17 @@ function indent(editor?: TextEditor) {
 
     try {
         const selection = editor.selection;
-        const aboveLineText = editor.document.lineAt(selection.start.line - 1).text;
-        const match = /^\s*(([-+*]|[0-9]+[.)]) +)(\[[ x]\] +)?/.exec(aboveLineText);
-        if (match) {
-            const indentationSize = match[1].length;
-            let edit = new WorkspaceEdit()
-            for (let i = selection.start.line; i <= selection.end.line; i++) {
-                if (i === selection.end.line && !selection.isEmpty && selection.end.character === 0) {
-                    break;
-                }
-                if (editor.document.lineAt(i).text.length !== 0) {
-                    edit.insert(editor.document.uri, new Position(i, 0), ' '.repeat(indentationSize));
-                }
+        const indentationSize = tryDetermineIndentationSize(editor, selection.start.line);
+        let edit = new WorkspaceEdit()
+        for (let i = selection.start.line; i <= selection.end.line; i++) {
+            if (i === selection.end.line && !selection.isEmpty && selection.end.character === 0) {
+                break;
             }
-            return workspace.applyEdit(edit);
+            if (editor.document.lineAt(i).text.length !== 0) {
+                edit.insert(editor.document.uri, new Position(i, 0), ' '.repeat(indentationSize));
+            }
         }
+        return workspace.applyEdit(edit);
     } catch (error) { }
 
     return commands.executeCommand('editor.action.indentLines');
@@ -235,31 +227,38 @@ function outdent(editor?: TextEditor) {
 
     try {
         const selection = editor.selection;
-        const aboveLineText = editor.document.lineAt(selection.start.line - 1).text;
-        const match = /^\s*(([-+*]|[0-9]+[.)]) +)(\[[ x]\] +)?/.exec(aboveLineText);
-        if (match) {
-            const indentationSize = match[1].length;
-            let edit = new WorkspaceEdit()
-            for (let i = selection.start.line; i <= selection.end.line; i++) {
-                if (i === selection.end.line && !selection.isEmpty && selection.end.character === 0) {
-                    break;
-                }
-                const lineText = editor.document.lineAt(i).text;
-                let maxOutdentSize: number;
-                if (lineText.trim().length === 0) {
-                    maxOutdentSize = lineText.length;
-                } else {
-                    maxOutdentSize = editor.document.lineAt(i).firstNonWhitespaceCharacterIndex;
-                }
-                if (maxOutdentSize > 0) {
-                    edit.delete(editor.document.uri, new Range(i, 0, i, Math.min(indentationSize, maxOutdentSize)));
-                }
+        const indentationSize = tryDetermineIndentationSize(editor, selection.start.line);
+        let edit = new WorkspaceEdit()
+        for (let i = selection.start.line; i <= selection.end.line; i++) {
+            if (i === selection.end.line && !selection.isEmpty && selection.end.character === 0) {
+                break;
             }
-            return workspace.applyEdit(edit);
+            const lineText = editor.document.lineAt(i).text;
+            let maxOutdentSize: number;
+            if (lineText.trim().length === 0) {
+                maxOutdentSize = lineText.length;
+            } else {
+                maxOutdentSize = editor.document.lineAt(i).firstNonWhitespaceCharacterIndex;
+            }
+            if (maxOutdentSize > 0) {
+                edit.delete(editor.document.uri, new Range(i, 0, i, Math.min(indentationSize, maxOutdentSize)));
+            }
         }
+        return workspace.applyEdit(edit);
     } catch (error) { }
 
     return commands.executeCommand('editor.action.outdentLines');
+}
+
+function tryDetermineIndentationSize(editor: TextEditor, line: number) {
+    while (--line >= 0) {
+        const lineText = editor.document.lineAt(line).text;
+        let matches;
+        if ((matches = /^(\s*)(([-+*]|[0-9]+[.)]) +)(\[[ x]\] +)?/.exec(lineText)) !== null) {
+            return matches[2].length;
+        }
+    }
+    throw "No previous Markdown list item";
 }
 
 /**
@@ -293,14 +292,14 @@ function lookUpwardForMarker(editor: TextEditor, line: number, currentIndentatio
     while (--line >= 0) {
         const lineText = editor.document.lineAt(line).text;
         let matches;
-        if ((matches = /^(\s*)([0-9]+)[.)] +/.exec(lineText)) !== null) {
-            let leadingSpace = matches[1];
-            let marker = matches[2];
+        if ((matches = /^(\s*)(([0-9]+)[.)] +)/.exec(lineText)) !== null) {
+            let leadingSpace: string = matches[1];
+            let marker = matches[3];
             if (leadingSpace.length === currentIndentation) {
                 return Number(marker) + 1;
             } else if (
-                (editor.options.insertSpaces && leadingSpace.length + editor.options.tabSize <= currentIndentation)
-                || !editor.options.insertSpaces && leadingSpace.length + 1 <= currentIndentation
+                (!leadingSpace.includes('\t') && leadingSpace.length + matches[2].length <= currentIndentation)
+                || leadingSpace.includes('\t') && leadingSpace.length + 1 <= currentIndentation
             ) {
                 return 1;
             }
