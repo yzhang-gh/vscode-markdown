@@ -119,9 +119,11 @@ Tip: `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
-## Latest CI Build
+## Latest Development Build
 
 Download it [here](https://ci.appveyor.com/project/neilsustc/vscode-markdown/build/artifacts).
+
+To install, execute `Extensions: Install from VSIX...` in the Command Palette (`ctrl + shift + p`)
 
 ## Contributing
 
