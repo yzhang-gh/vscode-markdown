@@ -198,14 +198,22 @@ function asNormal(key: string, modifiers?: string) {
  * 
  * then indent the current line to align with the previous line.
  */
-function indent(editor: TextEditor) {
+function indent(editor?: TextEditor) {
+    if (!editor) {
+        editor = window.activeTextEditor;
+    }
+
     try {
-        const aboveLineText = editor.document.lineAt(editor.selection.start.line - 1).text;
+        const selection = editor.selection;
+        const aboveLineText = editor.document.lineAt(selection.start.line - 1).text;
         const match = /^\s*(([-+*]|[0-9]+[.)]) +)(\[[ x]\] +)?/.exec(aboveLineText);
         if (match) {
             const indentationSize = match[1].length;
             let edit = new WorkspaceEdit()
-            for (let i = editor.selection.start.line; i <= editor.selection.end.line; i++) {
+            for (let i = selection.start.line; i <= selection.end.line; i++) {
+                if (i === selection.end.line && !selection.isEmpty && selection.end.character === 0) {
+                    break;
+                }
                 if (editor.document.lineAt(i).text.length !== 0) {
                     edit.insert(editor.document.uri, new Position(i, 0), ' '.repeat(indentationSize));
                 }
@@ -220,15 +228,29 @@ function indent(editor: TextEditor) {
 /**
  * Similar to `indent`-function
  */
-function outdent(editor: TextEditor) {
+function outdent(editor?: TextEditor) {
+    if (!editor) {
+        editor = window.activeTextEditor;
+    }
+
     try {
-        const aboveLineText = editor.document.lineAt(editor.selection.start.line - 1).text;
+        const selection = editor.selection;
+        const aboveLineText = editor.document.lineAt(selection.start.line - 1).text;
         const match = /^\s*(([-+*]|[0-9]+[.)]) +)(\[[ x]\] +)?/.exec(aboveLineText);
         if (match) {
             const indentationSize = match[1].length;
             let edit = new WorkspaceEdit()
-            for (let i = editor.selection.start.line; i <= editor.selection.end.line; i++) {
-                const maxOutdentSize = editor.document.lineAt(i).firstNonWhitespaceCharacterIndex;
+            for (let i = selection.start.line; i <= selection.end.line; i++) {
+                if (i === selection.end.line && !selection.isEmpty && selection.end.character === 0) {
+                    break;
+                }
+                const lineText = editor.document.lineAt(i).text;
+                let maxOutdentSize: number;
+                if (lineText.trim().length === 0) {
+                    maxOutdentSize = lineText.length;
+                } else {
+                    maxOutdentSize = editor.document.lineAt(i).firstNonWhitespaceCharacterIndex;
+                }
                 if (maxOutdentSize > 0) {
                     edit.delete(editor.document.uri, new Range(i, 0, i, Math.min(indentationSize, maxOutdentSize)));
                 }
@@ -395,13 +417,11 @@ function onCopyLineDown() {
 }
 
 function onIndentLines() {
-    return commands.executeCommand('editor.action.indentLines')
-        .then(() => fixMarker());
+    return indent().then(() => fixMarker());
 }
 
 function onOutdentLines() {
-    return commands.executeCommand('editor.action.outdentLines')
-        .then(() => fixMarker());
+    return outdent().then(() => fixMarker());
 }
 
 export function deactivate() { }
