@@ -122,12 +122,15 @@ function onTabKey(modifiers?: string) {
         return asNormal('tab', modifiers);
     }
 
-    // Cases where indent/outdent should occur, followed by fixing the ordered list markers:
-    // 1.  When there is a range of text selected
-    // 2.  When the shift key is held (it should always outdent)
-    // 3.  When the cursor is placed anywhere before the text that follows an ordered list marker
     let match = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.exec(lineText);
-    if (match && cursorPos.character <= match[0].length) {
+    if (
+        match
+        && (
+            modifiers === 'shift'
+            || !editor.selection.isEmpty
+            || editor.selection.isEmpty &&  cursorPos.character <= match[0].length
+        )
+    ) {
         if (modifiers === 'shift') {
             return outdent(editor).then(() => fixMarker());
         } else {
@@ -201,7 +204,7 @@ function indent(editor?: TextEditor) {
 
     try {
         const selection = editor.selection;
-        const indentationSize = tryDetermineIndentationSize(editor, selection.start.line);
+        const indentationSize = tryDetermineIndentationSize(editor, selection.start.line, editor.document.lineAt(selection.start.line).firstNonWhitespaceCharacterIndex);
         let edit = new WorkspaceEdit()
         for (let i = selection.start.line; i <= selection.end.line; i++) {
             if (i === selection.end.line && !selection.isEmpty && selection.end.character === 0) {
@@ -227,7 +230,7 @@ function outdent(editor?: TextEditor) {
 
     try {
         const selection = editor.selection;
-        const indentationSize = tryDetermineIndentationSize(editor, selection.start.line);
+        const indentationSize = tryDetermineIndentationSize(editor, selection.start.line, editor.document.lineAt(selection.start.line).firstNonWhitespaceCharacterIndex);
         let edit = new WorkspaceEdit()
         for (let i = selection.start.line; i <= selection.end.line; i++) {
             if (i === selection.end.line && !selection.isEmpty && selection.end.character === 0) {
