@@ -91,9 +91,9 @@ suite("List editing.", () => {
         testCommand('markdown.extension.onBackspaceKey', {},
             [
                 '1. item1',
-                '    5. item2'
+                '   5. item2'
             ],
-            new Selection(1, 7, 1, 7),
+            new Selection(1, 6, 1, 6),
             [
                 '1. item1',
                 '2. item2'
@@ -105,18 +105,18 @@ suite("List editing.", () => {
         testCommand('markdown.extension.onBackspaceKey', {},
             [
                 '1. item1',
-                '    1. item1-1',
-                '    2. item1-2',
-                '    3. item1-3',
-                '    4. item1-4'
+                '   1. item1-1',
+                '   2. item1-2',
+                '   3. item1-3',
+                '   4. item1-4'
             ],
-            new Selection(3, 7, 3, 7),
+            new Selection(3, 6, 3, 6),
             [
                 '1. item1',
-                '    1. item1-1',
-                '    2. item1-2',
+                '   1. item1-1',
+                '   2. item1-2',
                 '2. item1-3',
-                '    1. item1-4'
+                '   1. item1-4'
             ],
             new Selection(3, 3, 3, 3)).then(done, done);
     });
@@ -125,18 +125,18 @@ suite("List editing.", () => {
         testCommand('markdown.extension.onBackspaceKey', {},
             [
                 '1. item1',
-                '    1. item1-1',
-                '       item1-2',
-                '    2. item1-3',
-                '    3. item1-4'
+                '   1. item1-1',
+                '      item1-2',
+                '   2. item1-3',
+                '   3. item1-4'
             ],
-            new Selection(3, 7, 3, 7),
+            new Selection(3, 6, 3, 6),
             [
                 '1. item1',
-                '    1. item1-1',
-                '       item1-2',
+                '   1. item1-1',
+                '      item1-2',
                 '2. item1-3',
-                '    1. item1-4'
+                '   1. item1-4'
             ],
             new Selection(3, 3, 3, 3)).then(done, done);
     });
@@ -146,16 +146,16 @@ suite("List editing.", () => {
             [
                 '1. item1',
                 '2. item2',
-                '    1. item1-1',
-                '    2. item1-2',
-                '    3. item1-3',
+                '   1. item1-1',
+                '   2. item1-2',
+                '   3. item1-3',
                 '3. item3'
             ],
             new Selection(1, 0, 3, 0),
             [
                 '1. item1',
-                '    1. item1-2',
-                '    2. item1-3',
+                '   1. item1-2',
+                '   2. item1-3',
                 '2. item3'
             ],
             new Selection(1, 0, 1, 0)).then(done, done);
@@ -185,40 +185,40 @@ suite("List editing.", () => {
         testCommand('markdown.extension.onTabKey', {},
             [
                 '1. test',
-                '    1. test',
-                '    2. test',
+                '   1. test',
+                '   2. test',
                 '2. test',
-                '    1. test'
+                '   1. test'
             ],
             new Selection(3, 3, 3, 3),
             [
                 '1. test',
-                '    1. test',
-                '    2. test',
-                '    3. test',
-                '    4. test'
+                '   1. test',
+                '   2. test',
+                '   3. test',
+                '   4. test'
             ],
-            new Selection(3, 7, 3, 7)).then(done, done);
+            new Selection(3, 6, 3, 6)).then(done, done);
     });
 
     test("Tab key. Fix ordered marker. 4: Multi-line list item", done => {
         testCommand('markdown.extension.onTabKey', {},
             [
                 '1. test',
-                '    1. test',
-                '       test',
+                '   1. test',
+                '      test',
                 '2. test',
-                '    1. test'
+                '   1. test'
             ],
             new Selection(3, 3, 3, 3),
             [
                 '1. test',
-                '    1. test',
-                '       test',
-                '    2. test',
-                '    3. test'
+                '   1. test',
+                '      test',
+                '   2. test',
+                '   3. test'
             ],
-            new Selection(3, 7, 3, 7)).then(done, done);
+            new Selection(3, 6, 3, 6)).then(done, done);
     });
 
     test("Tab key. Fix ordered marker. 5: Selection range", done => {
@@ -226,19 +226,20 @@ suite("List editing.", () => {
             [
                 '1. test',
                 '2. test',
-                '    1. test',
-                '    2. test',
+                '   1. test',
+                '   2. test',
                 '3. test'
             ],
             new Selection(1, 0, 3, 0),
             [
                 '1. test',
-                '    1. test',
-                '        1. test',
-                '    2. test',
+                '   1. test',
+                '      1. test',
+                '   2. test',
                 '2. test'
             ],
-            new Selection(1, 0, 3, 0)).then(done, done);
+            // Should have been (1, 0, 3, 0) if we want to accurately mimic `editor.action.indentLines`
+            new Selection(1, 3, 3, 0)).then(done, done);
     });
 
     test("Move Line Up. 1: '2. |'", done => {
@@ -294,17 +295,17 @@ suite("List editing.", () => {
             [
                 '1. test',
                 '2. test',
-                '    1. test',
+                '   1. test',
                 '3. test'
             ],
             new Selection(1, 5, 1, 5),
             [
                 '1. test',
-                '    1. test',
-                '    2. test',
+                '   1. test',
+                '   2. test',
                 '2. test'
             ],
-            new Selection(1, 9, 1, 9)).then(done, done);
+            new Selection(1, 8, 1, 8)).then(done, done);
     });
 
     test("Indent Lines. 2: Selection range", done => {
@@ -313,33 +314,34 @@ suite("List editing.", () => {
                 '1. test',
                 '2. test',
                 '3. test',
-                '    1. test',
+                '   1. test',
                 '4. test'
             ],
             new Selection(1, 0, 3, 0),
             [
                 '1. test',
-                '    1. test',
-                '    2. test',
-                '    3. test',
+                '   1. test',
+                '   2. test',
+                '   3. test',
                 '2. test'
             ],
-            new Selection(1, 0, 3, 0)).then(done, done);
+            // Should have been (1, 0, 3, 0) if we want to accurately mimic `editor.action.indentLines`
+            new Selection(1, 3, 3, 0)).then(done, done);
     });
 
     test("Outdent Lines. 1: No selection range", done => {
         testCommand('markdown.extension.onOutdentLines', {},
             [
                 '1. test',
-                '    1. test',
-                '    2. test',
+                '   1. test',
+                '   2. test',
                 '2. test'
             ],
             new Selection(1, 0, 1, 0),
             [
                 '1. test',
                 '2. test',
-                '    1. test',
+                '   1. test',
                 '3. test'
             ],
             new Selection(1, 0, 1, 0)).then(done, done);
@@ -349,9 +351,9 @@ suite("List editing.", () => {
         testCommand('markdown.extension.onOutdentLines', {},
             [
                 '1. test',
-                '    1. test',
-                '    2. test',
-                '    3. test',
+                '   1. test',
+                '   2. test',
+                '   3. test',
                 '2. test'
             ],
             new Selection(1, 0, 3, 0),
@@ -359,7 +361,7 @@ suite("List editing.", () => {
                 '1. test',
                 '2. test',
                 '3. test',
-                '    1. test',
+                '   1. test',
                 '4. test'
             ],
             new Selection(1, 0, 3, 0)).then(done, done);
