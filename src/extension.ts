@@ -54,12 +54,14 @@ function activateMdExt(context: ExtensionContext) {
 }
 
 function newVersionMessage(extensionPath: string) {
-    let data, currentVersion;
+    let data: string, currentVersion: string;
     try {
         data = fs.readFileSync(`${extensionPath}${path.sep}package.json`).toString();
         currentVersion = JSON.parse(data).version;
-        if (fs.existsSync(`${extensionPath}${path.sep}VERSION`) &&
-            fs.readFileSync(`${extensionPath}${path.sep}VERSION`).toString() === currentVersion) {
+        if (
+            fs.existsSync(`${extensionPath}${path.sep}VERSION`)
+            && fs.readFileSync(`${extensionPath}${path.sep}VERSION`).toString() === currentVersion
+        ) {
             return;
         }
         fs.writeFileSync(`${extensionPath}${path.sep}VERSION`, currentVersion);
