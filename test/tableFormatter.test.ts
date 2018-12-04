@@ -193,9 +193,27 @@ suite("Table formatter.", () => {
             ],
             new Selection(0, 0, 0, 0),
             [
-                '| a   | b   | c     |',
+                '| a   | b   |   c   |',
                 '| --- | --- | :---: |',
-                '| c   | d   | e     |'
+                '| c   | d   |   e   |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done)
+    });
+
+    test("Indentation within cells", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '| Column L | Column C | Column R |',
+                '| ---- | :----: | ----: |',
+                '| c | d | e |',
+                '| fg | hi | jk |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| Column L | Column C | Column R |',
+                '| -------- | :------: | -------: |',
+                '| c        |    d     |        e |',
+                '| fg       |    hi    |       jk |'
             ],
             new Selection(0, 0, 0, 0)).then(done, done)
     });
