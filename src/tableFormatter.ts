@@ -67,6 +67,8 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
 
         // Desired width of each column
         let colWidth = [];
+        // Alignment of each column        
+        let colAlign = []
         // Regex to extract cell content.
         // Known issue: `\\|` is not correctly parsed as a valid delimiter
         let fieldRegExp = new RegExp(/(?:\|?((?:\\\||`.*?`|[^\|])+))/gu);
@@ -96,20 +98,26 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         lines[1] = lines[1].map((cell, i) => {
             if (/:-+:/.test(cell)) {
                 //:---:
-                colWidth[i] = Math.max(colWidth[i], 5)
+                colWidth[i] = Math.max(colWidth[i], 5);
+                colAlign[i] = 'c';
                 return ':' + '-'.repeat(colWidth[i] - 2) + ':';
             } else if (/:-+/.test(cell)) {
                 //:---
-                colWidth[i] = Math.max(colWidth[i], 4)
+                colWidth[i] = Math.max(colWidth[i], 4);
+                colAlign[i] = 'l';
                 return ':' + '-'.repeat(colWidth[i] - 1);
             } else if (/-+:/.test(cell)) {
                 //---:
-                colWidth[i] = Math.max(colWidth[i], 4)
+                colWidth[i] = Math.max(colWidth[i], 4);
+                colAlign[i] = 'r';
                 return '-'.repeat(colWidth[i] - 1) + ':';
             } else if (/-+/.test(cell)) {
                 //---
-                colWidth[i] = Math.max(colWidth[i], 3)
+                colWidth[i] = Math.max(colWidth[i], 3);
+                colAlign[i] = 'l';
                 return '-'.repeat(colWidth[i]);
+            } else {
+                colAlign[i] = 'l';
             }
         });
 
@@ -119,9 +127,20 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 if (cjkRegex.test(cell)) {
                     cellLength -= cell.match(cjkRegex).length;
                 }
-                return (cell + ' '.repeat(cellLength)).slice(0, cellLength);
+                //return (cell + ' '.repeat(cellLength)).slice(0, cellLength);
+                return this.alignText(cell, colAlign[i], cellLength);
             });
             return indentation + '| ' + cells.join(' | ') + ' |';
         }).join(doc.eol === EndOfLine.LF ? '\n' : '\r\n');
+    }
+
+    private alignText(text: string, align: string, length: number) {
+        if (align === 'c' && length > text.length) {
+            return (' '.repeat(Math.floor((length - text.length) / 2)) + text + ' '.repeat(length)).slice(0, length);
+        } else if (align === 'r') {
+            return (' '.repeat(length) + text).slice(-length);
+        } else {
+            return (text + ' '.repeat(length)).slice(0, length);
+        }
     }
 }
