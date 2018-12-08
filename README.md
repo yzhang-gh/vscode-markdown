@@ -114,6 +114,7 @@ Tip: `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
 | `markdown.extension.print.imgToBase64`             | `false`   | Convert images to base64 when printing to HTML                    |
 | `markdown.extension.syntax.decorations`            | `true`    | Add decorations to strikethrough and code spans                   |
 | `markdown.extension.syntax.plainTheme`             | `false`   | A distraction-free theme                                          |
+| `markdown.extension.toc.tabSize`                   | `auto`    | Control the indentation size of TOC (`auto` or a number)          |
 
 ## Changelog
 

@@ -1,3 +1,16 @@
+### 1.8.0 (2018.12.08)
+
+- **New**: Option `markdown.extension.toc.tabSize`, default `auto`. Thanks, [Maël Valais (@maelvalais)](https://github.com/maelvalais).
+- **New**: Adaptive indentation size on <kbd>Tab</kbd>/<kbd>Backspace</kbd> key ([#155](https://github.com/neilsustc/vscode-markdown/issues/155), [#241](https://github.com/neilsustc/vscode-markdown/issues/241)).
+- **New**: Better alignment of cells within tables. Thanks, [K Sriram (@ksri91)](https://github.com/ksri91).
+- **Fix**: Support setext headings in TOC ([#284](https://github.com/neilsustc/vscode-markdown/issues/284), [#311](https://github.com/neilsustc/vscode-markdown/issues/311)).
+- **Fix**: Markdown preview stylesheets priority (VSCode base styles < VSCode preview settings < Custom stylesheets) ([#329](https://github.com/neilsustc/vscode-markdown/issues/329)).
+- **Fix**: Math completions for untitled document ([#326](https://github.com/neilsustc/vscode-markdown/issues/326)).
+- **Fix**: Image completions ([#330](https://github.com/neilsustc/vscode-markdown/issues/330)).
+- **Other**: Use `cmd` instead of `ctrl` for some keybindings on Mac ([#334](https://github.com/neilsustc/vscode-markdown/issues/334)).
+
+---
+
 ### 1.7.0 (2018.10.27)
 
 - **New**: Math syntax highlight ([#254](https://github.com/neilsustc/vscode-markdown/issues/254)). Many thanks, [@linsui](https://github.com/linsui).
