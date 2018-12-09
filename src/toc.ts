@@ -225,6 +225,7 @@ function buildToc() {
     if (isMdEditor(editor)) {
         let lines = editor.document.getText()
             .replace(/(^|\r?\n)```[\W\w]+?(```|$)/g, '') // Remove code blocks
+            .replace(/^---[\W\w]+?(\r?\n)---/, '') // Remove YAML front matter
             .split(/\r?\n/g);
         // Transform setext headings to ATX headings
         lines.forEach((lineText, i, arr) => {
