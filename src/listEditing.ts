@@ -128,7 +128,7 @@ function onTabKey(modifiers?: string) {
         && (
             modifiers === 'shift'
             || !editor.selection.isEmpty
-            || editor.selection.isEmpty &&  cursorPos.character <= match[0].length
+            || editor.selection.isEmpty && cursorPos.character <= match[0].length
         )
     ) {
         if (modifiers === 'shift') {
@@ -202,20 +202,22 @@ function indent(editor?: TextEditor) {
         editor = window.activeTextEditor;
     }
 
-    try {
-        const selection = editor.selection;
-        const indentationSize = tryDetermineIndentationSize(editor, selection.start.line, editor.document.lineAt(selection.start.line).firstNonWhitespaceCharacterIndex);
-        let edit = new WorkspaceEdit()
-        for (let i = selection.start.line; i <= selection.end.line; i++) {
-            if (i === selection.end.line && !selection.isEmpty && selection.end.character === 0) {
-                break;
+    if (workspace.getConfiguration("markdown.extension.list", editor.document.uri).get<string>("indentationSize") === "adaptive") {
+        try {
+            const selection = editor.selection;
+            const indentationSize = tryDetermineIndentationSize(editor, selection.start.line, editor.document.lineAt(selection.start.line).firstNonWhitespaceCharacterIndex);
+            let edit = new WorkspaceEdit()
+            for (let i = selection.start.line; i <= selection.end.line; i++) {
+                if (i === selection.end.line && !selection.isEmpty && selection.end.character === 0) {
+                    break;
+                }
+                if (editor.document.lineAt(i).text.length !== 0) {
+                    edit.insert(editor.document.uri, new Position(i, 0), ' '.repeat(indentationSize));
+                }
             }
-            if (editor.document.lineAt(i).text.length !== 0) {
-                edit.insert(editor.document.uri, new Position(i, 0), ' '.repeat(indentationSize));
-            }
-        }
-        return workspace.applyEdit(edit);
-    } catch (error) { }
+            return workspace.applyEdit(edit);
+        } catch (error) { }
+    }
 
     return commands.executeCommand('editor.action.indentLines');
 }
@@ -228,27 +230,29 @@ function outdent(editor?: TextEditor) {
         editor = window.activeTextEditor;
     }
 
-    try {
-        const selection = editor.selection;
-        const indentationSize = tryDetermineIndentationSize(editor, selection.start.line, editor.document.lineAt(selection.start.line).firstNonWhitespaceCharacterIndex);
-        let edit = new WorkspaceEdit()
-        for (let i = selection.start.line; i <= selection.end.line; i++) {
-            if (i === selection.end.line && !selection.isEmpty && selection.end.character === 0) {
-                break;
+    if (workspace.getConfiguration("markdown.extension.list", editor.document.uri).get<string>("indentationSize") === "adaptive") {
+        try {
+            const selection = editor.selection;
+            const indentationSize = tryDetermineIndentationSize(editor, selection.start.line, editor.document.lineAt(selection.start.line).firstNonWhitespaceCharacterIndex);
+            let edit = new WorkspaceEdit()
+            for (let i = selection.start.line; i <= selection.end.line; i++) {
+                if (i === selection.end.line && !selection.isEmpty && selection.end.character === 0) {
+                    break;
+                }
+                const lineText = editor.document.lineAt(i).text;
+                let maxOutdentSize: number;
+                if (lineText.trim().length === 0) {
+                    maxOutdentSize = lineText.length;
+                } else {
+                    maxOutdentSize = editor.document.lineAt(i).firstNonWhitespaceCharacterIndex;
+                }
+                if (maxOutdentSize > 0) {
+                    edit.delete(editor.document.uri, new Range(i, 0, i, Math.min(indentationSize, maxOutdentSize)));
+                }
             }
-            const lineText = editor.document.lineAt(i).text;
-            let maxOutdentSize: number;
-            if (lineText.trim().length === 0) {
-                maxOutdentSize = lineText.length;
-            } else {
-                maxOutdentSize = editor.document.lineAt(i).firstNonWhitespaceCharacterIndex;
-            }
-            if (maxOutdentSize > 0) {
-                edit.delete(editor.document.uri, new Range(i, 0, i, Math.min(indentationSize, maxOutdentSize)));
-            }
-        }
-        return workspace.applyEdit(edit);
-    } catch (error) { }
+            return workspace.applyEdit(edit);
+        } catch (error) { }
+    }
 
     return commands.executeCommand('editor.action.outdentLines');
 }

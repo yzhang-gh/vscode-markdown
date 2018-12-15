@@ -210,13 +210,19 @@
                     "default": false,
                     "description": "%config.toc.githubCompatibility.description%"
                 },
-                "markdown.extension.toc.tabSize": {
-                    "type": [
-                        "number",
-                        "string"
+                "markdown.extension.list.indentationSize": {
+                    "type": "string",
+                    "enum": [
+                        "adaptive",
+                        "inherit"
                     ],
-                    "default": "auto",
-                    "description": "%config.toc.tabSize.description%"
+                    "enumDescriptions": [
+                        "Use 2 spaces for unordered list and 3 for the ordered",
+                        "Use the configured tab size of the current document (see vscode status bar)"
+                    ],
+                    "default": "adaptive",
+                    "description": "Whether to use different indentation sizes on different context",
+                    "scope": "resource"
                 },
                 "markdown.extension.preview.autoShowPreviewToSide": {
                     "type": "boolean",

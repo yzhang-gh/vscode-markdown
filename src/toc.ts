@@ -204,14 +204,17 @@ function loadTocConfig() {
     // Load workspace config
     let activeEditor = vscode.window.activeTextEditor;
     docConfig.eol = activeEditor.document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
-    let tabSize = tocSectionCfg.get<number | 'auto'>('tabSize');
-    let insertSpaces = activeEditor.options.insertSpaces;
 
-    
-    if (tabSize === "auto") {
-        docConfig.tab = insertSpaces ? " ".repeat(tocConfig.orderedList ? 3 : 2) : '\t';
+    let tabSize = Number(activeEditor.options.tabSize);
+    if (vscode.workspace.getConfiguration('markdown.extension.list', activeEditor.document.uri).get<string>('indentationSize') === 'adaptive') {
+        tabSize = tocConfig.orderedList ? 3 : 2;
+    }
+
+    let insertSpaces = activeEditor.options.insertSpaces;
+    if (insertSpaces) {
+        docConfig.tab = ' '.repeat(tabSize);
     } else {
-        docConfig.tab = " ".repeat(tabSize);
+        docConfig.tab = '\t';
     }
 }
 
