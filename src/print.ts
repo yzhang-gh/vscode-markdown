@@ -195,12 +195,16 @@ function readCss(fileName: string) {
 }
 
 function getStyles(uri: vscode.Uri) {
-    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.css" integrity="sha384-D+9gmBxUQogRLqvARvNLmA9hS2x//eK1FhVb9PiU86gmcrBrJAQT8okdJ4LMp2uv" crossorigin="anonymous">';
+    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">';
+    const markdownCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">';
+    const highlightCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">'
 
-    const baseCssPaths = ['markdown.css', 'highlight.css', 'checkbox.css'].map(s => getMediaPath(s));
+    const baseCssPaths = ['checkbox.css'].map(s => getMediaPath(s));
     const customCssPaths = getCustomStyleSheets(uri);
 
     return `${katexCss}
+        ${markdownCss}
+        ${highlightCss}
         ${baseCssPaths.map(css => wrapWithStyleTag(css)).join('\n')}
         ${getPreviewSettingStyles()}
         ${customCssPaths.map(css => wrapWithStyleTag(css)).join('\n')}`;
