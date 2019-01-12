@@ -294,7 +294,7 @@
         "markdown.markdownItPlugins": true,
         "markdown.previewStyles": [
             "./media/checkbox.css",
-            "./media/katex-0.10.0-rc.1.min.css"
+            "./node_modules/katex/dist/katex.min.css"
         ],
         "grammars": [
             {
