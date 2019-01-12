@@ -325,7 +325,7 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "dependencies": {
-        "@neilsustc/markdown-it-katex": "^0.2.0",
+        "@neilsustc/markdown-it-katex": "^0.3.0",
         "highlight.js": "^9.13.1",
         "image-size": "^0.6.3",
         "markdown-it-task-lists": "^2.1.1",
