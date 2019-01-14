@@ -135,7 +135,8 @@ async function print(type: string) {
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
         <title>${title ? title : ''}</title>
-        ${getScriptsAndStyles(doc.uri)}
+        ${getStyles(doc.uri)}
+        <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
     </head>
     <body>
         ${body}
@@ -194,11 +195,10 @@ function readCss(fileName: string) {
     }
 }
 
-function getScriptsAndStyles(uri: vscode.Uri) {
+function getStyles(uri: vscode.Uri) {
     const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">';
     const markdownCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">';
     const highlightCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">';
-    const copyTeXJs = '<script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>';
     const copyTeXCss = '<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">';
 
     const baseCssPaths = ['checkbox.css'].map(s => getMediaPath(s));
@@ -207,7 +207,6 @@ function getScriptsAndStyles(uri: vscode.Uri) {
     return `${katexCss}
         ${markdownCss}
         ${highlightCss}
-        ${copyTeXJs}
         ${copyTeXCss}
         ${baseCssPaths.map(css => wrapWithStyleTag(css)).join('\n')}
         ${getPreviewSettingStyles()}
