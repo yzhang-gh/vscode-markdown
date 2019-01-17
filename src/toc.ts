@@ -6,8 +6,11 @@ import { extractText, isMdEditor, mdDocSelector, slugify } from './util';
 /**
  * Workspace config
  */
-let docConfig = { tab: '  ', eol: '\r\n' };
-let tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false, tabSize: 2 };
+const docConfig = { tab: '  ', eol: '\r\n' };
+const tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false, tabSize: 2 };
+const TOC_START_LINE: string = '<!-- vscode-markdown-toc -->';
+const TOC_END_LINE: string = '<!-- \/vscode-markdown-toc -->';
+const TOC_END_LINE_REGEX_STR: string = '<!-- \\\/vscode-markdown-toc -->';
 
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
@@ -30,23 +33,25 @@ async function createToc() {
 async function updateToc() {
     let editor = vscode.window.activeTextEditor;
     let doc = editor.document;
-    let tocRange = await detectTocRange(doc);
-    if (tocRange != null) {
-        let oldToc = getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol);
-        let newToc = await generateTocText();
-        if (oldToc !== newToc) {
-            let unchangedLength = commonPrefixLength(oldToc, newToc);
-            let newStart = doc.positionAt(doc.offsetAt(tocRange.start) + unchangedLength);
-            let replaceRange = tocRange.with(newStart);
-            await editor.edit(editBuilder => {
-                if (replaceRange.isEmpty) {
-                    editBuilder.insert(replaceRange.start, newToc.substring(unchangedLength));
-                } else {
-                    editBuilder.replace(replaceRange, newToc.substring(unchangedLength));
+    let tocRanges = await detectTocRanges(doc);
+    let newToc = await generateTocText();
+    await editor.edit(editBuilder => {
+        for (let tocRange of tocRanges) {
+            if (tocRange != null) {
+                let oldToc = getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol);
+                if (oldToc !== newToc) {
+                    let unchangedLength = commonPrefixLength(oldToc, newToc);
+                    let newStart = doc.positionAt(doc.offsetAt(tocRange.start) + unchangedLength);
+                    let replaceRange = tocRange.with(newStart);
+                    if (replaceRange.isEmpty) {
+                        editBuilder.insert(replaceRange.start, newToc.substring(unchangedLength));
+                    } else {
+                        editBuilder.replace(replaceRange, newToc.substring(unchangedLength));
+                    }
                 }
-            });
+            }
         }
-    }
+    });
 }
 
 async function generateTocText(): Promise<string> {
@@ -87,34 +92,27 @@ async function generateTocText(): Promise<string> {
     while (/^[ \t]/.test(toc[0])) {
         toc = toc.slice(1);
     }
-    return toc.join(docConfig.eol);
+    let tocList = toc.join(docConfig.eol);
+    return `${TOC_START_LINE}${docConfig.eol}${tocList}${docConfig.eol}${TOC_END_LINE}`;
 }
 
-async function detectTocRange(doc: vscode.TextDocument): Promise<vscode.Range> | null {
-    let newTocText = await generateTocText();
+/**
+ * Returns an array of TOC ranges.
+ * If no TOC found, returns an empty array.
+ * @param doc a TextDocument
+ */
+async function detectTocRanges(doc: vscode.TextDocument): Promise<Array<vscode.Range>> {
+    let tocRanges = [];
     let fullText = doc.getText();
-    let listRegex = /(?:^|\r?\n)((?:[-+*]|[0-9]+[.)]) .*(?:\r?\n[ \t]*(?:[-+*]|[0-9]+[.)]) .*)*)/g;
+    let tocRegexStr = `${TOC_START_LINE}\\r?\\n(((?!${TOC_START_LINE})[\\s\\S])*)\\r?\\n${TOC_END_LINE_REGEX_STR}`;
+    let tocRegex = new RegExp(tocRegexStr, 'g');
     let match;
-    while ((match = listRegex.exec(fullText)) !== null) {
-        let listText = match[1];
-
-        let firstLine: string = listText.split(/\r?\n/)[0];
-        if (vscode.workspace.getConfiguration('markdown.extension.toc').get<boolean>('plaintext')) {
-            // A lazy way to check whether it is a link
-            if (firstLine.includes('](')) {
-                continue;
-            }
-        } else {
-            if (!firstLine.includes('](#')) {
-                continue;
-            }
-        }
-
-        if (radioOfCommonPrefix(newTocText, listText) + similarity(newTocText, listText) > 0.5) {
-            return new vscode.Range(doc.positionAt(fullText.indexOf(listText)), doc.positionAt(fullText.indexOf(listText) + listText.length));
-        }
+    while ((match = tocRegex.exec(fullText)) != null) {
+        tocRanges.push(
+            new vscode.Range(doc.positionAt(match.index), doc.positionAt(tocRegex.lastIndex))
+        );
     }
-    return null;
+    return tocRanges;
 }
 
 function commonPrefixLength(s1, s2) {
@@ -125,60 +123,6 @@ function commonPrefixLength(s1, s2) {
         }
     }
     return minLength;
-}
-
-function radioOfCommonPrefix(s1, s2) {
-    let minLength = Math.min(s1.length, s2.length);
-    let maxLength = Math.max(s1.length, s2.length);
-
-    let prefixLength = commonPrefixLength(s1, s2);
-    if (prefixLength < minLength) {
-        return prefixLength / minLength;
-    } else {
-        return minLength / maxLength;
-    }
-}
-
-function similarity(s1, s2) {
-    var longer = s1;
-    var shorter = s2;
-    if (s1.length < s2.length) {
-        longer = s2;
-        shorter = s1;
-    }
-    var longerLength = longer.length;
-    if (longerLength == 0) {
-        return 1.0;
-    }
-    return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
-}
-
-function editDistance(s1, s2) {
-    s1 = s1.toLowerCase();
-    s2 = s2.toLowerCase();
-
-    var costs = new Array();
-    for (var i = 0; i <= s1.length; i++) {
-        var lastValue = i;
-        for (var j = 0; j <= s2.length; j++) {
-            if (i == 0)
-                costs[j] = j;
-            else {
-                if (j > 0) {
-                    var newValue = costs[j - 1];
-                    if (s1.charAt(i - 1) != s2.charAt(j - 1))
-                        newValue = Math.min(Math.min(newValue, lastValue),
-                            costs[j]) + 1;
-                    costs[j - 1] = lastValue;
-                    lastValue = newValue;
-                }
-            }
-        }
-        if (i > 0) {
-            costs[s2.length] = lastValue;
-        }
-    }
-    return costs[s2.length];
 }
 
 function onWillSave(e: vscode.TextDocumentWillSaveEvent) {
@@ -261,17 +205,18 @@ class TocCodeLensProvider implements vscode.CodeLensProvider {
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken):
         vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
         let lenses: vscode.CodeLens[] = [];
-        return detectTocRange(document).then(tocRange => {
-            if (tocRange == null) return lenses; // No TOC
-            return generateTocText().then(text => {
-                let status = getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol) === text ? 'up to date' : 'out of date';
-                lenses.push(new vscode.CodeLens(tocRange, {
-                    arguments: [],
-                    title: `Table of Contents (${status})`,
-                    command: ''
-                }));
-                return lenses;
-            });
+        return detectTocRanges(document).then(tocRanges => {
+            for (let tocRange of tocRanges) {
+                generateTocText().then(text => {
+                    let status = getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol) === text ? 'up to date' : 'out of date';
+                    lenses.push(new vscode.CodeLens(tocRange, {
+                        arguments: [],
+                        title: `Table of Contents (${status})`,
+                        command: ''
+                    }));
+                });
+            }
+            return lenses;
         });
     }
 }
