@@ -42,11 +42,13 @@ suite("TOC.", () => {
                 '',
                 '# Section 2',
                 '',
+                '<!-- vscode-markdown-toc -->',
                 '- [Section 1](#section-1)',
                 '  - [Section 1.1](#section-11)',
-                '- [Section 2](#section-2)'
+                '- [Section 2](#section-2)',
+                '<!-- \/vscode-markdown-toc -->'
             ],
-            new Selection(8, 25, 8, 25)).then(done, done);
+            new Selection(10, 29, 10, 29)).then(done, done);
     });
 
     test("Update", done => {
@@ -60,9 +62,11 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
+                '<!-- vscode-markdown-toc -->',
                 '- [Section 1](#section-1)',
                 '  - [Section 1.1](#section-11)',
-                '- [Section 2](#section-2)'
+                '- [Section 2](#section-2)',
+                '<!-- \/vscode-markdown-toc -->'
             ],
             new Selection(0, 0, 0, 0),
             [
@@ -74,10 +78,12 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
+                '<!-- vscode-markdown-toc -->',
                 '- [Section 1](#section-1)',
                 '  - [Section 1.1](#section-11)',
                 '- [Section 2](#section-2)',
-                '  - [Section 2.1](#section-21)'
+                '  - [Section 2.1](#section-21)',
+                '<!-- \/vscode-markdown-toc -->'
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
@@ -124,12 +130,14 @@ suite("TOC.", () => {
                 '',
                 '#### Section 2.1.1.1',
                 '',
+                '<!-- vscode-markdown-toc -->',
                 '- [Section 1.1](#section-11)',
                 '  - [Section 1.1.1](#section-111)',
                 '- [Section 2.1](#section-21)',
                 '  - [Section 2.1.1](#section-211)',
+                '<!-- \/vscode-markdown-toc -->'
             ],
-            new Selection(19, 33, 19, 33)).then(done, done);
+            new Selection(21, 29, 21, 29)).then(done, done);
     });
 
     test("Update (levels 2..3)", done => {
@@ -150,10 +158,12 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
+                '<!-- vscode-markdown-toc -->',
                 '- [Section 1.1](#section-11)',
                 '  - [Section 1.1.1](#section-111)',
                 '- [Section 2.1](#section-21)',
                 '  - [Section 2.1.1](#section-211)',
+                '<!-- \/vscode-markdown-toc -->'
             ],
             new Selection(0, 0, 0, 0),
             [
@@ -169,9 +179,11 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
+                '<!-- vscode-markdown-toc -->',
                 '- [Section 1.1](#section-11)',
                 '  - [Section 1.1.1](#section-111)',
-                '- [Section 2.1](#section-21)'
+                '- [Section 2.1](#section-21)',
+                '<!-- \/vscode-markdown-toc -->'
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
@@ -195,11 +207,13 @@ suite("TOC.", () => {
                 '',
                 '# Section 2',
                 '',
+                '<!-- vscode-markdown-toc -->',
                 '- [Section 中文](#section-%E4%B8%AD%E6%96%87)',
                 '  - [Section 1.1](#section-11)',
-                '- [Section 2](#section-2)'
+                '- [Section 2](#section-2)',
+                '<!-- \/vscode-markdown-toc -->'
             ],
-            new Selection(8, 25, 8, 25)).then(done, done);
+            new Selection(10, 29, 10, 29)).then(done, done);
     });
 
     test("Slugify. `a.b` c => ab-c", done => {
@@ -213,9 +227,11 @@ suite("TOC.", () => {
             [
                 '# `a.b` c',
                 '',
-                '- [`a.b` c](#ab-c)'
+                '<!-- vscode-markdown-toc -->',
+                '- [`a.b` c](#ab-c)',
+                '<!-- \/vscode-markdown-toc -->'
             ],
-            new Selection(2, 18, 2, 18)).then(done, done);
+            new Selection(4, 29, 4, 29)).then(done, done);
     });
 
     test("Setext headings", done => {
@@ -237,10 +253,12 @@ suite("TOC.", () => {
                 'Section 1.1',
                 '---',
                 '',
+                '<!-- vscode-markdown-toc -->',
                 '- [Section 1](#section-1)',
-                '  - [Section 1.1](#section-11)'
+                '  - [Section 1.1](#section-11)',
+                '<!-- \/vscode-markdown-toc -->'
             ],
-            new Selection(7, 30, 7, 30)).then(done, done);
+            new Selection(9, 29, 9, 29)).then(done, done);
     });
 
     test("Non-Latin symbols", done => {
@@ -261,9 +279,60 @@ suite("TOC.", () => {
                 '',
                 '## Секция 1.1',
                 '',
+                '<!-- vscode-markdown-toc -->',
                 '- [Секция 1](#Секция-1)',
-                '  - [Секция 1.1](#Секция-11)'
+                '  - [Секция 1.1](#Секция-11)',
+                '<!-- \/vscode-markdown-toc -->'
             ],
-            new Selection(5, 28, 5, 28)).then(done, done);
+            new Selection(7, 29, 7, 29)).then(done, done);
+    });
+
+    test("Update multiple TOCs", done => {
+        testCommand('markdown.extension.toc.update',
+            {
+                "markdown.extension.toc.githubCompatibility": true
+            },
+            [
+                '# Head 1',
+                '# Head 2',
+                '',
+                '<!-- vscode-markdown-toc -->',
+                '- [Head 1](#head-1)',
+                '- [Head 2](#head-2)',
+                '- [Head 3](#head-3)',
+                '<!-- \/vscode-markdown-toc -->',
+                '',
+                '<!-- vscode-markdown-toc -->',
+                '- [Head 1](#head-1)',
+                '- [Head 2](#head-2)',
+                '- [Head 3](#head-3)',
+                '<!-- \/vscode-markdown-toc -->',
+                '',
+                '# Head 3',
+                '# Head 4'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '# Head 1',
+                '# Head 2',
+                '',
+                '<!-- vscode-markdown-toc -->',
+                '- [Head 1](#head-1)',
+                '- [Head 2](#head-2)',
+                '- [Head 3](#head-3)',
+                '- [Head 4](#head-4)',
+                '<!-- \/vscode-markdown-toc -->',
+                '',
+                '<!-- vscode-markdown-toc -->',
+                '- [Head 1](#head-1)',
+                '- [Head 2](#head-2)',
+                '- [Head 3](#head-3)',
+                '- [Head 4](#head-4)',
+                '<!-- \/vscode-markdown-toc -->',
+                '',
+                '# Head 3',
+                '# Head 4',
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
     });
 });
