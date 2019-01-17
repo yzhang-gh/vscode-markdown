@@ -153,14 +153,14 @@ function onBackspaceKey() {
 
     if (!editor.selection.isEmpty) {
         return asNormal('backspace').then(() => fixMarker(findNextMarkerLineNumber()));
-    } else if (/^\s+([-+*]|[0-9]+[.)]) (\[[ x]\] )?$/.test(textBeforeCursor)) {
+    } else if (/^\s+([-+*]|[0-9]+[.)]) +(\[[ x]\] )?$/.test(textBeforeCursor)) {
         return outdent(editor).then(() => fixMarker());
     } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- ', '1. '
         return editor.edit(editBuilder => {
             editBuilder.replace(new Range(cursor.with({ character: 0 }), cursor), ' '.repeat(textBeforeCursor.length))
         }).then(() => fixMarker(findNextMarkerLineNumber()));
-    } else if (/^([-+*]|[0-9]+[.)]) (\[[ x]\] )$/.test(textBeforeCursor)) {
+    } else if (/^([-+*]|[0-9]+[.)]) +(\[[ x]\] )$/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor == '- [ ]', '1. [x]'
         return deleteRange(editor, new Range(cursor.with({ character: textBeforeCursor.length - 4 }), cursor)).then(() => fixMarker(findNextMarkerLineNumber()));
     } else {
@@ -397,11 +397,11 @@ function checkTaskList() {
     let line = editor.document.lineAt(cursorPos.line).text;
 
     let matches;
-    if (matches = /^(\s*([-+*]|[0-9]+[.)]) \[) \]/.exec(line)) {
+    if (matches = /^(\s*([-+*]|[0-9]+[.)]) +\[) \]/.exec(line)) {
         return editor.edit(editBuilder => {
             editBuilder.replace(new Range(cursorPos.with({ character: matches[1].length }), cursorPos.with({ character: matches[1].length + 1 })), 'x');
         });
-    } else if (matches = /^(\s*([-+*]|[0-9]+[.)]) \[)x\]/.exec(line)) {
+    } else if (matches = /^(\s*([-+*]|[0-9]+[.)]) +\[)x\]/.exec(line)) {
         return editor.edit(editBuilder => {
             editBuilder.replace(new Range(cursorPos.with({ character: matches[1].length }), cursorPos.with({ character: matches[1].length + 1 })), ' ');
         });
