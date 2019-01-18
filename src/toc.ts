@@ -35,7 +35,7 @@ async function updateToc() {
     let newToc = await generateTocText();
     await editor.edit(editBuilder => {
         for (let tocRange of tocRanges) {
-            if (tocRange != null) {
+            if (tocRange !== null) {
                 let oldToc = getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol);
                 if (oldToc !== newToc) {
                     let unchangedLength = commonPrefixLength(oldToc, newToc);
@@ -104,8 +104,21 @@ async function detectTocRanges(doc: vscode.TextDocument): Promise<Array<vscode.R
     let fullText = doc.getText();
     let listRegex = /(?:^|\r?\n)((?:[-+*]|[0-9]+[.)]) .*(?:\r?\n[ \t]*(?:[-+*]|[0-9]+[.)]) .*)*)/g;
     let match;
-    while ((match = listRegex.exec(fullText)) != null) {
+    while ((match = listRegex.exec(fullText)) !== null) {
         let listText = match[1];
+
+        let firstLine: string = listText.split(/\r?\n/)[0];
+        if (vscode.workspace.getConfiguration('markdown.extension.toc').get<boolean>('plaintext')) {
+            // A lazy way to check whether it is a link
+            if (firstLine.includes('](')) {
+                continue;
+            }
+        } else {
+            if (!firstLine.includes('](#')) {
+                continue;
+            }
+        }
+
         if (radioOfCommonPrefix(newTocText, listText) + stringSimilarity.compareTwoStrings(newTocText, listText) > 0.5) {
             tocRanges.push(
                 new vscode.Range(doc.positionAt(match.index + docConfig.eol.length), doc.positionAt(listRegex.lastIndex))
