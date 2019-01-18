@@ -95,17 +95,17 @@ async function generateTocText(): Promise<string> {
 
 /**
  * Returns an array of TOC ranges.
- * If no TOC found, returns an empty array.
+ * If no TOC is found, returns an empty array.
  * @param doc a TextDocument
  */
 async function detectTocRanges(doc: vscode.TextDocument): Promise<Array<vscode.Range>> {
     let tocRanges = [];
     let newTocText = await generateTocText();
     let fullText = doc.getText();
-    let listRegex = /(?:^|\r?\n)((?:[-+*]|[0-9]+[.)]) .*(?:\r?\n[ \t]*(?:[-+*]|[0-9]+[.)]) .*)*)/g;
+    let listRegex = /(^|\r?\n)((?:[-+*]|[0-9]+[.)]) .*(?:\r?\n[ \t]*(?:[-+*]|[0-9]+[.)]) .*)*)/g;
     let match;
     while ((match = listRegex.exec(fullText)) !== null) {
-        let listText = match[1];
+        let listText = match[2];
 
         // Prevent fake TOC like [#304](https://github.com/neilsustc/vscode-markdown/issues/304)
         let firstLine: string = listText.split(/\r?\n/)[0];
@@ -122,7 +122,7 @@ async function detectTocRanges(doc: vscode.TextDocument): Promise<Array<vscode.R
 
         if (radioOfCommonPrefix(newTocText, listText) + stringSimilarity.compareTwoStrings(newTocText, listText) > 0.5) {
             tocRanges.push(
-                new vscode.Range(doc.positionAt(match.index + docConfig.eol.length), doc.positionAt(listRegex.lastIndex))
+                new vscode.Range(doc.positionAt(match.index + match[1].length), doc.positionAt(listRegex.lastIndex))
             );
         }
     }
