@@ -2,15 +2,13 @@
 
 import * as vscode from 'vscode';
 import { extractText, isMdEditor, mdDocSelector, slugify } from './util';
+import * as stringSimilarity from 'string-similarity';
 
 /**
  * Workspace config
  */
 const docConfig = { tab: '  ', eol: '\r\n' };
 const tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false, tabSize: 2 };
-const TOC_START_LINE: string = '<!-- vscode-markdown-toc -->';
-const TOC_END_LINE: string = '<!-- \/vscode-markdown-toc -->';
-const TOC_END_LINE_REGEX_STR: string = '<!-- \\\/vscode-markdown-toc -->';
 
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
@@ -92,8 +90,7 @@ async function generateTocText(): Promise<string> {
     while (/^[ \t]/.test(toc[0])) {
         toc = toc.slice(1);
     }
-    let tocList = toc.join(docConfig.eol);
-    return `${TOC_START_LINE}${docConfig.eol}${tocList}${docConfig.eol}${TOC_END_LINE}`;
+    return toc.join(docConfig.eol);
 }
 
 /**
@@ -103,14 +100,17 @@ async function generateTocText(): Promise<string> {
  */
 async function detectTocRanges(doc: vscode.TextDocument): Promise<Array<vscode.Range>> {
     let tocRanges = [];
+    let newTocText = await generateTocText();
     let fullText = doc.getText();
-    let tocRegexStr = `${TOC_START_LINE}\\r?\\n(((?!${TOC_START_LINE})[\\s\\S])*)\\r?\\n${TOC_END_LINE_REGEX_STR}`;
-    let tocRegex = new RegExp(tocRegexStr, 'g');
+    let listRegex = /(?:^|\r?\n)((?:[-+*]|[0-9]+[.)]) .*(?:\r?\n[ \t]*(?:[-+*]|[0-9]+[.)]) .*)*)/g;
     let match;
-    while ((match = tocRegex.exec(fullText)) != null) {
-        tocRanges.push(
-            new vscode.Range(doc.positionAt(match.index), doc.positionAt(tocRegex.lastIndex))
-        );
+    while ((match = listRegex.exec(fullText)) != null) {
+        let listText = match[1];
+        if (radioOfCommonPrefix(newTocText, listText) + stringSimilarity.compareTwoStrings(newTocText, listText) > 0.5) {
+            tocRanges.push(
+                new vscode.Range(doc.positionAt(match.index + docConfig.eol.length), doc.positionAt(listRegex.lastIndex))
+            );
+        }
     }
     return tocRanges;
 }
@@ -123,6 +123,18 @@ function commonPrefixLength(s1, s2) {
         }
     }
     return minLength;
+}
+
+function radioOfCommonPrefix(s1, s2) {
+    let minLength = Math.min(s1.length, s2.length);
+    let maxLength = Math.max(s1.length, s2.length);
+
+    let prefixLength = commonPrefixLength(s1, s2);
+    if (prefixLength < minLength) {
+        return prefixLength / minLength;
+    } else {
+        return minLength / maxLength;
+    }
 }
 
 function onWillSave(e: vscode.TextDocumentWillSaveEvent) {

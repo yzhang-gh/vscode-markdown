@@ -328,8 +328,9 @@
         "@neilsustc/markdown-it-katex": "^0.3.0",
         "highlight.js": "^9.13.1",
         "image-size": "^0.6.3",
+        "markdown-it": "^8.4.2",
         "markdown-it-task-lists": "^2.1.1",
-        "markdown-it": "^8.4.2"
+        "string-similarity": "^3.0.0"
     },
     "devDependencies": {
         "@types/highlight.js": "^9.12.3",
