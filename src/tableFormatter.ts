@@ -28,7 +28,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     private detectTables(text: string) {
         const lineBreak = '\\r?\\n';
         const contentLine = '\\|?.*\\|.*\\|?';
-        const hyphenLine = '[ \\t]*\\|?( *:?-{3,}:? *\\|)+( *:?-{3,}:? *\\|?)[ \\t]*';
+        const hyphenLine = '[ \\t]*\\|?( *:?-+:? *\\|)+( *:?-+:? *\\|?)[ \\t]*';
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
         return text.match(tableRegex);
     }
