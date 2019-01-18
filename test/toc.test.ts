@@ -266,4 +266,45 @@ suite("TOC.", () => {
             ],
             new Selection(5, 28, 5, 28)).then(done, done);
     });
+
+    test("Update multiple TOCs", done => {
+        testCommand('markdown.extension.toc.update',
+            {
+                "markdown.extension.toc.githubCompatibility": true
+            },
+            [
+                '# Head 1',
+                '# Head 2',
+                '',
+                '- [Head 1](#head-1)',
+                '- [Head 2](#head-2)',
+                '- [Head 3](#head-3)',
+                '',
+                '- [Head 1](#head-1)',
+                '- [Head 2](#head-2)',
+                '- [Head 3](#head-3)',
+                '',
+                '# Head 3',
+                '# Head 4'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '# Head 1',
+                '# Head 2',
+                '',
+                '- [Head 1](#head-1)',
+                '- [Head 2](#head-2)',
+                '- [Head 3](#head-3)',
+                '- [Head 4](#head-4)',
+                '',
+                '- [Head 1](#head-1)',
+                '- [Head 2](#head-2)',
+                '- [Head 3](#head-3)',
+                '- [Head 4](#head-4)',
+                '',
+                '# Head 3',
+                '# Head 4'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
 });
