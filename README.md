@@ -2,8 +2,8 @@
 
 [![version](https://img.shields.io/vscode-marketplace/v/yzhang.markdown-all-in-one.svg?style=flat-square&label=vscode%20marketplace)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)  
 [![installs](https://img.shields.io/vscode-marketplace/d/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)  
-[![AppVeyor](https://img.shields.io/appveyor/ci/neilsustc/vscode-markdown.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/neilsustc/vscode-markdown)  
-[![GitHub stars](https://img.shields.io/github/stars/neilsustc/vscode-markdown.svg?style=flat-square&label=github%20stars)](https://github.com/neilsustc/vscode-markdown)
+[![AppVeyor](https://img.shields.io/appveyor/ci/yzhang-gh/vscode-markdown.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/yzhang-gh/vscode-markdown)  
+[![GitHub stars](https://img.shields.io/github/stars/yzhang-gh/vscode-markdown.svg?style=flat-square&label=github%20stars)](https://github.com/yzhang-gh/vscode-markdown)
 
 All you need for Markdown (keyboard shortcuts, table of contents, auto preview and more).
 
@@ -132,12 +132,12 @@ See [CHANGELOG](CHANGELOG.md) for more information.
 
 ## Latest Development Build
 
-Download it [here](https://ci.appveyor.com/project/neilsustc/vscode-markdown/build/artifacts).
+Download it [here](https://ci.appveyor.com/project/yzhang-gh/vscode-markdown/build/artifacts).
 
 To install, execute `Extensions: Install from VSIX...` in the Command Palette (`ctrl + shift + p`)
 
 ## Contributing
 
-Bugs, feature requests and more, in [GitHub Issues](https://github.com/neilsustc/vscode-markdown/issues).
+Bugs, feature requests and more, in [GitHub Issues](https://github.com/yzhang-gh/vscode-markdown/issues).
 
 Or leave a review on [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one#review-details) 😉.

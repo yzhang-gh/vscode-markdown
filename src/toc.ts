@@ -107,7 +107,7 @@ async function detectTocRanges(doc: vscode.TextDocument): Promise<Array<vscode.R
     while ((match = listRegex.exec(fullText)) !== null) {
         let listText = match[2];
 
-        // Prevent fake TOC like [#304](https://github.com/neilsustc/vscode-markdown/issues/304)
+        // Prevent fake TOC like [#304](https://github.com/yzhang-gh/vscode-markdown/issues/304)
         let firstLine: string = listText.split(/\r?\n/)[0];
         if (vscode.workspace.getConfiguration('markdown.extension.toc').get<boolean>('plaintext')) {
             // A lazy way to check whether it is a link

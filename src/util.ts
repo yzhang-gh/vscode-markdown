@@ -31,7 +31,7 @@ export function getNewFeatureMsg(version: string) {
 }
 
 export function showChangelog() {
-    commands.executeCommand('vscode.open', Uri.parse('https://github.com/neilsustc/vscode-markdown/blob/master/CHANGELOG.md'));
+    commands.executeCommand('vscode.open', Uri.parse('https://github.com/yzhang-gh/vscode-markdown/blob/master/CHANGELOG.md'));
 }
 
 /* ┌─────────────────┐

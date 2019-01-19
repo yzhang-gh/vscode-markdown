@@ -15,11 +15,11 @@
         "markdown"
     ],
     "bugs": {
-        "url": "https://github.com/neilsustc/vscode-markdown/issues"
+        "url": "https://github.com/yzhang-gh/vscode-markdown/issues"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/neilsustc/vscode-markdown"
+        "url": "https://github.com/yzhang-gh/vscode-markdown"
     },
     "license": "MIT",
     "activationEvents": [
