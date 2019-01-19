@@ -1,8 +1,33 @@
+### 2.0.0 (2019.01.19)
+
+🎂🎂 This extension is 2 years old!
+
+- **New**: Option `markdown.extension.list.indentationSize` ([#344](https://github.com/neilsustc/vscode-markdown/issues/344)).
+  - `adaptive`: use 2 spaces indentation for unordered lists, 3 for ordered lists.
+  - `inherit`: respect the tab size setting of current file.
+- **New**: Copy math as TeX command in exported HTML ([#358](https://github.com/neilsustc/vscode-markdown/issues/358)).
+
+<!--  -->
+
+- **Fix**: Many performance issue ([#181](https://github.com/neilsustc/vscode-markdown/issues/181), [#323](https://github.com/neilsustc/vscode-markdown/issues/323)).
+- **Fix**: Fake heading in YAML front matter ([#343](https://github.com/neilsustc/vscode-markdown/issues/343)).
+- **Fix**: Math function `\neq` rendering ([#252](https://github.com/neilsustc/vscode-markdown/issues/252), [#349](https://github.com/neilsustc/vscode-markdown/issues/349)).
+- **Fix**: Keybinding for checking/unchecking task list ([#361](https://github.com/neilsustc/vscode-markdown/issues/361)).
+- **Fix**: <kbd>Backspace</kbd> conflicts with Vim extension ([#362](https://github.com/neilsustc/vscode-markdown/issues/362)).
+- **Fix**: GFM table syntax ([#316](https://github.com/neilsustc/vscode-markdown/issues/316)).
+
+Thanks a lot, [Li Yiming (@upupming)](https://github.com/upupming).
+
+---
+
 ### 1.8.0 (2018.12.08)
 
 - **New**: Option `markdown.extension.toc.tabSize`, default `auto`. Thanks, [Maël Valais (@maelvalais)](https://github.com/maelvalais).
 - **New**: Adaptive indentation size on <kbd>Tab</kbd>/<kbd>Backspace</kbd> key ([#155](https://github.com/neilsustc/vscode-markdown/issues/155), [#241](https://github.com/neilsustc/vscode-markdown/issues/241)).
-- **New**: Better alignment of cells within tables. Thanks, [K Sriram (@ksri91)](https://github.com/ksri91).
+- **New**: Better alignment of cells within tables ([#341](https://github.com/neilsustc/vscode-markdown/issues/341)). Thanks, [Sriram Krishna (@k-sriram)](https://github.com/k-sriram).
+
+<!--  -->
+
 - **Fix**: Support setext headings in TOC ([#284](https://github.com/neilsustc/vscode-markdown/issues/284), [#311](https://github.com/neilsustc/vscode-markdown/issues/311)).
 - **Fix**: Markdown preview stylesheets priority (VSCode base styles < VSCode preview settings < Custom stylesheets) ([#329](https://github.com/neilsustc/vscode-markdown/issues/329)).
 - **Fix**: Math completions for untitled document ([#326](https://github.com/neilsustc/vscode-markdown/issues/326)).
@@ -14,6 +39,9 @@
 ### 1.7.0 (2018.10.27)
 
 - **New**: Math syntax highlight ([#254](https://github.com/neilsustc/vscode-markdown/issues/254)). Many thanks, [@linsui](https://github.com/linsui).
+
+<!--  -->
+
 - **Fix**: `imgToBase64` option doesn't apply to relative image paths ([#266](https://github.com/neilsustc/vscode-markdown/issues/266)).
 - **Fix**: TOC generation error `Cannot read property '1' of null` ([#275](https://github.com/neilsustc/vscode-markdown/issues/275)).
 - **Fix**: Escape HTML markup in code blocks ([#285](https://github.com/neilsustc/vscode-markdown/issues/285)).

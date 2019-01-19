@@ -80,6 +80,9 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ## Keyboard Shortcuts
 
+<details>
+<summary>Table</summary>
+
 | Key                                               | Command                      |
 | ------------------------------------------------- | ---------------------------- |
 | <kbd>Ctrl</kbd> + <kbd>B</kbd>                    | Toggle bold                  |
@@ -92,29 +95,36 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> | Toggle preview               |
 | <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>       | Toggle preview to side       |
 
+</details>
 
 Tip: `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
 
 ## Supported Settings
 
-| Name                                               | Default   | Description                                                       |
-| -------------------------------------------------- | --------- | ----------------------------------------------------------------- |
-| `markdown.extension.toc.levels`                    | `1..6`    | Control the heading levels to show in the table of contents.      |
-| `markdown.extension.toc.unorderedList.marker`      | `-`       | Use `-`, `*` or `+` in the table of contents (for unordered list) |
-| `markdown.extension.toc.orderedList`               | `false`   | Use ordered list in the table of contents.                        |
-| `markdown.extension.toc.plaintext`                 | `false`   | Just plain text.                                                  |
-| `markdown.extension.toc.updateOnSave`              | `true`    | Automatically update the table of contents on save.               |
-| `markdown.extension.toc.githubCompatibility`       | `false`   | GitHub compatibility                                              |
-| `markdown.extension.preview.autoShowPreviewToSide` | `false`   | Automatically show preview when opening a Markdown file.          |
-| `markdown.extension.orderedList.marker`            | `ordered` | Or `one`: always use `1.` as ordered list marker                  |
-| `markdown.extension.orderedList.autoRenumber`      | `true`    | Auto fix list markers as you edits                                |
-| `markdown.extension.italic.indicator`              | `*`       | Use `*` or `_` to wrap italic text                                |
-| `markdown.extension.showExplorer`                  | `true`    | Show outline view in explorer panel                               |
-| `markdown.extension.print.absoluteImgPath`         | `true`    | Convert image path to absolute path                               |
-| `markdown.extension.print.imgToBase64`             | `false`   | Convert images to base64 when printing to HTML                    |
-| `markdown.extension.syntax.decorations`            | `true`    | Add decorations to strikethrough and code spans                   |
-| `markdown.extension.syntax.plainTheme`             | `false`   | A distraction-free theme                                          |
-| `markdown.extension.toc.tabSize`                   | `auto`    | Control the indentation size of TOC (`auto` or a number)          |
+<details>
+<summary>Table</summary>
+
+| Name                                               | Default    | Description                                                       |
+| -------------------------------------------------- | ---------- | ----------------------------------------------------------------- |
+| `markdown.extension.toc.levels`                    | `1..6`     | Control the heading levels to show in the table of contents.      |
+| `markdown.extension.toc.unorderedList.marker`      | `-`        | Use `-`, `*` or `+` in the table of contents (for unordered list) |
+| `markdown.extension.toc.orderedList`               | `false`    | Use ordered list in the table of contents.                        |
+| `markdown.extension.toc.plaintext`                 | `false`    | Just plain text.                                                  |
+| `markdown.extension.toc.updateOnSave`              | `true`     | Automatically update the table of contents on save.               |
+| `markdown.extension.toc.githubCompatibility`       | `false`    | GitHub compatibility                                              |
+| `markdown.extension.preview.autoShowPreviewToSide` | `false`    | Automatically show preview when opening a Markdown file.          |
+| `markdown.extension.orderedList.marker`            | `ordered`  | Or `one`: always use `1.` as ordered list marker                  |
+| `markdown.extension.orderedList.autoRenumber`      | `true`     | Auto fix list markers as you edits                                |
+| `markdown.extension.italic.indicator`              | `*`        | Use `*` or `_` to wrap italic text                                |
+| `markdown.extension.showExplorer`                  | `true`     | Show outline view in explorer panel                               |
+| `markdown.extension.print.absoluteImgPath`         | `true`     | Convert image path to absolute path                               |
+| `markdown.extension.print.imgToBase64`             | `false`    | Convert images to base64 when printing to HTML                    |
+| `markdown.extension.syntax.decorations`            | `true`     | Add decorations to strikethrough and code spans                   |
+| `markdown.extension.syntax.plainTheme`             | `false`    | A distraction-free theme                                          |
+| `markdown.extension.toc.tabSize`                   | `auto`     | Control the indentation size of TOC (`auto` or a number)          |
+| `markdown.extension.list.indentationSize`          | `adaptive` | Use different indentation size for ordered and unordered list     |
+
+</details>
 
 ## Changelog
 
