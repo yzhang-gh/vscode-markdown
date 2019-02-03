@@ -221,7 +221,7 @@
                         "Use the configured tab size of the current document (see vscode status bar)"
                     ],
                     "default": "adaptive",
-                    "description": "Whether to use different indentation sizes on different context",
+                    "description": "Whether to use different indentation sizes on different contexts",
                     "scope": "resource"
                 },
                 "markdown.extension.preview.autoShowPreviewToSide": {
