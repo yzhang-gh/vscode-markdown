@@ -6,7 +6,7 @@ import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKin
 import { mdDocSelector } from './util';
 
 export function activate(context: ExtensionContext) {
-    context.subscriptions.push(languages.registerCompletionItemProvider(mdDocSelector, new MdCompletionItemProvider(), '(', '\\', '/'));
+    context.subscriptions.push(languages.registerCompletionItemProvider(mdDocSelector, new MdCompletionItemProvider(), '(', '\\', '/', '['));
 }
 
 class MdCompletionItemProvider implements CompletionItemProvider {
@@ -135,6 +135,19 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     return [];
                 }
             }
+        } else if (/\[[^\]]*?\]\[$/.test(lineTextBefore)) {
+            // Reference link labels
+            return new Promise((res, _) => {
+                let refLabels = document.getText().split(/\r?\n/).reduce((prev, curr) => {
+                    let match;
+                    if ((match = /^\[([^\]]*?)\]:.*/.exec(curr)) !== null) {
+                        prev.push(new CompletionItem(match[1], CompletionItemKind.Reference));
+                    }
+                    return prev;
+                }, []);
+
+                res(refLabels);
+            });
         } else {
             return [];
         }
