@@ -135,13 +135,18 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     return [];
                 }
             }
-        } else if (/\[[^\]]*?\]\[$/.test(lineTextBefore)) {
+        } else if (/\[[^\]]*?\]\[[^\]]*$/.test(lineTextBefore)) {
             // Reference link labels
+            let startIndex = lineTextBefore.lastIndexOf('[');
+            const range = new Range(position.with({ character: startIndex + 1 }), position);
             return new Promise((res, _) => {
                 let refLabels = document.getText().split(/\r?\n/).reduce((prev, curr) => {
                     let match;
-                    if ((match = /^\[([^\]]*?)\]:.*/.exec(curr)) !== null) {
-                        prev.push(new CompletionItem(match[1], CompletionItemKind.Reference));
+                    if ((match = /^\[([^\]]*?)\]: (\S*)( .*)?/.exec(curr)) !== null) {
+                        let item = new CompletionItem(match[1], CompletionItemKind.Reference);
+                        item.documentation = match[2];
+                        item.range = range;
+                        prev.push(item);
                     }
                     return prev;
                 }, []);
