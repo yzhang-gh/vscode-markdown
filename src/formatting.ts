@@ -1,6 +1,6 @@
 'use strict';
 
-import { commands, ExtensionContext, Position, Range, Selection, TextEditor, window, workspace } from 'vscode';
+import { commands, env, ExtensionContext, Position, Range, Selection, TextEditor, window, workspace } from 'vscode';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
@@ -11,7 +11,8 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.editing.toggleMath', toggleMath),
         commands.registerCommand('markdown.extension.editing.toggleHeadingUp', toggleHeadingUp),
         commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown),
-        commands.registerCommand('markdown.extension.editing.toggleUnorderedList', toggleUnorderedList)
+        commands.registerCommand('markdown.extension.editing.toggleUnorderedList', toggleUnorderedList),
+        commands.registerCommand('markdown.extension.editing.paste', paste)
     );
 }
 
@@ -113,6 +114,16 @@ function toggleUnorderedList() {
                 editBuilder.delete(new Range(cursor.line, indentation, cursor.line, cursor.character));
             });
     }
+}
+
+function paste() {
+    return env.clipboard.readText().then(text => {
+        if (/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(text)) {
+            return commands.executeCommand("editor.action.insertSnippet", { "snippet": `[$TM_SELECTED_TEXT$0](${text})` });
+        } else {
+            return commands.executeCommand("editor.action.clipboardPasteAction");
+        }
+    });
 }
 
 function styleByWrapping(startPattern, endPattern?) {
