@@ -1,8 +1,8 @@
 # Markdown Support for Visual Studio Code
 
-[![version](https://img.shields.io/vscode-marketplace/v/yzhang.markdown-all-in-one.svg?style=flat-square&label=vscode%20marketplace)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)  
-[![installs](https://img.shields.io/vscode-marketplace/d/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)  
-[![AppVeyor](https://img.shields.io/appveyor/ci/yzhang-gh/vscode-markdown.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/yzhang-gh/vscode-markdown)  
+[![version](https://img.shields.io/vscode-marketplace/v/yzhang.markdown-all-in-one.svg?style=flat-square&label=vscode%20marketplace)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
+[![installs](https://img.shields.io/vscode-marketplace/d/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
+[![AppVeyor](https://img.shields.io/appveyor/ci/yzhang-gh/vscode-markdown.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/yzhang-gh/vscode-markdown)
 [![GitHub stars](https://img.shields.io/github/stars/yzhang-gh/vscode-markdown.svg?style=flat-square&label=github%20stars)](https://github.com/yzhang-gh/vscode-markdown)
 
 All you need for Markdown (keyboard shortcuts, table of contents, auto preview and more).
@@ -10,13 +10,11 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 ## Features
 
 - **Keyboard shortcuts** (toggle bold, italic, code span, strikethrough and heading)
-  
-  ![toggle bold](images/gifs/keybinding.gif) (toggle bold)
-  
-  ![toggle bold 2](images/gifs/keybinding2.gif) (even when there is no word selected)
-  
+
+  ![ctrl b (multi-cursor)](images/gifs/multi-ctrl-b-light.gif) (toggle bold)
+
   ![check task list](images/gifs/keybinding-tasklist.gif) (check/uncheck task list)
-  
+
   See full key binding list in [keyboard shortcuts](#keyboard-shortcuts) section
 
 - **Table of contents**
@@ -24,13 +22,13 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   ![toc](images/toc.png)
 
   - The indentation rules (tab or spaces) of TOC will be the same of your current file (find it in the right bottom corner)
-  
+
   - To make TOC compatible with GitHub, you need to set option `githubCompatibility` to `true`
-  
+
   - Use `<!-- omit in toc -->` to ignore specific heading in TOC
 
 - **List editing**
-  
+
   ![on enter key 1](images/gifs/on-enter-key1.gif) (<kbd>Enter</kbd>)
 
   ![on enter key 2](images/gifs/on-enter-key2.gif) (<kbd>Enter</kbd>)
@@ -42,31 +40,43 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   ![marker fixing](images/gifs/marker-fixing.gif) (auto fix ordered list markers)
 
 - **Print Markdown to HTML**
-  
+
   - Command `Markdown: Print current document to HTML`
-  
+
   - It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others
 
-- **GitHub Flavored Markdown**
-  
+- **GitHub Flavoured Markdown**
+
   - Table formatter
-  
+
     ![table-formatter](images/gifs/table-formatter.gif)
 
   - Task list
 
 - **Math**
-  
+
   ![math](images/math.png)
 
 - **Auto completions**
 
-  ![image paths](images/image-completions.png) (images paths)
+  - Images
 
-  ![math completions](images/math-completions.png) (math commands)
+    ![image paths](images/image-completions.png)
+
+  - Math functions
+
+    ![math completions](images/math-completions.png)
+
+  - Reference links
+
+    ![suggest ref link](images/gifs/suggest-ref-link-light.png)
 
 - **Others**
-  
+
+  - Paste link on selected text
+
+    ![paste link](images/gifs/paste-link-light.gif)
+
   - Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
 
 ## Available Commands
@@ -138,6 +148,6 @@ To install, execute `Extensions: Install from VSIX...` in the Command Palette (`
 
 ## Contributing
 
-Bugs, feature requests and more, in [GitHub Issues](https://github.com/yzhang-gh/vscode-markdown/issues).
-
-Or leave a review on [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one#review-details) 😉.
+- File bugs, feature requests in [GitHub Issues](https://github.com/yzhang-gh/vscode-markdown/issues).
+- Leave a review on [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one#review-details).
+- Buy me a coffee ☕ (via [PayPal](https://www.paypal.me/2yzhang), [Alipay or WeChat](donate.md)).

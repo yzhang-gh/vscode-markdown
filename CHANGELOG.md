@@ -1,3 +1,23 @@
+### 2.1.0 (2019.02.16)
+
+- **New**: Paste link on selected text ([#20](https://github.com/yzhang-gh/vscode-markdown/issues/20)).
+
+  ![paste](images/gifs/paste.gif)
+
+- **New**: Multi-cursor support ([#33](https://github.com/yzhang-gh/vscode-markdown/issues/33)).
+
+  ![multi-cursor](images/gifs/multi-cursor.gif)
+
+- **New**: Auto-complete for reference link IDs ([#366](https://github.com/yzhang-gh/vscode-markdown/issues/366)).
+
+  ![suggest ref link](images/gifs/suggest-ref-link.png)
+
+- **Fix**: Conflict with `editor.tabCompletion` setting ([#367](https://github.com/yzhang-gh/vscode-markdown/issues/367)).
+
+- **Other**: Added ways to buy me a coffee 😉 ([PayPal](https://www.paypal.me/2yzhang), [Alipay or WeChat](donate.md)).
+
+---
+
 ### 2.0.0 (2019.01.19)
 
 🎂🎂 This extension is 2 years old!
