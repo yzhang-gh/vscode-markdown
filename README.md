@@ -107,8 +107,6 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 </details>
 
-Tip: `**word|**` -> `**word**|` (<kbd>Ctrl</kbd> + <kbd>B</kbd>)
-
 ## Supported Settings
 
 <details>
