@@ -58,7 +58,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     private formatTable(text: string, doc: TextDocument, options: FormattingOptions) {
         let indentation = this.getTableIndentation(text, options);
 
-        let rows = [];
+        let rows: string[] = [];
         let rowsNoIndentPattern = new RegExp(/^\s*(\S.*)$/gum);
         let match = null;
         while ((match = rowsNoIndentPattern.exec(text)) !== null) {
@@ -71,10 +71,18 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         let colAlign = []
         // Regex to extract cell content.
         // Known issue: `\\|` is not correctly parsed as a valid delimiter
-        let fieldRegExp = new RegExp(/(?:\|?((?:\\\||`.*?`|[^\|])+))/gu);
+        let fieldRegExp = new RegExp(/(?:((?:\\\||`.*?`|[^\|])*)\|)/gu);
         let cjkRegex = /[\u3000-\u9fff\uff01-\uff60‘“’”—]/g;
 
         let lines = rows.map((row, num) => {
+            // Normalize
+            if (row.startsWith('|')) {
+                row = row.slice(1);
+            }
+            if (!row.endsWith('|')) {
+                row = row + '|';
+            }
+
             let field = null;
             let values = [];
             let i = 0;

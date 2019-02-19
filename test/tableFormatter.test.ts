@@ -251,4 +251,20 @@ suite("Table formatter.", () => {
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
+
+    test("GitHub issue#381", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '| a | b | c |',
+                '| --- | --- | --- |',
+                '| a || c |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| a   | b   | c   |',
+                '| --- | --- | --- |',
+                '| a   |     | c   |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
 });
