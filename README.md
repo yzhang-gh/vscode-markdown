@@ -4,6 +4,7 @@
 [![installs](https://img.shields.io/vscode-marketplace/d/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
 [![AppVeyor](https://img.shields.io/appveyor/ci/yzhang-gh/vscode-markdown.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/yzhang-gh/vscode-markdown)
 [![GitHub stars](https://img.shields.io/github/stars/yzhang-gh/vscode-markdown.svg?style=flat-square&label=github%20stars)](https://github.com/yzhang-gh/vscode-markdown)
+[![VSCode Power User course](https://img.shields.io/badge/Learn%20-VSCode%20Power%20User%20Course%20%E2%86%92-gray.svg?style=flat-square&colorA=444444&colorB=4F44D6)](https://VSCode.pro?utm_source=MarkdownAllInOne)
 
 All you need for Markdown (keyboard shortcuts, table of contents, auto preview and more).
 
@@ -151,3 +152,7 @@ To install, execute `Extensions: Install from VSIX...` in the Command Palette (`
 - File bugs, feature requests in [GitHub Issues](https://github.com/yzhang-gh/vscode-markdown/issues).
 - Leave a review on [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one#review-details).
 - Buy me a coffee ☕ (via [PayPal](https://www.paypal.me/2yzhang), [Alipay or WeChat](donate.md)).
+
+---
+
+And a *Thank You* to [VSCode Power User Course](https://VSCode.pro?utm_source=MarkdownAllInOne) for sharing many VSCode tips with me.
