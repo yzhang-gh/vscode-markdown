@@ -51,6 +51,8 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
     ![table-formatter](images/gifs/table-formatter.gif)
 
+    (Note that the keybinding is <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd> on Linux)
+
   - Task list
 
 - **Math**
