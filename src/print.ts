@@ -126,7 +126,7 @@ async function print(type: string) {
     } else if (config.get<boolean>('print.absoluteImgPath')) {
         body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (_, p1, p2, p3) { // Match '<img...src="..."...>'
             const imgUri = fixHref(doc.uri, p2);
-            return `${p1}${imgUri.toString()}${p3}`;
+            return `${p1}${imgUri.toString(true)}${p3}`;
         });
     }
 
