@@ -1,3 +1,11 @@
+### 2.1.1 (2019.03.05)
+
+- **Fix**: Table format ([#381](https://github.com/yzhang-gh/vscode-markdown/issues/381)).
+- **Fix**: Unexpected link creation on pasting ([#382](https://github.com/yzhang-gh/vscode-markdown/issues/382)).
+- **Fix**: Image path encoding when printing ([#385](https://github.com/yzhang-gh/vscode-markdown/issues/385)).
+
+---
+
 ### 2.1.0 (2019.02.16)
 
 - **New**: Paste link on selected text ([#20](https://github.com/yzhang-gh/vscode-markdown/issues/20)).
