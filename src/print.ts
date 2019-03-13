@@ -227,6 +227,7 @@ function getCustomStyleSheets(resource: vscode.Uri): string[] {
     return [];
 }
 
+// See <https://github.com/Microsoft/vscode/blob/cceda8e2f2f1156a825cedb02901285393239b22/extensions/markdown-language-features/src/features/previewContentProvider.ts#L99>
 function fixHref(resource: vscode.Uri, href: string): vscode.Uri {
     if (!href) {
         return vscode.Uri.file(href);
@@ -241,6 +242,12 @@ function fixHref(resource: vscode.Uri, href: string): vscode.Uri {
     // Use href as file URI if it is absolute
     if (path.isAbsolute(href) || hrefUri.scheme === 'file') {
         return hrefUri;
+    }
+
+    // Use a workspace relative path if there is a workspace
+    let root = vscode.workspace.getWorkspaceFolder(resource);
+    if (root) {
+        return vscode.Uri.file(path.join(root.uri.fsPath, href));
     }
 
     // Otherwise look relative to the markdown file
