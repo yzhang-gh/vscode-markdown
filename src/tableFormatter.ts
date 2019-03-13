@@ -2,11 +2,29 @@
 
 // https://github.github.com/gfm/#tables-extension-
 
-import { CancellationToken, DocumentFormattingEditProvider, ExtensionContext, FormattingOptions, languages, Range, TextDocument, TextEdit, workspace, EndOfLine } from 'vscode';
+import { CancellationToken, Disposable, DocumentFormattingEditProvider, EndOfLine, ExtensionContext, FormattingOptions, languages, Range, TextDocument, TextEdit, workspace } from 'vscode';
 import { mdDocSelector } from './util';
 
-export function activate(context: ExtensionContext) {
-    context.subscriptions.push(languages.registerDocumentFormattingEditProvider(mdDocSelector, new MarkdownDocumentFormatter));
+export function activate(_: ExtensionContext) {
+    let registration: Disposable | undefined;
+
+    function registerFormatterIfEnabled() {
+        const isEnabled = workspace.getConfiguration().get('markdown.extension.tableFormatter.enabled', true);
+        if (isEnabled && !registration) {
+            registration = languages.registerDocumentFormattingEditProvider(mdDocSelector, new MarkdownDocumentFormatter());
+        } else if (!isEnabled && registration) {
+            registration.dispose();
+            registration = undefined;
+        }
+    }
+
+    registerFormatterIfEnabled();
+
+    workspace.onDidChangeConfiguration(event => {
+        if (event.affectsConfiguration('markdown.extension.tableFormatter.enabled')) {
+            registerFormatterIfEnabled();
+        }
+    });
 }
 
 export function deactivate() { }

@@ -2,7 +2,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { ExtensionContext, languages, window, workspace } from 'vscode';
+import { ExtensionContext, languages, window } from 'vscode';
 import * as completion from './completion';
 import * as formatting from './formatting';
 import * as listEditing from './listEditing';
@@ -39,9 +39,7 @@ function activateMdExt(context: ExtensionContext) {
     // Print to PDF
     print.activate(context);
     // Table formatter
-    if (workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('enabled')) {
-        tableFormatter.activate(context);
-    }
+    tableFormatter.activate(context);
     // Auto show preview to side
     preview.activate(context);
 
