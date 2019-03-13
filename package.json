@@ -333,22 +333,22 @@
     },
     "dependencies": {
         "@neilsustc/markdown-it-katex": "^0.3.0",
-        "highlight.js": "^9.13.1",
-        "image-size": "^0.6.3",
+        "highlight.js": "^9.15.6",
+        "image-size": "^0.7.2",
         "markdown-it": "^8.4.2",
         "markdown-it-task-lists": "^2.1.1",
         "string-similarity": "^3.0.0"
     },
     "devDependencies": {
         "@types/highlight.js": "^9.12.3",
-        "@types/image-size": "^0.0.29",
+        "@types/image-size": "^0.7.0",
         "@types/markdown-it": "^0.0.7",
-        "@types/mocha": "^5.2.5",
-        "@types/node": "^10.12.10",
-        "mocha": "^5.2.0",
+        "@types/mocha": "^5.2.6",
+        "@types/node": "^11.11.3",
+        "mocha": "^6.0.2",
         "ts-loader": "^5.3.3",
-        "typescript": "^3.1.6",
-        "vscode": "^1.1.29",
+        "typescript": "^3.3.3333",
+        "vscode": "^1.1.30",
         "webpack": "^4.29.6",
         "webpack-cli": "^3.2.3"
     }
