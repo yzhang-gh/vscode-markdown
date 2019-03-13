@@ -26,7 +26,7 @@
         "onLanguage:markdown",
         "workspaceContains:README.md"
     ],
-    "main": "./out/src/extension",
+    "main": "./dist/extension",
     "contributes": {
         "commands": [
             {
@@ -324,11 +324,12 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
+        "vscode:prepublish": "webpack --mode production",
+        "compile": "webpack --mode none",
+        "watch": "webpack --mode none --watch",
         "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+        "test": "tsc -p ./ && node ./node_modules/vscode/bin/test",
+        "test-compile": "tsc -p ./"
     },
     "dependencies": {
         "@neilsustc/markdown-it-katex": "^0.3.0",
@@ -345,7 +346,10 @@
         "@types/mocha": "^5.2.5",
         "@types/node": "^10.12.10",
         "mocha": "^5.2.0",
+        "ts-loader": "^5.3.3",
         "typescript": "^3.1.6",
-        "vscode": "^1.1.29"
+        "vscode": "^1.1.29",
+        "webpack": "^4.29.6",
+        "webpack-cli": "^3.2.3"
     }
 }

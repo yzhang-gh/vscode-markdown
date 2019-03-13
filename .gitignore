@@ -5,3 +5,4 @@ VERSION
 ROADMAP.md
 *.log
 /.vscode-test
+dist
