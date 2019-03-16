@@ -1,6 +1,6 @@
 'use strict'
 
-import { ExtensionContext, Range, TextEditor, window, workspace } from "vscode";
+import { ExtensionContext, Range, TextEditor, window, workspace, Position } from "vscode";
 import { isMdEditor } from "./util";
 
 let decorTypes = {
@@ -111,8 +111,34 @@ function updateDecorations(editor?: TextEditor) {
                 const regex = new RegExp(reText, 'g');
                 let match;
                 while ((match = regex.exec(lineText)) !== null) {
+
                     let startIndex = match.index;
+
                     for (let i = 0; i < decorTypeNames.length; i++) {
+
+                        // Skip if in math environment (See `completion.ts`)
+                        const lineTextBefore = lineText.substr(0, startIndex);
+                        const lineTextAfter = lineText.substr(startIndex);
+                        if (
+                            /(^|[^\$])\$(|[^ \$].*)\w*$/.test(lineTextBefore)
+                            && lineTextAfter.includes('$')
+                        ) {
+                            // Inline math ($...$)
+                            break;
+                        } else {
+                            const textBefore = editor.document.getText(new Range(0, 0, lineNum, startIndex));
+                            const textAfter = editor.document.getText().substr(editor.document.offsetAt(new Position(lineNum, startIndex)));
+                            let matches;
+                            if (
+                                (matches = textBefore.match(/\$\$/g)) !== null
+                                && matches.length % 2 !== 0
+                                && textAfter.includes('\$\$')
+                            ) {
+                                // Display math ($$ ... $$)
+                                break;
+                            }
+                        }
+
                         let range = new Range(lineNum, startIndex, lineNum, startIndex + match[i + 1].length);
                         startIndex += match[i + 1].length;
 
