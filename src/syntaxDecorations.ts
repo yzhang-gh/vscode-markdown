@@ -40,12 +40,12 @@ for (const decorTypeName in decorTypes) {
 
 let regexDecorTypeMapping = {
     "(~~.+?~~)": ["strikethrough"],
-    "(`[^`\\n]+?`)": ["codeSpan"]
+    "(?<!`)(`+)(?!`)(.*?)(?<!`)(\\1)(?!`)": ["codeSpan"]
 };
 
 let regexDecorTypeMappingPlainTheme = {
     // `code`
-    "(`)([^`\\n]+?)(`)": ["gray", "baseColor", "gray"],
+    "(?<!`)(`+)(?!`)(.*?)(?<!`)(\\1)(?!`)": ["gray", "baseColor", "gray"],
     // [alt](link)
     "(^|[^!])(\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": ["", "gray", "lightBlue", "gray"],
     // ![alt](link)
@@ -139,14 +139,15 @@ function updateDecorations(editor?: TextEditor) {
                             }
                         }
 
-                        let range = new Range(lineNum, startIndex, lineNum, startIndex + match[i + 1].length);
-                        startIndex += match[i + 1].length;
-
                         const decorTypeName = decorTypeNames[i];
+                        const caughtGroup = decorTypeName == "codeSpan"? match[0]: match[i + 1];
+                        const range = new Range(lineNum, startIndex, lineNum, startIndex + caughtGroup.length);
+                        startIndex += caughtGroup.length;
+
                         if (decorTypeName.length === 0) {
                             continue;
                         }
-                        decors[decorTypeNames[i]].push(range);
+                        decors[decorTypeName].push(range);
                     }
                 }
             }
