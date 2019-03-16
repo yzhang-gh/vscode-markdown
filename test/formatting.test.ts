@@ -1,4 +1,4 @@
-import { workspace, Selection } from 'vscode';
+import { workspace, Selection, env } from 'vscode';
 import { testMdFile, defaultConfigs, testCommand } from './testUtils';
 
 let previousConfigs = Object.assign({}, defaultConfigs);
@@ -81,5 +81,13 @@ suite("Formatting.", () => {
 
     test("Toggle strikethrough. Task list item", done => {
         testCommand('markdown.extension.editing.toggleStrikethrough', {}, ['- [ ] text text'], new Selection(0, 15, 0, 15), ['- [ ] ~~text text~~'], new Selection(0, 19, 0, 19)).then(done, done);
+    });
+
+    // disclaimer: I am not sure about this code. Looks like it works fine, but I am not fully undestand how it works underneath.
+    test("Paste link on selected text. `|text|` -> `[text|](link)`", async () => {
+        const link = 'http://just.a.link';
+        await env.clipboard.writeText(link);
+
+        return testCommand('markdown.extension.editing.paste', {}, ['text'], new Selection(0, 0, 0, 4), ['[text](' + link + ')'], new Selection(0, 5, 0, 5));
     });
 });
