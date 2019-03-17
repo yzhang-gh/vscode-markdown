@@ -119,11 +119,26 @@ function toggleUnorderedList() {
 async function paste() {
     if (window.activeTextEditor.selection.isSingleLine) {
         const text = await env.clipboard.readText();
-        if (/^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/.test(text)) {
+        if (isSingleLink(text)) {
             return commands.executeCommand("editor.action.insertSnippet", { "snippet": `[$TM_SELECTED_TEXT$0](${text})` });
         }
     }
     return commands.executeCommand("editor.action.clipboardPasteAction");
+}
+
+/**
+ * Checksif the string is a link. The list of link examples you can see in the tests file
+ * `test/linksRecognition.test.ts`.
+ *
+ * @param text string to check
+ *
+ * @return boolean
+ */
+function isSingleLink(text: string) {
+    const linkRegex = /^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
+    const isLink = (linkRegex.test(text));
+
+    return isLink;
 }
 
 function styleByWrapping(startPattern, endPattern?) {
