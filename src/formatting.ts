@@ -182,13 +182,13 @@ function styleByWrapping(startPattern, endPattern?) {
 
 /**
  * Add or remove `startPattern`/`endPattern` according to the context
- * @param editor 
+ * @param editor
  * @param options The undo/redo behavior
  * @param cursor cursor position
  * @param range range to be replaced
  * @param isSelected is this range selected
- * @param startPtn 
- * @param endPtn 
+ * @param startPtn
+ * @param endPtn
  */
 function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position, number][], newSelections: Selection[], i: number, shift: number, cursor: Position, range: Range, isSelected: boolean, startPtn: string, endPtn?: string) {
     if (endPtn == undefined) {
