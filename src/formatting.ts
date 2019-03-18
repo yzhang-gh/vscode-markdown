@@ -16,6 +16,11 @@ export function activate(context: ExtensionContext) {
     );
 }
 
+/**
+ * Here we store Regexp to check if the text is the single link.
+ */
+const singleLinkRegex: RegExp = createLinkRegex();
+
 // Return Promise because need to chain operations in unit tests
 
 function toggleBold() {
@@ -119,11 +124,64 @@ function toggleUnorderedList() {
 async function paste() {
     if (window.activeTextEditor.selection.isSingleLine) {
         const text = await env.clipboard.readText();
-        if (/^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/.test(text)) {
+        if (isSingleLink(text)) {
             return commands.executeCommand("editor.action.insertSnippet", { "snippet": `[$TM_SELECTED_TEXT$0](${text})` });
         }
     }
     return commands.executeCommand("editor.action.clipboardPasteAction");
+}
+
+/**
+ * Creates Regexp to check if the text is a link (further detailes in the isSingleLink() documentation).
+ *
+ * @return Regexp
+ */
+function createLinkRegex(): RegExp {
+    // unicode letters range(must not be a raw string)
+    const ul = '\\u00a1-\\uffff';
+    // IP patterns
+    const ipv4_re = '(?:25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}';
+    const ipv6_re = '\\[[0-9a-f:\\.]+\\]';  // simple regex (in django it is validated additionally)
+
+
+    // Host patterns
+    const hostname_re = '[a-z' + ul + '0-9](?:[a-z' + ul + '0-9-]{0,61}[a-z' + ul + '0-9])?';
+    // Max length for domain name labels is 63 characters per RFC 1034 sec. 3.1
+    const domain_re = '(?:\\.(?!-)[a-z' + ul + '0-9-]{1,63}(?<!-))*';
+
+    const tld_re = ''
+        + '\\.'                               // dot
+        + '(?!-)'                             // can't start with a dash
+        + '(?:[a-z' + ul + '-]{2,63}'         // domain label
+        + '|xn--[a-z0-9]{1,59})'              // or punycode label
+        + '(?<!-)'                            // can't end with a dash
+        + '\\.?'                              // may have a trailing dot
+        ;
+
+    const host_re = '(' + hostname_re + domain_re + tld_re + '|localhost)';
+    const pattern = ''
+        + '^(?:[a-z0-9\\.\\-\\+]*)://'  // scheme is not validated (in django it is validated additionally)
+        + '(?:[^\\s:@/]+(?::[^\\s:@/]*)?@)?'  // user: pass authentication
+        + '(?:' + ipv4_re + '|' + ipv6_re + '|' + host_re + ')'
+        + '(?::\\d{2,5})?'  // port
+        + '(?:[/?#][^\\s]*)?'  // resource path
+        + '$' // end of string
+        ;
+
+    return new RegExp(pattern, 'i');
+}
+
+/**
+ * Checks if the string is a link. The list of link examples you can see in the tests file
+ * `test/linksRecognition.test.ts`. This code ported from django's
+ * [URLValidator](https://github.com/django/django/blob/2.2b1/django/core/validators.py#L74) with some simplifyings.
+ *
+ * @param text string to check
+ *
+ * @return boolean
+ */
+export function isSingleLink(text: string): boolean {
+    return singleLinkRegex.test(text);
 }
 
 function styleByWrapping(startPattern, endPattern?) {
@@ -182,13 +240,13 @@ function styleByWrapping(startPattern, endPattern?) {
 
 /**
  * Add or remove `startPattern`/`endPattern` according to the context
- * @param editor 
+ * @param editor
  * @param options The undo/redo behavior
  * @param cursor cursor position
  * @param range range to be replaced
  * @param isSelected is this range selected
- * @param startPtn 
- * @param endPtn 
+ * @param startPtn
+ * @param endPtn
  */
 function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position, number][], newSelections: Selection[], i: number, shift: number, cursor: Position, range: Range, isSelected: boolean, startPtn: string, endPtn?: string) {
     if (endPtn == undefined) {
