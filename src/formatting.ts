@@ -168,9 +168,7 @@ function createLinkRegex(): RegExp {
         + '$' // end of string
         ;
 
-    const linkRegex = new RegExp(pattern, 'i');
-
-    return linkRegex;
+    return new RegExp(pattern, 'i');
 }
 
 /**
@@ -183,9 +181,7 @@ function createLinkRegex(): RegExp {
  * @return boolean
  */
 export function isSingleLink(text: string): boolean {
-    const isLink = (singleLinkRegex.test(text));
-
-    return isLink;
+    return singleLinkRegex.test(text);
 }
 
 function styleByWrapping(startPattern, endPattern?) {
