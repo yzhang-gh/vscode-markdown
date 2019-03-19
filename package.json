@@ -70,7 +70,7 @@
             {
                 "command": "markdown.extension.editing.toggleStrikethrough",
                 "key": "alt+s",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !isMac"
             },
             {
                 "command": "markdown.extension.editing.toggleHeadingUp",
