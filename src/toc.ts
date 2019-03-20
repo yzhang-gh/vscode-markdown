@@ -95,7 +95,7 @@ async function generateTocText(): Promise<string> {
               template = tocConfig.template
                 .replace("{marker}", (orderedListMarkerIsOne ? "1" : ++order[relativeLvl]) + ".")
                 .replace("{name}", entryText)
-                .replace("{link}", slugify(anchorText))
+                .replace("{link}", "#" + slugify(anchorText))
             } else {
               template = tocConfig.template
                 .replace("{marker}", tocConfig.marker)
