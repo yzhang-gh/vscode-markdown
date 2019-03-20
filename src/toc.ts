@@ -8,7 +8,18 @@ import * as stringSimilarity from 'string-similarity';
  * Workspace config
  */
 const docConfig = { tab: '  ', eol: '\r\n' };
-const tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false, tabSize: 2 };
+const tocConfig = {
+  startDepth: 1,
+  endDepth: 6,
+  listMarker: '-',
+  orderedList: false,
+  updateOnSave: false,
+  plaintext: false,
+   tabSize: 2,
+  marker: "-",
+  template: "",
+  markerSkipLast: false,
+};
 
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
@@ -63,34 +74,47 @@ async function generateTocText(): Promise<string> {
     let startDepth = Math.max(tocConfig.startDepth, Math.min.apply(null, tocEntries.map(h => h.level)));
     let order = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
 
-    let anchorOccurances = {};
+    let anchorOccurrences = {};
 
-    tocEntries.forEach(entry => {
+    tocEntries.forEach((entry: any, index: number) => {
         if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
             let relativeLvl = entry.level - startDepth;
             let entryText = extractText(entry.text);
             let anchorText = entryText;
 
-            if (anchorOccurances.hasOwnProperty(anchorText)) {
-                anchorOccurances[anchorText] += 1;
-                anchorText += ' ' + String(anchorOccurances[anchorText]);
+            if (anchorOccurrences.hasOwnProperty(anchorText)) {
+                anchorOccurrences[anchorText] += 1;
+                anchorText += ' ' + String(anchorOccurrences[anchorText]);
             } else {
-                anchorOccurances[anchorText] = 0;
+                anchorOccurrences[anchorText] = 0;
             }
 
-            let row = [
-                docConfig.tab.repeat(relativeLvl),
-                (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLvl]) + '.' : tocConfig.listMarker) + ' ',
-                tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(anchorText)})`
-            ];
-            toc.push(row.join(''));
+            let template = ""
+
+            if (tocConfig.orderedList) {
+              template = tocConfig.template
+                .replace("{marker}", (orderedListMarkerIsOne ? "1" : ++order[relativeLvl]) + ".")
+                .replace("{name}", entryText)
+                .replace("{link}", slugify(anchorText))
+            } else {
+              template = tocConfig.template
+                .replace("{marker}", tocConfig.marker)
+                .replace("{name}", entryText)
+                .replace("{link}", "#" + slugify(anchorText))
+                .replace("{eol}", docConfig.eol)
+            }
+
+            template = docConfig.tab.repeat(relativeLvl) + template // add tab
+
+            if (!tocConfig.orderedList && tocConfig.markerSkipLast && index === tocEntries.length - 1) {
+              template = template.replace(tocConfig.marker, "") // remove the last marker
+            }
+
+            toc.push(template);
             if (tocConfig.orderedList) order.fill(0, relativeLvl + 1);
         }
     });
-    while (/^[ \t]/.test(toc[0])) {
-        toc = toc.slice(1);
-    }
-    return toc.join(docConfig.eol);
+    return toc.join(tocConfig.orderedList ? docConfig.eol : '');
 }
 
 /**
@@ -102,27 +126,23 @@ async function detectTocRanges(doc: vscode.TextDocument): Promise<Array<vscode.R
     let tocRanges = [];
     let newTocText = await generateTocText();
     let fullText = doc.getText();
-    let listRegex = /(^|\r?\n)((?:[-+*]|[0-9]+[.)]) .*(?:\r?\n[ \t]*(?:[-+*]|[0-9]+[.)]) .*)*)/g;
-    let match;
-    while ((match = listRegex.exec(fullText)) !== null) {
-        let listText = match[2];
 
-        // Prevent fake TOC like [#304](https://github.com/yzhang-gh/vscode-markdown/issues/304)
-        let firstLine: string = listText.split(/\r?\n/)[0];
-        if (vscode.workspace.getConfiguration('markdown.extension.toc').get<boolean>('plaintext')) {
-            // A lazy way to check whether it is a link
-            if (firstLine.includes('](')) {
-                continue;
-            }
-        } else {
-            if (!firstLine.includes('](#')) {
-                continue;
-            }
-        }
+    let regexListItem = tocConfig.template
+      .replace(/\s|\[|\]|\(|\)|#/g, "") // remove everything we don't need here
+      .replace("{marker}", `(\\s*${tocConfig.orderedList ? "[0-9]+\\." : "\\" + tocConfig.marker}\\s*)${tocConfig.markerSkipLast ? '?' : ''}`)
+      .replace("{name}", "(\\[[a-zA-Z0-9]+\\])")
+      .replace("{link}", `(\\(${tocConfig.plaintext ? "" : "#"}[a-zA-Z0-9]+\\))`)
+      .replace("{eol}", docConfig.eol)
+    let regexList = new RegExp(`(?!\\n)(${regexListItem})+`, "g")
+    console.log(`(?!\\n)(${regexListItem})+`);
+
+    let match;
+    while ((match = regexList.exec(fullText)) !== null) {
+        let listText = match[0];
 
         if (radioOfCommonPrefix(newTocText, listText) + stringSimilarity.compareTwoStrings(newTocText, listText) > 0.5) {
             tocRanges.push(
-                new vscode.Range(doc.positionAt(match.index + match[1].length), doc.positionAt(listRegex.lastIndex))
+                new vscode.Range(doc.positionAt(match.index), doc.positionAt(regexList.lastIndex))
             );
         }
     }
@@ -170,6 +190,9 @@ function loadTocConfig() {
     tocConfig.listMarker = tocSectionCfg.get<string>('unorderedList.marker');
     tocConfig.plaintext = tocSectionCfg.get<boolean>('plaintext');
     tocConfig.updateOnSave = tocSectionCfg.get<boolean>('updateOnSave');
+    tocConfig.marker = tocSectionCfg.get<string>("marker")
+    tocConfig.markerSkipLast = tocSectionCfg.get<boolean>("markerSkipLast")
+    tocConfig.template = tocSectionCfg.get<string>("template")
 
     // Load workspace config
     let activeEditor = vscode.window.activeTextEditor;
