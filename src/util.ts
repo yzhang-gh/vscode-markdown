@@ -1,6 +1,6 @@
 'use strict'
 
-import { commands, TextEditor, Uri, workspace } from 'vscode';
+import { commands, Position, Range, TextDocument, TextEditor, Uri, workspace } from 'vscode';
 import localize from './localize';
 
 /* ┌────────┐
@@ -12,6 +12,16 @@ export const mdDocSelector = [{ language: 'markdown', scheme: 'file' }, { langua
 
 export function isMdEditor(editor: TextEditor) {
     return editor && editor.document && editor.document.languageId === 'markdown';
+}
+
+export function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
+    let textBefore = doc.getText(new Range(new Position(0, 0), new Position(lineNum, 0)));
+    let matches = textBefore.match(/```.*\r?\n/g);
+    if (matches == null) {
+        return false;
+    } else {
+        return matches.length % 2 != 0;
+    }
 }
 
 /* ┌───────────┐

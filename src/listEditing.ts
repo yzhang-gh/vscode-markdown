@@ -1,6 +1,7 @@
 'use strict'
 
-import { commands, ExtensionContext, Position, Range, Selection, TextDocument, TextEditor, window, workspace, TextEdit, WorkspaceEdit } from 'vscode';
+import { commands, ExtensionContext, Position, Range, Selection, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
+import { isInFencedCodeBlock } from './util';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
@@ -18,16 +19,6 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.onIndentLines', onIndentLines),
         commands.registerCommand('markdown.extension.onOutdentLines', onOutdentLines)
     );
-}
-
-function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
-    let textBefore = doc.getText(new Range(new Position(0, 0), new Position(lineNum, 0)));
-    let matches = textBefore.match(/```.*\r?\n/g);
-    if (matches == null) {
-        return false;
-    } else {
-        return matches.length % 2 != 0;
-    }
 }
 
 function onEnterKey(modifiers?: string) {
