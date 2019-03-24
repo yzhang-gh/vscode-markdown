@@ -1,3 +1,12 @@
+### 2.2.0 (2019.03.24)
+
+- **Fix**: Better syntax decorations ([#390](https://github.com/yzhang-gh/vscode-markdown/issues/390), [#393](https://github.com/yzhang-gh/vscode-markdown/issues/393)).
+- **Fix**: Recognize relative path of `markdown.styles` when exporting to HTML ([#394](https://github.com/yzhang-gh/vscode-markdown/issues/394)).
+- **Other**: Unregister formatter when being disabled ([#395](https://github.com/yzhang-gh/vscode-markdown/issues/395)).
+- **Other**: Better URL regexp ([#397](https://github.com/yzhang-gh/vscode-markdown/issues/397)). Thanks, [Igor (@Ovsyanka)](https://github.com/Ovsyanka).
+- **Other**: Remove default `alt + s` keybinding for macOS ([#404](https://github.com/yzhang-gh/vscode-markdown/issues/404)).
+- **Other**: webpack!
+
 ### 2.1.1 (2019.03.05)
 
 - **Fix**: Table format ([#381](https://github.com/yzhang-gh/vscode-markdown/issues/381)).
