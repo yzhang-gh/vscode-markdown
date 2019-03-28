@@ -182,16 +182,16 @@
             "title": "%config.title%",
             "properties": {
                 "markdown.extension.toc.marker": {
-                  "type": "string",
-                  "default": "·"
+                    "type": "string",
+                    "default": "·"
                 },
                 "markdown.extension.toc.markerSkipLast": {
-                  "type": "boolean",
-                  "default": true
+                    "type": "boolean",
+                    "default": true
                 },
                 "markdown.extension.toc.template": {
-                  "type": "string",
-                  "default": "{marker} [{name}]({link})"
+                    "type": "string",
+                    "default": "{marker} [{name}]({link})"
                 },
                 "markdown.extension.toc.levels": {
                     "type": "string",
