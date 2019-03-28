@@ -15,7 +15,7 @@ const tocConfig = {
   orderedList: false,
   updateOnSave: false,
   plaintext: false,
-   tabSize: 2,
+  tabSize: 2,
   marker: "-",
   template: "",
   markerSkipLast: false,
