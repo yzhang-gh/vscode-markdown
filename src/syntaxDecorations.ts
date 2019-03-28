@@ -1,7 +1,7 @@
 'use strict'
 
 import { ExtensionContext, Range, TextEditor, window, workspace, Position } from "vscode";
-import { isMdEditor } from "./util";
+import { isMdEditor, isInFencedCodeBlock } from "./util";
 
 let decorTypes = {
     "baseColor": window.createTextEditorDecorationType({
@@ -93,6 +93,8 @@ function updateDecorations(editor?: TextEditor) {
         return;
     }
 
+    const doc = editor.document;
+
     // Clean decorations
     for (const decorTypeName in decorTypes) {
         if (decorTypes.hasOwnProperty(decorTypeName)) {
@@ -100,22 +102,25 @@ function updateDecorations(editor?: TextEditor) {
         }
     }
 
-    editor.document.getText().split(/\r?\n/g).forEach((lineText, lineNum) => {
-        let appliedMappings = workspace.getConfiguration('markdown.extension.syntax').get<boolean>('plainTheme') ?
-            { ...regexDecorTypeMapping, ...regexDecorTypeMappingPlainTheme } :
-            regexDecorTypeMapping;
+    // e.g. { "(~~.+?~~)": ["strikethrough"] }
+    let appliedMappings = workspace.getConfiguration('markdown.extension.syntax').get<boolean>('plainTheme') ?
+        { ...regexDecorTypeMapping, ...regexDecorTypeMappingPlainTheme } :
+        regexDecorTypeMapping;
+
+    doc.getText().split(/\r?\n/g).forEach((lineText, lineNum) => {
+        if (isInFencedCodeBlock(doc, lineNum)) { return; }
 
         for (const reText in appliedMappings) {
             if (appliedMappings.hasOwnProperty(reText)) {
-                const decorTypeNames = appliedMappings[reText];
-                const regex = new RegExp(reText, 'g');
+                const decorTypeNames: string[] = appliedMappings[reText];  // e.g. ["strikethrough"]
+                const regex = new RegExp(reText, 'g');  // e.g. "(~~.+?~~)"
+
                 let match;
                 while ((match = regex.exec(lineText)) !== null) {
 
                     let startIndex = match.index;
 
                     for (let i = 0; i < decorTypeNames.length; i++) {
-
                         // Skip if in math environment (See `completion.ts`)
                         const lineTextBefore = lineText.substr(0, startIndex);
                         const lineTextAfter = lineText.substr(startIndex);
@@ -126,8 +131,8 @@ function updateDecorations(editor?: TextEditor) {
                             // Inline math ($...$)
                             break;
                         } else {
-                            const textBefore = editor.document.getText(new Range(0, 0, lineNum, startIndex));
-                            const textAfter = editor.document.getText().substr(editor.document.offsetAt(new Position(lineNum, startIndex)));
+                            const textBefore = doc.getText(new Range(0, 0, lineNum, startIndex));
+                            const textAfter = doc.getText().substr(doc.offsetAt(new Position(lineNum, startIndex)));
                             let matches;
                             if (
                                 (matches = textBefore.match(/\$\$/g)) !== null
@@ -140,7 +145,7 @@ function updateDecorations(editor?: TextEditor) {
                         }
 
                         const decorTypeName = decorTypeNames[i];
-                        const caughtGroup = decorTypeName == "codeSpan"? match[0]: match[i + 1];
+                        const caughtGroup = decorTypeName == "codeSpan" ? match[0] : match[i + 1];
                         const range = new Range(lineNum, startIndex, lineNum, startIndex + caughtGroup.length);
                         startIndex += caughtGroup.length;
 

@@ -90,7 +90,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         // Regex to extract cell content.
         // Known issue: `\\|` is not correctly parsed as a valid delimiter
         let fieldRegExp = new RegExp(/(?:((?:\\\||`.*?`|[^\|])*)\|)/gu);
-        let cjkRegex = /[\u3000-\u9fff\uff01-\uff60‘“’”—]/g;
+        let cjkRegex = /[\u3000-\u9fff\uff01-\uff60]/g;
 
         let lines = rows.map((row, num) => {
             // Normalize

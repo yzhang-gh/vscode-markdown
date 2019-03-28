@@ -1,367 +1,355 @@
 {
   "name": "markdown-all-in-one",
-  "version": "2.1.1",
+  "displayName": "%ext.displayName%",
   "description": "%ext.description%",
+  "icon": "images/Markdown-mark.png",
+  "version": "2.2.0",
+  "publisher": "yzhang",
+  "engines": {
+      "vscode": "^1.30.2"
+  },
+  "categories": [
+      "Other"
+  ],
   "keywords": [
-    "markdown"
+      "markdown"
   ],
   "bugs": {
-    "url": "https://github.com/yzhang-gh/vscode-markdown/issues"
+      "url": "https://github.com/yzhang-gh/vscode-markdown/issues"
   },
   "repository": {
-    "type": "git",
-    "url": "https://github.com/yzhang-gh/vscode-markdown"
+      "type": "git",
+      "url": "https://github.com/yzhang-gh/vscode-markdown"
   },
   "license": "MIT",
+  "activationEvents": [
+      "onLanguage:markdown",
+      "workspaceContains:README.md"
+  ],
   "main": "./dist/extension",
+  "contributes": {
+      "commands": [
+          {
+              "command": "markdown.extension.toc.create",
+              "title": "%command.toc.create.title%"
+          },
+          {
+              "command": "markdown.extension.toc.update",
+              "title": "%command.toc.update.title%"
+          },
+          {
+              "command": "markdown.extension.printToHtml",
+              "title": "%command.printToHtml.title%"
+          },
+          {
+              "command": "markdown.extension.editing.toggleCodeSpan",
+              "title": "%command.editing.toggleCodeSpan.title%"
+          },
+          {
+              "command": "markdown.extension.editing.toggleMath",
+              "title": "%command.editing.toggleMath.title%"
+          },
+          {
+              "command": "markdown.extension.editing.toggleUnorderedList",
+              "title": "%command.editing.toggleUnorderedList.title%"
+          }
+      ],
+      "keybindings": [
+          {
+              "command": "markdown.extension.editing.toggleBold",
+              "key": "ctrl+b",
+              "mac": "cmd+b",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+          },
+          {
+              "command": "markdown.extension.editing.toggleItalic",
+              "key": "ctrl+i",
+              "mac": "cmd+i",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+          },
+          {
+              "command": "markdown.extension.editing.toggleStrikethrough",
+              "key": "alt+s",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !isMac"
+          },
+          {
+              "command": "markdown.extension.editing.toggleHeadingUp",
+              "key": "ctrl+shift+]",
+              "mac": "ctrl+shift+]",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+          },
+          {
+              "command": "markdown.extension.editing.toggleHeadingDown",
+              "key": "ctrl+shift+[",
+              "mac": "ctrl+shift+[",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+          },
+          {
+              "command": "markdown.extension.editing.toggleMath",
+              "key": "ctrl+m",
+              "mac": "cmd+m",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+          },
+          {
+              "command": "markdown.extension.onEnterKey",
+              "key": "enter",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
+          },
+          {
+              "command": "markdown.extension.onCtrlEnterKey",
+              "key": "ctrl+enter",
+              "mac": "cmd+enter",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+          },
+          {
+              "command": "markdown.extension.onShiftEnterKey",
+              "key": "shift+enter",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+          },
+          {
+              "command": "markdown.extension.onTabKey",
+              "key": "tab",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions"
+          },
+          {
+              "command": "markdown.extension.onShiftTabKey",
+              "key": "shift+tab",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions"
+          },
+          {
+              "command": "markdown.extension.onBackspaceKey",
+              "key": "backspace",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
+          },
+          {
+              "command": "markdown.extension.onMoveLineUp",
+              "key": "alt+up",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+          },
+          {
+              "command": "markdown.extension.onMoveLineDown",
+              "key": "alt+down",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+          },
+          {
+              "command": "markdown.extension.onCopyLineUp",
+              "key": "shift+alt+up",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+          },
+          {
+              "command": "markdown.extension.onCopyLineDown",
+              "key": "shift+alt+down",
+              "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+          },
+          {
+              "command": "markdown.extension.onIndentLines",
+              "key": "ctrl+]",
+              "mac": "cmd+]",
+              "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+          },
+          {
+              "command": "markdown.extension.onOutdentLines",
+              "key": "ctrl+[",
+              "mac": "cmd+[",
+              "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+          },
+          {
+              "command": "markdown.extension.checkTaskList",
+              "key": "alt+c",
+              "when": "editorTextFocus && editorLangId == markdown"
+          },
+          {
+              "command": "markdown.extension.togglePreview",
+              "key": "ctrl+shift+v",
+              "mac": "cmd+shift+v",
+              "when": "!terminalFocus"
+          },
+          {
+              "command": "markdown.extension.togglePreviewToSide",
+              "key": "ctrl+k v",
+              "mac": "cmd+k v",
+              "when": "!terminalFocus"
+          },
+          {
+              "command": "markdown.extension.editing.paste",
+              "key": "ctrl+v",
+              "mac": "cmd+v",
+              "when": "editorTextFocus && editorLangId == markdown && editorHasSelection"
+          }
+      ],
+      "configuration": {
+          "type": "object",
+          "title": "%config.title%",
+          "properties": {
+              "markdown.extension.toc.levels": {
+                  "type": "string",
+                  "default": "1..6",
+                  "description": "%config.toc.levels.description%"
+              },
+              "markdown.extension.toc.orderedList": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "%config.toc.orderedList.description%"
+              },
+              "markdown.extension.toc.unorderedList.marker": {
+                  "type": "string",
+                  "default": "-",
+                  "description": "%config.toc.unorderedList.marker.description%",
+                  "enum": [
+                      "-",
+                      "*",
+                      "+"
+                  ]
+              },
+              "markdown.extension.toc.plaintext": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "%config.toc.plaintext.description%"
+              },
+              "markdown.extension.toc.updateOnSave": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "%config.toc.updateOnSave.description%"
+              },
+              "markdown.extension.toc.githubCompatibility": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "%config.toc.githubCompatibility.description%"
+              },
+              "markdown.extension.list.indentationSize": {
+                  "type": "string",
+                  "enum": [
+                      "adaptive",
+                      "inherit"
+                  ],
+                  "enumDescriptions": [
+                      "Use 2 spaces for unordered list and 3 for the ordered",
+                      "Use the configured tab size of the current document (see vscode status bar)"
+                  ],
+                  "default": "adaptive",
+                  "description": "Whether to use different indentation sizes on different contexts",
+                  "scope": "resource"
+              },
+              "markdown.extension.preview.autoShowPreviewToSide": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "%config.preview.autoShowPreviewToSide.description%"
+              },
+              "markdown.extension.orderedList.marker": {
+                  "type": "string",
+                  "default": "ordered",
+                  "description": "%config.orderedList.marker.description%",
+                  "enum": [
+                      "one",
+                      "ordered"
+                  ]
+              },
+              "markdown.extension.orderedList.autoRenumber": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "%config.orderedList.autoRenumber.description%"
+              },
+              "markdown.extension.italic.indicator": {
+                  "type": "string",
+                  "default": "*",
+                  "description": "%config.italic.indicator.description%",
+                  "enum": [
+                      "*",
+                      "_"
+                  ]
+              },
+              "markdown.extension.showExplorer": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "%config.showExplorer.description%"
+              },
+              "markdown.extension.tableFormatter.enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "%config.tableFormatter.enabled.description%"
+              },
+              "markdown.extension.tableFormatter.normalizeIndentation": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "%config.tableFormatter.normalizeIndentation.description%"
+              },
+              "markdown.extension.print.absoluteImgPath": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "%config.print.absoluteImgPath.description%",
+                  "scope": "resource"
+              },
+              "markdown.extension.print.imgToBase64": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "%config.print.imgToBase64.description%",
+                  "scope": "resource"
+              },
+              "markdown.extension.syntax.decorations": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "%config.syntax.decorations.description%"
+              },
+              "markdown.extension.syntax.plainTheme": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "%config.syntax.plainTheme.description%"
+              }
+          }
+      },
+      "markdown.markdownItPlugins": true,
+      "markdown.previewStyles": [
+          "./media/checkbox.css",
+          "./node_modules/katex/dist/katex.min.css"
+      ],
+      "grammars": [
+          {
+              "scopeName": "markdown.math_display",
+              "path": "./syntaxes/math_display.markdown.tmLanguage.json",
+              "injectTo": [
+                  "text.html.markdown"
+              ]
+          },
+          {
+              "scopeName": "markdown.math_inline",
+              "path": "./syntaxes/math_inline.markdown.tmLanguage.json",
+              "injectTo": [
+                  "text.html.markdown"
+              ]
+          },
+          {
+              "scopeName": "text.katex",
+              "path": "./syntaxes/katex.tmLanguage.json"
+          }
+      ]
+  },
   "scripts": {
-    "compile": "webpack --mode none",
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "tsc -p ./ && node ./node_modules/vscode/bin/test",
-    "test-compile": "tsc -p ./",
-    "vscode:prepublish": "webpack --mode production",
-    "watch": "webpack --mode none --watch"
+      "vscode:prepublish": "webpack --mode production",
+      "compile": "webpack --mode none",
+      "watch": "webpack --mode none --watch",
+      "postinstall": "node ./node_modules/vscode/bin/install",
+      "test": "tsc -p ./ && node ./node_modules/vscode/bin/test",
+      "test-compile": "tsc -p ./"
   },
   "dependencies": {
-    "@neilsustc/markdown-it-katex": "^0.3.0",
-    "highlight.js": "^9.15.6",
-    "image-size": "^0.7.2",
-    "markdown-it": "^8.4.2",
-    "markdown-it-task-lists": "^2.1.1",
-    "string-similarity": "^3.0.0"
+      "@neilsustc/markdown-it-katex": "^0.3.0",
+      "highlight.js": "^9.15.6",
+      "image-size": "^0.7.2",
+      "markdown-it": "^8.4.2",
+      "markdown-it-task-lists": "^2.1.1",
+      "string-similarity": "^3.0.0"
   },
   "devDependencies": {
-    "@types/highlight.js": "^9.12.3",
-    "@types/image-size": "^0.7.0",
-    "@types/markdown-it": "^0.0.7",
-    "@types/mocha": "^5.2.6",
-    "@types/node": "^11.11.3",
-    "mocha": "^6.0.2",
-    "ts-loader": "^5.3.3",
-    "typescript": "^3.3.3333",
-    "vscode": "^1.1.30",
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.2.3"
-  },
-  "engines": {
-    "vscode": "^1.30.2"
-  },
-  "activationEvents": [
-    "onLanguage:markdown",
-    "workspaceContains:README.md"
-  ],
-  "categories": [
-    "Other"
-  ],
-  "contributes": {
-    "commands": [
-      {
-        "command": "markdown.extension.toc.create",
-        "title": "%command.toc.create.title%"
-      },
-      {
-        "command": "markdown.extension.toc.update",
-        "title": "%command.toc.update.title%"
-      },
-      {
-        "command": "markdown.extension.printToHtml",
-        "title": "%command.printToHtml.title%"
-      },
-      {
-        "command": "markdown.extension.editing.toggleCodeSpan",
-        "title": "%command.editing.toggleCodeSpan.title%"
-      },
-      {
-        "command": "markdown.extension.editing.toggleMath",
-        "title": "%command.editing.toggleMath.title%"
-      },
-      {
-        "command": "markdown.extension.editing.toggleUnorderedList",
-        "title": "%command.editing.toggleUnorderedList.title%"
-      }
-    ],
-    "keybindings": [
-      {
-        "command": "markdown.extension.editing.toggleBold",
-        "key": "ctrl+b",
-        "mac": "cmd+b",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
-      },
-      {
-        "command": "markdown.extension.editing.toggleItalic",
-        "key": "ctrl+i",
-        "mac": "cmd+i",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
-      },
-      {
-        "command": "markdown.extension.editing.toggleStrikethrough",
-        "key": "alt+s",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !isMac"
-      },
-      {
-        "command": "markdown.extension.editing.toggleHeadingUp",
-        "key": "ctrl+shift+]",
-        "mac": "ctrl+shift+]",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
-      },
-      {
-        "command": "markdown.extension.editing.toggleHeadingDown",
-        "key": "ctrl+shift+[",
-        "mac": "ctrl+shift+[",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
-      },
-      {
-        "command": "markdown.extension.editing.toggleMath",
-        "key": "ctrl+m",
-        "mac": "cmd+m",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
-      },
-      {
-        "command": "markdown.extension.onEnterKey",
-        "key": "enter",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
-      },
-      {
-        "command": "markdown.extension.onCtrlEnterKey",
-        "key": "ctrl+enter",
-        "mac": "cmd+enter",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
-      },
-      {
-        "command": "markdown.extension.onShiftEnterKey",
-        "key": "shift+enter",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
-      },
-      {
-        "command": "markdown.extension.onTabKey",
-        "key": "tab",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions"
-      },
-      {
-        "command": "markdown.extension.onShiftTabKey",
-        "key": "shift+tab",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions"
-      },
-      {
-        "command": "markdown.extension.onBackspaceKey",
-        "key": "backspace",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
-      },
-      {
-        "command": "markdown.extension.onMoveLineUp",
-        "key": "alt+up",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
-      },
-      {
-        "command": "markdown.extension.onMoveLineDown",
-        "key": "alt+down",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
-      },
-      {
-        "command": "markdown.extension.onCopyLineUp",
-        "key": "shift+alt+up",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
-      },
-      {
-        "command": "markdown.extension.onCopyLineDown",
-        "key": "shift+alt+down",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
-      },
-      {
-        "command": "markdown.extension.onIndentLines",
-        "key": "ctrl+]",
-        "mac": "cmd+]",
-        "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
-      },
-      {
-        "command": "markdown.extension.onOutdentLines",
-        "key": "ctrl+[",
-        "mac": "cmd+[",
-        "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
-      },
-      {
-        "command": "markdown.extension.checkTaskList",
-        "key": "alt+c",
-        "when": "editorTextFocus && editorLangId == markdown"
-      },
-      {
-        "command": "markdown.extension.togglePreview",
-        "key": "ctrl+shift+v",
-        "mac": "cmd+shift+v",
-        "when": "!terminalFocus"
-      },
-      {
-        "command": "markdown.extension.togglePreviewToSide",
-        "key": "ctrl+k v",
-        "mac": "cmd+k v",
-        "when": "!terminalFocus"
-      },
-      {
-        "command": "markdown.extension.editing.paste",
-        "key": "ctrl+v",
-        "mac": "cmd+v",
-        "when": "editorTextFocus && editorLangId == markdown && editorHasSelection"
-      }
-    ],
-    "configuration": {
-      "type": "object",
-      "title": "%config.title%",
-      "properties": {
-        "markdown.extension.toc.levels": {
-          "type": "string",
-          "default": "1..6",
-          "description": "%config.toc.levels.description%"
-        },
-        "markdown.extension.toc.orderedList": {
-          "type": "boolean",
-          "default": false,
-          "description": "%config.toc.orderedList.description%"
-        },
-        "markdown.extension.toc.marker": {
-          "type": "string",
-          "default": "·"
-        },
-        "markdown.extension.toc.markerSkipLast": {
-          "type": "boolean",
-          "default": true
-        },
-        "markdown.extension.toc.template": {
-          "type": "string",
-          "default": "[{name}]({link}) {marker}"
-        },
-        "markdown.extension.toc.unorderedList.marker": {
-          "type": "string",
-          "default": "-",
-          "description": "%config.toc.unorderedList.marker.description%",
-          "enum": [
-            "-",
-            "*",
-            "+"
-          ]
-        },
-        "markdown.extension.toc.plaintext": {
-          "type": "boolean",
-          "default": false,
-          "description": "%config.toc.plaintext.description%"
-        },
-        "markdown.extension.toc.updateOnSave": {
-          "type": "boolean",
-          "default": true,
-          "description": "%config.toc.updateOnSave.description%"
-        },
-        "markdown.extension.toc.githubCompatibility": {
-          "type": "boolean",
-          "default": false,
-          "description": "%config.toc.githubCompatibility.description%"
-        },
-        "markdown.extension.list.indentationSize": {
-          "type": "string",
-          "enum": [
-            "adaptive",
-            "inherit"
-          ],
-          "enumDescriptions": [
-            "Use 2 spaces for unordered list and 3 for the ordered",
-            "Use the configured tab size of the current document (see vscode status bar)"
-          ],
-          "default": "adaptive",
-          "description": "Whether to use different indentation sizes on different contexts",
-          "scope": "resource"
-        },
-        "markdown.extension.preview.autoShowPreviewToSide": {
-          "type": "boolean",
-          "default": false,
-          "description": "%config.preview.autoShowPreviewToSide.description%"
-        },
-        "markdown.extension.orderedList.marker": {
-          "type": "string",
-          "default": "ordered",
-          "description": "%config.orderedList.marker.description%",
-          "enum": [
-            "one",
-            "ordered"
-          ]
-        },
-        "markdown.extension.orderedList.autoRenumber": {
-          "type": "boolean",
-          "default": true,
-          "description": "%config.orderedList.autoRenumber.description%"
-        },
-        "markdown.extension.italic.indicator": {
-          "type": "string",
-          "default": "*",
-          "description": "%config.italic.indicator.description%",
-          "enum": [
-            "*",
-            "_"
-          ]
-        },
-        "markdown.extension.showExplorer": {
-          "type": "boolean",
-          "default": false,
-          "description": "%config.showExplorer.description%"
-        },
-        "markdown.extension.tableFormatter.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "%config.tableFormatter.enabled.description%"
-        },
-        "markdown.extension.tableFormatter.normalizeIndentation": {
-          "type": "boolean",
-          "default": false,
-          "description": "%config.tableFormatter.normalizeIndentation.description%"
-        },
-        "markdown.extension.print.absoluteImgPath": {
-          "type": "boolean",
-          "default": true,
-          "description": "%config.print.absoluteImgPath.description%",
-          "scope": "resource"
-        },
-        "markdown.extension.print.imgToBase64": {
-          "type": "boolean",
-          "default": false,
-          "description": "%config.print.imgToBase64.description%",
-          "scope": "resource"
-        },
-        "markdown.extension.syntax.decorations": {
-          "type": "boolean",
-          "default": true,
-          "description": "%config.syntax.decorations.description%"
-        },
-        "markdown.extension.syntax.plainTheme": {
-          "type": "boolean",
-          "default": false,
-          "description": "%config.syntax.plainTheme.description%"
-        }
-      }
-    },
-    "markdown.markdownItPlugins": true,
-    "markdown.previewStyles": [
-      "./media/checkbox.css",
-      "./node_modules/katex/dist/katex.min.css"
-    ],
-    "grammars": [
-      {
-        "scopeName": "markdown.math_display",
-        "path": "./syntaxes/math_display.markdown.tmLanguage.json",
-        "injectTo": [
-          "text.html.markdown"
-        ]
-      },
-      {
-        "scopeName": "markdown.math_inline",
-        "path": "./syntaxes/math_inline.markdown.tmLanguage.json",
-        "injectTo": [
-          "text.html.markdown"
-        ]
-      },
-      {
-        "scopeName": "text.katex",
-        "path": "./syntaxes/katex.tmLanguage.json"
-      }
-    ]
-  },
-  "displayName": "%ext.displayName%",
-  "icon": "images/Markdown-mark.png",
-  "publisher": "yzhang"
+      "@types/highlight.js": "^9.12.3",
+      "@types/image-size": "^0.7.0",
+      "@types/markdown-it": "^0.0.7",
+      "@types/mocha": "^5.2.6",
+      "@types/node": "^11.11.3",
+      "mocha": "^6.0.2",
+      "ts-loader": "^5.3.3",
+      "typescript": "^3.3.3333",
+      "vscode": "^1.1.30",
+      "webpack": "^4.29.6",
+      "webpack-cli": "^3.2.3"
+  }
 }
