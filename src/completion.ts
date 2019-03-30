@@ -37,7 +37,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     relations0 = ['curlyeqsucc', 'gtrapprox', 'perp', 'succapprox', 'dashv', 'gtreqless', 'pitchfork', 'succcurlyeq', 'dblcolon', 'gtreqqless', 'prec', 'succeq', 'doteq', 'gtrless', 'precapprox', 'succsim', 'approx', 'Doteq', 'gtrsim', 'preccurlyeq', 'Supset', 'approxeq', 'doteqdot', 'in', 'preceq', 'supset', 'asymp', 'eqcirc', 'Join', 'precsim', 'supseteq', 'backepsilon', 'eqcolon', 'le', 'propto', 'supseteqq', 'backsim', 'Eqcolon', 'leq', 'risingdotseq', 'thickapprox', 'backsimeq', 'eqqcolon', 'leqq', 'shortmid', 'thicksim', 'between', 'Eqqcolon', 'leqslant', 'shortparallel', 'trianglelefteq', 'bowtie', 'eqsim', 'lessapprox', 'sim', 'triangleq', 'bumpeq', 'eqslantgtr', 'lesseqgtr', 'simeq', 'trianglerighteq', 'Bumpeq', 'eqslantless', 'lesseqqgtr', 'smallfrown', 'varpropto', 'circeq', 'equiv', 'lessgtr', 'smallsmile', 'vartriangle', 'colonapprox', 'fallingdotseq', 'lesssim', 'smile', 'vartriangleleft', 'Colonapprox', 'frown', 'll', 'sqsubset', 'vartriangleright', 'coloneq', 'ge', 'lll', 'sqsubseteq', 'vcentcolon', 'Coloneq', 'geq', 'llless', 'sqsupset', 'vdash', 'coloneqq', 'geqq', 'lt', 'sqsupseteq', 'vDash', 'Coloneqq', 'geqslant', 'mid', 'Subset', 'Vdash', 'colonsim', 'gg', 'models', 'subset', 'Vvdash', 'Colonsim', 'ggg', 'multimap', 'subseteq', 'cong', 'gggtr', 'owns', 'subseteqq', 'curlyeqprec', 'gt', 'parallel', 'succ'];
     negatedRelations0 = ['not', 'gnapprox', 'ngeqslant', 'nsubseteq', 'precneqq', 'gneq', 'ngtr', 'nsubseteqq', 'precnsim', 'gneqq', 'nleq', 'nsucc', 'subsetneq', 'gnsim', 'nleqq', 'nsucceq', 'subsetneqq', 'gvertneqq', 'nleqslant', 'nsupseteq', 'succnapprox', 'lnapprox', 'nless', 'nsupseteqq', 'succneqq', 'lneq', 'nmid', 'ntriangleleft', 'succnsim', 'lneqq', 'notin', 'ntrianglelefteq', 'supsetneq', 'lnsim', 'notni', 'ntriangleright', 'supsetneqq', 'lvertneqq', 'nparallel', 'ntrianglerighteq', 'varsubsetneq', 'ncong', 'nprec', 'nvdash', 'varsubsetneqq', 'ne', 'npreceq', 'nvDash', 'varsupsetneq', 'neq', 'nshortmid', 'nVDash', 'varsupsetneqq', 'ngeq', 'nshortparallel', 'nVdash', 'ngeqq', 'nsim', 'precnapprox'];
     arrows0 = ['circlearrowleft', 'Leftarrow ', 'looparrowright', 'rightrightarrows', 'circlearrowright', 'leftarrowtail', 'Lsh', 'rightsquigarrow', 'curvearrowleft', 'leftharpoondown', 'mapsto', 'Rrightarrow', 'curvearrowright', 'leftharpoonup', 'nearrow', 'Rsh', 'dashleftarrow', 'leftleftarrows', 'nleftarrow', 'searrow', 'dashrightarrow', 'leftrightarrow', 'nLeftarrow', 'swarrow', 'downarrow', 'Leftrightarrow', 'nleftrightarrow', 'to', 'Downarrow', 'leftrightarrows', 'nLeftrightarrow', 'twoheadleftarrow', 'downdownarrows', 'leftrightharpoons', 'nrightarrow', 'twoheadrightarrow', 'downharpoonleft', 'leftrightsquigarrow', 'nRightarrow', 'uparrow', 'downharpoonright', 'Lleftarrow', 'nwarrow', 'Uparrow', 'gets', 'longleftarrow', 'restriction', 'updownarrow', 'hookleftarrow', 'Longleftarrow', 'rightarrow', 'Updownarrow', 'hookrightarrow', 'longleftrightarrow', 'Rightarrow', 'upharpoonleft', 'iff', 'Longleftrightarrow', 'rightarrowtail', 'upharpoonright', 'impliedby', 'longmapsto', 'rightharpoondown', 'upuparrows', 'implies', 'longrightarrow', 'rightharpoonu', 'leadsto', 'Longrightarrow', 'rightleftarrows', 'leftarrow', 'looparrowleft', 'rightleftharpoons'];
-    extensibleArrows1 = ['xrightarrow', 'xRightarrow', 'xrightharpoonup', 'xrightarrow', 'xmapsto', 'xrightharpoondown', 'xleftarrow', 'xLeftarrow', 'xleftharpoonup', 'xleftrightarrow', 'xLeftrightarrow', 'xleftharpoondown', 'xhookleftarrow', 'xhookrightarrow', 'xrightleftharpoons', 'xtwoheadrightarrow', 'xlongequal', 'xleftrightharpoons', 'xtwoheadleftarrow', 'xtofrom'];
+    extensibleArrows1 = ['xrightarrow', 'xRightarrow', 'xrightharpoonup', 'xmapsto', 'xrightharpoondown', 'xleftarrow', 'xLeftarrow', 'xleftharpoonup', 'xleftrightarrow', 'xLeftrightarrow', 'xleftharpoondown', 'xhookleftarrow', 'xhookrightarrow', 'xrightleftharpoons', 'xtwoheadrightarrow', 'xlongequal', 'xleftrightharpoons', 'xtwoheadleftarrow', 'xtofrom'];
     classAssignment0 = ['mathbin', 'mathclose', 'mathinner', 'mathop', 'mathopen', 'mathord', 'mathpunct', 'mathrel'];
     color2 = ['color', 'textcolor', 'colorbox'];
     font0 = ['rm', 'bf', 'it', 'sf', 'tt'];
@@ -72,6 +72,16 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         envSnippet.insertText = new SnippetString('begin{${1|matrix,aligned,array,pmatrix,bmatrix,alignedat,vmatrix,Vmatrix,gathered,Bmatrix,cases|}}\n\t$2\n\\end{$1}');
 
         this.mathCompletions = [...c1, ...c2, ...c3, envSnippet];
+        // Sort
+        this.mathCompletions.forEach(item => {
+            item.sortText = item.label.replace(/[a-zA-Z]/g, c => {
+                if (/[a-z]/.test(c)) {
+                    return `0${c}`;
+                } else {
+                    return `1${c.toLowerCase()}`;
+                }
+            });
+        });
     }
 
     provideCompletionItems(document: TextDocument, position: Position, _token: CancellationToken, _context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList> {
@@ -81,7 +91,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         let matches;
         matches = lineTextBefore.match(/\\+$/);
         if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
-            // Complete image paths
+            /* ┌─────────────┐
+               │ Image paths │
+               └─────────────┘ */
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
             matches = lineTextBefore.match(/!\[[^\]]*?\]\(([^\)]*?)[\\\/]?[^\\\/\)]*$/);
@@ -115,6 +127,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             (matches = lineTextBefore.match(/\\+$/)) !== null
             && matches[0].length % 2 !== 0
         ) {
+            /* ┌────────────────┐
+               │ Math functions │
+               └────────────────┘ */
             if (
                 /(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(lineTextBefore)
                 && lineTextAfter.includes('$')
@@ -136,7 +151,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 }
             }
         } else if (/\[[^\]]*?\]\[[^\]]*$/.test(lineTextBefore)) {
-            // Reference link labels
+            /* ┌───────────────────────┐
+               │ Reference link labels │
+               └───────────────────────┘ */
             let startIndex = lineTextBefore.lastIndexOf('[');
             const range = new Range(position.with({ character: startIndex + 1 }), position);
             return new Promise((res, _) => {
