@@ -44,12 +44,12 @@ let regexDecorTypeMapping = {
 };
 
 let regexDecorTypeMappingPlainTheme = {
-    // `code`
-    "(?<!`)(`+)(?!`)(.*?)(?<!`)(\\1)(?!`)": ["gray", "baseColor", "gray"],
     // [alt](link)
     "(^|[^!])(\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": ["", "gray", "lightBlue", "gray"],
     // ![alt](link)
     "(\\!\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": ["gray", "orange", "gray"],
+    // `code`
+    "(?<!`)(`+)(?!`)(.*?)(?<!`)(\\1)(?!`)": ["gray", "baseColor", "gray"],
     // *italic*
     "(\\*)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(\\*)": ["gray", "baseColor", "gray"],
     // _italic_
@@ -104,21 +104,32 @@ function updateDecorations(editor?: TextEditor) {
 
     // e.g. { "(~~.+?~~)": ["strikethrough"] }
     let appliedMappings = workspace.getConfiguration('markdown.extension.syntax').get<boolean>('plainTheme') ?
-        { ...regexDecorTypeMapping, ...regexDecorTypeMappingPlainTheme } :
+        { ...regexDecorTypeMappingPlainTheme, ...regexDecorTypeMapping } :
         regexDecorTypeMapping;
 
-    doc.getText().split(/\r?\n/g).forEach((lineText, lineNum) => {
+    doc.getText().split(/\r?\n/g).forEach((lineText, lineNum) => { // For each line
+
         if (isInFencedCodeBlock(doc, lineNum)) { return; }
 
+        // Issue #412
+        // Trick. Match `[alt](link)` and `![alt](link)` first and remember those greyed out ranges
+        let noDecorRanges: [number, number][] = [];
+
         for (const reText in appliedMappings) {
+
             if (appliedMappings.hasOwnProperty(reText)) {
-                const decorTypeNames: string[] = appliedMappings[reText];  // e.g. ["strikethrough"]
+                const decorTypeNames: string[] = appliedMappings[reText];  // e.g. ["strikethrough"] or ["gray", "baseColor", "gray"]
                 const regex = new RegExp(reText, 'g');  // e.g. "(~~.+?~~)"
 
                 let match;
                 while ((match = regex.exec(lineText)) !== null) {
 
                     let startIndex = match.index;
+
+                    if (noDecorRanges.some(r =>
+                        (startIndex > r[0] && startIndex < r[1])
+                        || (startIndex + match[0].length > r[0] && startIndex + match[0].length < r[1])
+                    )) { continue; }
 
                     for (let i = 0; i < decorTypeNames.length; i++) {
                         // Skip if in math environment (See `completion.ts`)
@@ -146,9 +157,15 @@ function updateDecorations(editor?: TextEditor) {
 
                         const decorTypeName = decorTypeNames[i];
                         const caughtGroup = decorTypeName == "codeSpan" ? match[0] : match[i + 1];
+                        
+                        if (decorTypeName === "gray" && caughtGroup.length > 2) {
+                            noDecorRanges.push([startIndex, startIndex + caughtGroup.length]);
+                        }
+
                         const range = new Range(lineNum, startIndex, lineNum, startIndex + caughtGroup.length);
                         startIndex += caughtGroup.length;
 
+                        // Needed for `[alt](link)` rule. And must appear after `startIndex += caughtGroup.length;`
                         if (decorTypeName.length === 0) {
                             continue;
                         }
