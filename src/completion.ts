@@ -4,6 +4,7 @@ import * as sizeOf from 'image-size';
 import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
 import { mdDocSelector } from './util';
+import { stringify } from 'querystring';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerCompletionItemProvider(mdDocSelector, new MdCompletionItemProvider(), '(', '\\', '/', '['));
@@ -157,11 +158,30 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             let startIndex = lineTextBefore.lastIndexOf('[');
             const range = new Range(position.with({ character: startIndex + 1 }), position);
             return new Promise((res, _) => {
-                let refLabels = document.getText().split(/\r?\n/).reduce((prev, curr) => {
+                const lines = document.getText().split(/\r?\n/);
+                const usageCounts = lines.reduce((useCounts, currentLine) => {
+                    let match: RegExpExecArray;
+                    const pattern = /\[[^\]]+\]\[([^\]]*?)\]/g;
+                    while ((match = pattern.exec(currentLine)) !== null) {
+                        let usedRef = match[1];
+                        if (!useCounts.has(usedRef)) {
+                            useCounts.set(usedRef, 0);
+                        }
+                        useCounts.set(usedRef, useCounts.get(usedRef) + 1);
+                    }
+                    return useCounts;
+                }, new Map<string, number>());
+                let refLabels = lines.reduce((prev, curr) => {
                     let match;
                     if ((match = /^\[([^\]]*?)\]: (\S*)( .*)?/.exec(curr)) !== null) {
-                        let item = new CompletionItem(match[1], CompletionItemKind.Reference);
+                        const ref = match[1];
+                        let item = new CompletionItem(ref, CompletionItemKind.Reference);
                         item.documentation = match[2];
+                        // prefer unused items
+                        // We need to `sortText` in the else case as well due to:
+                        // https://github.com/Microsoft/vscode/issues/66109#issuecomment-451873316
+                        item.sortText = !usageCounts.has(ref) ? `!!!-${ref}` : item.sortText = ref;
+                        
                         item.range = range;
                         prev.push(item);
                     }
