@@ -4,7 +4,6 @@ import * as sizeOf from 'image-size';
 import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
 import { mdDocSelector } from './util';
-import { stringify } from 'querystring';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerCompletionItemProvider(mdDocSelector, new MdCompletionItemProvider(), '(', '\\', '/', '['));
