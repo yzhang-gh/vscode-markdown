@@ -176,11 +176,13 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     if ((match = /^\[([^\]]*?)\]: (\S*)( .*)?/.exec(curr)) !== null) {
                         const ref = match[1];
                         let item = new CompletionItem(ref, CompletionItemKind.Reference);
-                        item.documentation = match[2];
+                        const usages = usageCounts.get(ref) || 0;
+                        item.documentation = new MarkdownString(match[2]);
+                        item.detail = usages === 1 ? `1 usage`  : `${usages} usages`;
                         // prefer unused items
                         // We need to `sortText` in the else case as well due to:
                         // https://github.com/Microsoft/vscode/issues/66109#issuecomment-451873316
-                        item.sortText = !usageCounts.has(ref) ? `!!!-${ref}` : item.sortText = ref;
+                        item.sortText = usages === 0 ? `!!!-${ref}` : item.sortText = ref;
                         
                         item.range = range;
                         prev.push(item);
