@@ -181,7 +181,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                         // prefer unused items
                         // We need to `sortText` in the else case as well due to:
                         // https://github.com/Microsoft/vscode/issues/66109#issuecomment-451873316
-                        item.sortText = usages === 0 ? `!!!-${ref}` : item.sortText = ref;
+                        item.sortText = usages === 0 ? `0-${ref}` : item.sortText = `1-${ref}`;
                         
                         item.range = range;
                         prev.push(item);
