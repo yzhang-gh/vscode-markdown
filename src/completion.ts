@@ -157,11 +157,30 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             let startIndex = lineTextBefore.lastIndexOf('[');
             const range = new Range(position.with({ character: startIndex + 1 }), position);
             return new Promise((res, _) => {
-                let refLabels = document.getText().split(/\r?\n/).reduce((prev, curr) => {
+                const lines = document.getText().split(/\r?\n/);
+                const usageCounts = lines.reduce((useCounts, currentLine) => {
+                    let match: RegExpExecArray;
+                    const pattern = /\[[^\]]+\]\[([^\]]*?)\]/g;
+                    while ((match = pattern.exec(currentLine)) !== null) {
+                        let usedRef = match[1];
+                        if (!useCounts.has(usedRef)) {
+                            useCounts.set(usedRef, 0);
+                        }
+                        useCounts.set(usedRef, useCounts.get(usedRef) + 1);
+                    }
+                    return useCounts;
+                }, new Map<string, number>());
+                let refLabels = lines.reduce((prev, curr) => {
                     let match;
                     if ((match = /^\[([^\]]*?)\]: (\S*)( .*)?/.exec(curr)) !== null) {
-                        let item = new CompletionItem(match[1], CompletionItemKind.Reference);
-                        item.documentation = match[2];
+                        const ref = match[1];
+                        let item = new CompletionItem(ref, CompletionItemKind.Reference);
+                        const usages = usageCounts.get(ref) || 0;
+                        item.documentation = new MarkdownString(match[2]);
+                        item.detail = usages === 1 ? `1 usage`  : `${usages} usages`;
+                        // Prefer unused items
+                        item.sortText = usages === 0 ? `0-${ref}` : item.sortText = `1-${ref}`;
+                        
                         item.range = range;
                         prev.push(item);
                     }
