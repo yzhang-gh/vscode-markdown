@@ -178,9 +178,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                         const usages = usageCounts.get(ref) || 0;
                         item.documentation = new MarkdownString(match[2]);
                         item.detail = usages === 1 ? `1 usage`  : `${usages} usages`;
-                        // prefer unused items
-                        // We need to `sortText` in the else case as well due to:
-                        // https://github.com/Microsoft/vscode/issues/66109#issuecomment-451873316
+                        // Prefer unused items
                         item.sortText = usages === 0 ? `0-${ref}` : item.sortText = `1-${ref}`;
                         
                         item.range = range;
