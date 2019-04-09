@@ -22,7 +22,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     otherLetters0 = ['imath', 'nabla', 'Im', 'Reals', 'text', 'jmath', 'partial', 'image', 'wp', 'text', 'aleph', 'Game', 'Bbbk', 'weierp', 'text', 'alef', 'Finv', 'N', 'Z', 'text', 'alefsym', 'cnums', 'natnums', 'text', 'text', 'beth', 'Complex', 'R', 'text', 'text', 'gimel', 'ell', 'Re', 'text', 'daleth', 'hbar', 'real', 'text', 'eth', 'hslash', 'reals', 'text'];
     annotation1 = ['cancel', 'overbrace', 'bcancel', 'underbrace', 'xcancel', 'not =', 'sout', 'boxed'];
     overlap1 = ['mathllap', 'mathrlap', 'mathclap', 'llap', 'rlap', 'clap', 'smash'];
-    spacing0 = ['\kern', '\thinspace', '\mkern', '\mskip', '\hskip', '\medspace', '\hspace', '\hspace*', '\thickspace', '\phantom', '\enspace', '\hphantom', '\quad', '\vphantom', '\qquad', '\negthinspace', '\negmedspace', '\nobreakspace', '\negthickspace', '\space'];
+    spacing0 = ['thinspace', 'medspace', 'thickspace', 'enspace', 'quad', 'qquad', 'negthinspace', 'negmedspace', 'nobreakspace', 'negthickspace'];
+    spacing1 = ['kern', 'mkern', 'mskip', 'hskip', 'hspace', 'hspace*', 'phantom', 'hphantom', 'vphantom'];
     verticalLayout0 = ['atop']
     verticalLayout2 = ['stackrel', 'overset', 'underset', 'raisebox'];
     logicAndSetTheory0 = ['forall', 'complement', 'therefore', 'emptyset', 'exists', 'subset', 'because', 'empty', 'exist', 'supset', 'mapsto', 'varnothing', 'nexists', 'mid', 'to', 'implies', 'in', 'land', 'gets', 'impliedby', 'isin', 'lor', 'leftrightarrow', 'iff', 'notin', 'ni', 'notni', 'neg'];
@@ -58,7 +59,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             return item;
         });
         // \cmd{$1}
-        let c2 = Array.from(new Set([...this.accents1, ...this.annotation1, ...this.overlap1, ...this.mathOperators1, ...this.sqrt1, ...this.extensibleArrows1, ...this.font1, ...this.style1])).map(cmd => {
+        let c2 = Array.from(new Set([, ...this.spacing1, ...this.accents1, ...this.annotation1, ...this.overlap1, ...this.mathOperators1, ...this.sqrt1, ...this.extensibleArrows1, ...this.font1, ...this.style1])).map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
             item.insertText = new SnippetString(`${cmd}\{$1\}`);
             return item;
