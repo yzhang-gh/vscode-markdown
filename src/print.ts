@@ -75,11 +75,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() { }
 
-function onDidSave(e: vscode.TextDocument) {
-    e.languageId == 'markdown' && 
-        vscode.workspace.getConfiguration(
-            'markdown.extension.printToHtmlOnFileSaved') && 
-            print('html');
+function onDidSave(doc: vscode.TextDocument) {
+    if (doc.languageId == 'markdown' && 
+            vscode.workspace.getConfiguration(
+                'markdown.extension.printToHtmlOnFileSaved'
+            )
+        ) {
+        print('html');
+    }
+        
 }
 
 async function print(type: string) {
