@@ -8,6 +8,7 @@
     "command.editing.toggleMath.title": "Markdown: 触发数学环境",
     "command.editing.toggleUnorderedList.title": "Markdown: 触发无序列表",
     "config.title": "Markdown All in One",
+    "config.printToHtmlOnFileSaved.description": "Markdown: 每次文档保存后自动打印为 HTML",
     "config.toc.levels.description": "目录级别的范围. 例如 `2..5` 表示在目录中只包含 2 到 5 级标题",
     "config.toc.orderedList.description": "使用有序列表 (1. ..., 2. ...)",
     "config.toc.unorderedList.marker.description": "在目录中使用 `-`, `*` 或 `+` （对于无序列表）",

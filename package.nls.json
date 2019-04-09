@@ -8,6 +8,7 @@
     "command.editing.toggleMath.title": "Markdown: Toggle math environment",
     "command.editing.toggleUnorderedList.title": "Markdown: Toggle unordered list",
     "config.title": "Markdown All in One",
+    "config.printToHtmlOnFileSaved.description": "Markdown: Print document to HTML each time when file is saved",
     "config.toc.levels.description": "Range of levels for table of contents. Use `x..y` for level x to y",
     "config.toc.orderedList.description": "Use ordered list (1. ..., 2. ...)",
     "config.toc.unorderedList.marker.description": "Use `-`, `*` or `+` in the table of contents (for unordered list)",

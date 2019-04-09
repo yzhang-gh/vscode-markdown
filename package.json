@@ -181,6 +181,11 @@
             "type": "object",
             "title": "%config.title%",
             "properties": {
+                "markdown.extension.printToHtmlOnFileSaved": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "%config.printToHtmlOnFileSaved.description%"
+                },
                 "markdown.extension.toc.levels": {
                     "type": "string",
                     "default": "1..6",
