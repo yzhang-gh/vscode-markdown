@@ -6,7 +6,7 @@ import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKin
 import { mdDocSelector } from './util';
 
 export function activate(context: ExtensionContext) {
-    context.subscriptions.push(languages.registerCompletionItemProvider(mdDocSelector, new MdCompletionItemProvider(), '(', '\\', '/', '['));
+    context.subscriptions.push(languages.registerCompletionItemProvider(mdDocSelector, new MdCompletionItemProvider(), '(', '\\', '/', '[', '#'));
 }
 
 class MdCompletionItemProvider implements CompletionItemProvider {
