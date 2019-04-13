@@ -4,7 +4,7 @@
 [![installs](https://img.shields.io/vscode-marketplace/d/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
 [![AppVeyor](https://img.shields.io/appveyor/ci/yzhang-gh/vscode-markdown.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/yzhang-gh/vscode-markdown)
 [![GitHub stars](https://img.shields.io/github/stars/yzhang-gh/vscode-markdown.svg?style=flat-square&label=github%20stars)](https://github.com/yzhang-gh/vscode-markdown)
-[![VSCode Power User course](https://img.shields.io/badge/Learn%20-VSCode%20Power%20User%20Course%20%E2%86%92-gray.svg?style=flat-square&colorA=444444&colorB=4F44D6)](https://VSCode.pro?utm_source=MarkdownAllInOne)
+[![GitHub Contributors](https://img.shields.io/github/contributors/yzhang-gh/vscode-markdown.svg?style=flat-square)](https://github.com/yzhang-gh/vscode-markdown/graphs/contributors)
 
 All you need for Markdown (keyboard shortcuts, table of contents, auto preview and more).
 
@@ -100,7 +100,6 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | ------------------------------------------------- | ---------------------------- |
 | <kbd>Ctrl</kbd> + <kbd>B</kbd>                    | Toggle bold                  |
 | <kbd>Ctrl</kbd> + <kbd>I</kbd>                    | Toggle italic                |
-| <kbd>Alt</kbd> + <kbd>S</kbd>                     | Toggle strikethrough         |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel)     |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel)   |
 | <kbd>Ctrl</kbd> + <kbd>M</kbd>                    | Toggle math environment      |
@@ -153,6 +152,10 @@ To install, execute `Extensions: Install from VSIX...` in the Command Palette (`
 - Leave a review on [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one#review-details).
 - Buy me a coffee ☕ (via [PayPal](https://www.paypal.me/2yzhang), [Alipay or WeChat](donate.md)).
 
+Special thanks to all the [contributors](https://github.com/yzhang-gh/vscode-markdown/graphs/contributors).
+
 ---
 
-And a *Thank You* to [VSCode Power User Course](https://VSCode.pro?utm_source=MarkdownAllInOne) for sharing many VSCode tips with me.
+Thanks [VSCode Power User Course](https://VSCode.pro?utm_source=MarkdownAllInOne) for sharing many VSCode tips with me.
+
+[![VSCode Power User course](https://img.shields.io/badge/Learn%20-VSCode%20Power%20User%20Course%20%E2%86%92-gray.svg?style=flat-square&colorA=444444&colorB=4F44D6)](https://VSCode.pro?utm_source=MarkdownAllInOne)
