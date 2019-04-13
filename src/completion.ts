@@ -15,49 +15,293 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     // \cmd         -> 0
     // \cmd{$1}     -> 1
     // \cmd{$1}{$2} -> 2
-    accents1 = ['grave', 'overleftarrow', 'overrightarrow', 'hat', 'underleftarrow', 'underrightarrow', 'widehat', 'overleftrightarrow', 'overbrace', 'acute', 'mathring', 'underleftrightarrow', 'underbrace', 'bar', 'tilde', 'overgroup', 'overlinesegment', 'breve', 'widetilde', 'undergroup', 'underlinesegment', 'check', 'vec', 'overleftharpoon', 'overrightharpoon', 'dot', 'overline', 'Overrightarrow', 'utilde', 'ddot', 'underline', 'widecheck'];
-    delimiters0 = ['lgroup', 'rgroup', 'lceil', 'rceil', 'uparrow', 'lbrack', 'rbrack', 'lfloor', 'rfloor', 'downarrow', 'lbrace', 'rbrace', 'lmoustache', 'rmoustache', 'updownarrow', 'langle', 'rangle', 'lt', 'gt', 'Uparrow', 'vert', 'ulcorner', 'urcorner', 'Downarrow', 'Vert', 'llcorner', 'lrcorner', 'Updownarrow', 'lvert', 'rvert', 'lVert', 'rVert', 'left.', 'right.', 'backslash'];
-    delimeterSizing0 = ['left', 'big', 'bigl', 'bigr', 'middle', 'Big', 'Bigl', 'Bigr', 'right', 'bigg', 'biggl', 'biggr', 'Bigg', 'Biggl', 'Biggr'];
-    greekLetters0 = ['Gamma', 'Delta', 'Theta', 'Lambda', 'Xi', 'Pi', 'Sigma', 'Upsilon', 'Phi', 'Psi', 'Omega', 'varGamma', 'varDelta', 'varTheta', 'varLambda', 'varXi', 'varPi', 'varSigma', 'varUpsilon', 'varPhi', 'varPsi', 'varOmega', 'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi', 'omicron', 'pi', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega', 'varepsilon', 'varkappa', 'vartheta', 'varpi', 'varrho', 'varsigma', 'varphi', 'digamma'];
-    otherLetters0 = ['imath', 'eth', 'Im', 'text{\\aa}', 'text{\\o}', 'jmath', 'Finv', 'Re', 'text{\\AA}', 'text{\\O}', 'aleph', 'Game', 'wp', 'text{\\ae}', 'text{\\ss}', 'beth', 'ell', 'partial', 'text{\\AE}', 'text{\\i}', 'gimel', 'hbar', 'nabla', 'text{\\oe}', 'text{\\j}', 'daleth', 'hslash', 'Bbbk', 'text{\\OE}'];
-    annotation1 = ['cancel', 'bcancel', 'xcancel', 'sout', 'overbrace', 'underbrace', 'boxed', 'not', 'tag', 'tag*'];
-    overlap1 = ['mathllap', 'mathrlap', 'mathclap', 'llap', 'rlap', 'clap', 'smash'];
+    // 
+    // Use linebreak to mimic the structure of the KaTeX [Support Table](https://katex.org/docs/supported.html)
+    accents1 = [
+        'tilde', 'mathring',
+        'widetilde', 'overgroup',
+        'utilde', 'undergroup',
+        'acute', 'vec', 'Overrightarrow',
+        'bar', 'overleftarrow', 'overrightarrow',
+        'breve', 'underleftarrow', 'underrightarrow',
+        'check', 'overleftharpoon', 'overrightharpoon',
+        'dot', 'overleftrightarrow', 'overbrace',
+        'ddot', 'underleftrightarrow', 'underbrace',
+        'grave', 'overline', 'overlinesegment',
+        'hat', 'underline', 'underlinesegment',
+        'widehat', 'widecheck'
+    ];
+    delimiters0 = [
+        'lparen', 'rparen', 'lceil', 'rceil', 'uparrow',
+        'lbrack', 'rbrack', 'lfloor', 'rfloor', 'downarrow', 'updownarrow',
+        'langle', 'rangle', 'lgroup', 'rgroup', 'Uparrow',
+        'vert', 'ulcorner', 'urcorner', 'Downarrow',
+        'Vert', 'llcorner', 'lrcorner', 'Updownarrow',
+        'lvert', 'rvert', 'lVert', 'rVert', 'backslash',
+        'lang', 'rang', 'lt', 'gt'
+    ];
+    delimeterSizing0 = [
+        'left', 'big', 'bigl', 'bigm', 'bigr',
+        'middle', 'Big', 'Bigl', 'Bigm', 'Bigr',
+        'right', 'bigg', 'biggl', 'biggm', 'biggr',
+        'Bigg', 'Biggl', 'Biggm', 'Biggr'
+    ];
+    greekLetters0 = [
+        'Alpha', 'Beta', 'Gamma', 'Delta',
+        'Epsilon', 'Zeta', 'Eta', 'Theta',
+        'Iota', 'Kappa', 'Lambda', 'Mu',
+        'Nu', 'Xi', 'Omicron', 'Pi',
+        'Sigma', 'Tau', 'Upsilon', 'Phi',
+        'Chi', 'Psi', 'Omega',
+        'varGamma', 'varDelta', 'varTheta', 'varLambda',
+        'varXi', 'varPi', 'varSigma', 'varUpsilon',
+        'varPhi', 'varPsi', 'varOmega',
+        'alpha', 'beta', 'gamma', 'delta',
+        'epsilon', 'zeta', 'eta', 'theta',
+        'iota', 'kappa', 'lambda', 'mu',
+        'nu', 'xi', 'omicron', 'pi',
+        'rho', 'sigma', 'tau', 'upsilon',
+        'phi', 'chi', 'psi', 'omega',
+        'varepsilon', 'varkappa', 'vartheta', 'thetasym',
+        'varpi', 'varrho', 'varsigma', 'varphi',
+        'digamma'
+    ];
+    otherLetters0 = [
+        'imath', 'nabla', 'Im', 'Reals',
+        'jmath', 'partial', 'image', 'wp',
+        'aleph', 'Game', 'Bbbk', 'weierp',
+        'alef', 'Finv', 'N', 'Z',
+        'alefsym', 'cnums', 'natnums',
+        'beth', 'Complex', 'R',
+        'gimel', 'ell', 'Re',
+        'daleth', 'hbar', 'real',
+        'eth', 'hslash', 'reals'
+    ];
+    annotation1 = [
+        'cancel', 'overbrace',
+        'bcancel', 'underbrace',
+        'xcancel', 'not =',
+        'sout', 'boxed',
+        'tag', 'tag*'
+    ];
     verticalLayout0 = ['atop']
     verticalLayout2 = ['stackrel', 'overset', 'underset', 'raisebox'];
-    logicAndSetTheory0 = ['forall', 'complement', 'therefore', 'neg', 'lnot', 'exists', 'subset', 'because', 'emptyset', 'varnothing', 'nexists', 'supset', 'mapsto', 'in', 'mid', 'to', 'implies', 'notin', 'land', 'gets', 'impliedby', 'ni', 'lor', 'leftrightarrow', 'iff', 'notni'];
-    bigOperators0 = ['sum', 'prod', 'bigvee', 'bigotimes', 'int', 'coprod', 'bigwedge', 'bigoplus', 'iint', 'intop', 'bigcap', 'bigodot', 'iiint', 'smallint', 'bigcup', 'biguplus', 'oint', 'bigsqcup'];
-    binaryOperators0 = ['cdot', 'gtrdot', 'pmod', 'cdotp', 'intercal', 'pod', 'centerdot', 'land', 'rhd', 'circ', 'leftthreetimes', 'rightthreetimes', 'amalg', 'circledast', 'ldotp', 'rtimes', 'And', 'circledcirc', 'lor', 'setminus', 'ast', 'circleddash', 'lessdot', 'smallsetminus', 'barwedge', 'Cup', 'lhd', 'sqcap', 'bigcirc', 'cup', 'ltimes', 'sqcup', 'bmod', 'curlyvee', 'mod', 'times', 'boxdot', 'curlywedge', 'mp', 'unlhd', 'boxminus', 'div', 'odot', 'unrhd', 'boxplus', 'divideontimes', 'ominus', 'uplus', 'boxtimes', 'dotplus', 'oplus', 'vee', 'bullet', 'doublebarwedge', 'otimes', 'veebar', 'Cap', 'doublecap', 'oslash', 'wedge', 'cap', 'doublecup', 'pm', 'wr'];
+    overlap1 = ['mathllap', 'mathrlap', 'mathclap', 'llap', 'rlap', 'clap', 'smash'];
+    spacing0 = ['thinspace', 'medspace', 'thickspace', 'enspace', 'quad', 'qquad', 'negthinspace', 'negmedspace', 'nobreakspace', 'negthickspace'];
+    spacing1 = ['kern', 'mkern', 'mskip', 'hskip', 'hspace', 'hspace*', 'phantom', 'hphantom', 'vphantom'];
+    logicAndSetTheory0 = [
+        'forall', 'complement', 'therefore', 'emptyset',
+        'exists', 'subset', 'because', 'empty',
+        'exist', 'supset', 'mapsto', 'varnothing',
+        'nexists', 'mid', 'to', 'implies',
+        'in', 'land', 'gets', 'impliedby',
+        'isin', 'lor', 'leftrightarrow', 'iff',
+        'notin', 'ni', 'notni', 'neg', 'lnot'
+    ];
+    bigOperators0 = [
+        'sum', 'prod', 'bigotimes', 'bigvee',
+        'int', 'coprod', 'bigoplus', 'bigwedge',
+        'iint', 'intop', 'bigodot', 'bigcap',
+        'iiint', 'smallint', 'biguplus', 'bigcup',
+        'oint', 'oiint', 'oiiint', 'bigsqcup'
+    ];
+    binaryOperators0 = [
+        'cdot', 'gtrdot', 'pmod',
+        'cdotp', 'intercal', 'pod',
+        'centerdot', 'land', 'rhd',
+        'circ', 'leftthreetimes', 'rightthreetimes',
+        'amalg', 'circledast', 'ldotp', 'rtimes',
+        'And', 'circledcirc', 'lor', 'setminus',
+        'ast', 'circleddash', 'lessdot', 'smallsetminus',
+        'barwedge', 'Cup', 'lhd', 'sqcap',
+        'bigcirc', 'cup', 'ltimes', 'sqcup',
+        'bmod', 'curlyvee', 'times',
+        'boxdot', 'curlywedge', 'mp', 'unlhd',
+        'boxminus', 'div', 'odot', 'unrhd',
+        'boxplus', 'divideontimes', 'ominus', 'uplus',
+        'boxtimes', 'dotplus', 'oplus', 'vee',
+        'bullet', 'doublebarwedge', 'otimes', 'veebar',
+        'Cap', 'doublecap', 'oslash', 'wedge',
+        'cap', 'doublecup', 'pm', 'plusmn', 'wr'
+    ];
+    fractions0 = ['over', 'above'];
+    fractions2 = ['frac', 'dfrac', 'tfrac', 'cfrac', 'genfrac'];
     binomialCoefficients0 = ['choose'];
-    binomialCoefficients2 = ['binom', 'dbinom', 'tbinom'];
-    fractions0 = ['over'];
-    fractions2 = ['frac', 'dfrac', 'tfrac', 'cfrac'];
-    mathOperators0 = ['arcsin', 'cotg', 'ln', 'det', 'arccos', 'coth', 'log', 'gcd', 'arctan', 'csc', 'sec', 'inf', 'arctg', 'ctg', 'sin', 'lim', 'arcctg', 'cth', 'sinh', 'liminf', 'arg', 'deg', 'sh', 'limsup', 'ch', 'dim', 'tan', 'max', 'cos', 'exp', 'tanh', 'min', 'cosec', 'hom', 'tg', 'Pr', 'cosh', 'ker', 'th', 'sup', 'cot', 'lg', 'limits'];
+    binomialCoefficients2 = ['binom', 'dbinom', 'tbinom', 'brace', 'brack'];
+    mathOperators0 = [
+        'arcsin', 'cotg', 'ln', 'det',
+        'arccos', 'coth', 'log', 'gcd',
+        'arctan', 'csc', 'sec', 'inf',
+        'arctg', 'ctg', 'sin', 'lim',
+        'arcctg', 'cth', 'sinh', 'liminf',
+        'arg', 'deg', 'sh', 'limsup',
+        'ch', 'dim', 'tan', 'max',
+        'cos', 'exp', 'tanh', 'min',
+        'cosec', 'hom', 'tg', 'Pr',
+        'cosh', 'ker', 'th', 'sup',
+        'cot', 'lg', 'argmax',
+        'argmin', 'limits'
+    ];
     mathOperators1 = ['operatorname'];
     sqrt1 = ['sqrt'];
-    relations0 = ['curlyeqsucc', 'gtrapprox', 'perp', 'succapprox', 'dashv', 'gtreqless', 'pitchfork', 'succcurlyeq', 'dblcolon', 'gtreqqless', 'prec', 'succeq', 'doteq', 'gtrless', 'precapprox', 'succsim', 'approx', 'Doteq', 'gtrsim', 'preccurlyeq', 'Supset', 'approxeq', 'doteqdot', 'in', 'preceq', 'supset', 'asymp', 'eqcirc', 'Join', 'precsim', 'supseteq', 'backepsilon', 'eqcolon', 'le', 'propto', 'supseteqq', 'backsim', 'Eqcolon', 'leq', 'risingdotseq', 'thickapprox', 'backsimeq', 'eqqcolon', 'leqq', 'shortmid', 'thicksim', 'between', 'Eqqcolon', 'leqslant', 'shortparallel', 'trianglelefteq', 'bowtie', 'eqsim', 'lessapprox', 'sim', 'triangleq', 'bumpeq', 'eqslantgtr', 'lesseqgtr', 'simeq', 'trianglerighteq', 'Bumpeq', 'eqslantless', 'lesseqqgtr', 'smallfrown', 'varpropto', 'circeq', 'equiv', 'lessgtr', 'smallsmile', 'vartriangle', 'colonapprox', 'fallingdotseq', 'lesssim', 'smile', 'vartriangleleft', 'Colonapprox', 'frown', 'll', 'sqsubset', 'vartriangleright', 'coloneq', 'ge', 'lll', 'sqsubseteq', 'vcentcolon', 'Coloneq', 'geq', 'llless', 'sqsupset', 'vdash', 'coloneqq', 'geqq', 'lt', 'sqsupseteq', 'vDash', 'Coloneqq', 'geqslant', 'mid', 'Subset', 'Vdash', 'colonsim', 'gg', 'models', 'subset', 'Vvdash', 'Colonsim', 'ggg', 'multimap', 'subseteq', 'cong', 'gggtr', 'owns', 'subseteqq', 'curlyeqprec', 'gt', 'parallel', 'succ'];
-    negatedRelations0 = ['not', 'gnapprox', 'ngeqslant', 'nsubseteq', 'precneqq', 'gneq', 'ngtr', 'nsubseteqq', 'precnsim', 'gneqq', 'nleq', 'nsucc', 'subsetneq', 'gnsim', 'nleqq', 'nsucceq', 'subsetneqq', 'gvertneqq', 'nleqslant', 'nsupseteq', 'succnapprox', 'lnapprox', 'nless', 'nsupseteqq', 'succneqq', 'lneq', 'nmid', 'ntriangleleft', 'succnsim', 'lneqq', 'notin', 'ntrianglelefteq', 'supsetneq', 'lnsim', 'notni', 'ntriangleright', 'supsetneqq', 'lvertneqq', 'nparallel', 'ntrianglerighteq', 'varsubsetneq', 'ncong', 'nprec', 'nvdash', 'varsubsetneqq', 'ne', 'npreceq', 'nvDash', 'varsupsetneq', 'neq', 'nshortmid', 'nVDash', 'varsupsetneqq', 'ngeq', 'nshortparallel', 'nVdash', 'ngeqq', 'nsim', 'precnapprox'];
-    arrows0 = ['circlearrowleft', 'Leftarrow ', 'looparrowright', 'rightrightarrows', 'circlearrowright', 'leftarrowtail', 'Lsh', 'rightsquigarrow', 'curvearrowleft', 'leftharpoondown', 'mapsto', 'Rrightarrow', 'curvearrowright', 'leftharpoonup', 'nearrow', 'Rsh', 'dashleftarrow', 'leftleftarrows', 'nleftarrow', 'searrow', 'dashrightarrow', 'leftrightarrow', 'nLeftarrow', 'swarrow', 'downarrow', 'Leftrightarrow', 'nleftrightarrow', 'to', 'Downarrow', 'leftrightarrows', 'nLeftrightarrow', 'twoheadleftarrow', 'downdownarrows', 'leftrightharpoons', 'nrightarrow', 'twoheadrightarrow', 'downharpoonleft', 'leftrightsquigarrow', 'nRightarrow', 'uparrow', 'downharpoonright', 'Lleftarrow', 'nwarrow', 'Uparrow', 'gets', 'longleftarrow', 'restriction', 'updownarrow', 'hookleftarrow', 'Longleftarrow', 'rightarrow', 'Updownarrow', 'hookrightarrow', 'longleftrightarrow', 'Rightarrow', 'upharpoonleft', 'iff', 'Longleftrightarrow', 'rightarrowtail', 'upharpoonright', 'impliedby', 'longmapsto', 'rightharpoondown', 'upuparrows', 'implies', 'longrightarrow', 'rightharpoonu', 'leadsto', 'Longrightarrow', 'rightleftarrows', 'leftarrow', 'looparrowleft', 'rightleftharpoons'];
-    extensibleArrows1 = ['xrightarrow', 'xRightarrow', 'xrightharpoonup', 'xmapsto', 'xrightharpoondown', 'xleftarrow', 'xLeftarrow', 'xleftharpoonup', 'xleftrightarrow', 'xLeftrightarrow', 'xleftharpoondown', 'xhookleftarrow', 'xhookrightarrow', 'xrightleftharpoons', 'xtwoheadrightarrow', 'xlongequal', 'xleftrightharpoons', 'xtwoheadleftarrow', 'xtofrom'];
+    relations0 = [
+        'eqcirc', 'lesseqgtr', 'sqsupset',
+        'eqcolon', 'lesseqqgtr', 'sqsupseteq',
+        'Eqcolon', 'lessgtr', 'Subset',
+        'eqqcolon', 'lesssim', 'subset',
+        'approx', 'Eqqcolon', 'll', 'subseteq', 'sube',
+        'approxeq', 'eqsim', 'lll', 'subseteqq',
+        'asymp', 'eqslantgtr', 'llless', 'succ',
+        'backepsilon', 'eqslantless', 'lt', 'succapprox',
+        'backsim', 'equiv', 'mid', 'succcurlyeq',
+        'backsimeq', 'fallingdotseq', 'models', 'succeq',
+        'between', 'frown', 'multimap', 'succsim',
+        'bowtie', 'ge', 'owns', 'Supset',
+        'bumpeq', 'geq', 'parallel', 'supset',
+        'Bumpeq', 'geqq', 'perp', 'supseteq',
+        'circeq', 'geqslant', 'pitchfork', 'supseteqq',
+        'colonapprox', 'gg', 'prec', 'thickapprox',
+        'Colonapprox', 'ggg', 'precapprox', 'thicksim',
+        'coloneq', 'gggtr', 'preccurlyeq', 'trianglelefteq',
+        'Coloneq', 'gt', 'preceq', 'triangleq',
+        'coloneqq', 'gtrapprox', 'precsim', 'trianglerighteq',
+        'Coloneqq', 'gtreqless', 'propto', 'varpropto',
+        'colonsim', 'gtreqqless', 'risingdotseq', 'vartriangle',
+        'Colonsim', 'gtrless', 'shortmid', 'vartriangleleft',
+        'cong', 'gtrsim', 'shortparallel', 'vartriangleright',
+        'curlyeqprec', 'in', 'sim', 'vcentcolon',
+        'curlyeqsucc', 'Join', 'simeq', 'vdash',
+        'dashv', 'le', 'smallfrown', 'vDash',
+        'dblcolon', 'leq', 'smallsmile', 'Vdash',
+        'doteq', 'leqq', 'smile', 'Vvdash',
+        'Doteq', 'leqslant', 'sqsubset',
+        'doteqdot', 'lessapprox', 'sqsubseteq'
+    ];
+    negatedRelations0 = [
+        'gnapprox', 'ngeqslant', 'nsubseteq', 'precneqq',
+        'gneq', 'ngtr', 'nsubseteqq', 'precnsim',
+        'gneqq', 'nleq', 'nsucc', 'subsetneq',
+        'gnsim', 'nleqq', 'nsucceq', 'subsetneqq',
+        'gvertneqq', 'nleqslant', 'nsupseteq', 'succnapprox',
+        'lnapprox', 'nless', 'nsupseteqq', 'succneqq',
+        'lneq', 'nmid', 'ntriangleleft', 'succnsim',
+        'lneqq', 'notin', 'ntrianglelefteq', 'supsetneq',
+        'lnsim', 'notni', 'ntriangleright', 'supsetneqq',
+        'lvertneqq', 'nparallel', 'ntrianglerighteq', 'varsubsetneq',
+        'ncong', 'nprec', 'nvdash', 'varsubsetneqq',
+        'ne', 'npreceq', 'nvDash', 'varsupsetneq',
+        'neq', 'nshortmid', 'nVDash', 'varsupsetneqq',
+        'ngeq', 'nshortparallel', 'nVdash',
+        'ngeqq', 'nsim', 'precnapprox'
+    ];
+    arrows0 = [
+        'circlearrowleft', 'leftharpoonup', 'rArr',
+        'circlearrowright', 'leftleftarrows', 'rarr',
+        'curvearrowleft', 'leftrightarrow', 'restriction',
+        'curvearrowright', 'Leftrightarrow', 'rightarrow',
+        'Darr', 'leftrightarrows', 'Rightarrow',
+        'dArr', 'leftrightharpoons', 'rightarrowtail',
+        'darr', 'leftrightsquigarrow', 'rightharpoondown',
+        'dashleftarrow', 'Lleftarrow', 'rightharpoonup',
+        'dashrightarrow', 'longleftarrow', 'rightleftarrows',
+        'downarrow', 'Longleftarrow', 'rightleftharpoons',
+        'Downarrow', 'longleftrightarrow', 'rightrightarrows',
+        'downdownarrows', 'Longleftrightarrow', 'rightsquigarrow',
+        'downharpoonleft', 'longmapsto', 'Rrightarrow',
+        'downharpoonright', 'longrightarrow', 'Rsh',
+        'gets', 'Longrightarrow', 'searrow',
+        'Harr', 'looparrowleft', 'swarrow',
+        'hArr', 'looparrowright', 'to',
+        'harr', 'Lrarr', 'twoheadleftarrow',
+        'hookleftarrow', 'lrArr', 'twoheadrightarrow',
+        'hookrightarrow', 'lrarr', 'Uarr',
+        'iff', 'Lsh', 'uArr',
+        'impliedby', 'mapsto', 'uarr',
+        'implies', 'nearrow', 'uparrow',
+        'Larr', 'nleftarrow', 'Uparrow',
+        'lArr', 'nLeftarrow', 'updownarrow',
+        'larr', 'nleftrightarrow', 'Updownarrow',
+        'leadsto', 'nLeftrightarrow', 'upharpoonleft',
+        'leftarrow', 'nrightarrow', 'upharpoonright',
+        'Leftarrow', 'nRightarrow', 'upuparrows',
+        'leftarrowtail', 'nwarrow', 'leftharpoondown', 'Rarr'
+    ];
+    extensibleArrows1 = [
+        'xleftarrow', 'xrightarrow',
+        'xLeftarrow', 'xRightarrow',
+        'xleftrightarrow', 'xLeftrightarrow',
+        'xhookleftarrow', 'xhookrightarrow',
+        'xtwoheadleftarrow', 'xtwoheadrightarrow',
+        'xleftharpoonup', 'xrightharpoonup',
+        'xleftharpoondown', 'xrightharpoondown',
+        'xleftrightharpoons', 'xrightleftharpoons',
+        'xtofrom', 'xmapsto',
+        'xlongequal'
+    ];
     classAssignment0 = ['mathbin', 'mathclose', 'mathinner', 'mathop', 'mathopen', 'mathord', 'mathpunct', 'mathrel'];
     color2 = ['color', 'textcolor', 'colorbox'];
     font0 = ['rm', 'bf', 'it', 'sf', 'tt'];
-    font1 = ['mathrm', 'mathbf', 'mathit', 'mathsf', 'mathtt', 'textrm', 'textbf', 'textit', 'textsf', 'texttt', 'textnormal', 'bold', 'Bbb', 'mathcal', 'frak', 'text', 'boldsymbol', 'mathbb', 'mathscr', 'mathfrak', 'bm'];
+    font1 = [
+        'mathrm', 'mathbf', 'mathit',
+        'mathnormal', 'textbf', 'textit',
+        'textrm', 'bold', 'Bbb',
+        'textnormal', 'boldsymbol', 'mathbb',
+        'text', 'bm', 'frak',
+        'mathsf', 'mathtt', 'mathfrak',
+        'textsf', 'texttt', 'mathcal', 'mathscr'
+    ];
     size0 = ['Huge', 'huge', 'LARGE', 'Large', 'large', 'normalsize', 'small', 'footnotesize', 'scriptsize', 'tiny'];
-    style0 = ['displaystyle', 'textstyle', 'scriptstyle', 'scriptscriptstyle', 'limits', 'nolimits', 'verb', 'text'];
-    style1 = ['text'];
-    symbolsAndPunctuation0 = ['Box', 'dots', 'checkmark', 'square', 'cdots', 'dag', 'blacksquare', 'ddots', 'dagger', 'triangle', 'ldots', 'textdagger', 'triangledown', 'vdots', 'ddag', 'textunderscore', 'triangleleft', 'mathellipsis', 'ddagger', 'triangleright', 'textellipsis', 'textdaggerdbl', 'textendash', 'bigtriangledown', 'flat', 'bigtriangleup', 'natural', 'textdollar', 'textemdash', 'blacktriangle', 'sharp', 'pounds', 'blacktriangledown', 'circledR', 'textsterling', 'textquoteleft', 'blacktriangleleft', 'circledS', 'yen', 'text{\\lq}', 'blacktriangleright', 'clubsuit', 'surd', 'textquoteright', 'diamond', 'diamondsuit', 'degree', 'text{\\rq}', 'Diamond', 'heartsuit', 'diagdown', 'textquotedblleft', 'lozenge', 'spadesuit', 'diagup', 'blacklozenge', 'angle', 'mho', 'textquotedblright', 'star', 'measuredangle', 'maltese', 'colon', 'bigstar', 'sphericalangle', 'text{\\P}', 'backprime', 'textbar', 'top', 'text{\\S}', 'prime', 'textbardbl', 'bot', 'nabla', 'textless', 'textbraceleft', 'textbraceright', 'infty', 'textgreater', 'KaTeX', 'LaTeX', 'TeX'];
+    style0 = ['displaystyle', 'textstyle', 'scriptstyle', 'scriptscriptstyle', 'limits', 'nolimits', 'verb'];
+    symbolsAndPunctuation0 = [
+        'cdots', 'LaTeX',
+        'ddots', 'TeX',
+        'ldots', 'nabla',
+        'vdots', 'infty',
+        'dotsb', 'infin',
+        'dotsc', 'checkmark',
+        'dotsi', 'dag',
+        'dotsm', 'dagger',
+        'dotso',
+        'sdot', 'ddag',
+        'mathellipsis', 'ddagger',
+        'Box', 'Dagger',
+        'lq', 'square', 'angle',
+        'blacksquare', 'measuredangle',
+        'rq', 'triangle', 'sphericalangle',
+        'triangledown', 'top',
+        'triangleleft', 'bot',
+        'triangleright',
+        'colon', 'bigtriangledown',
+        'backprime', 'bigtriangleup', 'pounds',
+        'prime', 'blacktriangle', 'mathsterling',
+        'blacktriangledown',
+        'blacktriangleleft', 'yen',
+        'blacktriangleright', 'surd',
+        'diamond', 'degree',
+        'Diamond',
+        'lozenge', 'mho',
+        'blacklozenge', 'diagdown',
+        'star', 'diagup',
+        'bigstar', 'flat',
+        'clubsuit', 'natural',
+        'copyright', 'clubs', 'sharp',
+        'circledR', 'diamondsuit', 'heartsuit',
+        'diamonds', 'hearts',
+        'circledS', 'spadesuit', 'spades',
+        'maltese'
+    ];
 
     mathCompletions: CompletionItem[];
 
     constructor() {
         // \cmd
-        let c1 = Array.from(new Set([...this.delimiters0, ...this.delimeterSizing0, ...this.greekLetters0, ...this.otherLetters0, ...this.verticalLayout0, ...this.logicAndSetTheory0, ...this.bigOperators0, ...this.binaryOperators0, ...this.binomialCoefficients0, ...this.fractions0, ...this.mathOperators0, ...this.relations0, ...this.negatedRelations0, ...this.arrows0, ...this.classAssignment0, ...this.font0, ...this.size0, ...this.style0, ...this.symbolsAndPunctuation0])).map(cmd => {
+        let c1 = Array.from(new Set([...this.delimiters0, ...this.delimeterSizing0, ...this.greekLetters0, ...this.otherLetters0, ...this.spacing0, ...this.verticalLayout0, ...this.logicAndSetTheory0, ...this.bigOperators0, ...this.binaryOperators0, ...this.binomialCoefficients0, ...this.fractions0, ...this.mathOperators0, ...this.relations0, ...this.negatedRelations0, ...this.arrows0, ...this.classAssignment0, ...this.font0, ...this.size0, ...this.style0, ...this.symbolsAndPunctuation0])).map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
             item.insertText = cmd;
             return item;
         });
         // \cmd{$1}
-        let c2 = Array.from(new Set([...this.accents1, ...this.annotation1, ...this.overlap1, ...this.mathOperators1, ...this.sqrt1, ...this.extensibleArrows1, ...this.font1, ...this.style1])).map(cmd => {
+        let c2 = Array.from(new Set([...this.accents1, ...this.annotation1, ...this.overlap1, ...this.spacing1, ...this.mathOperators1, ...this.sqrt1, ...this.extensibleArrows1, ...this.font1])).map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
             item.insertText = new SnippetString(`${cmd}\{$1\}`);
             return item;
@@ -177,10 +421,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                         let item = new CompletionItem(ref, CompletionItemKind.Reference);
                         const usages = usageCounts.get(ref) || 0;
                         item.documentation = new MarkdownString(match[2]);
-                        item.detail = usages === 1 ? `1 usage`  : `${usages} usages`;
+                        item.detail = usages === 1 ? `1 usage` : `${usages} usages`;
                         // Prefer unused items
                         item.sortText = usages === 0 ? `0-${ref}` : item.sortText = `1-${ref}`;
-                        
                         item.range = range;
                         prev.push(item);
                     }
