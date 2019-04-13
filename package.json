@@ -181,11 +181,6 @@
             "type": "object",
             "title": "%config.title%",
             "properties": {
-                "markdown.extension.printToHtmlOnFileSaved": {
-                    "type": "boolean",
-                    "default": "false",
-                    "description": "%config.printToHtmlOnFileSaved.description%"
-                },
                 "markdown.extension.toc.levels": {
                     "type": "string",
                     "default": "1..6",
@@ -289,6 +284,11 @@
                     "default": false,
                     "description": "%config.print.imgToBase64.description%",
                     "scope": "resource"
+                },
+                "markdown.extension.print.onFileSave": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "%config.print.onFileSave.description%"
                 },
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
