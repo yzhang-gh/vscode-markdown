@@ -69,10 +69,22 @@ let thisContext: vscode.ExtensionContext;
 
 export function activate(context: vscode.ExtensionContext) {
     thisContext = context;
-    context.subscriptions.push(vscode.commands.registerCommand('markdown.extension.printToHtml', () => { print('html'); }));
+    context.subscriptions.push(
+        vscode.commands.registerCommand('markdown.extension.printToHtml', () => { print('html'); }),
+        vscode.workspace.onDidSaveTextDocument(onDidSave)
+    );
 }
 
 export function deactivate() { }
+
+function onDidSave(doc: vscode.TextDocument) {
+    if (
+        doc.languageId == 'markdown'
+        && vscode.workspace.getConfiguration('markdown.extension.print.onFileSave')
+    ) {
+        print('html');
+    }
+}
 
 async function print(type: string) {
     const editor = vscode.window.activeTextEditor;

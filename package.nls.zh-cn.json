@@ -23,6 +23,7 @@
     "config.tableFormatter.normalizeIndentation.description": "使位于列表内的表格的缩进长度为制表符长度（tabSize）",
     "config.print.absoluteImgPath.description": "将图片路径转换为绝对路径",
     "config.print.imgToBase64.description": "在打印到 HTML 时将图片转换为 base64",
+    "config.print.onFileSave.description": "Markdown: 文档保存后自动打印为 HTML",
     "config.syntax.decorations.description": "添加语法装饰",
     "config.syntax.plainTheme.description": "只有当 `extension.syntax.decorations` 启用时才生效",
     "showMe": "显示更新日志",

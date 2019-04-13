@@ -285,6 +285,11 @@
                     "description": "%config.print.imgToBase64.description%",
                     "scope": "resource"
                 },
+                "markdown.extension.print.onFileSave": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "%config.print.onFileSave.description%"
+                },
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
                     "default": true,
