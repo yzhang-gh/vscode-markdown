@@ -118,27 +118,35 @@ async function print(type: string) {
         title = title.replace(/^#+/, '').replace(/#+$/, '').trim();
     }
 
-    let body = await render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
+    let body: string = await render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
 
     // Image paths
     const config = vscode.workspace.getConfiguration('markdown.extension', doc.uri);
 
     if (config.get<boolean>("print.imgToBase64")) {
         body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (_, p1, p2, p3) { // Match '<img...src="..."...>'
-            const imgUri = fixHref(doc.uri, p2);
-            try {
-                const imgExt = path.extname(imgUri.fsPath).slice(1);
-                const file = fs.readFileSync(imgUri.fsPath).toString('base64');
-                return `${p1}data:image/${imgExt};base64,${file}${p3}`;
-            } catch (e) {
-                vscode.window.showWarningMessage(localize("unableToReadFile") + ` ${imgUri.fsPath}, ` + localize("revertingToImagePaths"));
+            if (!p2.startsWith('http')) {
+                const imgSrc = relToAbsPath(doc.uri, p2);
+                try {
+                    const imgExt = path.extname(imgSrc).slice(1);
+                    const file = fs.readFileSync(imgSrc).toString('base64');
+                    return `${p1}data:image/${imgExt};base64,${file}${p3}`;
+                } catch (e) {
+                    vscode.window.showWarningMessage(localize("unableToReadFile") + ` ${imgSrc}, ` + localize("revertingToImagePaths"));
+                }
+                return `${p1}${imgSrc}${p3}`;
+            } else {
+                return _;
             }
-            return `${p1}${imgUri.toString()}${p3}`;
         });
     } else if (config.get<boolean>('print.absoluteImgPath')) {
         body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (_, p1, p2, p3) { // Match '<img...src="..."...>'
-            const imgUri = fixHref(doc.uri, p2);
-            return `${p1}${imgUri.toString(true)}${p3}`;
+            if (!p2.startsWith('http')) {
+                const imgSrc = relToAbsPath(doc.uri, p2);
+                return `${p1}file:///${imgSrc}${p3}`;
+            } else {
+                return _;
+            }
         });
     }
 
@@ -186,8 +194,7 @@ function getMediaPath(mediaFile: string): string {
 }
 
 function wrapWithStyleTag(src: string) {
-    const uri = vscode.Uri.parse(src);
-    if (uri.scheme.includes('http')) {
+    if (src.startsWith('http')) {
         return `<link rel="stylesheet" href="${src}">`;
     } else {
         return `<style>\n${readCss(src)}\n</style>`;
@@ -220,50 +227,38 @@ function getStyles(uri: vscode.Uri) {
         ${markdownCss}
         ${highlightCss}
         ${copyTeXCss}
-        ${baseCssPaths.map(css => wrapWithStyleTag(css)).join('\n')}
+        ${baseCssPaths.map(cssSrc => wrapWithStyleTag(cssSrc)).join('\n')}
         ${getPreviewSettingStyles()}
-        ${customCssPaths.map(css => wrapWithStyleTag(css)).join('\n')}`;
+        ${customCssPaths.map(cssSrc => wrapWithStyleTag(cssSrc)).join('\n')}`;
 }
 
 function getCustomStyleSheets(resource: vscode.Uri): string[] {
-    const styles = vscode.workspace.getConfiguration('markdown')['styles'];
+    const styles = vscode.workspace.getConfiguration('markdown', resource)['styles'];
     if (styles && Array.isArray(styles) && styles.length > 0) {
+        const root = vscode.workspace.getWorkspaceFolder(resource);
         return styles.map(s => {
-            const uri = fixHref(resource, s);
-            if (uri.scheme === 'file') {
-                return uri.fsPath;
+            if (!s || s.startsWith('http') || path.isAbsolute(s)) {
+                return s;
             }
-            return s;
+
+            if (root) {
+                return path.join(root.uri.fsPath, s);
+            } else {
+                // Otherwise look relative to the markdown file
+                return path.join(path.dirname(resource.fsPath), s);
+            }
         });
     }
     return [];
 }
 
-// See <https://github.com/Microsoft/vscode/blob/cceda8e2f2f1156a825cedb02901285393239b22/extensions/markdown-language-features/src/features/previewContentProvider.ts#L99>
-function fixHref(resource: vscode.Uri, href: string): vscode.Uri {
-    if (!href) {
-        return vscode.Uri.file(href);
-    }
-
-    // Use href if it is already an URL
-    const hrefUri = vscode.Uri.parse(href);
-    if (['http', 'https'].indexOf(hrefUri.scheme) >= 0) {
-        return hrefUri;
-    }
-
-    // Use href as file URI if it is absolute
-    if (path.isAbsolute(href) || hrefUri.scheme === 'file') {
-        return hrefUri;
-    }
-
-    // Use a workspace relative path if there is a workspace
-    let root = vscode.workspace.getWorkspaceFolder(resource);
-    if (root) {
-        return vscode.Uri.file(path.join(root.uri.fsPath, href));
+function relToAbsPath(resource: vscode.Uri, href: string): string {
+    if (!href || href.startsWith('http') || path.isAbsolute(href)) {
+        return href;
     }
 
     // Otherwise look relative to the markdown file
-    return vscode.Uri.file(path.join(path.dirname(resource.fsPath), href));
+    return path.join(path.dirname(resource.fsPath), href);
 }
 
 function getPreviewSettingStyles(): string {
