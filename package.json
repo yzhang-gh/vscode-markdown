@@ -3,7 +3,7 @@
     "displayName": "%ext.displayName%",
     "description": "%ext.description%",
     "icon": "images/Markdown-mark.png",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.30.2"
@@ -350,10 +350,10 @@
         "@types/markdown-it": "^0.0.7",
         "@types/mocha": "^5.2.6",
         "@types/node": "^11.11.3",
-        "mocha": "^6.0.2",
+        "mocha": "^6.1.4",
         "ts-loader": "^5.3.3",
         "typescript": "^3.3.3333",
-        "vscode": "^1.1.30",
+        "vscode": "^1.1.33",
         "webpack": "^4.29.6",
         "webpack-cli": "^3.2.3"
     }

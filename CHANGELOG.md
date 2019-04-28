@@ -1,3 +1,22 @@
+### 2.3.0 (2019.04.28)
+
+- **New** Prefer unused links for reference link label completions ([#414](https://github.com/yzhang-gh/vscode-markdown/issues/414)). Thanks, [Chris (@alshain)](https://github.com/alshain).
+- **New**: Option `markdown.extension.print.onFileSave` ([#417](https://github.com/yzhang-gh/vscode-markdown/issues/417)). Thanks, [Li Yiming (@upupming)](https://github.com/upupming).
+- **New**: Autocompletion for heading links ([#419](https://github.com/yzhang-gh/vscode-markdown/issues/419)). Thanks again, [Chris (@alshain)](https://github.com/alshain).
+
+<!--  -->
+
+- **Fix**: Syntax decorations ([#390](https://github.com/yzhang-gh/vscode-markdown/issues/390)).
+- **Fix**: Table formatter ([#408](https://github.com/yzhang-gh/vscode-markdown/issues/408)).
+- **Fix**: Delete space rather than outdent list when there are two or more spaces on <kbd>Backspace</kbd> ([#410](https://github.com/yzhang-gh/vscode-markdown/issues/410)).
+- **Fix**: Image paths in exported HTML ([#415](https://github.com/yzhang-gh/vscode-markdown/issues/415), [#429](https://github.com/yzhang-gh/vscode-markdown/issues/429)).
+- **Fix**: TOC and fenced code blocks ([#425](https://github.com/yzhang-gh/vscode-markdown/issues/425)).
+
+- **Other**: Sort KaTeX functions (lowercase first) ([#413](https://github.com/yzhang-gh/vscode-markdown/issues/413)).
+- **Other**: Update KaTeX supported functions ([#416](https://github.com/yzhang-gh/vscode-markdown/issues/416)). Thanks again, [Li Yiming (@upupming)](https://github.com/upupming).
+
+---
+
 ### 2.2.0 (2019.03.24)
 
 - **Fix**: Better syntax decorations ([#390](https://github.com/yzhang-gh/vscode-markdown/issues/390), [#393](https://github.com/yzhang-gh/vscode-markdown/issues/393)).
@@ -6,6 +25,8 @@
 - **Other**: Better URL regexp ([#397](https://github.com/yzhang-gh/vscode-markdown/issues/397)). Thanks, [Igor (@Ovsyanka)](https://github.com/Ovsyanka).
 - **Other**: Remove default `alt + s` keybinding for macOS ([#404](https://github.com/yzhang-gh/vscode-markdown/issues/404)).
 - **Other**: webpack!
+
+---
 
 ### 2.1.1 (2019.03.05)
 
