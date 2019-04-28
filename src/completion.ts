@@ -3,7 +3,8 @@
 import * as sizeOf from 'image-size';
 import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
-import { mdDocSelector } from './util';
+import { mdDocSelector, slugify } from './util';
+import { buildToc } from './toc';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerCompletionItemProvider(mdDocSelector, new MdCompletionItemProvider(), '(', '\\', '/', '[', '#'));
@@ -433,9 +434,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 res(refLabels);
             });
         } else if (/\[[^\]]*\]\(#[^\)]*$/.test(lineTextBefore)) {
-            /* ┌──────────────────────────┐
-               │ Anchor tags from headers │
-               └──────────────────────────┘ */
+            /* ┌───────────────────────────┐
+               │ Anchor tags from headings │
+               └───────────────────────────┘ */
             let startIndex = lineTextBefore.lastIndexOf('(');
             let endPosition = position;
 
@@ -447,45 +448,35 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 //     or: ... <CURSOR> )     (endPosition assignment is a no-op for this case)
 
                 // in every case, we want to remove all characters after the cursor and before that first closing paren
-                endPosition = position.with({character: + endPosition.character + lineTextAfter.indexOf(')')});
+                endPosition = position.with({ character: + endPosition.character + lineTextAfter.indexOf(')') });
             } else {
                 // If no closing paren is found, replace all trailing non-white-space chars and add a closing paren
                 // distance to first non-whitespace or EOL
                 const toReplace = (lineTextAfter.search(/(?<=^\S+)(\s|$)/))
-                endPosition = position.with({character: + endPosition.character + toReplace});
+                endPosition = position.with({ character: + endPosition.character + toReplace });
 
                 addClosingParen = true;
             }
-            
+
             const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
-            const linesToPreview = 8;
 
             return new Promise((res, _) => {
-                const lines = document.getText().split(/\r?\n/);
-                
-                let refLabels = lines.reduce((prev, curr, lineNumber) => {
-                    let match;
-                    if ((match = /^#+\s+(.*)\s*$/.exec(curr)) !== null) {
-                        const title = match[2];
-                        const anchorName = title.replace(/ +/g, "-").toLowerCase();
-                        let item = new CompletionItem('#' + anchorName, CompletionItemKind.Reference);
-                        
-                        if (addClosingParen) {
-                            item.insertText = item.label + ')';
-                        }
-                        const context = document.getText(new Range(new Position(lineNumber + 1, 0), new Position(lineNumber + 1 + linesToPreview, 0)));
-                        
-                        
-                        const markdown = `${curr}\n${context}`;
-                        item.documentation = new MarkdownString(markdown);
-                        
-                        item.range = range;
-                        prev.push(item);
+                const toc = buildToc(document);
+
+                const headingCompletions = toc.reduce((prev, curr) => {
+                    let item = new CompletionItem('#' + slugify(curr.text), CompletionItemKind.Reference);
+
+                    if (addClosingParen) {
+                        item.insertText = item.label + ')';
                     }
+
+                    item.documentation = curr.text;
+                    item.range = range;
+                    prev.push(item);
                     return prev;
                 }, []);
 
-                res(refLabels);
+                res(headingCompletions);
             });
         } else {
             return [];
