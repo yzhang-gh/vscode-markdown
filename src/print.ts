@@ -79,8 +79,8 @@ export function deactivate() { }
 
 function onDidSave(doc: vscode.TextDocument) {
     if (
-        doc.languageId == 'markdown'
-        && vscode.workspace.getConfiguration('markdown.extension.print.onFileSave')
+        doc.languageId === 'markdown'
+        && vscode.workspace.getConfiguration('markdown.extension.print', doc.uri).get<boolean>('onFileSave')
     ) {
         print('html');
     }
