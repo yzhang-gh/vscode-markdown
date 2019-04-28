@@ -1,3 +1,7 @@
+### 2.3.1 (2019.04.29)
+
+- **Fix**: Option `markdown.extension.print.onFileSave` not respected ([#432](https://github.com/yzhang-gh/vscode-markdown/issues/432)).
+
 ### 2.3.0 (2019.04.28)
 
 - **New** Prefer unused links for reference link label completions ([#414](https://github.com/yzhang-gh/vscode-markdown/issues/414)). Thanks, [Chris (@alshain)](https://github.com/alshain).
