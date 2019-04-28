@@ -75,11 +75,19 @@ suite("List editing.", () => {
         testCommand('markdown.extension.onBackspaceKey', {}, ['-  item1'], new Selection(0, 3, 0, 3), ['- item1'], new Selection(0, 2, 0, 2)).then(done, done);
     });
 
-    test("Backspace key. 3: '- [ ] |'", done => {
+    test("Backspace key. 3: '  -  |'", done => {
+        testCommand('markdown.extension.onBackspaceKey', {}, ['  -  item1'], new Selection(0, 5, 0, 5), ['  - item1'], new Selection(0, 4, 0, 4)).then(done, done);
+    });
+
+    test("Backspace key. 4: '- [ ] |'", done => {
         testCommand('markdown.extension.onBackspaceKey', {}, ['- [ ] item1'], new Selection(0, 6, 0, 6), ['- item1'], new Selection(0, 2, 0, 2)).then(done, done);
     });
 
-    test("Backspace key. 4: '- [ ]  |'", done => {
+    test("Backspace key. 5: '  - [ ] |'", done => {
+        testCommand('markdown.extension.onBackspaceKey', {}, ['  - [ ] item1'], new Selection(0, 8, 0, 8), ['  - item1'], new Selection(0, 4, 0, 4)).then(done, done);
+    });
+
+    test("Backspace key. 6: '- [ ]  |'", done => {
         testCommand('markdown.extension.onBackspaceKey', {}, ['- [ ]  item1'], new Selection(0, 7, 0, 7), ['- [ ] item1'], new Selection(0, 6, 0, 6)).then(done, done);
     });
 
