@@ -162,13 +162,13 @@
                 "command": "markdown.extension.togglePreview",
                 "key": "ctrl+shift+v",
                 "mac": "cmd+shift+v",
-                "when": "!terminalFocus"
+                "when": "!terminalFocus && editorLangId == markdown"
             },
             {
                 "command": "markdown.extension.togglePreviewToSide",
                 "key": "ctrl+k v",
                 "mac": "cmd+k v",
-                "when": "!terminalFocus"
+                "when": "!terminalFocus && editorLangId == markdown"
             },
             {
                 "command": "markdown.extension.editing.paste",
