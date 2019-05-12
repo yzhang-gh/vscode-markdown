@@ -151,13 +151,15 @@ async function print(type: string) {
         });
     }
 
+    const hasMath = hasMathEnv(doc.getText());
+
     const html = `<!DOCTYPE html>
     <html>
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
         <title>${title ? title : ''}</title>
-        ${getStyles(doc.uri)}
-        <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        ${getStyles(doc.uri, hasMath)}
+        ${hasMath ? '<script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>' : ''}
     </head>
     <body>
         ${body}
@@ -173,6 +175,11 @@ async function print(type: string) {
         case 'pdf':
             break;
     }
+}
+
+function hasMathEnv(text: string) {
+    // I'm lazy
+    return text.includes('$');
 }
 
 async function render(text: string, config: vscode.WorkspaceConfiguration) {
@@ -215,7 +222,7 @@ function readCss(fileName: string) {
     }
 }
 
-function getStyles(uri: vscode.Uri) {
+function getStyles(uri: vscode.Uri, hasMathEnv: boolean) {
     const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">';
     const markdownCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">';
     const highlightCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">';
@@ -224,10 +231,10 @@ function getStyles(uri: vscode.Uri) {
     const baseCssPaths = ['checkbox.css'].map(s => getMediaPath(s));
     const customCssPaths = getCustomStyleSheets(uri);
 
-    return `${katexCss}
+    return `${hasMathEnv ? katexCss : ''}
         ${markdownCss}
         ${highlightCss}
-        ${copyTeXCss}
+        ${hasMathEnv ? copyTeXCss : ''}
         ${baseCssPaths.map(cssSrc => wrapWithStyleTag(cssSrc)).join('\n')}
         ${getPreviewSettingStyles()}
         ${customCssPaths.map(cssSrc => wrapWithStyleTag(cssSrc)).join('\n')}`;
