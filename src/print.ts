@@ -134,7 +134,7 @@ async function print(type: string) {
                 } catch (e) {
                     vscode.window.showWarningMessage(localize("unableToReadFile") + ` ${imgSrc}, ` + localize("revertingToImagePaths"));
                 }
-                return `${p1}${imgSrc}${p3}`;
+                return `${p1}file:///${imgSrc}${p3}`;
             } else {
                 return _;
             }
@@ -143,6 +143,7 @@ async function print(type: string) {
         body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (_, p1, p2, p3) { // Match '<img...src="..."...>'
             if (!p2.startsWith('http')) {
                 const imgSrc = relToAbsPath(doc.uri, p2);
+                // Absolute paths need `file:///` but relative paths don't
                 return `${p1}file:///${imgSrc}${p3}`;
             } else {
                 return _;
