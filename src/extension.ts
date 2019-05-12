@@ -13,14 +13,16 @@ import * as decorations from './syntaxDecorations';
 import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
 import { getNewFeatureMsg, showChangelog } from './util';
+import {workspace} from 'vscode';
 
 export function activate(context: ExtensionContext) {
     activateMdExt(context);
 
     return {
         extendMarkdownIt(md) {
+
             return md.use(require('markdown-it-task-lists'))
-                .use(require('@neilsustc/markdown-it-katex'), { "throwOnError": false });
+                .use(require('@neilsustc/markdown-it-katex'), { throwOnError: false, macros : workspace.getConfiguration('markdown.extension.katex').get<object>('macros')  });
         }
     }
 }

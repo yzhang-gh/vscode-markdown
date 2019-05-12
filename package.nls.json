@@ -27,6 +27,7 @@
     "config.print.onFileSave.description": "Markdown: Print current document to HTML when file is saved",
     "config.syntax.decorations.description": "Add syntax decorations",
     "config.syntax.plainTheme.description": "Only take effect when `extension.syntax.decorations` is enabled",
+    "config.katex.macros.description": "user-defined KaTeX macros",
     "showMe": "Show Me",
     "dismiss": "Dismiss",
     "noValidMarkdownFile": "No valid Markdown file",
