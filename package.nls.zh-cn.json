@@ -26,6 +26,7 @@
     "config.print.onFileSave.description": "Markdown: 文档保存后自动打印为 HTML",
     "config.syntax.decorations.description": "添加语法装饰",
     "config.syntax.plainTheme.description": "只有当 `extension.syntax.decorations` 启用时才生效",
+    "config.katex.macros.description": "自定义 KaTeX 宏",
     "showMe": "显示更新日志",
     "dismiss": "忽略",
     "noValidMarkdownFile": "未选中有效的 Markdown 文件",
