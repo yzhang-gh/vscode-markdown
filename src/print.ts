@@ -127,9 +127,12 @@ async function print(type: string) {
 
     // Image paths
     const config = vscode.workspace.getConfiguration('markdown.extension', doc.uri);
+    const configToBase64 = config.get<boolean>("print.imgToBase64");
+    const configAbsPath = config.get<boolean>('print.absoluteImgPath')
+    const imgTagRegex = /(<img[^>]+src=")([^"]+)("[^>]*>)/g;  // Match '<img...src="..."...>'
 
-    if (config.get<boolean>("print.imgToBase64")) {
-        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (_, p1, p2, p3) { // Match '<img...src="..."...>'
+    if (configToBase64) {
+        body = body.replace(imgTagRegex, function (_, p1, p2, p3) {
             if (!p2.startsWith('http')) {
                 const imgSrc = relToAbsPath(doc.uri, p2);
                 try {
@@ -138,14 +141,16 @@ async function print(type: string) {
                     return `${p1}data:image/${imgExt};base64,${file}${p3}`;
                 } catch (e) {
                     vscode.window.showWarningMessage(localize("unableToReadFile") + ` ${imgSrc}, ` + localize("revertingToImagePaths"));
+                    if (configAbsPath) {
+                        return `${p1}file:///${imgSrc}${p3}`;
+                    } else {
+                        return _;
+                    }
                 }
-                return `${p1}file:///${imgSrc}${p3}`;
-            } else {
-                return _;
             }
         });
-    } else if (config.get<boolean>('print.absoluteImgPath')) {
-        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (_, p1, p2, p3) { // Match '<img...src="..."...>'
+    } else if (configAbsPath) {
+        body = body.replace(imgTagRegex, function (_, p1, p2, p3) {
             if (!p2.startsWith('http')) {
                 const imgSrc = relToAbsPath(doc.uri, p2);
                 // Absolute paths need `file:///` but relative paths don't
