@@ -7,6 +7,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import localize from './localize';
 import { isMdEditor, slugify } from './util';
+import { workspace } from 'vscode';
 
 let md;
 let slugCounts = {};
@@ -33,7 +34,11 @@ async function initMdIt() {
             }
             return `<div>${md.utils.escapeHtml(str)}</div>`;
         }
-    }).use(mdtl).use(mdkt);
+    }).use(mdtl)
+        .use(mdkt, {
+            throwOnError: false,
+            macros: workspace.getConfiguration('markdown.extension.katex').get<object>('macros')
+        });
 
     addNamedHeaders(md);
 }
