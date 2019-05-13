@@ -38,7 +38,7 @@ function activateMdExt(context: ExtensionContext) {
     // Toc
     toc.activate(context);
     // Syntax decorations
-    decorations.activiate(context);
+    decorations.activate(context);
     // Images paths and math commands completions
     completion.activate(context);
     // Print to PDF

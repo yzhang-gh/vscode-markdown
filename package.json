@@ -303,7 +303,7 @@
                 },
                 "markdown.extension.katex.macros": {
                     "type": "object",
-                    "default": "{}",
+                    "default": {},
                     "description": "%config.katex.macros.description%"
                 }
             }
