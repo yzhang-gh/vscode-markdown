@@ -58,7 +58,7 @@ let regexDecorTypeMappingPlainTheme = {
     "(\\*\\*)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(\\*\\*)": ["gray", "baseColor", "gray"]
 }
 
-export function activiate(context: ExtensionContext) {
+export function activate(context: ExtensionContext) {
     window.onDidChangeActiveTextEditor(updateDecorations);
 
     workspace.onDidChangeTextDocument(event => {
