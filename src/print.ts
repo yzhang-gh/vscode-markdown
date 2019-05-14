@@ -133,31 +133,34 @@ async function print(type: string) {
 
     if (configToBase64) {
         body = body.replace(imgTagRegex, function (_, p1, p2, p3) {
-            if (!p2.startsWith('http')) {
-                const imgSrc = relToAbsPath(doc.uri, p2);
-                try {
-                    const imgExt = path.extname(imgSrc).slice(1);
-                    const file = fs.readFileSync(imgSrc).toString('base64');
-                    return `${p1}data:image/${imgExt};base64,${file}${p3}`;
-                } catch (e) {
-                    vscode.window.showWarningMessage(localize("unableToReadFile") + ` ${imgSrc}, ` + localize("revertingToImagePaths"));
-                    if (configAbsPath) {
-                        return `${p1}file:///${imgSrc}${p3}`;
-                    } else {
-                        return _;
-                    }
-                }
+            if (p2.startsWith('http')) {
+                return _;
             }
-        });
-    } else if (configAbsPath) {
-        body = body.replace(imgTagRegex, function (_, p1, p2, p3) {
-            if (!p2.startsWith('http')) {
-                const imgSrc = relToAbsPath(doc.uri, p2);
-                // Absolute paths need `file:///` but relative paths don't
+
+            const imgSrc = relToAbsPath(doc.uri, p2);
+            try {
+                const imgExt = path.extname(imgSrc).slice(1);
+                const file = fs.readFileSync(imgSrc).toString('base64');
+                return `${p1}data:image/${imgExt};base64,${file}${p3}`;
+            } catch (e) {
+                vscode.window.showWarningMessage(localize("unableToReadFile") + ` ${imgSrc}, ` + localize("revertingToImagePaths"));
+            }
+
+            if (configAbsPath) {
                 return `${p1}file:///${imgSrc}${p3}`;
             } else {
                 return _;
             }
+        });
+    } else if (configAbsPath) {
+        body = body.replace(imgTagRegex, function (_, p1, p2, p3) {
+            if (p2.startsWith('http')) {
+                return _;
+            }
+
+            const imgSrc = relToAbsPath(doc.uri, p2);
+            // Absolute paths need `file:///` but relative paths don't
+            return `${p1}file:///${imgSrc}${p3}`;
         });
     }
 
