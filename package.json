@@ -343,9 +343,9 @@
         "test-compile": "tsc -p ./"
     },
     "dependencies": {
-        "@neilsustc/markdown-it-katex": "^0.3.0",
+        "@neilsustc/markdown-it-katex": "^0.4.0",
         "highlight.js": "^9.15.6",
-        "image-size": "^0.7.2",
+        "image-size": "^0.7.4",
         "markdown-it": "^8.4.2",
         "markdown-it-task-lists": "^2.1.1",
         "string-similarity": "^3.0.0"

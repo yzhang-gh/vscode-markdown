@@ -227,7 +227,7 @@ function readCss(fileName: string) {
         return fs.readFileSync(fileName).toString().replace(/\s+/g, ' ');
     } catch (error) {
         let msg = error.message.replace('ENOENT: no such file or directory, open', localize("customStyle")) + localize("notFound");
-        msg = msg.replace(/'([c-z]):/, function (match, g1) {
+        msg = msg.replace(/'([c-z]):/, function (_, g1) {
             return `'${g1.toUpperCase()}:`;
         });
         vscode.window.showWarningMessage(msg);
@@ -236,7 +236,7 @@ function readCss(fileName: string) {
 }
 
 function getStyles(uri: vscode.Uri, hasMathEnv: boolean) {
-    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">';
+    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">';
     const markdownCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">';
     const highlightCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">';
     const copyTeXCss = '<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">';
