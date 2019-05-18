@@ -93,7 +93,7 @@ async function generateTocText(doc: vscode.TextDocument): Promise<string> {
             let row = [
                 docConfig.tab.repeat(relativeLvl),
                 (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLvl]) + '.' : tocConfig.listMarker) + ' ',
-                tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(anchorText)})`
+                tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(anchorText, true)})`
                 //tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(anchorText)})`
             ];
             toc.push(row.join(''));
