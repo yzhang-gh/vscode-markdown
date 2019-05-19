@@ -90,13 +90,14 @@ function getMathState(editor: TextEditor, cursor: Position): MathBlockState {
         return MathBlockState.INLINE;
     } else if (getContext(editor, cursor, '$$ ', ' $$') === '$$ | $$') {
         return MathBlockState.SINGLE_DISPLAYED;
-    } else if (editor.document.lineAt(cursor.line).text === '' 
-                && cursor.line > 0
-                && editor.document.lineAt(cursor.line-1).text === '$$'
-                && cursor.line < editor.document.lineCount - 1
-                && editor.document.lineAt(cursor.line+1).text === '$$'
-                ){
-                    return MathBlockState.MULTI_DISPLAYED
+    } else if (
+        editor.document.lineAt(cursor.line).text === ''
+        && cursor.line > 0
+        && editor.document.lineAt(cursor.line - 1).text === '$$'
+        && cursor.line < editor.document.lineCount - 1
+        && editor.document.lineAt(cursor.line + 1).text === '$$'
+    ) {
+        return MathBlockState.MULTI_DISPLAYED
     } else {
         return MathBlockState.NONE;
     }
@@ -118,13 +119,13 @@ function setMathState(editor: TextEditor, cursor: Position, oldMathBlockState: M
                 rangeToBeDeleted = new Range(cursor, cursor);
                 break;
             case MathBlockState.INLINE:
-                rangeToBeDeleted = new Range(new Position(cursor.line, cursor.character-1), new Position(cursor.line, cursor.character+1))
+                rangeToBeDeleted = new Range(new Position(cursor.line, cursor.character - 1), new Position(cursor.line, cursor.character + 1));
                 break;
             case MathBlockState.SINGLE_DISPLAYED:
-                rangeToBeDeleted = new Range(new Position(cursor.line, cursor.character-3), new Position(cursor.line, cursor.character+3))
+                rangeToBeDeleted = new Range(new Position(cursor.line, cursor.character - 3), new Position(cursor.line, cursor.character + 3));
                 break;
             case MathBlockState.MULTI_DISPLAYED:
-                rangeToBeDeleted = new Range(new Position(cursor.line-1, 0), new Position(cursor.line+1, 2))
+                rangeToBeDeleted = new Range(new Position(cursor.line - 1, 0), new Position(cursor.line + 1, 2));
                 break;
         }
         editBuilder.delete(rangeToBeDeleted)
@@ -157,13 +158,13 @@ function setMathState(editor: TextEditor, cursor: Position, oldMathBlockState: M
                     newPosition = newCursor
                     break;
                 case MathBlockState.INLINE:
-                    newPosition = newCursor.with(newCursor.line, newCursor.character-1)
+                    newPosition = newCursor.with(newCursor.line, newCursor.character - 1)
                     break;
                 case MathBlockState.SINGLE_DISPLAYED:
-                    newPosition = newCursor.with(newCursor.line, newCursor.character-3)
+                    newPosition = newCursor.with(newCursor.line, newCursor.character - 3)
                     break;
                 case MathBlockState.MULTI_DISPLAYED:
-                    newPosition = newCursor.with(newCursor.line-1, 0)
+                    newPosition = newCursor.with(newCursor.line - 1, 0)
                     break;
             }
             editor.selection = new Selection(newPosition, newPosition);
@@ -172,9 +173,9 @@ function setMathState(editor: TextEditor, cursor: Position, oldMathBlockState: M
 }
 
 const transTable = [
-    MathBlockState.NONE, 
+    MathBlockState.NONE,
     MathBlockState.INLINE,
-    MathBlockState.MULTI_DISPLAYED, 
+    MathBlockState.MULTI_DISPLAYED,
     MathBlockState.SINGLE_DISPLAYED
 ];
 const reverseTransTable = new Array(...transTable).reverse();

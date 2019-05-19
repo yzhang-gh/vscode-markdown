@@ -50,6 +50,10 @@
                 "title": "%command.editing.toggleMath.title%"
             },
             {
+                "command": "markdown.extension.editing.toggleMathReverse",
+                "title": "Markdown: Toggle math environment (in reverse order)"
+            },
+            {
                 "command": "markdown.extension.editing.toggleUnorderedList",
                 "title": "%command.editing.toggleUnorderedList.title%"
             }
@@ -88,12 +92,6 @@
                 "command": "markdown.extension.editing.toggleMath",
                 "key": "ctrl+m",
                 "mac": "cmd+m",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.editing.toggleMathReverse",
-                "key": "ctrl+shift+m",
-                "mac": "cmd+shift+m",
                 "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
             },
             {
