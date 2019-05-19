@@ -20,6 +20,12 @@ async function initMdIt() {
     const mdtl = await import('markdown-it-task-lists');
     const mdkt = await import('@neilsustc/markdown-it-katex');
 
+    let katexOptions = { throwOnError: false };
+    const userMacros = workspace.getConfiguration('markdown.extension.katex').get<object>('macros');
+    if (Object.entries(userMacros).length !== 0) {
+        katexOptions['macros'] = userMacros;
+    }
+
     md = (await import('markdown-it'))({
         html: true,
         highlight: (str: string, lang: string) => {
@@ -35,10 +41,7 @@ async function initMdIt() {
             return `<div>${md.utils.escapeHtml(str)}</div>`;
         }
     }).use(mdtl)
-        .use(mdkt, {
-            throwOnError: false,
-            macros: workspace.getConfiguration('markdown.extension.katex').get<object>('macros')
-        });
+        .use(mdkt, katexOptions);
 
     addNamedHeaders(md);
 }

@@ -21,11 +21,14 @@ export function activate(context: ExtensionContext) {
     return {
         extendMarkdownIt(md) {
 
+            let katexOptions = { throwOnError: false };
+            const userMacros = workspace.getConfiguration('markdown.extension.katex').get<object>('macros');
+            if (Object.entries(userMacros).length !== 0) {
+                katexOptions['macros'] = userMacros;
+            }
+
             return md.use(require('markdown-it-task-lists'))
-                .use(require('@neilsustc/markdown-it-katex'), {
-                    throwOnError: false,
-                    macros: workspace.getConfiguration('markdown.extension.katex').get<object>('macros')
-                });
+                .use(require('@neilsustc/markdown-it-katex'), katexOptions);
         }
     }
 }
