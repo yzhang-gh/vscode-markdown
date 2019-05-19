@@ -13,6 +13,23 @@ function toggleInlineMath() {
     let editor = window.activeTextEditor;
     let cursorPosBeforeInsertion = editor.selection.active;
     
+    let [isInInline, inlineRange] = isInInlineMath();
+    if (isInInline) {
+        // Cancel the block
+        editor.edit(editBuilder => {
+            editBuilder.delete(inlineRange);
+        });
+    } else {
+        // Create the block
+        editor.edit(editBuilder => {
+            editBuilder.insert(cursorPosBeforeInsertion, ' $$ ');
+        }).then(() => {
+            let cursorPosAfterInsertion = editor.selection.active;
+            let mathPosition = cursorPosAfterInsertion.with(cursorPosAfterInsertion.line, cursorPosAfterInsertion.character - 2)
+            editor.selection = new Selection(mathPosition, mathPosition);
+        });
+    }
+
     /**
      * Function name: isInInlineMath
      * Purpose: return true and the range when the cursor is in an inline math block.
@@ -58,28 +75,29 @@ function toggleInlineMath() {
         }
         return [false, null];
     }
-
-    let [isInInline, inlineRange] = isInInlineMath()
-    if (isInInline) {
-        // Cancel the block
-        editor.edit(editBuilder => {
-            editBuilder.delete(inlineRange);
-        });
-    } else {
-        // Create the block
-        editor.edit(editBuilder => {
-            editBuilder.insert(cursorPosBeforeInsertion, ' $$ ');
-        }).then(() => {
-            let cursorPosAfterInsertion = editor.selection.active;
-            let mathPosition = cursorPosAfterInsertion.with(cursorPosAfterInsertion.line, cursorPosAfterInsertion.character - 2)
-            editor.selection = new Selection(mathPosition, mathPosition);
-        });
-    }
 }
 
 function toggleDisplayedMath() {
     let editor = window.activeTextEditor;
     let cursorPosBeforeInsertion = editor.selection.active;
+
+    let [isInDisplayed, displayedRange] = isInDisplayedMath();
+    if (isInDisplayed) {
+        // Cancel the block
+        editor.edit(editBuilder => {
+            editBuilder.delete(displayedRange);
+        });
+    }
+    else {
+        // Create the block
+        editor.edit(editBuilder => {
+            editBuilder.insert(cursorPosBeforeInsertion, `\n$$\n\n$$\n`);
+        }).then(() => {
+            let cursorPosAfterInsertion = editor.selection.active;
+            let mathPosition = cursorPosAfterInsertion.with(cursorPosAfterInsertion.line - 2, 0)
+            editor.selection = new Selection(mathPosition, mathPosition);
+        });
+    }
 
     /**
      * Function name: isInDisplayedMath
@@ -123,23 +141,5 @@ function toggleDisplayedMath() {
             return [true, new Range(upDollarPosition, downDollarPosition)];
         }
         return [false, null];
-    }
-
-    let [isInDisplayed, displayedRange] = isInDisplayedMath()
-    if (isInDisplayed) {
-        // Cancel the block
-        editor.edit(editBuilder => {
-            editBuilder.delete(displayedRange);
-        });
-    }
-    else {
-        // Create the block
-        editor.edit(editBuilder => {
-            editBuilder.insert(cursorPosBeforeInsertion, `\n$$\n\n$$\n`);
-        }).then(() => {
-            let cursorPosAfterInsertion = editor.selection.active;
-            let mathPosition = cursorPosAfterInsertion.with(cursorPosAfterInsertion.line - 2, 0)
-            editor.selection = new Selection(mathPosition, mathPosition);
-        });
     }
 }
