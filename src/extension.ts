@@ -6,6 +6,7 @@ import { ExtensionContext, languages, window } from 'vscode';
 import * as completion from './completion';
 import * as formatting from './formatting';
 import * as listEditing from './listEditing';
+import * as mathEditing from './mathEditing'
 import localize from './localize';
 import * as preview from './preview';
 import * as print from './print';
@@ -32,6 +33,8 @@ export function activate(context: ExtensionContext) {
 }
 
 function activateMdExt(context: ExtensionContext) {
+    // Toggle Math block shortcut
+    mathEditing.activate(context);
     // Override `Enter`, `Tab` and `Backspace` keys
     listEditing.activate(context);
     // Shortcuts

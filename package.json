@@ -159,6 +159,16 @@
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
+                "command": "markdown.extension.toggleInlineMath",
+                "key": "ctrl+m",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
+                "command": "markdown.extension.toggleDisplayedMath",
+                "key": "ctrl+shift+m",
+                "when": "editorTextFocus && editorLangId == markdown"
+            },
+            {
                 "command": "markdown.extension.togglePreview",
                 "key": "ctrl+shift+v",
                 "mac": "cmd+shift+v",
