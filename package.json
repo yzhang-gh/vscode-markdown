@@ -28,6 +28,25 @@
     ],
     "main": "./dist/extension",
     "contributes": {
+        "languages": [{
+            "id": "markdown",
+            "aliases": [
+                "Markdown",
+                "markdown"
+            ],
+            "extensions": [
+                ".md",
+                ".mkd",
+                ".mdwn",
+                ".mdown",
+                ".markdown",
+                ".markdn",
+                ".mdtxt",
+                ".mdtext",
+                ".workbook"
+            ],
+            "configuration": "./language-configuration.json"
+        }],
         "commands": [
             {
                 "command": "markdown.extension.toc.create",
