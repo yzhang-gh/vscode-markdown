@@ -37,7 +37,7 @@ async function initMdIt() {
     }).use(mdtl)
         .use(mdkt, {
             throwOnError: false,
-            macros: workspace.getConfiguration('markdown.extension.katex').get<object>('macros')
+            macros: JSON.parse(JSON.stringify(workspace.getConfiguration('markdown.extension.katex').get<object>('macros')))
         });
 
     addNamedHeaders(md);

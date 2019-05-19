@@ -24,7 +24,7 @@ export function activate(context: ExtensionContext) {
             return md.use(require('markdown-it-task-lists'))
                 .use(require('@neilsustc/markdown-it-katex'), {
                     throwOnError: false,
-                    macros: workspace.getConfiguration('markdown.extension.katex').get<object>('macros')
+                    macros: JSON.parse(JSON.stringify(workspace.getConfiguration('markdown.extension.katex').get<object>('macros')))
                 });
         }
     }
