@@ -60,6 +60,12 @@
         ],
         "keybindings": [
             {
+                "command": "markdown.extension.editing.toggleHtmlMark",
+                "key": "ctrl+shift+m",
+                "mac": "cmd+shift+m",
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+            },
+            {
                 "command": "markdown.extension.editing.toggleBold",
                 "key": "ctrl+b",
                 "mac": "cmd+b",
