@@ -4,6 +4,7 @@ import { commands, env, ExtensionContext, Position, Range, Selection, TextEditor
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
+        commands.registerCommand('markdown.extension.editing.toggleHtmlMark', toggleHtmlMark),
         commands.registerCommand('markdown.extension.editing.toggleBold', toggleBold),
         commands.registerCommand('markdown.extension.editing.toggleItalic', toggleItalic),
         commands.registerCommand('markdown.extension.editing.toggleCodeSpan', toggleCodeSpan),
@@ -26,6 +27,10 @@ const singleLinkRegex: RegExp = createLinkRegex();
 
 function toggleBold() {
     return styleByWrapping('**');
+}
+
+function toggleHtmlMark() {
+    return styleByWrapping('<mark>', '</mark>);
 }
 
 function toggleItalic() {
