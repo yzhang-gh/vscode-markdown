@@ -30,7 +30,7 @@ function toggleBold() {
 }
 
 function toggleHtmlMark() {
-    return styleByWrapping('<mark>', '</mark>);
+    return styleByWrapping('<mark>', '</mark>');
 }
 
 function toggleItalic() {
@@ -319,7 +319,7 @@ function styleByWrapping(startPattern, endPattern?) {
                 // `**|**` to `|`
                 let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
                 let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
-                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, new Range(start, end), false, startPattern);
+                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, new Range(start, end), false, startPattern, endPattern);
             } else {
                 // Select word under cursor
                 let wordRange = editor.document.getWordRangeAtPosition(cursorPos);
@@ -331,11 +331,11 @@ function styleByWrapping(startPattern, endPattern?) {
                 if (startPattern === '~~' && /^\s*[\*\+\-] (\[[ x]\] )? */g.test(currentTextLine.text)) {
                     wordRange = currentTextLine.range.with(new Position(cursorPos.line, currentTextLine.text.match(/^\s*[\*\+\-] (\[[ x]\] )? */g)[0].length));
                 }
-                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, wordRange, false, startPattern);
+                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, wordRange, false, startPattern, endPattern);
             }
         } else {
             // Text selected
-            wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, selection, true, startPattern);
+            wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, selection, true, startPattern, endPattern);
         }
     });
 
@@ -365,7 +365,7 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
 
     let newCursorPos = cursor.with({ character: cursor.character + shift });
     let newSelection: Selection;
-    if (isWrapped(text, startPtn)) {
+    if (isWrapped(text, startPtn, endPtn)) {
         // remove start/end patterns from range
         wsEdit.replace(editor.document.uri, range, text.substr(startPtn.length, text.length - ptnLength));
 
