@@ -20,6 +20,13 @@ async function initMdIt() {
     const mdtl = await import('markdown-it-task-lists');
     const mdkt = await import('@neilsustc/markdown-it-katex');
 
+    // Make a deep copy as `macros` will be modified by KaTeX during initialization
+    let userMacros = JSON.parse(JSON.stringify(workspace.getConfiguration('markdown.extension.katex').get<object>('macros')));
+    let katexOptions = { throwOnError: false };
+    if (Object.keys(userMacros).length !== 0) {
+        katexOptions['userMacros'] = userMacros;
+    }
+
     md = (await import('markdown-it'))({
         html: true,
         highlight: (str: string, lang: string) => {
@@ -34,11 +41,7 @@ async function initMdIt() {
             }
             return `<div>${md.utils.escapeHtml(str)}</div>`;
         }
-    }).use(mdtl)
-        .use(mdkt, {
-            throwOnError: false,
-            macros: JSON.parse(JSON.stringify(workspace.getConfiguration('markdown.extension.katex').get<object>('macros')))
-        });
+    }).use(mdtl).use(mdkt, katexOptions);
 
     addNamedHeaders(md);
 }
