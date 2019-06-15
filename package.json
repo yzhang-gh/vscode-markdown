@@ -246,6 +246,10 @@
                     "enum": [
                         "one",
                         "ordered"
+                    ],
+                    "enumDescriptions": [
+                        "%config.orderedList.marker.enumDescriptions.one%",
+                        "%config.orderedList.marker.enumDescriptions.ordered%"
                     ]
                 },
                 "markdown.extension.orderedList.autoRenumber": {

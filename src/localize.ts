@@ -77,7 +77,7 @@ export class Localize {
             return {};
         }
 
-        return require(languageFilePath);
+        return JSON.parse(fs.readFileSync(languageFilePath, "utf-8"));
     }
 }
 
