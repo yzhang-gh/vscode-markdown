@@ -51,7 +51,7 @@
             },
             {
                 "command": "markdown.extension.editing.toggleMathReverse",
-                "title": "Markdown: Toggle math environment (in reverse order)"
+                "title": "%command.editing.toggleMathReverse.title%"
             },
             {
                 "command": "markdown.extension.editing.toggleUnorderedList",
@@ -227,11 +227,11 @@
                         "inherit"
                     ],
                     "enumDescriptions": [
-                        "Use 2 spaces for unordered list and 3 for the ordered",
-                        "Use the configured tab size of the current document (see vscode status bar)"
+                        "%config.list.indentationSize.enumDescriptions.adaptive%",
+                        "%config.list.indentationSize.enumDescriptions.inherit%"
                     ],
                     "default": "adaptive",
-                    "description": "Whether to use different indentation sizes on different contexts",
+                    "description": "%config.list.indentationSize.description%",
                     "scope": "resource"
                 },
                 "markdown.extension.preview.autoShowPreviewToSide": {
