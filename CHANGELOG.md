@@ -1,6 +1,29 @@
+### 2.4.0 (2019.06.16)
+
+- **New**: Command `toggleList` (*Note: no default keybinding assigned*) ([#237](https://github.com/yzhang-gh/vscode-markdown/issues/237), [#307](https://github.com/yzhang-gh/vscode-markdown/issues/307))
+  ![toggle list](images/gifs/toggle-list.gif)
+- **New**: Support KaTeX macros ([#426](https://github.com/yzhang-gh/vscode-markdown/issues/426)). Thanks, [Pierre (@PierreMarchand20)](https://github.com/PierreMarchand20).
+
+<!--  -->
+
+- **Fix**: Image paths ([#415](https://github.com/yzhang-gh/vscode-markdown/issues/415)).
+- **Fix**: Fenced code block checking ([#434](https://github.com/yzhang-gh/vscode-markdown/issues/434)).
+
+<!--  -->
+
+- **Other**: Don't downcase the TOC links ([#312](https://github.com/yzhang-gh/vscode-markdown/issues/312)). Thanks, [Scott Meesseman (@spmeesseman)](https://github.com/spmeesseman).
+- **Other**: Command `toggleMath` now cycles through `|` -> `$|$` -> `$$\n|\n$$` -> `$$ | $$` ([#421](https://github.com/yzhang-gh/vscode-markdown/issues/421#issuecomment-493747064)). Thanks, [Li Yiming (@upupming)](https://github.com/upupming).
+- **Other**: Don't include KaTeX stylesheets in the exported HTML if no math ([#430](https://github.com/yzhang-gh/vscode-markdown/issues/430)).
+- **Other**: Upgrade KaTeX ([#446](https://github.com/yzhang-gh/vscode-markdown/issues/446)).
+- **Other**: Better math completions ([PR#470](https://github.com/yzhang-gh/vscode-markdown/pull/470), [PR#471](https://github.com/yzhang-gh/vscode-markdown/pull/471))
+
+---
+
 ### 2.3.1 (2019.04.29)
 
 - **Fix**: Option `markdown.extension.print.onFileSave` not respected ([#432](https://github.com/yzhang-gh/vscode-markdown/issues/432)).
+
+---
 
 ### 2.3.0 (2019.04.28)
 

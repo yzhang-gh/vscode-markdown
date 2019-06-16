@@ -38,6 +38,8 @@ export function getNewFeatureMsg(version: string) {
             return localize("1.5.0 msg");
         case '2.1.0':
             return localize("2.1.0 msg");
+        case '2.4.0':
+            return localize("2.4.0 msg");
     }
     return undefined;
 }
