@@ -1,6 +1,6 @@
 ### 2.4.0 (2019.06.16)
 
-- **New**: Command `toggleList` (*Note: no default keybinding assigned*) ([#237](https://github.com/yzhang-gh/vscode-markdown/issues/237), [#307](https://github.com/yzhang-gh/vscode-markdown/issues/307))
+- **New**: Command `toggleList` (*Note: no default keybinding assigned*) ([#237](https://github.com/yzhang-gh/vscode-markdown/issues/237), [#307](https://github.com/yzhang-gh/vscode-markdown/issues/307))  
   ![toggle list](images/gifs/toggle-list.gif)
 - **New**: Support KaTeX macros ([#426](https://github.com/yzhang-gh/vscode-markdown/issues/426)). Thanks, [Pierre (@PierreMarchand20)](https://github.com/PierreMarchand20).
 
