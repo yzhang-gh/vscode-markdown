@@ -246,7 +246,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'xtofrom', 'xmapsto',
         'xlongequal'
     ];
-    classAssignment0 = [
+    classAssignment1 = [
         'mathbin', 'mathclose', 'mathinner', 'mathop',
         'mathopen', 'mathord', 'mathpunct', 'mathrel'
     ];
@@ -336,7 +336,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 ...this.overlap1, ...this.spacing1,
                 ...this.mathOperators1, ...this.sqrt1,
                 ...this.extensibleArrows1, ...this.font1,
-                ...this.classAssignment0
+                ...this.classAssignment1
             ]
         )).map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
