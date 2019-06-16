@@ -1,6 +1,7 @@
 'use strict';
 
-import { commands, env, ExtensionContext, Position, Range, Selection, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
+import { commands, env, ExtensionContext, Position, Range, Selection, TextDocument, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
+import { fixMarker } from './listEditing';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
@@ -12,7 +13,7 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.editing.toggleMathReverse', () => toggleMath(reverseTransTable)),
         commands.registerCommand('markdown.extension.editing.toggleHeadingUp', toggleHeadingUp),
         commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown),
-        commands.registerCommand('markdown.extension.editing.toggleUnorderedList', toggleUnorderedList),
+        commands.registerCommand('markdown.extension.editing.toggleList', toggleList),
         commands.registerCommand('markdown.extension.editing.paste', paste)
     );
 }
@@ -190,33 +191,41 @@ function toggleMath(transTable) {
     setMathState(editor, cursor, oldMathBlockState, transTable[(currentStateIndex + 1) % transTable.length])
 }
 
-function toggleUnorderedList() {
-    let editor = window.activeTextEditor;
-    if (!editor.selection.isEmpty) return;
-    let cursor = editor.selection.active;
-    let textBeforeCursor = editor.document.lineAt(cursor.line).text.substr(0, cursor.character);
+function toggleList() {
+    const editor = window.activeTextEditor;
+    const doc = editor.document;
+    let batchEdit = new WorkspaceEdit();
 
-    let indentation = 0;
-    switch (textBeforeCursor.trim()) {
-        case '':
-            return editor.edit(editBuilder => {
-                editBuilder.insert(cursor, '- ');
-            });
-        case '-':
-            indentation = textBeforeCursor.indexOf('-');
-            return editor.edit(editBuilder => {
-                editBuilder.replace(new Range(cursor.line, indentation, cursor.line, cursor.character), '*' + ' '.repeat(textBeforeCursor.length - indentation - 1));
-            });
-        case '*':
-            indentation = textBeforeCursor.indexOf('*');
-            return editor.edit(editBuilder => {
-                editBuilder.replace(new Range(cursor.line, indentation, cursor.line, cursor.character), '+' + ' '.repeat(textBeforeCursor.length - indentation - 1));
-            });
-        case '+':
-            indentation = textBeforeCursor.indexOf('+');
-            return editor.edit(editBuilder => {
-                editBuilder.delete(new Range(cursor.line, indentation, cursor.line, cursor.character));
-            });
+    editor.selections.forEach(selection => {
+        if (selection.isEmpty) {
+            toggleListSingleLine(doc, selection.active.line, batchEdit);
+        } else {
+            for (let i = selection.start.line; i <= selection.end.line; i++) {
+                toggleListSingleLine(doc, i, batchEdit);
+            }
+        }
+    });
+
+    return workspace.applyEdit(batchEdit).then(() => fixMarker());
+}
+
+function toggleListSingleLine(doc: TextDocument, line: number, wsEdit: WorkspaceEdit) {
+    const lineText = doc.lineAt(line).text;
+    const indentation = lineText.trim().length === 0 ? lineText.length : lineText.indexOf(lineText.trim());
+    const lineTextContent = lineText.substr(indentation);
+
+    if (lineTextContent.startsWith("- ")) {
+        wsEdit.replace(doc.uri, new Range(line, indentation, line, indentation + 2), "* ");
+    } else if (lineTextContent.startsWith("* ")) {
+        wsEdit.replace(doc.uri, new Range(line, indentation, line, indentation + 2), "+ ");
+    } else if (lineTextContent.startsWith("+ ")) {
+        wsEdit.replace(doc.uri, new Range(line, indentation, line, indentation + 2), "1. ");
+    } else if (/^\d\. /.test(lineTextContent)) {
+        wsEdit.replace(doc.uri, new Range(line, indentation + 1, line, indentation + 2), ")");
+    } else if (/^\d\) /.test(lineTextContent)) {
+        wsEdit.delete(doc.uri, new Range(line, indentation, line, indentation + 3));
+    } else {
+        wsEdit.insert(doc.uri, new Position(line, indentation), "- ");
     }
 }
 

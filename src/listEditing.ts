@@ -316,7 +316,7 @@ function lookUpwardForMarker(editor: TextEditor, line: number, currentIndentatio
 /**
  * Fix ordered list marker *iteratively* starting from current line
  */
-function fixMarker(line?: number) {
+export function fixMarker(line?: number) {
     if (!workspace.getConfiguration('markdown.extension.orderedList').get<boolean>('autoRenumber')) return;
     if (workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'one') return;
 

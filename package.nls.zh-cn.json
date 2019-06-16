@@ -7,7 +7,7 @@
     "command.editing.toggleCodeSpan.title": "Markdown: 触发代码块",
     "command.editing.toggleMath.title": "Markdown: 触发数学环境",
     "command.editing.toggleMathReverse.title": "Markdown: 触发数学环境（反向）",
-    "command.editing.toggleUnorderedList.title": "Markdown: 触发无序列表",
+    "command.editing.toggleList.title": "Markdown: 触发列表",
     "config.title": "Markdown All in One",
     "config.toc.levels.description": "目录级别的范围. 例如 `2..5` 表示在目录中只包含 2 到 5 级标题",
     "config.toc.orderedList.description": "使用有序列表 (1. ..., 2. ...)",

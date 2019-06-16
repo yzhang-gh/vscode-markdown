@@ -54,8 +54,8 @@
                 "title": "%command.editing.toggleMathReverse.title%"
             },
             {
-                "command": "markdown.extension.editing.toggleUnorderedList",
-                "title": "%command.editing.toggleUnorderedList.title%"
+                "command": "markdown.extension.editing.toggleList",
+                "title": "%command.editing.toggleList.title%"
             }
         ],
         "keybindings": [

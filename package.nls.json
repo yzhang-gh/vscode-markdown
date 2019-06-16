@@ -7,7 +7,7 @@
     "command.editing.toggleCodeSpan.title": "Markdown: Toggle code span",
     "command.editing.toggleMath.title": "Markdown: Toggle math environment",
     "command.editing.toggleMathReverse.title": "Markdown: Toggle math environment (in reverse order)",
-    "command.editing.toggleUnorderedList.title": "Markdown: Toggle unordered list",
+    "command.editing.toggleList.title": "Markdown: Toggle list",
     "config.title": "Markdown All in One",
     "config.toc.levels.description": "Range of levels for table of contents. Use `x..y` for level x to y",
     "config.toc.orderedList.description": "Use ordered list (1. ..., 2. ...)",
