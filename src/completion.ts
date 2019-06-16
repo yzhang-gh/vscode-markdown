@@ -88,8 +88,15 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     verticalLayout0 = ['atop']
     verticalLayout2 = ['stackrel', 'overset', 'underset', 'raisebox'];
     overlap1 = ['mathllap', 'mathrlap', 'mathclap', 'llap', 'rlap', 'clap', 'smash'];
-    spacing0 = ['thinspace', 'medspace', 'thickspace', 'enspace', 'quad', 'qquad', 'negthinspace', 'negmedspace', 'nobreakspace', 'negthickspace'];
-    spacing1 = ['kern', 'mkern', 'mskip', 'hskip', 'hspace', 'hspace*', 'phantom', 'hphantom', 'vphantom'];
+    spacing0 = [
+        'thinspace', 'medspace', 'thickspace', 'enspace',
+        'quad', 'qquad', 'negthinspace', 'negmedspace',
+        'nobreakspace', 'negthickspace'
+    ];
+    spacing1 = [
+        'kern', 'mkern', 'mskip', 'hskip',
+        'hspace', 'hspace*', 'phantom', 'hphantom', 'vphantom'
+    ];
     logicAndSetTheory0 = [
         'forall', 'complement', 'therefore', 'emptyset',
         'exists', 'subset', 'because', 'empty',
@@ -239,7 +246,10 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'xtofrom', 'xmapsto',
         'xlongequal'
     ];
-    classAssignment0 = ['mathbin', 'mathclose', 'mathinner', 'mathop', 'mathopen', 'mathord', 'mathpunct', 'mathrel'];
+    classAssignment0 = [
+        'mathbin', 'mathclose', 'mathinner', 'mathop',
+        'mathopen', 'mathord', 'mathpunct', 'mathrel'
+    ];
     color2 = ['color', 'textcolor', 'colorbox'];
     font0 = ['rm', 'bf', 'it', 'sf', 'tt'];
     font1 = [
@@ -251,8 +261,14 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'mathsf', 'mathtt', 'mathfrak',
         'textsf', 'texttt', 'mathcal', 'mathscr'
     ];
-    size0 = ['Huge', 'huge', 'LARGE', 'Large', 'large', 'normalsize', 'small', 'footnotesize', 'scriptsize', 'tiny'];
-    style0 = ['displaystyle', 'textstyle', 'scriptstyle', 'scriptscriptstyle', 'limits', 'nolimits', 'verb'];
+    size0 = [
+        'Huge', 'huge', 'LARGE', 'Large', 'large',
+        'normalsize', 'small', 'footnotesize', 'scriptsize', 'tiny'
+    ];
+    style0 = [
+        'displaystyle', 'textstyle', 'scriptstyle', 'scriptscriptstyle',
+        'limits', 'nolimits', 'verb'
+    ];
     symbolsAndPunctuation0 = [
         'cdots', 'LaTeX',
         'ddots', 'TeX',
@@ -314,7 +330,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             return item;
         });
         let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
-        envSnippet.insertText = new SnippetString('begin{${1|matrix,aligned,array,pmatrix,bmatrix,alignedat,vmatrix,Vmatrix,gathered,Bmatrix,cases|}}\n\t$2\n\\end{$1}');
+        envSnippet.insertText = new SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
 
         this.mathCompletions = [...c1, ...c2, ...c3, envSnippet];
         // Sort
