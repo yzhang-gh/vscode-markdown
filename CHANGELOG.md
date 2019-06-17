@@ -1,7 +1,11 @@
 ### 2.4.0 (2019.06.16)
 
-- **New**: Command `toggleList` (*Note: no default keybinding assigned*) ([#237](https://github.com/yzhang-gh/vscode-markdown/issues/237), [#307](https://github.com/yzhang-gh/vscode-markdown/issues/307))  
+- **New**: Command `toggleList` (*Note: no default keybinding assigned*) ([#237](https://github.com/yzhang-gh/vscode-markdown/issues/237), [#307](https://github.com/yzhang-gh/vscode-markdown/issues/307))
+
   ![toggle list](images/gifs/toggle-list.gif)
+
+<!--  -->
+
 - **New**: Support KaTeX macros ([#426](https://github.com/yzhang-gh/vscode-markdown/issues/426)). Thanks, [Pierre (@PierreMarchand20)](https://github.com/PierreMarchand20).
 
 <!--  -->
@@ -79,7 +83,11 @@
 
   ![suggest ref link](images/gifs/suggest-ref-link.png)
 
+<!--  -->
+
 - **Fix**: Conflict with `editor.tabCompletion` setting ([#367](https://github.com/yzhang-gh/vscode-markdown/issues/367)).
+
+<!--  -->
 
 - **Other**: Added ways to buy me a coffee 😉 ([PayPal](https://www.paypal.me/2yzhang), [Alipay or WeChat](donate.md)).
 
