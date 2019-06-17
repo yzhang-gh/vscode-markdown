@@ -20,6 +20,13 @@ async function initMdIt() {
     const mdtl = await import('markdown-it-task-lists');
     const mdkt = await import('@neilsustc/markdown-it-katex');
 
+    // Make a deep copy as `macros` will be modified by KaTeX during initialization
+    let userMacros = JSON.parse(JSON.stringify(workspace.getConfiguration('markdown.extension.katex').get<object>('macros')));
+    let katexOptions = { throwOnError: false };
+    if (Object.keys(userMacros).length !== 0) {
+        katexOptions['userMacros'] = userMacros;
+    }
+
     md = (await import('markdown-it'))({
         html: true,
         highlight: (str: string, lang: string) => {
@@ -34,11 +41,7 @@ async function initMdIt() {
             }
             return `<div>${md.utils.escapeHtml(str)}</div>`;
         }
-    }).use(mdtl)
-        .use(mdkt, {
-            throwOnError: false,
-            macros: workspace.getConfiguration('markdown.extension.katex').get<object>('macros')
-        });
+    }).use(mdtl).use(mdkt, katexOptions);
 
     addNamedHeaders(md);
 }
@@ -127,32 +130,40 @@ async function print(type: string) {
 
     // Image paths
     const config = vscode.workspace.getConfiguration('markdown.extension', doc.uri);
+    const configToBase64 = config.get<boolean>("print.imgToBase64");
+    const configAbsPath = config.get<boolean>('print.absoluteImgPath')
+    const imgTagRegex = /(<img[^>]+src=")([^"]+)("[^>]*>)/g;  // Match '<img...src="..."...>'
 
-    if (config.get<boolean>("print.imgToBase64")) {
-        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (_, p1, p2, p3) { // Match '<img...src="..."...>'
-            if (!p2.startsWith('http')) {
-                const imgSrc = relToAbsPath(doc.uri, p2);
-                try {
-                    const imgExt = path.extname(imgSrc).slice(1);
-                    const file = fs.readFileSync(imgSrc).toString('base64');
-                    return `${p1}data:image/${imgExt};base64,${file}${p3}`;
-                } catch (e) {
-                    vscode.window.showWarningMessage(localize("unableToReadFile") + ` ${imgSrc}, ` + localize("revertingToImagePaths"));
-                }
+    if (configToBase64) {
+        body = body.replace(imgTagRegex, function (_, p1, p2, p3) {
+            if (p2.startsWith('http')) {
+                return _;
+            }
+
+            const imgSrc = relToAbsPath(doc.uri, p2);
+            try {
+                const imgExt = path.extname(imgSrc).slice(1);
+                const file = fs.readFileSync(imgSrc).toString('base64');
+                return `${p1}data:image/${imgExt};base64,${file}${p3}`;
+            } catch (e) {
+                vscode.window.showWarningMessage(localize("unableToReadFile") + ` ${imgSrc}, ` + localize("revertingToImagePaths"));
+            }
+
+            if (configAbsPath) {
                 return `${p1}file:///${imgSrc}${p3}`;
             } else {
                 return _;
             }
         });
-    } else if (config.get<boolean>('print.absoluteImgPath')) {
-        body = body.replace(/(<img[^>]+src=")([^"]+)("[^>]*>)/g, function (_, p1, p2, p3) { // Match '<img...src="..."...>'
-            if (!p2.startsWith('http')) {
-                const imgSrc = relToAbsPath(doc.uri, p2);
-                // Absolute paths need `file:///` but relative paths don't
-                return `${p1}file:///${imgSrc}${p3}`;
-            } else {
+    } else if (configAbsPath) {
+        body = body.replace(imgTagRegex, function (_, p1, p2, p3) {
+            if (p2.startsWith('http')) {
                 return _;
             }
+
+            const imgSrc = relToAbsPath(doc.uri, p2);
+            // Absolute paths need `file:///` but relative paths don't
+            return `${p1}file:///${imgSrc}${p3}`;
         });
     }
 
@@ -219,7 +230,7 @@ function readCss(fileName: string) {
         return fs.readFileSync(fileName).toString().replace(/\s+/g, ' ');
     } catch (error) {
         let msg = error.message.replace('ENOENT: no such file or directory, open', localize("customStyle")) + localize("notFound");
-        msg = msg.replace(/'([c-z]):/, function (match, g1) {
+        msg = msg.replace(/'([c-z]):/, function (_, g1) {
             return `'${g1.toUpperCase()}:`;
         });
         vscode.window.showWarningMessage(msg);
@@ -228,7 +239,7 @@ function readCss(fileName: string) {
 }
 
 function getStyles(uri: vscode.Uri, hasMathEnv: boolean) {
-    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">';
+    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">';
     const markdownCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">';
     const highlightCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">';
     const copyTeXCss = '<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">';

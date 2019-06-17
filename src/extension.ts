@@ -18,14 +18,18 @@ import { workspace } from 'vscode';
 export function activate(context: ExtensionContext) {
     activateMdExt(context);
 
+    // Make a deep copy as `macros` will be modified by KaTeX during initialization
+    let userMacros = JSON.parse(JSON.stringify(workspace.getConfiguration('markdown.extension.katex').get<object>('macros')));
+    let katexOptions = { throwOnError: false };
+    if (Object.keys(userMacros).length !== 0) {
+        katexOptions['userMacros'] = userMacros;
+    }
+
     return {
         extendMarkdownIt(md) {
 
             return md.use(require('markdown-it-task-lists'))
-                .use(require('@neilsustc/markdown-it-katex'), {
-                    throwOnError: false,
-                    macros: workspace.getConfiguration('markdown.extension.katex').get<object>('macros')
-                });
+                .use(require('@neilsustc/markdown-it-katex'), katexOptions);
         }
     }
 }
@@ -38,7 +42,7 @@ function activateMdExt(context: ExtensionContext) {
     // Toc
     toc.activate(context);
     // Syntax decorations
-    decorations.activiate(context);
+    decorations.activate(context);
     // Images paths and math commands completions
     completion.activate(context);
     // Print to PDF

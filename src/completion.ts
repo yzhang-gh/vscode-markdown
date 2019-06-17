@@ -88,8 +88,15 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     verticalLayout0 = ['atop']
     verticalLayout2 = ['stackrel', 'overset', 'underset', 'raisebox'];
     overlap1 = ['mathllap', 'mathrlap', 'mathclap', 'llap', 'rlap', 'clap', 'smash'];
-    spacing0 = ['thinspace', 'medspace', 'thickspace', 'enspace', 'quad', 'qquad', 'negthinspace', 'negmedspace', 'nobreakspace', 'negthickspace'];
-    spacing1 = ['kern', 'mkern', 'mskip', 'hskip', 'hspace', 'hspace*', 'phantom', 'hphantom', 'vphantom'];
+    spacing0 = [
+        'thinspace', 'medspace', 'thickspace', 'enspace',
+        'quad', 'qquad', 'negthinspace', 'negmedspace',
+        'nobreakspace', 'negthickspace'
+    ];
+    spacing1 = [
+        'kern', 'mkern', 'mskip', 'hskip',
+        'hspace', 'hspace*', 'phantom', 'hphantom', 'vphantom'
+    ];
     logicAndSetTheory0 = [
         'forall', 'complement', 'therefore', 'emptyset',
         'exists', 'subset', 'because', 'empty',
@@ -239,7 +246,10 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'xtofrom', 'xmapsto',
         'xlongequal'
     ];
-    classAssignment0 = ['mathbin', 'mathclose', 'mathinner', 'mathop', 'mathopen', 'mathord', 'mathpunct', 'mathrel'];
+    classAssignment1 = [
+        'mathbin', 'mathclose', 'mathinner', 'mathop',
+        'mathopen', 'mathord', 'mathpunct', 'mathrel'
+    ];
     color2 = ['color', 'textcolor', 'colorbox'];
     font0 = ['rm', 'bf', 'it', 'sf', 'tt'];
     font1 = [
@@ -251,8 +261,14 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'mathsf', 'mathtt', 'mathfrak',
         'textsf', 'texttt', 'mathcal', 'mathscr'
     ];
-    size0 = ['Huge', 'huge', 'LARGE', 'Large', 'large', 'normalsize', 'small', 'footnotesize', 'scriptsize', 'tiny'];
-    style0 = ['displaystyle', 'textstyle', 'scriptstyle', 'scriptscriptstyle', 'limits', 'nolimits', 'verb'];
+    size0 = [
+        'Huge', 'huge', 'LARGE', 'Large', 'large',
+        'normalsize', 'small', 'footnotesize', 'scriptsize', 'tiny'
+    ];
+    style0 = [
+        'displaystyle', 'textstyle', 'scriptstyle', 'scriptscriptstyle',
+        'limits', 'nolimits', 'verb'
+    ];
     symbolsAndPunctuation0 = [
         'cdots', 'LaTeX',
         'ddots', 'TeX',
@@ -296,25 +312,50 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
     constructor() {
         // \cmd
-        let c1 = Array.from(new Set([...this.delimiters0, ...this.delimeterSizing0, ...this.greekLetters0, ...this.otherLetters0, ...this.spacing0, ...this.verticalLayout0, ...this.logicAndSetTheory0, ...this.bigOperators0, ...this.binaryOperators0, ...this.binomialCoefficients0, ...this.fractions0, ...this.mathOperators0, ...this.relations0, ...this.negatedRelations0, ...this.arrows0, ...this.classAssignment0, ...this.font0, ...this.size0, ...this.style0, ...this.symbolsAndPunctuation0])).map(cmd => {
+        let c1 = Array.from(new Set(
+            [
+                ...this.delimiters0, ...this.delimeterSizing0,
+                ...this.greekLetters0, ...this.otherLetters0,
+                ...this.spacing0, ...this.verticalLayout0,
+                ...this.logicAndSetTheory0, ...this.bigOperators0,
+                ...this.binaryOperators0, ...this.binomialCoefficients0,
+                ...this.fractions0, ...this.mathOperators0,
+                ...this.relations0, ...this.negatedRelations0,
+                ...this.arrows0, ...this.font0, ...this.size0,
+                ...this.style0, ...this.symbolsAndPunctuation0
+            ]
+        )).map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
             item.insertText = cmd;
             return item;
         });
         // \cmd{$1}
-        let c2 = Array.from(new Set([...this.accents1, ...this.annotation1, ...this.overlap1, ...this.spacing1, ...this.mathOperators1, ...this.sqrt1, ...this.extensibleArrows1, ...this.font1])).map(cmd => {
+        let c2 = Array.from(new Set(
+            [
+                ...this.accents1, ...this.annotation1,
+                ...this.overlap1, ...this.spacing1,
+                ...this.mathOperators1, ...this.sqrt1,
+                ...this.extensibleArrows1, ...this.font1,
+                ...this.classAssignment1
+            ]
+        )).map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
             item.insertText = new SnippetString(`${cmd}\{$1\}`);
             return item;
         });
         // \cmd{$1}{$2}
-        let c3 = Array.from(new Set([...this.verticalLayout2, ...this.binomialCoefficients2, ...this.fractions2, ...this.color2])).map(cmd => {
+        let c3 = Array.from(new Set(
+            [
+                ...this.verticalLayout2, ...this.binomialCoefficients2,
+                ...this.fractions2, ...this.color2
+            ]
+        )).map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
             item.insertText = new SnippetString(`${cmd}\{$1\}\{$2\}`);
             return item;
         });
         let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
-        envSnippet.insertText = new SnippetString('begin{${1|matrix,aligned,array,pmatrix,bmatrix,alignedat,vmatrix,Vmatrix,gathered,Bmatrix,cases|}}\n\t$2\n\\end{$1}');
+        envSnippet.insertText = new SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
 
         this.mathCompletions = [...c1, ...c2, ...c3, envSnippet];
         // Sort

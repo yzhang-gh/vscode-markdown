@@ -42,9 +42,9 @@ suite("TOC.", () => {
                 '',
                 '# Section 2',
                 '',
-                '- [Section 1](#section-1)',
-                '  - [Section 1.1](#section-11)',
-                '- [Section 2](#section-2)'
+                '- [Section 1](#Section-1)',
+                '  - [Section 1.1](#Section-11)',
+                '- [Section 2](#Section-2)'
             ],
             new Selection(8, 25, 8, 25)).then(done, done);
     });
@@ -60,9 +60,9 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
-                '- [Section 1](#section-1)',
-                '  - [Section 1.1](#section-11)',
-                '- [Section 2](#section-2)'
+                '- [Section 1](#Section-1)',
+                '  - [Section 1.1](#Section-11)',
+                '- [Section 2](#Section-2)'
             ],
             new Selection(0, 0, 0, 0),
             [
@@ -74,10 +74,10 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
-                '- [Section 1](#section-1)',
-                '  - [Section 1.1](#section-11)',
-                '- [Section 2](#section-2)',
-                '  - [Section 2.1](#section-21)'
+                '- [Section 1](#Section-1)',
+                '  - [Section 1.1](#Section-11)',
+                '- [Section 2](#Section-2)',
+                '  - [Section 2.1](#Section-21)'
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
@@ -124,10 +124,10 @@ suite("TOC.", () => {
                 '',
                 '#### Section 2.1.1.1',
                 '',
-                '- [Section 1.1](#section-11)',
-                '  - [Section 1.1.1](#section-111)',
-                '- [Section 2.1](#section-21)',
-                '  - [Section 2.1.1](#section-211)',
+                '- [Section 1.1](#Section-11)',
+                '  - [Section 1.1.1](#Section-111)',
+                '- [Section 2.1](#Section-21)',
+                '  - [Section 2.1.1](#Section-211)',
             ],
             new Selection(19, 33, 19, 33)).then(done, done);
     });
@@ -150,10 +150,10 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
-                '- [Section 1.1](#section-11)',
-                '  - [Section 1.1.1](#section-111)',
-                '- [Section 2.1](#section-21)',
-                '  - [Section 2.1.1](#section-211)',
+                '- [Section 1.1](#Section-11)',
+                '  - [Section 1.1.1](#Section-111)',
+                '- [Section 2.1](#Section-21)',
+                '  - [Section 2.1.1](#Section-211)',
             ],
             new Selection(0, 0, 0, 0),
             [
@@ -169,9 +169,9 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
-                '- [Section 1.1](#section-11)',
-                '  - [Section 1.1.1](#section-111)',
-                '- [Section 2.1](#section-21)'
+                '- [Section 1.1](#Section-11)',
+                '  - [Section 1.1.1](#Section-111)',
+                '- [Section 2.1](#Section-21)'
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
@@ -195,9 +195,9 @@ suite("TOC.", () => {
                 '',
                 '# Section 2',
                 '',
-                '- [Section 中文](#section-%E4%B8%AD%E6%96%87)',
-                '  - [Section 1.1](#section-11)',
-                '- [Section 2](#section-2)'
+                '- [Section 中文](#Section-%E4%B8%AD%E6%96%87)',
+                '  - [Section 1.1](#Section-11)',
+                '- [Section 2](#Section-2)'
             ],
             new Selection(8, 25, 8, 25)).then(done, done);
     });
@@ -237,8 +237,8 @@ suite("TOC.", () => {
                 'Section 1.1',
                 '---',
                 '',
-                '- [Section 1](#section-1)',
-                '  - [Section 1.1](#section-11)'
+                '- [Section 1](#Section-1)',
+                '  - [Section 1.1](#Section-11)'
             ],
             new Selection(7, 30, 7, 30)).then(done, done);
     });
@@ -276,13 +276,13 @@ suite("TOC.", () => {
                 '# Head 1',
                 '# Head 2',
                 '',
-                '- [Head 1](#head-1)',
-                '- [Head 2](#head-2)',
-                '- [Head 3](#head-3)',
+                '- [Head 1](#Head-1)',
+                '- [Head 2](#Head-2)',
+                '- [Head 3](#Head-3)',
                 '',
-                '- [Head 1](#head-1)',
-                '- [Head 2](#head-2)',
-                '- [Head 3](#head-3)',
+                '- [Head 1](#Head-1)',
+                '- [Head 2](#Head-2)',
+                '- [Head 3](#Head-3)',
                 '',
                 '# Head 3',
                 '# Head 4'
@@ -292,15 +292,15 @@ suite("TOC.", () => {
                 '# Head 1',
                 '# Head 2',
                 '',
-                '- [Head 1](#head-1)',
-                '- [Head 2](#head-2)',
-                '- [Head 3](#head-3)',
-                '- [Head 4](#head-4)',
+                '- [Head 1](#Head-1)',
+                '- [Head 2](#Head-2)',
+                '- [Head 3](#Head-3)',
+                '- [Head 4](#Head-4)',
                 '',
-                '- [Head 1](#head-1)',
-                '- [Head 2](#head-2)',
-                '- [Head 3](#head-3)',
-                '- [Head 4](#head-4)',
+                '- [Head 1](#Head-1)',
+                '- [Head 2](#Head-2)',
+                '- [Head 3](#Head-3)',
+                '- [Head 4](#Head-4)',
                 '',
                 '# Head 3',
                 '# Head 4'

@@ -38,6 +38,8 @@ export function getNewFeatureMsg(version: string) {
             return localize("1.5.0 msg");
         case '2.1.0':
             return localize("2.1.0 msg");
+        case '2.4.0':
+            return localize("2.4.0 msg");
     }
     return undefined;
 }
@@ -88,7 +90,8 @@ export function slugify(heading: string) {
         // GitHub slugify function
         // <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
         let slug = extractText(heading.trim())
-            .replace(/[A-Z]/g, match => match.toLowerCase()) // only downcase ASCII region
+            // We don't downcase letters as the anchors are case-sensitive by convention
+            // .replace(/[A-Z]/g, match => match.toLowerCase()) // only downcase ASCII region
             .replace(PUNCTUATION_REGEXP, '')
             .replace(/ /g, '-');
         return slug;
@@ -97,7 +100,8 @@ export function slugify(heading: string) {
         // <https://github.com/Microsoft/vscode/blob/f5738efe91cb1d0089d3605a318d693e26e5d15c/extensions/markdown-language-features/src/slugify.ts#L22-L29>
         return encodeURI(
             heading.trim()
-                .toLowerCase()
+                // Also don't downcase letters here
+                // .toLowerCase()
                 .replace(/\s+/g, '-') // Replace whitespace with -
                 .replace(/[\]\[\!\'\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\_\{\|\}\~\`。，、；：？！…—·ˉ¨‘’“”々～‖∶＂＇｀｜〃〔〕〈〉《》「」『』．〖〗【】（）［］｛｝]/g, '') // Remove known punctuators
                 .replace(/^\-+/, '') // Remove leading -

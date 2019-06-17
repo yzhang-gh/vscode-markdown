@@ -6,7 +6,8 @@
     "command.printToHtml.title": "Markdown: Print current document to HTML",
     "command.editing.toggleCodeSpan.title": "Markdown: Toggle code span",
     "command.editing.toggleMath.title": "Markdown: Toggle math environment",
-    "command.editing.toggleUnorderedList.title": "Markdown: Toggle unordered list",
+    "command.editing.toggleMathReverse.title": "Markdown: Toggle math environment (in reverse order)",
+    "command.editing.toggleList.title": "Markdown: Toggle list",
     "config.title": "Markdown All in One",
     "config.toc.levels.description": "Range of levels for table of contents. Use `x..y` for level x to y",
     "config.toc.orderedList.description": "Use ordered list (1. ..., 2. ...)",
@@ -14,9 +15,13 @@
     "config.toc.plaintext.description": "Just plain text",
     "config.toc.updateOnSave.description": "Auto update on save",
     "config.toc.githubCompatibility.description": "GitHub Compatibility",
-    "config.toc.tabSize.description": "Number of spaces for toc indentation. With 'auto', it is set to 2 for unordered list toc (MD007 convention) and 3 for unordered list toc (no convention)",
+    "config.list.indentationSize.description": "Whether to use different indentation sizes on different contexts",
+    "config.list.indentationSize.enumDescriptions.adaptive": "Use 2 spaces for unordered list and 3 for the ordered",
+    "config.list.indentationSize.enumDescriptions.inherit": "Use the configured tab size of the current document (see vscode status bar)",    
     "config.preview.autoShowPreviewToSide.description": "Auto show preview to side",
-    "config.orderedList.marker.description": "`one`: always use `1.` as ordered list marker; `ordered`",
+    "config.orderedList.marker.description": "Ordered list marker",
+    "config.orderedList.marker.enumDescriptions.one": "Always use `1.` as ordered list marker",
+    "config.orderedList.marker.enumDescriptions.ordered": "Use increasing numbers as ordered list marker",
     "config.orderedList.autoRenumber.description": "Auto fix ordered list markers",
     "config.italic.indicator.description": "Use `*` or `_` to wrap italic text",
     "config.showExplorer.description": "Show outline view in explorer panel",
@@ -41,5 +46,6 @@
     "1.3.0 msg": "Introduce an exciting feature! Auto renumbering ordered list.",
     "1.4.0 msg": "Many new features of Markdown-All-in-One v1.4.0",
     "1.5.0 msg": "Long time no see. Welcome to Markdown-All-in-One v1.5.0.",
-    "2.1.0 msg": "Markdown All in One v2.1.0! Paste URL as link, multi-cursor support, and more."
+    "2.1.0 msg": "Markdown All in One v2.1.0! Paste URL as link, multi-cursor support, and more.",
+    "2.4.0 msg": "Markdown All in One v2.4.0! New command 'toggleList' and KaTeX macros support."
 }

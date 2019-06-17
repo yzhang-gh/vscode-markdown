@@ -3,7 +3,7 @@
     "displayName": "%ext.displayName%",
     "description": "%ext.description%",
     "icon": "images/Markdown-mark.png",
-    "version": "2.3.1",
+    "version": "2.4.0",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.30.2"
@@ -50,8 +50,12 @@
                 "title": "%command.editing.toggleMath.title%"
             },
             {
-                "command": "markdown.extension.editing.toggleUnorderedList",
-                "title": "%command.editing.toggleUnorderedList.title%"
+                "command": "markdown.extension.editing.toggleMathReverse",
+                "title": "%command.editing.toggleMathReverse.title%"
+            },
+            {
+                "command": "markdown.extension.editing.toggleList",
+                "title": "%command.editing.toggleList.title%"
             }
         ],
         "keybindings": [
@@ -223,11 +227,11 @@
                         "inherit"
                     ],
                     "enumDescriptions": [
-                        "Use 2 spaces for unordered list and 3 for the ordered",
-                        "Use the configured tab size of the current document (see vscode status bar)"
+                        "%config.list.indentationSize.enumDescriptions.adaptive%",
+                        "%config.list.indentationSize.enumDescriptions.inherit%"
                     ],
                     "default": "adaptive",
-                    "description": "Whether to use different indentation sizes on different contexts",
+                    "description": "%config.list.indentationSize.description%",
                     "scope": "resource"
                 },
                 "markdown.extension.preview.autoShowPreviewToSide": {
@@ -242,6 +246,10 @@
                     "enum": [
                         "one",
                         "ordered"
+                    ],
+                    "enumDescriptions": [
+                        "%config.orderedList.marker.enumDescriptions.one%",
+                        "%config.orderedList.marker.enumDescriptions.ordered%"
                     ]
                 },
                 "markdown.extension.orderedList.autoRenumber": {
@@ -303,7 +311,7 @@
                 },
                 "markdown.extension.katex.macros": {
                     "type": "object",
-                    "default": "{}",
+                    "default": {},
                     "description": "%config.katex.macros.description%"
                 }
             }
@@ -343,9 +351,9 @@
         "test-compile": "tsc -p ./"
     },
     "dependencies": {
-        "@neilsustc/markdown-it-katex": "^0.3.0",
+        "@neilsustc/markdown-it-katex": "^0.4.0",
         "highlight.js": "^9.15.6",
-        "image-size": "^0.7.2",
+        "image-size": "^0.7.4",
         "markdown-it": "^8.4.2",
         "markdown-it-task-lists": "^2.1.1",
         "string-similarity": "^3.0.0"

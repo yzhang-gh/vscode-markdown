@@ -89,7 +89,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - Markdown: Toggle code span
 - Markdown: Print current document to HTML
 - Markdown: Toggle math environment
-- Markdown: Toggle unordered list
+- Markdown: Toggle list
 
 ## Keyboard Shortcuts
 
