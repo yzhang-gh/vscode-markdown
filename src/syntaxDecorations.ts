@@ -58,7 +58,9 @@ let regexDecorTypeMappingPlainTheme = {
     "(\\*\\*)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(\\*\\*)": ["gray", "baseColor", "gray"]
 }
 
-export function activate(context: ExtensionContext) {
+export function activate(_: ExtensionContext) {
+    if (!workspace.getConfiguration('markdown.extension.syntax').get<boolean>('decorations')) return;
+
     window.onDidChangeActiveTextEditor(updateDecorations);
 
     workspace.onDidChangeTextDocument(event => {
@@ -83,8 +85,6 @@ export function activate(context: ExtensionContext) {
 }
 
 function updateDecorations(editor?: TextEditor) {
-    if (!workspace.getConfiguration('markdown.extension.syntax').get<boolean>('decorations')) return;
-
     if (editor === undefined) {
         editor = window.activeTextEditor;
     }
@@ -157,7 +157,7 @@ function updateDecorations(editor?: TextEditor) {
 
                         const decorTypeName = decorTypeNames[i];
                         const caughtGroup = decorTypeName == "codeSpan" ? match[0] : match[i + 1];
-                        
+
                         if (decorTypeName === "gray" && caughtGroup.length > 2) {
                             noDecorRanges.push([startIndex, startIndex + caughtGroup.length]);
                         }
