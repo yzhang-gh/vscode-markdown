@@ -31,31 +31,38 @@
         "commands": [
             {
                 "command": "markdown.extension.toc.create",
-                "title": "%command.toc.create.title%"
+                "title": "%command.toc.create.title%",
+                "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.toc.update",
-                "title": "%command.toc.update.title%"
+                "title": "%command.toc.update.title%",
+                "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.printToHtml",
-                "title": "%command.printToHtml.title%"
+                "title": "%command.printToHtml.title%",
+                "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.editing.toggleCodeSpan",
-                "title": "%command.editing.toggleCodeSpan.title%"
+                "title": "%command.editing.toggleCodeSpan.title%",
+                "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.editing.toggleMath",
-                "title": "%command.editing.toggleMath.title%"
+                "title": "%command.editing.toggleMath.title%",
+                "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.editing.toggleMathReverse",
-                "title": "%command.editing.toggleMathReverse.title%"
+                "title": "%command.editing.toggleMathReverse.title%",
+                "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.editing.toggleList",
-                "title": "%command.editing.toggleList.title%"
+                "title": "%command.editing.toggleList.title%",
+                "category": "Markdown All in One"
             }
         ],
         "keybindings": [
