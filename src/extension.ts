@@ -2,7 +2,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { ExtensionContext, languages, window } from 'vscode';
+import { ExtensionContext, languages, window, workspace } from 'vscode';
 import * as completion from './completion';
 import * as formatting from './formatting';
 import * as listEditing from './listEditing';
@@ -13,7 +13,6 @@ import * as decorations from './syntaxDecorations';
 import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
 import { getNewFeatureMsg, showChangelog } from './util';
-import { workspace } from 'vscode';
 
 export function activate(context: ExtensionContext) {
     activateMdExt(context);
