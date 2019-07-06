@@ -6,7 +6,7 @@
     "version": "2.4.0",
     "publisher": "yzhang",
     "engines": {
-        "vscode": "^1.30.2"
+        "vscode": "^1.36.0"
     },
     "categories": [
         "Other"
