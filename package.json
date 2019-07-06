@@ -220,6 +220,11 @@
                     "default": false,
                     "description": "%config.toc.githubCompatibility.description%"
                 },
+                "markdown.extension.toc.downcaseLink": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%config.toc.downcaseLink.description%"
+                },
                 "markdown.extension.list.indentationSize": {
                     "type": "string",
                     "enum": [

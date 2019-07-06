@@ -15,6 +15,7 @@
     "config.toc.plaintext.description": "使用纯文本目录",
     "config.toc.updateOnSave.description": "保存时自动更新目录",
     "config.toc.githubCompatibility.description": "兼容 GitHub",
+    "config.toc.downcaseLink.description": "是否将目录中的链接转为小写",
     "config.list.indentationSize.description": "是否在不同上下文中使用不同缩进量",
     "config.list.indentationSize.enumDescriptions.adaptive": "无序列表中使用 2 空格，有序列表中使用 3 空格",
     "config.list.indentationSize.enumDescriptions.inherit": "使用当前文档设置的缩进量（请查看 vscode 状态栏）",    

@@ -15,6 +15,7 @@
     "config.toc.plaintext.description": "Just plain text",
     "config.toc.updateOnSave.description": "Auto update on save",
     "config.toc.githubCompatibility.description": "GitHub Compatibility",
+    "config.toc.downcaseLink.description": "Whether to downcase TOC links",
     "config.list.indentationSize.description": "Whether to use different indentation sizes on different contexts",
     "config.list.indentationSize.enumDescriptions.adaptive": "Use 2 spaces for unordered list and 3 for the ordered",
     "config.list.indentationSize.enumDescriptions.inherit": "Use the configured tab size of the current document (see vscode status bar)",    
