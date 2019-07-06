@@ -209,6 +209,7 @@ export function buildToc(doc: vscode.TextDocument) {
     let toc;
     let lines = doc.getText()
         .replace(/^```[\W\w]+?^```/gm, '')      // Remove code blocks
+        .replace(/<!--[\W\w]+?-->/, '')         // Remove comments
         .replace(/^---[\W\w]+?(\r?\n)---/, '')  // Remove YAML front matter
         .split(/\r?\n/g);
     // Transform setext headings to ATX headings
