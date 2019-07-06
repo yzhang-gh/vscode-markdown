@@ -2,7 +2,7 @@ import * as path from 'path'
 import * as assert from 'assert';
 import { commands, window, workspace, Position, Range, Selection } from 'vscode';
 
-export let testMdFile = path.join(__dirname, '..', '..', 'test', 'test.md');
+export let testMdFile = path.join(__dirname, '..', '..', '..', 'test', 'test.md');
 export let defaultConfigs = {
     "markdown.extension.toc.levels": "1..6",
     "markdown.extension.toc.unorderedList.marker": "-",
