@@ -377,11 +377,11 @@
         "@types/node": "^11.11.3",
         "@types/vscode": "1.36.0",
         "glob": "^7.1.4",
-        "mocha": "^6.1.4",
-        "ts-loader": "^5.3.3",
+        "mocha": "^6.2.0",
+        "ts-loader": "^6.0.4",
         "typescript": "^3.5.2",
         "vscode-test": "^1.0.0",
-        "webpack": "^4.29.6",
-        "webpack-cli": "^3.2.3"
+        "webpack": "^4.36.1",
+        "webpack-cli": "^3.3.6"
     }
 }
