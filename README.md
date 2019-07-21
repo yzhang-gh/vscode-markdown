@@ -128,6 +128,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.syntax.decorations`            | `true`     | Add decorations to strikethrough and code spans                   |
 | `markdown.extension.syntax.plainTheme`             | `false`    | A distraction-free theme                                          |
 | `markdown.extension.toc.githubCompatibility`       | `false`    | GitHub compatibility                                              |
+| `markdown.extension.toc.downcaseLink`              | `true`     | Force the TOC links to be lowercase                               |
 | `markdown.extension.toc.levels`                    | `1..6`     | Control the heading levels to show in the table of contents.      |
 | `markdown.extension.toc.orderedList`               | `false`    | Use ordered list in the table of contents.                        |
 | `markdown.extension.toc.plaintext`                 | `false`    | Just plain text.                                                  |

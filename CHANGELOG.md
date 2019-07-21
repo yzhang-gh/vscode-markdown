@@ -1,3 +1,12 @@
+### 2.4.1 (2019.07.21)
+
+- **New**: Option `toc.downcaseLink` (default: `true`) ([#476](https://github.com/yzhang-gh/vscode-markdown/issues/476)).
+- **Fix**: KaTeX macros ([#473](https://github.com/yzhang-gh/vscode-markdown/pull/473)). Thanks, [Pierre (@PierreMarchand20)](https://github.com/PierreMarchand20).
+- **Fix**: Ignore headings in comments ([#462](https://github.com/yzhang-gh/vscode-markdown/issues/462))
+- **Other**: Improve performance for large documents
+
+---
+
 ### 2.4.0 (2019.06.16)
 
 - **New**: Command `toggleList` (*Note: no default keybinding assigned*) ([#237](https://github.com/yzhang-gh/vscode-markdown/issues/237), [#307](https://github.com/yzhang-gh/vscode-markdown/issues/307))
