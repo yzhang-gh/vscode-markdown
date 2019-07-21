@@ -336,4 +336,29 @@ suite("TOC.", () => {
             ],
             new Selection(8, 25, 8, 25)).then(done, done);
     });
+
+    test("<!-- omit in toc -->", done => {
+        testCommand('markdown.extension.toc.create', {},
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1 <!-- omit in toc -->',
+                '',
+                '# Section 2',
+                '',
+                ''
+            ],
+            new Selection(6, 0, 6, 0),
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1 <!-- omit in toc -->',
+                '',
+                '# Section 2',
+                '',
+                '- [Section 1](#section-1)',
+                '- [Section 2](#section-2)'
+            ],
+            new Selection(7, 25, 7, 25)).then(done, done);
+    });
 });
