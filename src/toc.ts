@@ -209,6 +209,7 @@ export function buildToc(doc: vscode.TextDocument) {
     let toc;
     let lines = doc.getText()
         .replace(/^```[\W\w]+?^```/gm, '')      // Remove code blocks
+        .replace(/<!-- omit in (toc|TOC) -->/g, '&lt; omit in toc &gt;')  // Escape magic comment
         .replace(/<!--[\W\w]+?-->/, '')         // Remove comments
         .replace(/^---[\W\w]+?(\r?\n)---/, '')  // Remove YAML front matter
         .split(/\r?\n/g);
@@ -225,7 +226,7 @@ export function buildToc(doc: vscode.TextDocument) {
     toc = lines.filter(lineText => {
         return lineText.startsWith('#')
             && lineText.includes('# ')
-            && !lineText.toLowerCase().includes('<!-- omit in toc -->')
+            && !lineText.includes('&lt; omit in toc &gt;');
     }).map(lineText => {
         let entry = {};
         let matches = /^(#+) (.*)/.exec(lineText);
