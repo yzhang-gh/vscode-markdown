@@ -1,7 +1,7 @@
 'use strict'
 
-import { ExtensionContext, Range, TextEditor, window, workspace, Position } from "vscode";
-import { isMdEditor, isInFencedCodeBlock } from "./util";
+import { ExtensionContext, Position, Range, TextEditor, window, workspace } from "vscode";
+import { isFileTooLarge, isInFencedCodeBlock, isMdEditor } from "./util";
 
 let decorTypes = {
     "baseColor": window.createTextEditorDecorationType({
@@ -100,6 +100,10 @@ function updateDecorations(editor?: TextEditor) {
     }
 
     const doc = editor.document;
+
+    if (isFileTooLarge(doc)) {
+        return;
+    }
 
     // Clean decorations
     for (const decorTypeName in decorTypes) {

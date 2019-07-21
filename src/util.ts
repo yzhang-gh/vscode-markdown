@@ -1,5 +1,6 @@
 'use strict'
 
+import * as fs from 'fs';
 import { commands, Position, Range, TextDocument, TextEditor, Uri, workspace } from 'vscode';
 import localize from './localize';
 
@@ -21,6 +22,23 @@ export function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean
         return false;
     } else {
         return matches.length % 2 != 0;
+    }
+}
+
+const sizeLimit = 128000; // ~128KB
+let fileSizesCache = {}
+export function isFileTooLarge(document: TextDocument): boolean {
+    const filePath = document.uri.fsPath;
+    if (!filePath || !fs.existsSync(filePath)) {
+        return false;
+    }
+    const version = document.version;
+    if (fileSizesCache.hasOwnProperty(filePath) && fileSizesCache[filePath][0] === version) {
+        return fileSizesCache[filePath][1];
+    } else {
+        const isTooLarge = fs.statSync(filePath)['size'] > sizeLimit;
+        fileSizesCache[filePath] = [version, isTooLarge];
+        return isTooLarge;
     }
 }
 
@@ -112,7 +130,7 @@ export function slugify(heading: string) {
                 .replace(/^\-+/, '') // Remove leading -
                 .replace(/\-+$/, '') // Remove trailing -
         );
-        
+
         if (doDowncase) {
             slug = slug.toLowerCase()
         }
