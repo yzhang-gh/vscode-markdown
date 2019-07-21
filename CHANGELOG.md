@@ -1,15 +1,16 @@
-### 2.4.1 (2019.07.21)
+### 2.4.1/2.4.2 (2019.07.21)
 
 - **New**: Option `toc.downcaseLink` (default: `true`) ([#476](https://github.com/yzhang-gh/vscode-markdown/issues/476)).
 - **Fix**: KaTeX macros ([#473](https://github.com/yzhang-gh/vscode-markdown/pull/473)). Thanks, [Pierre (@PierreMarchand20)](https://github.com/PierreMarchand20).
-- **Fix**: Ignore headings in comments ([#462](https://github.com/yzhang-gh/vscode-markdown/issues/462))
+- **Fix**: Ignore headings in comments ([#462](https://github.com/yzhang-gh/vscode-markdown/issues/462)).
+- **Fix**: Magic comment `<!-- omit in toc -->` was ignored ([#490](https://github.com/yzhang-gh/vscode-markdown/issues/490)).
 - **Other**: Improve performance for large documents
 
 ---
 
 ### 2.4.0 (2019.06.16)
 
-- **New**: Command `toggleList` (*Note: no default keybinding assigned*) ([#237](https://github.com/yzhang-gh/vscode-markdown/issues/237), [#307](https://github.com/yzhang-gh/vscode-markdown/issues/307))
+- **New**: Command `toggleList` (*Note: no default keybinding assigned*) ([#237](https://github.com/yzhang-gh/vscode-markdown/issues/237), [#307](https://github.com/yzhang-gh/vscode-markdown/issues/307)).
 
   ![toggle list](images/gifs/toggle-list.gif)
 
@@ -28,7 +29,7 @@
 - **Other**: Command `toggleMath` now cycles through `|` -> `$|$` -> `$$\n|\n$$` -> `$$ | $$` ([#421](https://github.com/yzhang-gh/vscode-markdown/issues/421#issuecomment-493747064)). Thanks, [Li Yiming (@upupming)](https://github.com/upupming).
 - **Other**: Don't include KaTeX stylesheets in the exported HTML if no math ([#430](https://github.com/yzhang-gh/vscode-markdown/issues/430)).
 - **Other**: Upgrade KaTeX ([#446](https://github.com/yzhang-gh/vscode-markdown/issues/446)).
-- **Other**: Better math completions ([PR#470](https://github.com/yzhang-gh/vscode-markdown/pull/470), [PR#471](https://github.com/yzhang-gh/vscode-markdown/pull/471))
+- **Other**: Better math completions ([PR#470](https://github.com/yzhang-gh/vscode-markdown/pull/470), [PR#471](https://github.com/yzhang-gh/vscode-markdown/pull/471)).
 
 ---
 
