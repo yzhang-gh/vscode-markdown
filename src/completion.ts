@@ -409,6 +409,26 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     return item;
                 })
             );
+        } else if (/\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
+            /* ┌────────────┐
+               │ File paths │
+               └────────────┘ */
+            if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
+
+            matches = lineTextBefore.match(/\[[^\]]*?\]\(([^\)]*?)[\\\/]?[^\\\/\)]*$/);
+            let dir = matches[1].replace(/\\/g, '/');
+
+            return workspace.findFiles((dir.length == 0 ? '' : dir + '/') + '**/*', '**/node_modules/**').then(uris =>
+                uris.map(fileUri => {
+                    let relPath = path.relative(path.join(path.dirname(document.uri.fsPath), dir), fileUri.fsPath);
+                    relPath = relPath.replace(/\\/g, '/');
+                    let item = new CompletionItem(relPath.replace(/ /g, '&#32;'), CompletionItemKind.File);
+
+                    item.documentation = new MarkdownString(`![${relPath}](${fileUri.fsPath.replace(/ /g, '&#32;')}`);
+
+                    return item;
+                })
+            );
         } else if (
             (matches = lineTextBefore.match(/\\+$/)) !== null
             && matches[0].length % 2 !== 0
