@@ -382,14 +382,25 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                └─────────────┘ */
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
-            matches = lineTextBefore.match(/!\[[^\]]*?\]\(([^\)]*?)[\\\/]?[^\\\/\)]*$/);
-            let dir = matches[1].replace(/\\/g, '/');
+            //// The dir already typed inside parentheses, `[alt text](dir_here/...|)`
+            let dir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2).replace(/\\/g, '/');
+            if (dir.includes('/')) {
+                dir = dir.substr(0, dir.lastIndexOf('/') + 1);
+            } else {
+                dir = '';
+            }
 
-            return workspace.findFiles((dir.length == 0 ? '' : dir + '/') + '**/*.{png,jpg,jpeg,svg,gif}', '**/node_modules/**').then(uris =>
+            let basePath = path.join(
+                dir.startsWith('/')
+                    ? workspace.getWorkspaceFolder(document.uri).uri.fsPath
+                    : path.dirname(document.uri.fsPath),
+                dir
+            );
+
+            return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif}', '**/node_modules/**').then(uris =>
                 uris.map(imgUri => {
-                    let relPath = path.relative(path.join(path.dirname(document.uri.fsPath), dir), imgUri.fsPath);
-                    relPath = relPath.replace(/\\/g, '/');
-                    let item = new CompletionItem(relPath.replace(/ /g, '&#32;'), CompletionItemKind.File);
+                    const label = path.relative(basePath, imgUri.fsPath).replace(/\\/g, '/');
+                    let item = new CompletionItem(label.replace(/ /g, '&#32;'), CompletionItemKind.File);
 
                     // Add image preview
                     let dimensions: { width: number; height: number; };
@@ -404,7 +415,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                         dimensions.height = Number(dimensions.height * maxWidth / dimensions.width);
                         dimensions.width = maxWidth;
                     }
-                    item.documentation = new MarkdownString(`![${relPath}](${imgUri.fsPath.replace(/ /g, '&#32;')}|width=${dimensions.width},height=${dimensions.height})`);
+                    item.documentation = new MarkdownString(`![${label}](${imgUri.fsPath.replace(/ /g, '&#32;')}|width=${dimensions.width},height=${dimensions.height})`);
+
+                    item.sortText = label.replace(/\./g, '{');
 
                     return item;
                 })
@@ -519,6 +532,38 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
                 res(headingCompletions);
             });
+        } else if (/\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
+            /* ┌────────────┐
+               │ File paths │
+               └────────────┘ */
+            //// Should be after anchor completions
+            if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
+
+            //// The dir already typed inside parentheses, `[alt text](dir_here/...|)`
+            let dir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2).replace(/\\/g, '/');
+            if (dir.includes('/')) {
+                dir = dir.substr(0, dir.lastIndexOf('/') + 1);
+            } else {
+                dir = '';
+            }
+
+            let basePath = path.join(
+                dir.startsWith('/')
+                    ? workspace.getWorkspaceFolder(document.uri).uri.fsPath
+                    : path.dirname(document.uri.fsPath),
+                dir
+            );
+
+            return workspace.findFiles('**/*', '**/node_modules/**').then(uris =>
+                uris.map(
+                    uri => {
+                        const label = path.relative(basePath, uri.fsPath).replace(/\\/g, '/').replace(/ /g, '&#32;');
+                        let item = new CompletionItem(label, CompletionItemKind.File);
+                        item.sortText = label.replace(/\./g, '{');
+                        return item;
+                    }
+                )
+            );
         } else {
             return [];
         }
