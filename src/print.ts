@@ -172,7 +172,7 @@ async function print(type: string) {
     const html = `<!DOCTYPE html>
     <html>
     <head>
-        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <meta charset="UTF-8">
         <title>${title ? title : ''}</title>
         ${getStyles(doc.uri, hasMath)}
         ${hasMath ? '<script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>' : ''}
