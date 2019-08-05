@@ -159,6 +159,12 @@ Special thanks to all the [contributors](https://github.com/yzhang-gh/vscode-mar
 
 ---
 
+## Related
+
+[More extensions of mine](https://marketplace.visualstudio.com/publishers/yzhang)
+
+---
+
 Thanks [VSCode Power User Course](https://VSCode.pro?utm_source=MarkdownAllInOne) for sharing many VSCode tips with me.
 
 [![VSCode Power User course](https://img.shields.io/badge/Learn%20-VSCode%20Power%20User%20Course%20%E2%86%92-gray.svg?style=flat-square&colorA=444444&colorB=4F44D6)](https://VSCode.pro?utm_source=MarkdownAllInOne)
