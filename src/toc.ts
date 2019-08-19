@@ -208,7 +208,7 @@ function getText(range: vscode.Range): string {
 export function buildToc(doc: vscode.TextDocument) {
     let toc;
     let lines = doc.getText()
-        .replace(/^```[\W\w]+?^```/gm, '')      // Remove code blocks
+        .replace(/^ {,3}```[\W\w]+?^ {,3}```/gm, '')  // Remove code blocks
         .replace(/<!-- omit in (toc|TOC) -->/g, '&lt; omit in toc &gt;')  // Escape magic comment
         .replace(/<!--[\W\w]+?-->/, '')         // Remove comments
         .replace(/^---[\W\w]+?(\r?\n)---/, '')  // Remove YAML front matter
@@ -224,10 +224,12 @@ export function buildToc(doc: vscode.TextDocument) {
         }
     });
     toc = lines.filter(lineText => {
-        return lineText.startsWith('#')
+        return lineText.trim().startsWith('#')
+            && !lineText.startsWith('    ')  //// The opening `#` character may be indented 0-3 spaces
             && lineText.includes('# ')
             && !lineText.includes('&lt; omit in toc &gt;');
     }).map(lineText => {
+        lineText = lineText.replace(/^ +/, '');
         let entry = {};
         let matches = /^(#+) (.*)/.exec(lineText);
         entry['level'] = matches[1].length;
