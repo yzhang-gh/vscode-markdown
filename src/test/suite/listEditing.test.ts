@@ -375,4 +375,48 @@ suite("List editing.", () => {
             new Selection(1, 0, 3, 0)).then(done, done);
     });
 
+    test("List toggle. 1: Check single line", done => {
+        testCommand('markdown.extension.checkTaskList', {}, 
+        [
+            '- [ ] test'
+        ],
+        new Selection(0, 0, 0, 0),
+        [
+            '- [x] test'
+        ],
+        new Selection(0, 0, 0, 0),
+        ).then(done, done)
+    });
+    test("List toggle. 2: Check multiple lines", done => {
+        testCommand('markdown.extension.checkTaskList', {}, 
+        [
+            '- [ ] test',
+            '- [ ] test',
+            '- [ ] test',
+        ],
+        new Selection(0, 0, 1, 0),
+        [
+            '- [x] test',
+            '- [x] test',
+            '- [ ] test'
+        ],
+        new Selection(0, 0, 1, 0),
+        ).then(done, done)
+    });
+    test("List toggle. 3: Ignore already unchecked lines when unchecking", done => {
+        testCommand('markdown.extension.checkTaskList', {}, 
+        [
+            '- [x] test',
+            '- [ ] test',
+            '- [x] test',
+        ],
+        new Selection(0, 0, 2, 0),
+        [
+            '- [ ] test',
+            '- [ ] test',
+            '- [ ] test'
+        ],
+        new Selection(0, 0, 2, 0),
+        ).then(done, done)
+    });
 });

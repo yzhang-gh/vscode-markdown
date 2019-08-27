@@ -384,18 +384,42 @@ function deleteRange(editor: TextEditor, range: Range): Thenable<boolean> {
 }
 
 function checkTaskList() {
+    // - Look into selections for lines that could be checked/unchecked.
+    // - The first matching line dictates the new state for all further lines.
+    //   - I.e. if the first line is unchecked, only other unchecked lines will
+    //     be considered, and vice versa.
     let editor = window.activeTextEditor;
-    let cursorPos = editor.selection.active;
-    let line = editor.document.lineAt(cursorPos.line).text;
+    const uncheckedRegex = /^(\s*([-+*]|[0-9]+[.)]) +\[) \]/
+    const checkedRegex = /^(\s*([-+*]|[0-9]+[.)]) +\[)x\]/
+    var toBeToggled : Position[] = [] // all spots that have an "[x]" resp. "[ ]" which should be toggled
+    var newState: boolean | undefined = undefined // true = "x", false = " ", undefined = no matching lines
 
-    let matches;
-    if (matches = /^(\s*([-+*]|[0-9]+[.)]) +\[) \]/.exec(line)) {
+    // go through all touched lines of all selections.
+    for (const selection of editor.selections) {
+        for (let i = selection.start.line; i <= selection.end.line; i++) {
+            let line = editor.document.lineAt(i);
+            let lineStart = line.range.start;
+
+            let matches: RegExpExecArray;
+            if ((matches = uncheckedRegex.exec(line.text))
+                && newState !== false) {
+                toBeToggled.push(lineStart.with({ character: matches[1].length }));
+                newState = true;
+            } else if ((matches = checkedRegex.exec(line.text))
+                && newState !== true) {
+                toBeToggled.push(lineStart.with({ character: matches[1].length }));
+                newState = false;
+            }
+        }
+    }
+
+    if (newState !== undefined) {
+        const newChar = newState ? 'x' : ' ';
         return editor.edit(editBuilder => {
-            editBuilder.replace(new Range(cursorPos.with({ character: matches[1].length }), cursorPos.with({ character: matches[1].length + 1 })), 'x');
-        });
-    } else if (matches = /^(\s*([-+*]|[0-9]+[.)]) +\[)x\]/.exec(line)) {
-        return editor.edit(editBuilder => {
-            editBuilder.replace(new Range(cursorPos.with({ character: matches[1].length }), cursorPos.with({ character: matches[1].length + 1 })), ' ');
+            for (const pos of toBeToggled) {
+                var range = new Range(pos, pos.with({character: pos.character + 1}));
+                editBuilder.replace(range, newChar);
+            }
         });
     }
 }
