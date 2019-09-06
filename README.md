@@ -124,6 +124,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.print.absoluteImgPath`         | `true`     | Convert image path to absolute path                               |
 | `markdown.extension.print.imgToBase64`             | `false`    | Convert images to base64 when printing to HTML                    |
 | `markdown.extension.print.onFileSave`              | `false`    | Print to HTML on file save                                        |
+| `markdown.extension.print.validateUrls`            | `true`     | Enable/disable URL validation when printing                       |
 | `markdown.extension.showExplorer`                  | `true`     | Show outline view in explorer panel                               |
 | `markdown.extension.syntax.decorations`            | `true`     | Add decorations to strikethrough and code spans                   |
 | `markdown.extension.syntax.plainTheme`             | `false`    | A distraction-free theme                                          |

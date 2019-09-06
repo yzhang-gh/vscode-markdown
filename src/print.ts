@@ -43,6 +43,10 @@ async function initMdIt() {
         }
     }).use(mdtl).use(mdkt, katexOptions);
 
+    if (!workspace.getConfiguration('markdown.extension.print').get<boolean>('validateUrls', true)) {
+        md.validateLink = () => true;
+    }
+
     addNamedHeaders(md);
 }
 

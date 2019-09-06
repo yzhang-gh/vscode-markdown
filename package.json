@@ -3,7 +3,7 @@
     "displayName": "%ext.displayName%",
     "description": "%ext.description%",
     "icon": "images/Markdown-mark.png",
-    "version": "2.4.2",
+    "version": "2.5.2",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.36.0"
@@ -309,6 +309,12 @@
                     "type": "boolean",
                     "default": false,
                     "description": "%config.print.onFileSave.description%",
+                    "scope": "resource"
+                },
+                "markdown.extension.print.validateUrls": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%config.print.validateUrls.description%",
                     "scope": "resource"
                 },
                 "markdown.extension.syntax.decorations": {
