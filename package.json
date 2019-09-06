@@ -3,7 +3,7 @@
     "displayName": "%ext.displayName%",
     "description": "%ext.description%",
     "icon": "images/Markdown-mark.png",
-    "version": "2.5.2",
+    "version": "2.4.2",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.36.0"
