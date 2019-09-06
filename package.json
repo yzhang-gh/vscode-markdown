@@ -311,6 +311,12 @@
                     "description": "%config.print.onFileSave.description%",
                     "scope": "resource"
                 },
+                "markdown.extension.print.validateUrls": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%config.print.validateUrls.description%",
+                    "scope": "resource"
+                },
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
                     "default": true,
