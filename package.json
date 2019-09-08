@@ -24,7 +24,15 @@
     "license": "MIT",
     "activationEvents": [
         "onLanguage:markdown",
-        "workspaceContains:README.md"
+        "onCommand:markdown.extension.toc.create",
+        "onCommand:markdown.extension.toc.update",
+        "onCommand:markdown.extension.printToHtml",
+        "onCommand:markdown.extension.editing.toggleCodeSpan",
+        "onCommand:markdown.extension.editing.toggleMath",
+        "onCommand:markdown.extension.editing.toggleMathReverse",
+        "onCommand:markdown.extension.editing.toggleList",
+        "onCommand:markdown.extension.togglePreview",
+        "onCommand:markdown.extension.togglePreviewToSide"
     ],
     "main": "./dist/extension",
     "contributes": {
