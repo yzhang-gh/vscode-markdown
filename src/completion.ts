@@ -2,6 +2,7 @@
 
 import * as sizeOf from 'image-size';
 import * as path from 'path';
+import * as fs from 'fs';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
 import { mdDocSelector, slugify } from './util';
 import { buildToc } from './toc';
@@ -382,20 +383,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                └─────────────┘ */
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
-            //// The dir already typed inside parentheses, `[alt text](dir_here/...|)`
-            let dir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2).replace(/\\/g, '/');
-            if (dir.includes('/')) {
-                dir = dir.substr(0, dir.lastIndexOf('/') + 1);
-            } else {
-                dir = '';
-            }
-
-            let basePath = path.join(
-                dir.startsWith('/')
-                    ? workspace.getWorkspaceFolder(document.uri).uri.fsPath
-                    : path.dirname(document.uri.fsPath),
-                dir
-            );
+            const basePath = getBasepath(document, lineTextBefore);
 
             return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif}', '**/node_modules/**').then(uris =>
                 uris.map(imgUri => {
@@ -539,20 +527,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             //// Should be after anchor completions
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
-            //// The dir already typed inside parentheses, `[alt text](dir_here/...|)`
-            let dir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2).replace(/\\/g, '/');
-            if (dir.includes('/')) {
-                dir = dir.substr(0, dir.lastIndexOf('/') + 1);
-            } else {
-                dir = '';
-            }
-
-            let basePath = path.join(
-                dir.startsWith('/')
-                    ? workspace.getWorkspaceFolder(document.uri).uri.fsPath
-                    : path.dirname(document.uri.fsPath),
-                dir
-            );
+            const basePath = getBasepath(document, lineTextBefore);
 
             return workspace.findFiles('**/*', '**/node_modules/**').then(uris =>
                 uris.map(
@@ -568,4 +543,29 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             return [];
         }
     }
+}
+
+function getBasepath(doc: TextDocument, lineTextBefore: string): string {
+    //// The dir already typed inside parentheses, `[alt text](dir_here/...|)`
+    let dir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2).replace(/\\/g, '/');
+    if (dir.includes('/')) {
+        dir = dir.substr(0, dir.lastIndexOf('/') + 1);
+    } else {
+        dir = '';
+    }
+
+    let root = workspace.getWorkspaceFolder(doc.uri).uri.fsPath;
+    const rootFolder = workspace.getConfiguration('markdown.extension.completion', doc.uri).get<string>('root', '');
+    if (rootFolder.length > 0 && fs.existsSync(path.join(root, rootFolder))) {
+        root = path.join(root, rootFolder);
+    }
+
+    const basePath = path.join(
+        dir.startsWith('/')
+            ? root
+            : path.dirname(doc.uri.fsPath),
+        dir
+    );
+
+    return basePath;
 }

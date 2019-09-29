@@ -331,6 +331,11 @@
                     "type": "object",
                     "default": {},
                     "description": "%config.katex.macros.description%"
+                },
+                "markdown.extension.completion.root": {
+                    "type": "string",
+                    "default": "",
+                    "description": "%config.completion.root%"
                 }
             }
         },
