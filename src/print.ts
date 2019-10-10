@@ -181,7 +181,7 @@ async function print(type: string) {
         ${getStyles(doc.uri, hasMath)}
         ${hasMath ? '<script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>' : ''}
     </head>
-    <body>
+    <body class="vscode-light">
         ${body}
     </body>
     </html>`;
