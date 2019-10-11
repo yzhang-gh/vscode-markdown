@@ -137,6 +137,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.toc.unorderedList.marker`      | `-`        | Use `-`, `*` or `+` in the table of contents (for unordered list) |
 | `markdown.extension.toc.updateOnSave`              | `true`     | Automatically update the table of contents on save.               |
 | `markdown.extension.katex.macros`                  | `{}`       | KaTeX macros e.g. `{ "\\name": "expansion", ... }`                |
+| `markdown.extension.completion.root`               |            | Root folder when providing file path completions                  |
 
 </details>
 

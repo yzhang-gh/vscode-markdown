@@ -1,9 +1,35 @@
+### 2.5.0 (2019.10.11)
+
+- **New**: File path completions ([#497](https://github.com/yzhang-gh/vscode-markdown/pull/497)). Thanks, [@linsui](https://github.com/linsui).
+- **New**: Toggle multiple checkboxes ([#513](https://github.com/yzhang-gh/vscode-markdown/pull/513)). Thanks, [@GeorchW](https://github.com/GeorchW).
+- **New**: Option `print.validateUrls` ([#517](https://github.com/yzhang-gh/vscode-markdown/pull/517)). Thanks, [Olmo Maldonado (@ibolmo)](https://github.com/ibolmo).
+- **New**: Add KaTeX mhchem extension ([#521](https://github.com/yzhang-gh/vscode-markdown/pull/521)). Thanks, [Balthild Ires (@balthild)](https://github.com/balthild).
+- **New**: Option `completion.root` ([#526](https://github.com/yzhang-gh/vscode-markdown/issues/526)).
+
+<!--  -->
+
+- **Fix**: Cannot recognize indented headings ([#508](https://github.com/yzhang-gh/vscode-markdown/issues/508)).
+
+<!--  -->
+
+- **Other**: New logo with white background ([#498](https://github.com/yzhang-gh/vscode-markdown/issues/498)).
+- **Other**: Remove obsolete HTML attributes ([#499](https://github.com/yzhang-gh/vscode-markdown/issues/499)).
+- **Other**: Use light theme in exported HTML ([#529](https://github.com/yzhang-gh/vscode-markdown/issues/529)).
+
+---
+
 ### 2.4.1/2.4.2 (2019.07.21)
 
 - **New**: Option `toc.downcaseLink` (default: `true`) ([#476](https://github.com/yzhang-gh/vscode-markdown/issues/476)).
+
+<!--  -->
+
 - **Fix**: KaTeX macros ([#473](https://github.com/yzhang-gh/vscode-markdown/pull/473)). Thanks, [Pierre (@PierreMarchand20)](https://github.com/PierreMarchand20).
 - **Fix**: Ignore headings in comments ([#462](https://github.com/yzhang-gh/vscode-markdown/issues/462)).
 - **Fix**: Magic comment `<!-- omit in toc -->` was ignored ([#490](https://github.com/yzhang-gh/vscode-markdown/issues/490)).
+
+<!--  -->
+
 - **Other**: Improve performance for large documents
 
 ---
