@@ -1,4 +1,4 @@
-### 2.5.0 (2019.10.11)
+### 2.5.0/2.5.1 (2019.10.12)
 
 - **New**: File path completions ([#497](https://github.com/yzhang-gh/vscode-markdown/pull/497)). Thanks, [@linsui](https://github.com/linsui).
 - **New**: Toggle multiple checkboxes ([#513](https://github.com/yzhang-gh/vscode-markdown/pull/513)). Thanks, [@GeorchW](https://github.com/GeorchW).
@@ -9,6 +9,7 @@
 <!--  -->
 
 - **Fix**: Cannot recognize indented headings ([#508](https://github.com/yzhang-gh/vscode-markdown/issues/508)).
+- **Fix**: TOC and code blocks ([#532](https://github.com/yzhang-gh/vscode-markdown/issues/532)).
 
 <!--  -->
 
