@@ -361,4 +361,33 @@ suite("TOC.", () => {
             ],
             new Selection(7, 25, 7, 25)).then(done, done);
     });
+
+    test("Ignore code blocks", done => {
+        testCommand('markdown.extension.toc.create', {},
+            [
+                '# Section 1',
+                '',
+                '```',
+                '## Section 1.1',
+                '```',
+                '',
+                '# Section 2',
+                '',
+                ''
+            ],
+            new Selection(8, 0, 8, 0),
+            [
+                '# Section 1',
+                '',
+                '```',
+                '## Section 1.1',
+                '```',
+                '',
+                '# Section 2',
+                '',
+                '- [Section 1](#section-1)',
+                '- [Section 2](#section-2)'
+            ],
+            new Selection(9, 25, 9, 25)).then(done, done);
+    });
 });
