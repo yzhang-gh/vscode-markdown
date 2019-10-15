@@ -314,7 +314,13 @@
                 "markdown.extension.print.validateUrls": {
                     "type": "boolean",
                     "default": true,
-                    "description": "%config.print.validateUrls.description%",
+                    "description": "%config.print.validateUrls.description%"
+                },
+                "markdown.extension.print.theme": {
+                    "type":"string",
+                    "default":"light",
+                    "enum": ["light", "dark"],
+                    "description": "%config.print.theme%",
                     "scope": "resource"
                 },
                 "markdown.extension.syntax.decorations": {
