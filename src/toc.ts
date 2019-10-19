@@ -213,14 +213,21 @@ export function buildToc(doc: vscode.TextDocument) {
         .replace(/<!--[\W\w]+?-->/, '')                 //// Remove comments
         .replace(/^---[\W\w]+?(\r?\n)---/, '')          //// Remove YAML front matter
         .split(/\r?\n/g);
-    //// Transform setext headings to ATX headings
     lines.forEach((lineText, i, arr) => {
+        //// Transform setext headings to ATX headings
         if (
             i < arr.length - 1
             && lineText.match(/^ {0,3}\S.*$/)
             && arr[i + 1].match(/^ {0,3}(=+|-{2,}) *$/)
         ) {
             arr[i] = (arr[i + 1].includes('=') ? '# ' : '## ') + lineText;
+        }
+        //// Ignore headings following `<!-- omit in toc -->`
+        if (
+            i > 0
+            && arr[i - 1] === '&lt; omit in toc &gt;'
+        ) {
+            arr[i] = '';
         }
     });
     toc = lines.filter(lineText => {

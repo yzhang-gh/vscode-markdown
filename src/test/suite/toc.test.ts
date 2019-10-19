@@ -337,7 +337,7 @@ suite("TOC.", () => {
             new Selection(8, 25, 8, 25)).then(done, done);
     });
 
-    test("<!-- omit in toc -->", done => {
+    test("Inline <!-- omit in toc -->", done => {
         testCommand('markdown.extension.toc.create', {},
             [
                 '# Section 1',
@@ -360,6 +360,33 @@ suite("TOC.", () => {
                 '- [Section 2](#section-2)'
             ],
             new Selection(7, 25, 7, 25)).then(done, done);
+    });
+
+    test("<!-- omit in toc --> in previous line", done => {
+        testCommand('markdown.extension.toc.create', {},
+            [
+                '# Section 1',
+                '',
+                '<!-- omit in toc -->',
+                '## Section 1.1',
+                '',
+                '# Section 2',
+                '',
+                ''
+            ],
+            new Selection(7, 0, 7, 0),
+            [
+                '# Section 1',
+                '',
+                '<!-- omit in toc -->',
+                '## Section 1.1',
+                '',
+                '# Section 2',
+                '',
+                '- [Section 1](#section-1)',
+                '- [Section 2](#section-2)'
+            ],
+            new Selection(8, 25, 8, 25)).then(done, done);
     });
 
     test("Ignore code blocks", done => {
