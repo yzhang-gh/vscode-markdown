@@ -417,4 +417,26 @@ suite("TOC.", () => {
             ],
             new Selection(9, 25, 9, 25)).then(done, done);
     });
+
+    test("Strip markdown styles in headings", done => {
+        testCommand('markdown.extension.toc.create', {},
+            [
+                '# [text](link)',
+                '# **bold**',
+                '# *it1* _it2_',
+                '',
+                ''
+            ],
+            new Selection(4, 0, 4, 0),
+            [
+                '# [text](link)',
+                '# **bold**',
+                '# *it1* _it2_',
+                '',
+                '- [text](#text)',
+                '- [bold](#bold)',
+                '- [it1 it2](#it1-it2)'
+            ],
+            new Selection(6, 21, 6, 21)).then(done, done);
+    });
 });

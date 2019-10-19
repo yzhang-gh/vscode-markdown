@@ -78,15 +78,19 @@ export function extractText(text: string) {
     return textInHtml(textInMd(text));
 }
 
-// [text](link) -> text. In case there are links in heading (#83)
-// 💩
+//// [text](link) -> text. In case there are links in heading (#83)
+//// **bold** -> bold
+//// *italic*/_italic_ -> italic
+//// 💩
 function textInMd(text: string) {
-    return text.replace(/\[([^\]]+?)\]\([^\)]+?\)/g, (_, g1) => g1);
+    return text.replace(/\[([^\]]+?)\]\([^\)]+?\)/g, (_, g1) => g1)
+        .replace(/\*\*(.*)\*\*/g, (_, g1) => g1)
+        .replace(/([\*_])(.*)\1/g, (_, _1, g2) => g2);
 }
 
-// Convert HTML entities (#175)
-// Strip HTML tags (#179)
-// 💩
+//// Convert HTML entities (#175)
+//// Strip HTML tags (#179)
+//// 💩
 function textInHtml(text: string) {
     return text.replace(/(&emsp;)/g, _ => ' ')
         .replace(/(<!--[^>]*?-->)/g, '') // remove <!-- HTML comments -->
