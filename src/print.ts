@@ -140,7 +140,7 @@ async function print(type: string) {
 
     if (configToBase64) {
         body = body.replace(imgTagRegex, function (_, p1, p2, p3) {
-            if (p2.startsWith('http')) {
+            if (p2.startsWith('http') || p2.startsWith('data:')) {
                 return _;
             }
 
@@ -161,7 +161,7 @@ async function print(type: string) {
         });
     } else if (configAbsPath) {
         body = body.replace(imgTagRegex, function (_, p1, p2, p3) {
-            if (p2.startsWith('http')) {
+            if (p2.startsWith('http') || p2.startsWith('data:')) {
                 return _;
             }
 
