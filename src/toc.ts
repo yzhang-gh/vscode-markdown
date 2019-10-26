@@ -112,15 +112,21 @@ async function generateTocText(doc: vscode.TextDocument): Promise<string> {
  */
 async function detectTocRanges(doc: vscode.TextDocument): Promise<[Array<vscode.Range>, string]> {
     let tocRanges = [];
-    let newTocText = await generateTocText(doc);
-    let fullText = doc.getText();
+    const newTocText = await generateTocText(doc);
+    const fullText = doc.getText();
     let listRegex = /(^|\r?\n)((?:[-+*]|[0-9]+[.)]) .*(?:\r?\n[ \t]*(?:[-+*]|[0-9]+[.)]) .*)*)/g;
     let match;
     while ((match = listRegex.exec(fullText)) !== null) {
-        let listText = match[2];
+        //// #525 <!-- no toc --> comment
+        const listStartPos = doc.positionAt(match.index + match[1].length);
+        if (listStartPos.line > 0 && doc.lineAt(listStartPos.line - 1).text.includes("no toc")) {
+            continue;
+        }
+
+        const listText = match[2];
 
         // Prevent fake TOC like [#304](https://github.com/yzhang-gh/vscode-markdown/issues/304)
-        let firstLine: string = listText.split(/\r?\n/)[0];
+        const firstLine: string = listText.split(/\r?\n/)[0];
         if (vscode.workspace.getConfiguration('markdown.extension.toc').get<boolean>('plaintext')) {
             // A lazy way to check whether it is a link
             if (firstLine.includes('](')) {
@@ -134,7 +140,7 @@ async function detectTocRanges(doc: vscode.TextDocument): Promise<[Array<vscode.
 
         if (radioOfCommonPrefix(newTocText, listText) + stringSimilarity.compareTwoStrings(newTocText, listText) > 0.5) {
             tocRanges.push(
-                new vscode.Range(doc.positionAt(match.index + match[1].length), doc.positionAt(listRegex.lastIndex))
+                new vscode.Range(listStartPos, doc.positionAt(listRegex.lastIndex))
             );
         }
     }
