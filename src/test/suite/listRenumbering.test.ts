@@ -29,7 +29,6 @@ suite("Ordered list renumbering.", () => {
                 '1. one',
                 '2. two'
             ],
-
             new Selection(0, 6, 0, 6),
             [
                 '1. one',
