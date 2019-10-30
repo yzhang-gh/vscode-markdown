@@ -192,45 +192,24 @@
             "type": "object",
             "title": "%config.title%",
             "properties": {
-                "markdown.extension.toc.levels": {
+                "markdown.extension.completion.root": {
                     "type": "string",
-                    "default": "1..6",
-                    "description": "%config.toc.levels.description%"
+                    "default": "",
+                    "description": "%config.completion.root%"
                 },
-                "markdown.extension.toc.orderedList": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "%config.toc.orderedList.description%"
-                },
-                "markdown.extension.toc.unorderedList.marker": {
+                "markdown.extension.italic.indicator": {
                     "type": "string",
-                    "default": "-",
-                    "description": "%config.toc.unorderedList.marker.description%",
+                    "default": "*",
+                    "description": "%config.italic.indicator.description%",
                     "enum": [
-                        "-",
                         "*",
-                        "+"
+                        "_"
                     ]
                 },
-                "markdown.extension.toc.plaintext": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "%config.toc.plaintext.description%"
-                },
-                "markdown.extension.toc.updateOnSave": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "%config.toc.updateOnSave.description%"
-                },
-                "markdown.extension.toc.githubCompatibility": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "%config.toc.githubCompatibility.description%"
-                },
-                "markdown.extension.toc.downcaseLink": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "%config.toc.downcaseLink.description%"
+                "markdown.extension.katex.macros": {
+                    "type": "object",
+                    "default": {},
+                    "description": "%config.katex.macros.description%"
                 },
                 "markdown.extension.list.indentationSize": {
                     "type": "string",
@@ -246,10 +225,10 @@
                     "description": "%config.list.indentationSize.description%",
                     "scope": "resource"
                 },
-                "markdown.extension.preview.autoShowPreviewToSide": {
+                "markdown.extension.orderedList.autoRenumber": {
                     "type": "boolean",
-                    "default": false,
-                    "description": "%config.preview.autoShowPreviewToSide.description%"
+                    "default": true,
+                    "description": "%config.orderedList.autoRenumber.description%"
                 },
                 "markdown.extension.orderedList.marker": {
                     "type": "string",
@@ -264,34 +243,10 @@
                         "%config.orderedList.marker.enumDescriptions.ordered%"
                     ]
                 },
-                "markdown.extension.orderedList.autoRenumber": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "%config.orderedList.autoRenumber.description%"
-                },
-                "markdown.extension.italic.indicator": {
-                    "type": "string",
-                    "default": "*",
-                    "description": "%config.italic.indicator.description%",
-                    "enum": [
-                        "*",
-                        "_"
-                    ]
-                },
-                "markdown.extension.showExplorer": {
+                "markdown.extension.preview.autoShowPreviewToSide": {
                     "type": "boolean",
                     "default": false,
-                    "description": "%config.showExplorer.description%"
-                },
-                "markdown.extension.tableFormatter.enabled": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "%config.tableFormatter.enabled.description%"
-                },
-                "markdown.extension.tableFormatter.normalizeIndentation": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "%config.tableFormatter.normalizeIndentation.description%"
+                    "description": "%config.preview.autoShowPreviewToSide.description%"
                 },
                 "markdown.extension.print.absoluteImgPath": {
                     "type": "boolean",
@@ -317,9 +272,12 @@
                     "description": "%config.print.validateUrls.description%"
                 },
                 "markdown.extension.print.theme": {
-                    "type":"string",
-                    "default":"light",
-                    "enum": ["light", "dark"],
+                    "type": "string",
+                    "default": "light",
+                    "enum": [
+                        "light",
+                        "dark"
+                    ],
                     "description": "%config.print.theme%",
                     "scope": "resource"
                 },
@@ -333,15 +291,55 @@
                     "default": false,
                     "description": "%config.syntax.plainTheme.description%"
                 },
-                "markdown.extension.katex.macros": {
-                    "type": "object",
-                    "default": {},
-                    "description": "%config.katex.macros.description%"
+                "markdown.extension.tableFormatter.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%config.tableFormatter.enabled.description%"
                 },
-                "markdown.extension.completion.root": {
+                "markdown.extension.tableFormatter.normalizeIndentation": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%config.tableFormatter.normalizeIndentation.description%"
+                },
+                "markdown.extension.toc.downcaseLink": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%config.toc.downcaseLink.description%"
+                },
+                "markdown.extension.toc.githubCompatibility": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%config.toc.githubCompatibility.description%"
+                },
+                "markdown.extension.toc.levels": {
                     "type": "string",
-                    "default": "",
-                    "description": "%config.completion.root%"
+                    "default": "1..6",
+                    "description": "%config.toc.levels.description%"
+                },
+                "markdown.extension.toc.orderedList": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%config.toc.orderedList.description%"
+                },
+                "markdown.extension.toc.plaintext": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%config.toc.plaintext.description%"
+                },
+                "markdown.extension.toc.unorderedList.marker": {
+                    "type": "string",
+                    "default": "-",
+                    "description": "%config.toc.unorderedList.marker.description%",
+                    "enum": [
+                        "-",
+                        "*",
+                        "+"
+                    ]
+                },
+                "markdown.extension.toc.updateOnSave": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%config.toc.updateOnSave.description%"
                 }
             }
         },
