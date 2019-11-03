@@ -87,6 +87,28 @@ suite("List editing.", () => {
         testCommand('markdown.extension.onBackspaceKey', {}, ['- [ ]  item1'], new Selection(0, 7, 0, 7), ['- [ ] item1'], new Selection(0, 6, 0, 6)).then(done, done);
     });
 
+    test("Backspace key. github#411", done => {
+        testCommand('markdown.extension.onBackspaceKey', {},
+        [
+            '1. one',
+            '2. ',
+            '',
+            '# Heading',
+            '',
+            '3. three'
+        ],
+        new Selection(1, 3, 1, 3),
+        [
+            '1. one',
+            '   ',
+            '',
+            '# Heading',
+            '',
+            '3. three'
+        ],
+        new Selection(1, 3, 1, 3)).then(done, done);
+    });
+
     test("Tab key. 1: '- |'", done => {
         testCommand('markdown.extension.onTabKey', {}, ['- item1'], new Selection(0, 2, 0, 2), ['    - item1'], new Selection(0, 6, 0, 6)).then(done, done);
     });
