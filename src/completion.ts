@@ -384,13 +384,14 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
             const basePath = getBasepath(document, lineTextBefore);
+            const isRootedPath = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2).startsWith('/');
 
-            return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif}', '**/node_modules/**').then(uris =>
-                uris.map(imgUri => {
+            return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif}', '**/node_modules/**').then(uris => {
+                let items = uris.map(imgUri => {
                     const label = path.relative(basePath, imgUri.fsPath).replace(/\\/g, '/');
                     let item = new CompletionItem(label.replace(/ /g, '&#32;'), CompletionItemKind.File);
 
-                    // Add image preview
+                    //// Add image preview
                     let dimensions: { width: number; height: number; };
                     try {
                         dimensions = sizeOf(imgUri.fsPath);
@@ -408,8 +409,14 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     item.sortText = label.replace(/\./g, '{');
 
                     return item;
-                })
-            );
+                });
+
+                if (isRootedPath) {
+                    return items.filter(item => !item.label.startsWith('..'));
+                } else {
+                    return items;
+                }
+            });
         } else if (
             (matches = lineTextBefore.match(/\\+$/)) !== null
             && matches[0].length % 2 !== 0
@@ -528,17 +535,22 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
             const basePath = getBasepath(document, lineTextBefore);
+            const isRootedPath = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2).startsWith('/');
 
-            return workspace.findFiles('**/*', '**/node_modules/**').then(uris =>
-                uris.map(
-                    uri => {
-                        const label = path.relative(basePath, uri.fsPath).replace(/\\/g, '/').replace(/ /g, '&#32;');
-                        let item = new CompletionItem(label, CompletionItemKind.File);
-                        item.sortText = label.replace(/\./g, '{');
-                        return item;
-                    }
-                )
-            );
+            return workspace.findFiles('**/*', '**/node_modules/**').then(uris => {
+                let items = uris.map(uri => {
+                    const label = path.relative(basePath, uri.fsPath).replace(/\\/g, '/').replace(/ /g, '&#32;');
+                    let item = new CompletionItem(label, CompletionItemKind.File);
+                    item.sortText = label.replace(/\./g, '{');
+                    return item;
+                });
+
+                if (isRootedPath) {
+                    return items.filter(item => !item.label.startsWith('..'));
+                } else {
+                    return items;
+                }
+            });
         } else {
             return [];
         }

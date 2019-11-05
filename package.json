@@ -195,7 +195,8 @@
                 "markdown.extension.completion.root": {
                     "type": "string",
                     "default": "",
-                    "description": "%config.completion.root%"
+                    "description": "%config.completion.root%",
+                    "scope": "resource"
                 },
                 "markdown.extension.italic.indicator": {
                     "type": "string",
