@@ -275,6 +275,12 @@ function findNextMarkerLineNumber(line?: number): number {
     }
     while (line < editor.document.lineCount) {
         const lineText = editor.document.lineAt(line).text;
+
+        if (lineText.startsWith('#')) {
+            // Don't go searching past any headings
+            return -1;
+        }
+
         if (/^\s*[0-9]+[.)] +/.exec(lineText) !== null) {
             return line;
         }

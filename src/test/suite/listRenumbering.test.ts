@@ -124,6 +124,28 @@ suite("Ordered list renumbering.", () => {
             new Selection(1, 0, 1, 0)).then(done, done);
     });
 
+    test("Backspace key. github#411", done => {
+        testCommand('markdown.extension.onBackspaceKey', {},
+        [
+            '1. one',
+            '2. ',
+            '',
+            '# Heading',
+            '',
+            '3. three'
+        ],
+        new Selection(1, 3, 1, 3),
+        [
+            '1. one',
+            '   ',
+            '',
+            '# Heading',
+            '',
+            '3. three'
+        ],
+        new Selection(1, 3, 1, 3)).then(done, done);
+    });
+
     test("Tab key. Fix ordered marker. 1", done => {
         testCommand('markdown.extension.onTabKey', {},
             [
