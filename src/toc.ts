@@ -125,15 +125,16 @@ async function detectTocRanges(doc: vscode.TextDocument): Promise<[Array<vscode.
 
         const listText = match[2];
 
-        // Prevent fake TOC like [#304](https://github.com/yzhang-gh/vscode-markdown/issues/304)
+        //// Sanity checks
         const firstLine: string = listText.split(/\r?\n/)[0];
         if (vscode.workspace.getConfiguration('markdown.extension.toc').get<boolean>('plaintext')) {
-            // A lazy way to check whether it is a link
+            //// A lazy way to check whether it is a link
             if (firstLine.includes('](')) {
                 continue;
             }
         } else {
-            if (!firstLine.includes('](#')) {
+            //// GitHub issue #304 & #549
+            if (!(firstLine.includes('](#') && firstLine.trim().split(' ')[1].startsWith('['))) {
                 continue;
             }
         }
