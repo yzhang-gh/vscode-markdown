@@ -14,6 +14,7 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.editing.toggleHeadingUp', toggleHeadingUp),
         commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown),
         commands.registerCommand('markdown.extension.editing.toggleList', toggleList),
+        commands.registerCommand('markdown.extension.editing.toggleCodeBlock', toggleCodeBlock),
         commands.registerCommand('markdown.extension.editing.paste', paste)
     );
 }
@@ -37,7 +38,9 @@ function toggleItalic() {
 function toggleCodeSpan() {
     return styleByWrapping('`');
 }
-
+function toggleCodeBlock() {
+    return styleByWrapping('```\r\n', '\r\n```');
+}
 function toggleStrikethrough() {
     return styleByWrapping('~~');
 }
@@ -339,7 +342,7 @@ function styleByWrapping(startPattern, endPattern?) {
             }
         } else {
             // Text selected
-            wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, selection, true, startPattern);
+            wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, selection, true, startPattern, endPattern);
         }
     });
 
@@ -369,7 +372,7 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
 
     let newCursorPos = cursor.with({ character: cursor.character + shift });
     let newSelection: Selection;
-    if (isWrapped(text, startPtn)) {
+    if (isWrapped(text, startPtn, endPtn)) {
         // remove start/end patterns from range
         wsEdit.replace(editor.document.uri, range, text.substr(startPtn.length, text.length - ptnLength));
 
@@ -388,10 +391,18 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
             }
             newSelection = new Selection(newCursorPos, newCursorPos);
         } else {
-            newSelection = new Selection(
-                prevSelection.start.with({ character: prevSelection.start.character + shift }),
-                prevSelection.end.with({ character: prevSelection.end.character + shift - ptnLength })
-            );
+            if(startPtn == '```\r\n'){
+                newSelection = new Selection(
+                    new Position(prevSelection.start.line, 0),
+                    new Position(prevSelection.end.line-2, editor.document.lineAt(prevSelection.end.line-1).range.end.character)
+                );
+            }
+            else {
+                newSelection = new Selection(
+                    prevSelection.start.with({ character: prevSelection.start.character + shift }),
+                    prevSelection.end.with({ character: prevSelection.end.character + shift - ptnLength })
+                );
+            }
         }
     } else {
         // add start/end patterns around range
@@ -412,10 +423,19 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
             }
             newSelection = new Selection(newCursorPos, newCursorPos);
         } else {
-            newSelection = new Selection(
-                prevSelection.start.with({ character: prevSelection.start.character + shift }),
-                prevSelection.end.with({ character: prevSelection.end.character + shift + ptnLength })
-            );
+            if(startPtn == '```\r\n'){
+                newSelection = new Selection(
+                    new Position(prevSelection.start.line, 0),
+                    new Position(prevSelection.end.line+2, 3)
+                );
+            }
+            else
+            {
+                newSelection = new Selection(
+                    prevSelection.start.with({ character: prevSelection.start.character + shift }),
+                    prevSelection.end.with({ character: prevSelection.end.character + shift + ptnLength })
+                );
+            }
         }
     }
 
