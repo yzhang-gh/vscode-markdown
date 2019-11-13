@@ -2,6 +2,7 @@
 
 import { commands, env, ExtensionContext, Position, Range, Selection, TextDocument, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
 import { fixMarker } from './listEditing';
+import * as vscode from 'vscode';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
@@ -39,7 +40,9 @@ function toggleCodeSpan() {
     return styleByWrapping('`');
 }
 function toggleCodeBlock() {
-    return styleByWrapping('```\r\n', '\r\n```');
+    let editor = window.activeTextEditor;
+    return editor.insertSnippet( new vscode.SnippetString('```language$0 \n$TM_SELECTED_TEXT\n```'));
+    
 }
 function toggleStrikethrough() {
     return styleByWrapping('~~');
@@ -391,18 +394,10 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
             }
             newSelection = new Selection(newCursorPos, newCursorPos);
         } else {
-            if(startPtn == '```\r\n'){
-                newSelection = new Selection(
-                    new Position(prevSelection.start.line, 0),
-                    new Position(prevSelection.end.line-2, editor.document.lineAt(prevSelection.end.line-1).range.end.character)
-                );
-            }
-            else {
-                newSelection = new Selection(
-                    prevSelection.start.with({ character: prevSelection.start.character + shift }),
-                    prevSelection.end.with({ character: prevSelection.end.character + shift - ptnLength })
-                );
-            }
+            newSelection = new Selection(
+                prevSelection.start.with({ character: prevSelection.start.character + shift }),
+                prevSelection.end.with({ character: prevSelection.end.character + shift - ptnLength })
+            );
         }
     } else {
         // add start/end patterns around range
@@ -423,19 +418,10 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
             }
             newSelection = new Selection(newCursorPos, newCursorPos);
         } else {
-            if(startPtn == '```\r\n'){
-                newSelection = new Selection(
-                    new Position(prevSelection.start.line, 0),
-                    new Position(prevSelection.end.line+2, 3)
-                );
-            }
-            else
-            {
-                newSelection = new Selection(
-                    prevSelection.start.with({ character: prevSelection.start.character + shift }),
-                    prevSelection.end.with({ character: prevSelection.end.character + shift + ptnLength })
-                );
-            }
+            newSelection = new Selection(
+                prevSelection.start.with({ character: prevSelection.start.character + shift }),
+                prevSelection.end.with({ character: prevSelection.end.character + shift + ptnLength })
+            );             
         }
     }
 
