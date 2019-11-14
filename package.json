@@ -63,6 +63,11 @@
                 "command": "markdown.extension.editing.toggleList",
                 "title": "%command.editing.toggleList.title%",
                 "category": "Markdown All in One"
+            },
+            {
+                "command": "markdown.extension.editing.toggleCodeBlock",
+                "title": "%command.editing.toggleCodeBlock.title%",
+                "category": "Markdown All in One"
             }
         ],
         "keybindings": [
@@ -70,12 +75,6 @@
                 "command": "markdown.extension.editing.toggleBold",
                 "key": "ctrl+b",
                 "mac": "cmd+b",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
-            },
-            {
-                "command": "markdown.extension.editing.toggleCodeBlock",
-                "key": "ctrl+shift+k",
-                "mac": "cmd+shift+k",
                 "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
             },
             {

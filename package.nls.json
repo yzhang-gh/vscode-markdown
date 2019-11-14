@@ -8,6 +8,7 @@
     "command.editing.toggleMath.title": "Toggle math environment",
     "command.editing.toggleMathReverse.title": "Toggle math environment (in reverse order)",
     "command.editing.toggleList.title": "Toggle list",
+    "command.editing.toggleCodeBlock.title": "Toggle code block",
     "config.title": "Markdown All in One",
     "config.toc.levels.description": "Range of levels for table of contents. Use `x..y` for level x to y",
     "config.toc.orderedList.description": "Use ordered list (1. ..., 2. ...)",

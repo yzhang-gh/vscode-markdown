@@ -1,8 +1,7 @@
 'use strict';
 
-import { commands, env, ExtensionContext, Position, Range, Selection, TextDocument, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
+import { commands, env, ExtensionContext, Position, Range, Selection, SnippetString, TextDocument, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
 import { fixMarker } from './listEditing';
-import * as vscode from 'vscode';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
@@ -39,11 +38,12 @@ function toggleItalic() {
 function toggleCodeSpan() {
     return styleByWrapping('`');
 }
+
 function toggleCodeBlock() {
     let editor = window.activeTextEditor;
-    return editor.insertSnippet( new vscode.SnippetString('```language$0 \n$TM_SELECTED_TEXT\n```'));
-    
+    return editor.insertSnippet(new SnippetString('```$0\n$TM_SELECTED_TEXT\n```'));
 }
+
 function toggleStrikethrough() {
     return styleByWrapping('~~');
 }
@@ -421,7 +421,7 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
             newSelection = new Selection(
                 prevSelection.start.with({ character: prevSelection.start.character + shift }),
                 prevSelection.end.with({ character: prevSelection.end.character + shift + ptnLength })
-            );             
+            );
         }
     }
 
