@@ -73,6 +73,12 @@
                 "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
             },
             {
+                "command": "markdown.extension.editing.toggleCodeBlock",
+                "key": "ctrl+shift+k",
+                "mac": "cmd+shift+k",
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+            },
+            {
                 "command": "markdown.extension.editing.toggleItalic",
                 "key": "ctrl+i",
                 "mac": "cmd+i",
@@ -397,7 +403,7 @@
         "ts-loader": "^6.0.4",
         "typescript": "^3.5.2",
         "vscode-test": "^1.0.0",
-        "webpack": "^4.36.1",
+        "webpack": "^4.41.2",
         "webpack-cli": "^3.3.6"
     }
 }

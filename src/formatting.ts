@@ -2,6 +2,7 @@
 
 import { commands, env, ExtensionContext, Position, Range, Selection, TextDocument, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
 import { fixMarker } from './listEditing';
+import * as vscode from 'vscode';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
@@ -14,6 +15,7 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.editing.toggleHeadingUp', toggleHeadingUp),
         commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown),
         commands.registerCommand('markdown.extension.editing.toggleList', toggleList),
+        commands.registerCommand('markdown.extension.editing.toggleCodeBlock', toggleCodeBlock),
         commands.registerCommand('markdown.extension.editing.paste', paste)
     );
 }
@@ -37,7 +39,11 @@ function toggleItalic() {
 function toggleCodeSpan() {
     return styleByWrapping('`');
 }
-
+function toggleCodeBlock() {
+    let editor = window.activeTextEditor;
+    return editor.insertSnippet( new vscode.SnippetString('```language$0 \n$TM_SELECTED_TEXT\n```'));
+    
+}
 function toggleStrikethrough() {
     return styleByWrapping('~~');
 }
@@ -339,7 +345,7 @@ function styleByWrapping(startPattern, endPattern?) {
             }
         } else {
             // Text selected
-            wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, selection, true, startPattern);
+            wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, selection, true, startPattern, endPattern);
         }
     });
 
@@ -369,7 +375,7 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
 
     let newCursorPos = cursor.with({ character: cursor.character + shift });
     let newSelection: Selection;
-    if (isWrapped(text, startPtn)) {
+    if (isWrapped(text, startPtn, endPtn)) {
         // remove start/end patterns from range
         wsEdit.replace(editor.document.uri, range, text.substr(startPtn.length, text.length - ptnLength));
 
@@ -415,7 +421,7 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
             newSelection = new Selection(
                 prevSelection.start.with({ character: prevSelection.start.character + shift }),
                 prevSelection.end.with({ character: prevSelection.end.character + shift + ptnLength })
-            );
+            );             
         }
     }
 
