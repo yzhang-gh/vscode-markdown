@@ -377,14 +377,21 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
         let matches;
         matches = lineTextBefore.match(/\\+$/);
-        if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
+        if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore) || /<img [^>]*src="[^"]$/.test(lineTextBefore)) {
             /* ┌─────────────┐
                │ Image paths │
                └─────────────┘ */
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
-            const basePath = getBasepath(document, lineTextBefore);
-            const isRootedPath = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2).startsWith('/');
+            //// 🤔 better name?
+            let typedDir: string;
+            if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
+                typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2);
+            } else {
+                typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('="') + 2);
+            }
+            const basePath = getBasepath(document, typedDir);
+            const isRootedPath = typedDir.startsWith('/');
 
             return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif}', '**/node_modules/**').then(uris => {
                 let items = uris.map(imgUri => {
@@ -534,8 +541,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             //// Should be after anchor completions
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
-            const basePath = getBasepath(document, lineTextBefore);
-            const isRootedPath = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2).startsWith('/');
+            const typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2);
+            const basePath = getBasepath(document, typedDir);
+            const isRootedPath = typedDir.startsWith('/');
 
             return workspace.findFiles('**/*', '**/node_modules/**').then(uris => {
                 let items = uris.map(uri => {
@@ -557,9 +565,11 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     }
 }
 
-function getBasepath(doc: TextDocument, lineTextBefore: string): string {
-    //// The dir already typed inside parentheses, `[alt text](dir_here/...|)`
-    let dir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2).replace(/\\/g, '/');
+/**
+ * @param doc 
+ * @param dir The dir already typed in the src field, e.g. `[alt text](dir_here|)`
+ */
+function getBasepath(doc: TextDocument, dir: string): string {
     if (dir.includes('/')) {
         dir = dir.substr(0, dir.lastIndexOf('/') + 1);
     } else {
