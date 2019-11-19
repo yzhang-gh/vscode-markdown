@@ -377,7 +377,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
         let matches;
         matches = lineTextBefore.match(/\\+$/);
-        if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore) || /<img [^>]*src="[^"]$/.test(lineTextBefore)) {
+        if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore) || /<img [^>]*src="[^"]*$/.test(lineTextBefore)) {
             /* ┌─────────────┐
                │ Image paths │
                └─────────────┘ */
@@ -386,8 +386,10 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             //// 🤔 better name?
             let typedDir: string;
             if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
+                //// `![](dir_here|)`
                 typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2);
             } else {
+                //// `<img src="dir_here|">`
                 typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('="') + 2);
             }
             const basePath = getBasepath(document, typedDir);
