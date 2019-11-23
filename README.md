@@ -12,7 +12,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 - **Keyboard shortcuts** (toggle bold, italic, code span, strikethrough and heading)
 
-  ![ctrl b (multi-cursor)](images/gifs/multi-ctrl-b-light.gif) (toggle bold)
+  <img src="images/gifs/toggle-bold.gif" alt="toggle bold gif" width="282px">
 
   ![check task list](images/gifs/keybinding-tasklist.gif) (check/uncheck task list)
 
