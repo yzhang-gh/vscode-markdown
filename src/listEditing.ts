@@ -400,7 +400,7 @@ function checkTaskList() {
     let editor = window.activeTextEditor;
     const uncheckedRegex = /^(\s*([-+*]|[0-9]+[.)]) +\[) \]/
     const checkedRegex = /^(\s*([-+*]|[0-9]+[.)]) +\[)x\]/
-    var toBeToggled : Position[] = [] // all spots that have an "[x]" resp. "[ ]" which should be toggled
+    var toBeToggled: Position[] = [] // all spots that have an "[x]" resp. "[ ]" which should be toggled
     var newState: boolean | undefined = undefined // true = "x", false = " ", undefined = no matching lines
 
     // go through all touched lines of all selections.
@@ -426,7 +426,7 @@ function checkTaskList() {
         const newChar = newState ? 'x' : ' ';
         return editor.edit(editBuilder => {
             for (const pos of toBeToggled) {
-                var range = new Range(pos, pos.with({character: pos.character + 1}));
+                var range = new Range(pos, pos.with({ character: pos.character + 1 }));
                 editBuilder.replace(range, newChar);
             }
         });
