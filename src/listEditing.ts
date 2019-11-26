@@ -169,7 +169,10 @@ function asNormal(key: string, modifiers?: string) {
                 return commands.executeCommand('type', { source: 'keyboard', text: '\n' });
             }
         case 'tab':
-            if (workspace.getConfiguration('emmet').get<boolean>('triggerExpansionOnTab')) {
+            if (
+                window.activeTextEditor.selection.isEmpty
+                && workspace.getConfiguration('emmet').get<boolean>('triggerExpansionOnTab')
+            ) {
                 return commands.executeCommand('editor.emmet.action.expandAbbreviation');
             } else if (modifiers === 'shift') {
                 return commands.executeCommand('editor.action.outdentLines');
