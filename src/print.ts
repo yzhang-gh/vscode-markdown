@@ -1,86 +1,11 @@
 'use strict';
 
-// See https://github.com/Microsoft/vscode/tree/master/extensions/markdown/src
-
 import * as fs from "fs";
 import * as path from 'path';
-import { commands, ExtensionContext, extensions, TextDocument, Uri, window, workspace, WorkspaceConfiguration } from 'vscode';
+import { commands, ExtensionContext, TextDocument, Uri, window, workspace } from 'vscode';
 import localize from './localize';
-import { isMdEditor, slugify } from './util';
-
-let md;
-let slugCounts = {};
-
-async function initMdIt() {
-    // takes ~0.5s
-
-    // Cannot reuse these modules since vscode packs them using webpack
-    const hljs = await import('highlight.js');
-    const mdtl = await import('markdown-it-task-lists');
-    const mdkt = await import('@neilsustc/markdown-it-katex');
-
-    // Make a deep copy as `macros` will be modified by KaTeX during initialization
-    let userMacros = JSON.parse(JSON.stringify(workspace.getConfiguration('markdown.extension.katex').get<object>('macros')));
-    let katexOptions = { throwOnError: false };
-    if (Object.keys(userMacros).length !== 0) {
-        katexOptions['userMacros'] = userMacros;
-    }
-
-    md = (await import('markdown-it'))({
-        html: true,
-        highlight: (str: string, lang: string) => {
-            // Workaround for highlight not supporting tsx: https://github.com/isagalaev/highlight.js/issues/1155
-            if (lang && ['tsx', 'typescriptreact'].indexOf(lang.toLocaleLowerCase()) >= 0) {
-                lang = 'jsx';
-            }
-            if (lang && hljs.getLanguage(lang)) {
-                try {
-                    return `<div>${hljs.highlight(lang, str, true).value}</div>`;
-                } catch (error) { }
-            }
-            return `<div>${md.utils.escapeHtml(str)}</div>`;
-        }
-    }).use(mdtl).use(mdkt, katexOptions);
-
-    // Conditional modules
-    if (extensions.getExtension('bierner.markdown-footnotes') !== undefined) {
-        const mdfn = await import('markdown-it-footnote');
-        md = md.use(mdfn);
-    }
-
-    if (!workspace.getConfiguration('markdown.extension.print').get<boolean>('validateUrls', true)) {
-        md.validateLink = () => true;
-    }
-
-    addNamedHeaders(md);
-}
-
-// Adapted from <https://github.com/leff/markdown-it-named-headers/blob/master/index.js>
-// and <https://github.com/Microsoft/vscode/blob/cadd6586c6656e0c7df3b15ad01c5c4030da5d46/extensions/markdown-language-features/src/markdownEngine.ts#L225>
-function addNamedHeaders(md: any): void {
-    const originalHeadingOpen = md.renderer.rules.heading_open;
-
-    md.renderer.rules.heading_open = function (tokens, idx, options, env, self) {
-        const title = tokens[idx + 1].children.reduce((acc: string, t: any) => acc + t.content, '');
-        let slug = slugify(title);
-
-        if (slugCounts.hasOwnProperty(slug)) {
-            slugCounts[slug] += 1;
-            slug += '-' + slugCounts[slug];
-        } else {
-            slugCounts[slug] = 0;
-        }
-
-        tokens[idx].attrs = tokens[idx].attrs || [];
-        tokens[idx].attrs.push(['id', slug]);
-
-        if (originalHeadingOpen) {
-            return originalHeadingOpen(tokens, idx, options, env, self);
-        } else {
-            return self.renderToken(tokens, idx, options, env, self);
-        }
-    };
-}
+import { mdEngine } from "./markdownEngine";
+import { isMdEditor } from './util';
 
 let thisContext: ExtensionContext;
 
@@ -135,7 +60,7 @@ async function print(type: string) {
         title = title.replace(/^#+/, '').replace(/#+$/, '').trim();
     }
 
-    let body: string = await render(doc.getText(), workspace.getConfiguration('markdown.preview', doc.uri));
+    let body: string = await mdEngine.render(doc.getText(), workspace.getConfiguration('markdown.preview', doc.uri));
 
     // Image paths
     const config = workspace.getConfiguration('markdown.extension', doc.uri);
@@ -205,21 +130,6 @@ async function print(type: string) {
 function hasMathEnv(text: string) {
     // I'm lazy
     return text.includes('$');
-}
-
-async function render(text: string, config: WorkspaceConfiguration) {
-    if (md === undefined) {
-        await initMdIt();
-    }
-
-    md.set({
-        breaks: config.get<boolean>('breaks', false),
-        linkify: config.get<boolean>('linkify', true)
-    });
-
-    slugCounts = {};
-
-    return md.render(text);
 }
 
 function getMediaPath(mediaFile: string): string {
