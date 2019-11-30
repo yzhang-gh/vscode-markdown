@@ -202,22 +202,6 @@ suite("TOC.", () => {
             new Selection(8, 25, 8, 25)).then(done, done);
     });
 
-    test("Slugify. `a.b` c => ab-c", done => {
-        testCommand('markdown.extension.toc.create', {},
-            [
-                '# `a.b` c',
-                '',
-                ''
-            ],
-            new Selection(2, 0, 2, 0),
-            [
-                '# `a.b` c',
-                '',
-                '- [`a.b` c](#ab-c)'
-            ],
-            new Selection(2, 18, 2, 18)).then(done, done);
-    });
-
     test("Setext headings", done => {
         testCommand('markdown.extension.toc.create', {},
             [
