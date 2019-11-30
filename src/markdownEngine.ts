@@ -4,9 +4,13 @@ import { extensions, workspace, WorkspaceConfiguration } from 'vscode';
 import { slugify } from './util';
 
 class MarkdownEngine {
-    private md?;
+    public md?;
 
     private _slugCount = new Map<string, number>();
+
+    constructor() {
+        this.initMdIt();
+    }
 
     private async initMdIt() {
         if (!this.md) {

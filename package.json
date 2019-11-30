@@ -6,7 +6,7 @@
     "version": "2.5.1",
     "publisher": "yzhang",
     "engines": {
-        "vscode": "^1.36.0"
+        "vscode": "^1.38.0"
     },
     "categories": [
         "Other"
@@ -388,16 +388,16 @@
         "image-size": "^0.7.4",
         "markdown-it-footnote": "^3.0.2",
         "markdown-it-task-lists": "^2.1.1",
-        "markdown-it": "^8.4.2",
+        "markdown-it": "^10.0.0",
         "string-similarity": "^3.0.0"
     },
     "devDependencies": {
         "@types/highlight.js": "^9.12.3",
         "@types/image-size": "^0.7.0",
-        "@types/markdown-it": "^0.0.7",
+        "@types/markdown-it": "^0.0.9",
         "@types/mocha": "^5.2.6",
         "@types/node": "^11.11.3",
-        "@types/vscode": "1.36.0",
+        "@types/vscode": "1.38.0",
         "glob": "^7.1.4",
         "mocha": "^6.2.0",
         "ts-loader": "^6.0.4",

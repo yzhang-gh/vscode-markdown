@@ -3,6 +3,7 @@
 import * as fs from 'fs';
 import { commands, Position, Range, TextDocument, TextEditor, Uri, workspace } from 'vscode';
 import localize from './localize';
+import { mdEngine } from './markdownEngine';
 
 /* ┌────────┐
    │ Others │
@@ -75,27 +76,24 @@ export function showChangelog() {
  * @param text
  */
 export function extractText(text: string) {
-    return textInHtml(textInMd(text));
-}
-
-//// [text](link) -> text. In case there are links in heading (#83)
-//// **bold** -> bold
-//// *italic*/_italic_ -> italic
-//// 💩
-function textInMd(text: string) {
-    return text.replace(/\[([^\]]+?)\]\([^\)]+?\)/g, (_, g1) => g1)
-        .replace(/\*\*(.*)\*\*/g, (_, g1) => g1)
-        .replace(/([\*_])(.*)\1/g, (_, _1, g2) => g2);
+    if (mdEngine.md === undefined) {
+        return text;
+    }
+    const html = mdEngine.md.render(text).replace(/\r?\n$/, '');
+    return textInHtml(html);
 }
 
 //// Convert HTML entities (#175)
 //// Strip HTML tags (#179)
-//// 💩
-function textInHtml(text: string) {
-    return text.replace(/(&emsp;)/g, _ => ' ')
-        .replace(/(<!--[^>]*?-->)/g, '') // remove <!-- HTML comments -->
-        .replace(/<span[^>]*>(.*?)<\/span>/g, (_, g1) => g1) // remove <span>
-        .replace(/ +/g, ' ');
+function textInHtml(html: string) {
+    let text = html.replace(/(&emsp;)/g, _ => ' ')
+        .replace(/(<!--[^>]*?-->)/g, ''); //// remove <!-- HTML comments -->
+    //// remove HTML tags
+    while (/<(span|em|strong|a|p|code)[^>]*>(.*?)<\/\1>/.test(text)) {
+        text = text.replace(/<(span|em|strong|a|p|code)[^>]*>(.*?)<\/\1>/g, (_, _g1, g2) => g2)
+    }
+    text = text.replace(/ +/g, ' ');
+    return text;
 }
 
 /* ┌─────────┐

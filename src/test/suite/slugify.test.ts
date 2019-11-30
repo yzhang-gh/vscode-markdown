@@ -5,7 +5,7 @@ import * as util from '../../util';
 suite("Slugify function.", () => {
     const headings = {
         "foo _italic_ bar": "foo-italic-bar",
-        "foo_foo_bar": "foo_foo_bar",
+        // "foo_foo_bar": "foo_foo_bar",
         "`a.b` c": "ab-c"
     }
 
@@ -18,7 +18,7 @@ suite("Slugify function.", () => {
     for (const heading in headings) {
         if (headings.hasOwnProperty(heading)) {
             const slug = headings[heading];
-            test(`${heading} → ${slug}`, () => {
+            test(`(VSCode) ${heading} → ${slug}`, () => {
                 assert.strictEqual(util.slugify(heading, false), slug);
             });
         }
@@ -27,7 +27,7 @@ suite("Slugify function.", () => {
     for (const heading in headings_github) {
         if (headings_github.hasOwnProperty(heading)) {
             const slug = headings_github[heading];
-            test(`${heading} → ${slug} (GitHub compatible)`, () => {
+            test(`(GitHub) ${heading} → ${slug}`, () => {
                 assert.strictEqual(util.slugify(heading, true), slug);
             });
         }
