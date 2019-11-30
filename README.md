@@ -12,21 +12,22 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 - **Keyboard shortcuts** (toggle bold, italic, code span, strikethrough and heading)
 
-  <img src="images/gifs/toggle-bold.gif" alt="toggle bold gif" width="282px">
+  <p><img src="images/gifs/toggle-bold.gif" alt="toggle bold gif" width="282px"></p>
 
-  ![check task list](images/gifs/keybinding-tasklist.gif) (check/uncheck task list)
+  <p><img src="images/gifs/check-task-list.gif" alt="check task list" width="240px"></p>
 
-  See full key binding list in [keyboard shortcuts](#keyboard-shortcuts) section
+  See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts) section
 
 - **Table of contents**
 
-  ![toc](images/toc.png)
+  <p><img src="images/toc.png" alt="toc" width="305px"></p>
 
-  - The indentation rules (tab or spaces) of TOC will be the same of your current file (find it in the right bottom corner)
+  - The indentation rule (tab or spaces) of TOC will be the same of your current file (find it in the right bottom corner)
 
-  - To make TOC compatible with GitHub, you need to set option `githubCompatibility` to `true`
+  - To make TOC compatible with GitHub, set option `githubCompatibility` to `true`
 
-  - Use `<!-- omit in toc -->` to ignore specific heading in TOC
+  - Use `<!-- omit in toc -->` to ignore specific heading in TOC  
+    (It can also be placed above a heading)
 
 - **List editing**
 
