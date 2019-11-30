@@ -4,10 +4,9 @@
 
 import * as fs from "fs";
 import * as path from 'path';
-import * as vscode from 'vscode';
+import { commands, ExtensionContext, extensions, TextDocument, Uri, window, workspace, WorkspaceConfiguration } from 'vscode';
 import localize from './localize';
 import { isMdEditor, slugify } from './util';
-import { workspace } from 'vscode';
 
 let md;
 let slugCounts = {};
@@ -43,6 +42,12 @@ async function initMdIt() {
         }
     }).use(mdtl).use(mdkt, katexOptions);
 
+    // Conditional modules
+    if (extensions.getExtension('bierner.markdown-footnotes') !== undefined) {
+        const mdfn = await import('markdown-it-footnote');
+        md = md.use(mdfn);
+    }
+
     if (!workspace.getConfiguration('markdown.extension.print').get<boolean>('validateUrls', true)) {
         md.validateLink = () => true;
     }
@@ -77,32 +82,32 @@ function addNamedHeaders(md: any): void {
     };
 }
 
-let thisContext: vscode.ExtensionContext;
+let thisContext: ExtensionContext;
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: ExtensionContext) {
     thisContext = context;
     context.subscriptions.push(
-        vscode.commands.registerCommand('markdown.extension.printToHtml', () => { print('html'); }),
-        vscode.workspace.onDidSaveTextDocument(onDidSave)
+        commands.registerCommand('markdown.extension.printToHtml', () => { print('html'); }),
+        workspace.onDidSaveTextDocument(onDidSave)
     );
 }
 
 export function deactivate() { }
 
-function onDidSave(doc: vscode.TextDocument) {
+function onDidSave(doc: TextDocument) {
     if (
         doc.languageId === 'markdown'
-        && vscode.workspace.getConfiguration('markdown.extension.print', doc.uri).get<boolean>('onFileSave')
+        && workspace.getConfiguration('markdown.extension.print', doc.uri).get<boolean>('onFileSave')
     ) {
         print('html');
     }
 }
 
 async function print(type: string) {
-    const editor = vscode.window.activeTextEditor;
+    const editor = window.activeTextEditor;
 
     if (!isMdEditor(editor)) {
-        vscode.window.showErrorMessage(localize("noValidMarkdownFile"));
+        window.showErrorMessage(localize("noValidMarkdownFile"));
         return;
     }
 
@@ -111,7 +116,7 @@ async function print(type: string) {
         doc.save();
     }
 
-    vscode.window.setStatusBarMessage(localize("printing") + ` '${path.basename(doc.fileName)}' ` + localize("to") + ` '${type.toUpperCase()}' ...`, 1000);
+    window.setStatusBarMessage(localize("printing") + ` '${path.basename(doc.fileName)}' ` + localize("to") + ` '${type.toUpperCase()}' ...`, 1000);
 
     /**
      * Modified from <https://github.com/Microsoft/vscode/tree/master/extensions/markdown>
@@ -130,10 +135,10 @@ async function print(type: string) {
         title = title.replace(/^#+/, '').replace(/#+$/, '').trim();
     }
 
-    let body: string = await render(doc.getText(), vscode.workspace.getConfiguration('markdown.preview', doc.uri));
+    let body: string = await render(doc.getText(), workspace.getConfiguration('markdown.preview', doc.uri));
 
     // Image paths
-    const config = vscode.workspace.getConfiguration('markdown.extension', doc.uri);
+    const config = workspace.getConfiguration('markdown.extension', doc.uri);
     const configToBase64 = config.get<boolean>('print.imgToBase64');
     const configAbsPath = config.get<boolean>('print.absoluteImgPath');
     const imgTagRegex = /(<img[^>]+src=")([^"]+)("[^>]*>)/g;  // Match '<img...src="..."...>'
@@ -150,7 +155,7 @@ async function print(type: string) {
                 const file = fs.readFileSync(imgSrc).toString('base64');
                 return `${p1}data:image/${imgExt};base64,${file}${p3}`;
             } catch (e) {
-                vscode.window.showWarningMessage(localize("unableToReadFile") + ` ${imgSrc}, ` + localize("revertingToImagePaths"));
+                window.showWarningMessage(localize("unableToReadFile") + ` ${imgSrc}, ` + localize("revertingToImagePaths"));
             }
 
             if (configAbsPath) {
@@ -202,7 +207,7 @@ function hasMathEnv(text: string) {
     return text.includes('$');
 }
 
-async function render(text: string, config: vscode.WorkspaceConfiguration) {
+async function render(text: string, config: WorkspaceConfiguration) {
     if (md === undefined) {
         await initMdIt();
     }
@@ -237,12 +242,12 @@ function readCss(fileName: string) {
         msg = msg.replace(/'([c-z]):/, function (_, g1) {
             return `'${g1.toUpperCase()}:`;
         });
-        vscode.window.showWarningMessage(msg);
+        window.showWarningMessage(msg);
         return '';
     }
 }
 
-function getStyles(uri: vscode.Uri, hasMathEnv: boolean) {
+function getStyles(uri: Uri, hasMathEnv: boolean) {
     const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">';
     const markdownCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">';
     const highlightCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">';
@@ -260,10 +265,10 @@ function getStyles(uri: vscode.Uri, hasMathEnv: boolean) {
         ${customCssPaths.map(cssSrc => wrapWithStyleTag(cssSrc)).join('\n')}`;
 }
 
-function getCustomStyleSheets(resource: vscode.Uri): string[] {
-    const styles = vscode.workspace.getConfiguration('markdown', resource)['styles'];
+function getCustomStyleSheets(resource: Uri): string[] {
+    const styles = workspace.getConfiguration('markdown', resource)['styles'];
     if (styles && Array.isArray(styles) && styles.length > 0) {
-        const root = vscode.workspace.getWorkspaceFolder(resource);
+        const root = workspace.getWorkspaceFolder(resource);
         return styles.map(s => {
             if (!s || s.startsWith('http') || path.isAbsolute(s)) {
                 return s;
@@ -280,7 +285,7 @@ function getCustomStyleSheets(resource: vscode.Uri): string[] {
     return [];
 }
 
-function relToAbsPath(resource: vscode.Uri, href: string): string {
+function relToAbsPath(resource: Uri, href: string): string {
     if (!href || href.startsWith('http') || path.isAbsolute(href)) {
         return href;
     }
@@ -290,7 +295,7 @@ function relToAbsPath(resource: vscode.Uri, href: string): string {
 }
 
 function getPreviewSettingStyles(): string {
-    const previewSettings = vscode.workspace.getConfiguration('markdown')['preview'];
+    const previewSettings = workspace.getConfiguration('markdown')['preview'];
     if (!previewSettings) {
         return '';
     }

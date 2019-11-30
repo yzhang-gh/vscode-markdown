@@ -386,8 +386,9 @@
         "@neilsustc/markdown-it-katex": "^0.4.0",
         "highlight.js": "^9.15.6",
         "image-size": "^0.7.4",
-        "markdown-it": "^8.4.2",
+        "markdown-it-footnote": "^3.0.2",
         "markdown-it-task-lists": "^2.1.1",
+        "markdown-it": "^8.4.2",
         "string-similarity": "^3.0.0"
     },
     "devDependencies": {
@@ -401,7 +402,7 @@
         "mocha": "^6.2.0",
         "ts-loader": "^6.0.4",
         "typescript": "^3.5.2",
-        "vscode-test": "^1.0.0",
+        "vscode-test": "^1.2.3",
         "webpack": "^4.41.2",
         "webpack-cli": "^3.3.6"
     }
