@@ -63,37 +63,6 @@ suite("List editing.", () => {
             new Selection(1, 2, 1, 2)).then(done, done);
     });
 
-    test("Enter key. Disable in fenced code block", done => {
-        testCommand('markdown.extension.onEnterKey', {},
-            [
-                '```',
-                '- item1'
-            ],
-            new Selection(1, 7, 1, 7),
-            [
-                '```',
-                '- item1',
-                ''
-            ],
-            new Selection(2, 0, 2, 0)).then(done, done);
-    });
-
-    test("Enter key. Respect indentation rules", done => {
-        testCommand('markdown.extension.onEnterKey', {},
-            [
-                '```',
-                '{}'
-            ],
-            new Selection(1, 1, 1, 1),
-            [
-                '```',
-                '{',
-                '    ',
-                '}'
-            ],
-            new Selection(2, 4, 2, 4)).then(done, done);
-    });
-
     test("Enter key. Continue GFM checkbox item. '- [ ] item1|'", done => {
         testCommand('markdown.extension.onEnterKey', {},
             [
@@ -159,7 +128,7 @@ suite("List editing.", () => {
             new Selection(1, 2, 1, 2)).then(done, done);
     });
 
-    test("Backspace key. 1: '- |'", done => {
+    test("Backspace key: '- |'", done => {
         testCommand('markdown.extension.onBackspaceKey', {},
             [
                 '- item1'
@@ -171,31 +140,7 @@ suite("List editing.", () => {
             new Selection(0, 2, 0, 2)).then(done, done);
     });
 
-    test("Backspace key. 2: '-  |'", done => {
-        testCommand('markdown.extension.onBackspaceKey', {},
-            [
-                '-  item1'
-            ],
-            new Selection(0, 3, 0, 3),
-            [
-                '- item1'
-            ],
-            new Selection(0, 2, 0, 2)).then(done, done);
-    });
-
-    test("Backspace key. 3: '  -  |'", done => {
-        testCommand('markdown.extension.onBackspaceKey', {},
-            [
-                '  -  item1'
-            ],
-            new Selection(0, 5, 0, 5),
-            [
-                '  - item1'
-            ],
-            new Selection(0, 4, 0, 4)).then(done, done);
-    });
-
-    test("Backspace key. 4: '- [ ] |'", done => {
+    test("Backspace key: '- [ ] |'", done => {
         testCommand('markdown.extension.onBackspaceKey', {},
             [
                 '- [ ] item1'
@@ -207,7 +152,7 @@ suite("List editing.", () => {
             new Selection(0, 2, 0, 2)).then(done, done);
     });
 
-    test("Backspace key. 5: '  - [ ] |'", done => {
+    test("Backspace key: '  - [ ] |'", done => {
         testCommand('markdown.extension.onBackspaceKey', {},
             [
                 '  - [ ] item1'
@@ -217,18 +162,6 @@ suite("List editing.", () => {
                 '  - item1'
             ],
             new Selection(0, 4, 0, 4)).then(done, done);
-    });
-
-    test("Backspace key. 6: '- [ ]  |'", done => {
-        testCommand('markdown.extension.onBackspaceKey', {},
-            [
-                '- [ ]  item1'
-            ],
-            new Selection(0, 7, 0, 7),
-            [
-                '- [ ] item1'
-            ],
-            new Selection(0, 6, 0, 6)).then(done, done);
     });
 
     test("Tab key. 1: '- |'", done => {
