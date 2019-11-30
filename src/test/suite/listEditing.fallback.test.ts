@@ -89,4 +89,16 @@ suite("No list editing.", () => {
             ],
             new Selection(0, 6, 0, 6)).then(done, done);
     });
+
+    test("Shift tab key: '    text'", done => {
+        testCommand('markdown.extension.onShiftTabKey', {},
+            [
+                '    text'
+            ],
+            new Selection(0, 5, 0, 5),
+            [
+                'text'
+            ],
+            new Selection(0, 1, 0, 1)).then(done, done);
+    });
 });

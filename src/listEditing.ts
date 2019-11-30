@@ -6,10 +6,10 @@ import { isInFencedCodeBlock } from './util';
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand('markdown.extension.onEnterKey', onEnterKey),
-        commands.registerCommand('markdown.extension.onCtrlEnterKey', () => { onEnterKey('ctrl'); }),
-        commands.registerCommand('markdown.extension.onShiftEnterKey', () => { onEnterKey('shift'); }),
+        commands.registerCommand('markdown.extension.onCtrlEnterKey', () => { return onEnterKey('ctrl'); }),
+        commands.registerCommand('markdown.extension.onShiftEnterKey', () => { return onEnterKey('shift'); }),
         commands.registerCommand('markdown.extension.onTabKey', onTabKey),
-        commands.registerCommand('markdown.extension.onShiftTabKey', () => { onTabKey('shift'); }),
+        commands.registerCommand('markdown.extension.onShiftTabKey', () => { return onTabKey('shift'); }),
         commands.registerCommand('markdown.extension.onBackspaceKey', onBackspaceKey),
         commands.registerCommand('markdown.extension.checkTaskList', checkTaskList),
         commands.registerCommand('markdown.extension.onMoveLineDown', onMoveLineDown),
@@ -169,13 +169,13 @@ function asNormal(key: string, modifiers?: string) {
                 return commands.executeCommand('type', { source: 'keyboard', text: '\n' });
             }
         case 'tab':
-            if (
+            if (modifiers === 'shift') {
+                return commands.executeCommand('editor.action.outdentLines');
+            } else if (
                 window.activeTextEditor.selection.isEmpty
                 && workspace.getConfiguration('emmet').get<boolean>('triggerExpansionOnTab')
             ) {
                 return commands.executeCommand('editor.emmet.action.expandAbbreviation');
-            } else if (modifiers === 'shift') {
-                return commands.executeCommand('editor.action.outdentLines');
             } else {
                 return commands.executeCommand('tab');
             }
