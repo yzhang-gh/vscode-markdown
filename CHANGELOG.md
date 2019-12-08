@@ -1,3 +1,25 @@
+### 2.6.0 (2019.12.08)
+
+- **New**: Support `<!-- omit in toc -->` above a heading ([#495](https://github.com/yzhang-gh/vscode-markdown/issues/495)).
+- **New**: Support `<!-- no toc -->` above a list ([#525](https://github.com/yzhang-gh/vscode-markdown/issues/525)).
+- **New**: Option `print.theme` ([#534](https://github.com/yzhang-gh/vscode-markdown/issues/534)).
+- **New**: Command "toggle code block" ([#551](https://github.com/yzhang-gh/vscode-markdown/pull/551)). Thanks, [@axiqia](https://github.com/axiqia).
+- **New**: Support image path completions for HTML `img` tags.
+- **New**: Include [Markdown Footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes) in exported HTML if you have that extension installed ([#212](https://github.com/yzhang-gh/vscode-markdown/issues/212)).
+
+<!--  -->
+
+- **Fix**: TOC links ([#494](https://github.com/yzhang-gh/vscode-markdown/issues/494), [#515](https://github.com/yzhang-gh/vscode-markdown/issues/515) and [#550](https://github.com/yzhang-gh/vscode-markdown/issues/550)).
+- **Fix**: No longer convert images paths with data URIs ([#539](https://github.com/yzhang-gh/vscode-markdown/pull/539)). Thanks, [@leapwill](https://github.com/leapwill).
+- **Fix**: Unexpected ordered list marker updating ([#546](https://github.com/yzhang-gh/vscode-markdown/pull/546)). Thanks, [Alper Cugun (@alper)](https://github.com/alper).
+- **Fix**: <kbd>Shift</kbd> + <kbd>Tab</kbd> never outdents ([#561](https://github.com/yzhang-gh/vscode-markdown/issues/561)).
+
+<!--  -->
+
+- **Other**: Update `README` with high-resolution images.
+
+---
+
 ### 2.5.0/2.5.1 (2019.10.12)
 
 - **New**: File path completions ([#497](https://github.com/yzhang-gh/vscode-markdown/pull/497)). Thanks, [@linsui](https://github.com/linsui).
