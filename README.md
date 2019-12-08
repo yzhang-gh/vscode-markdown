@@ -12,15 +12,15 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 - **Keyboard shortcuts** (toggle bold, italic, code span, strikethrough and heading)
 
-  <p><img src="images/gifs/toggle-bold.gif" alt="toggle bold gif" width="282px"></p>
+  <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/toggle-bold.gif" alt="toggle bold gif" width="282px"></p>
 
-  <p><img src="images/gifs/check-task-list.gif" alt="check task list" width="240px"></p>
+  <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/check-task-list.gif" alt="check task list" width="240px"></p>
 
   See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts) section
 
 - **Table of contents**
 
-  <p><img src="images/toc.png" alt="toc" width="305px"></p>
+  <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/toc.png" alt="toc" width="305px"></p>
 
   - The indentation rule (tab or spaces) of TOC will be the same of your current file (find it in the right bottom corner)
 
@@ -31,11 +31,11 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 - **List editing**
 
-  <p><img src="images/gifs/on-enter-key.gif" alt="on enter key" width="214px"></p>
+  <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/on-enter-key.gif" alt="on enter key" width="214px"></p>
 
-  <p><img src="images/gifs/tab-backspace.gif" alt="on tab/backspace key" width="214px"></p>
+  <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/tab-backspace.gif" alt="on tab/backspace key" width="214px"></p>
 
-  <p><img src="images/gifs/fix-marker.gif" alt="fix ordered list markers" width="214px"></p>
+  <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/fix-marker.gif" alt="fix ordered list markers" width="214px"></p>
 
 - **Print Markdown to HTML**
 
@@ -47,7 +47,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
   - Table formatter
 
-    <p><img src="images/gifs/table-formatter.gif" alt="table formatter" width="246px"></p>
+    <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/table-formatter.gif" alt="table formatter" width="246px"></p>
 
     (Note that the keybinding is <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd> on Linux)
 
@@ -55,7 +55,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 - **Math**
 
-  <p><img src="images/math.png" alt="math" width="544px"></p>
+  <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/math.png" alt="math" width="544px"></p>
 
 - **Auto completions**
 
@@ -63,21 +63,21 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
   - Images/Files
 
-    <p><img src="images/image-completions.png" alt="image completions" width="351px"></p>
+    <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/image-completions.png" alt="image completions" width="351px"></p>
 
   - Math functions
 
-    <p><img src="images/math-completions.png" alt="math completions" width="154px"></p>
+    <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/math-completions.png" alt="math completions" width="154px"></p>
 
   - Reference links
 
-    <p><img src="images/reference-link.png" alt="reference links" width="301px"></p>
+    <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/reference-link.png" alt="reference links" width="301px"></p>
 
 - **Others**
 
   - Paste link on selected text
 
-    <p><img src="images/gifs/paste-link.gif" alt="paste link" width="342px"></p>
+    <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/paste-link.gif" alt="paste link" width="342px"></p>
 
   - Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
 
