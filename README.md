@@ -31,15 +31,11 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 - **List editing**
 
-  ![on enter key 1](images/gifs/on-enter-key1.gif) (<kbd>Enter</kbd>)
+  <p><img src="images/gifs/on-enter-key.gif" alt="on enter key" width="214px"></p>
 
-  ![on enter key 2](images/gifs/on-enter-key2.gif) (<kbd>Enter</kbd>)
+  <p><img src="images/gifs/tab-backspace.gif" alt="on tab/backspace key" width="214px"></p>
 
-  ![on tab key](images/gifs/on-tab-key.gif) (<kbd>Tab</kbd>)
-
-  ![on backspace key](images/gifs/on-backspace-key.gif) (<kbd>Backspace</kbd>)
-
-  ![marker fixing](images/gifs/marker-fixing.gif) (auto fix ordered list markers)
+  <p><img src="images/gifs/fix-marker.gif" alt="fix ordered list markers" width="214px"></p>
 
 - **Print Markdown to HTML**
 
@@ -47,11 +43,11 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
   - It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others
 
-- **GitHub Flavoured Markdown**
+- **GitHub Flavored Markdown**
 
   - Table formatter
 
-    ![table-formatter](images/gifs/table-formatter.gif)
+    <p><img src="images/gifs/table-formatter.gif" alt="table formatter" width="246px"></p>
 
     (Note that the keybinding is <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd> on Linux)
 
@@ -59,27 +55,27 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 - **Math**
 
-  ![math](images/math.png)
+  <p><img src="images/math.png" alt="math" width="544px"></p>
 
 - **Auto completions**
 
   - Images
 
-    ![image paths](images/image-completions.png)
+    <p><img src="images/image-completions.png" alt="image completions" width="351px"></p>
 
   - Math functions
 
-    ![math completions](images/math-completions.png)
+    <p><img src="images/math-completions.png" alt="math completions" width="154px"></p>
 
   - Reference links
 
-    ![suggest ref link](images/gifs/suggest-ref-link-light.png)
+    <p><img src="images/reference-link.png" alt="reference links" width="301px"></p>
 
 - **Others**
 
   - Paste link on selected text
 
-    ![paste link](images/gifs/paste-link-light.gif)
+    <p><img src="images/gifs/paste-link.gif" alt="paste link" width="342px"></p>
 
   - Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
 
