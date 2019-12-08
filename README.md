@@ -59,7 +59,9 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 - **Auto completions**
 
-  - Images
+  Tip: also support the option `completion.root`
+
+  - Images/Files
 
     <p><img src="images/image-completions.png" alt="image completions" width="351px"></p>
 
