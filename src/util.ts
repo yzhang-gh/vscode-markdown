@@ -78,13 +78,19 @@ export function showChangelog() {
 export function extractText(text: string) {
     //// Issue #515
     text = text.replace(/\[([^\]]*)\]\[[^\]]*\]/, (_, g1) => g1);
+    //// Escape leading `1.` (#567)
+    text = text.replace(/^([\d]+)(\.)/, (_, g1) => g1 + '%dot%');
 
     if (mdEngine.md === undefined) {
         return text;
     }
 
     const html = mdEngine.md.render(text).replace(/\r?\n$/, '');
-    return textInHtml(html);
+    text = textInHtml(html);
+
+    //// Unescape
+    text = text.replace('%dot%', '.')
+    return text;
 }
 
 //// Convert HTML entities (#175)

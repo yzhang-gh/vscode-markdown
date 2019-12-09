@@ -7,14 +7,16 @@ suite("Slugify function.", () => {
         "foo _italic_ bar": "foo-italic-bar",
         // "foo_foo_bar": "foo_foo_bar",
         "`a.b` c": "ab-c",
-        "Via [remark-cli][]": "via-remark-cli"
+        "Via [remark-cli][]": "via-remark-cli",
+        "1. not a list": "1-not-a-list"
     }
 
     const headings_github = {
         "foo _italic_ bar": "foo-italic-bar",
         "foo_foo_bar": "foo_foo_bar",
         "`a.b` c": "ab-c",
-        "Via [remark-cli][]": "via-remark-cli"
+        "Via [remark-cli][]": "via-remark-cli",
+        "1. not a list": "1-not-a-list"
     }
 
     for (const heading in headings) {
