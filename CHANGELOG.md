@@ -1,3 +1,9 @@
+### 2.6.1 (2019.12.12)
+
+- **Fix**: Strange HTML tags in TOC ([#567](https://github.com/yzhang-gh/vscode-markdown/issues/567)).
+
+---
+
 ### 2.6.0 (2019.12.08)
 
 - **New**: Support `<!-- omit in toc -->` above a heading ([#495](https://github.com/yzhang-gh/vscode-markdown/issues/495)).
