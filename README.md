@@ -95,16 +95,16 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 <details>
 <summary>Table</summary>
 
-| Key                                               | Command                      |
-| ------------------------------------------------- | ---------------------------- |
-| <kbd>Ctrl</kbd> + <kbd>B</kbd>                    | Toggle bold                  |
-| <kbd>Ctrl</kbd> + <kbd>I</kbd>                    | Toggle italic                |
-| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel)     |
-| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel)   |
-| <kbd>Ctrl</kbd> + <kbd>M</kbd>                    | Toggle math environment      |
-| <kbd>Alt</kbd> + <kbd>C</kbd>                     | Check/Uncheck task list item |
-| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> | Toggle preview               |
-| <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>       | Toggle preview to side       |
+| Key                                                              | Command                      |
+| ---------------------------------------------------------------- | ---------------------------- |
+| <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>B</kbd>                    | Toggle bold                  |
+| <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>I</kbd>                    | Toggle italic                |
+| <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>]</kbd> | Toggle heading (uplevel)     |
+| <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>[</kbd> | Toggle heading (downlevel)   |
+| <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>M</kbd>                    | Toggle math environment      |
+| <kbd>Alt</kbd> + <kbd>C</kbd>                                    | Check/Uncheck task list item |
+| <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> | Toggle preview               |
+| <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> <kbd>V</kbd>       | Toggle preview to side       |
 
 </details>
 
