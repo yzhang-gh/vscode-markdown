@@ -1,7 +1,7 @@
 'use strict'
 
 import { ExtensionContext, Position, Range, TextEditor, window, workspace } from "vscode";
-import { isFileTooLarge, isInFencedCodeBlock, isMdEditor } from "./util";
+import { isFileTooLarge, isInFencedCodeBlock, isMdEditor, mathEnvCheck } from "./util";
 
 let decorTypes = {
     "baseColor": window.createTextEditorDecorationType({
@@ -142,27 +142,9 @@ function updateDecorations(editor?: TextEditor) {
                     )) { continue; }
 
                     for (let i = 0; i < decorTypeNames.length; i++) {
-                        // Skip if in math environment (See `completion.ts`)
-                        const lineTextBefore = lineText.substr(0, startIndex);
-                        const lineTextAfter = lineText.substr(startIndex);
-                        if (
-                            /(^|[^\$])\$(|[^ \$].*)\w*$/.test(lineTextBefore)
-                            && lineTextAfter.includes('$')
-                        ) {
-                            // Inline math ($...$)
+                        //// Skip if in math environment (See `completion.ts`)
+                        if (mathEnvCheck(doc, new Position(lineNum, startIndex)) !== "") {
                             break;
-                        } else {
-                            const textBefore = doc.getText(new Range(0, 0, lineNum, startIndex));
-                            const textAfter = doc.getText().substr(doc.offsetAt(new Position(lineNum, startIndex)));
-                            let matches;
-                            if (
-                                (matches = textBefore.match(/\$\$/g)) !== null
-                                && matches.length % 2 !== 0
-                                && textAfter.includes('\$\$')
-                            ) {
-                                // Display math ($$ ... $$)
-                                break;
-                            }
                         }
 
                         const decorTypeName = decorTypeNames[i];
@@ -175,7 +157,7 @@ function updateDecorations(editor?: TextEditor) {
                         const range = new Range(lineNum, startIndex, lineNum, startIndex + caughtGroup.length);
                         startIndex += caughtGroup.length;
 
-                        // Needed for `[alt](link)` rule. And must appear after `startIndex += caughtGroup.length;`
+                        //// Needed for `[alt](link)` rule. And must appear after `startIndex += caughtGroup.length;`
                         if (decorTypeName.length === 0) {
                             continue;
                         }

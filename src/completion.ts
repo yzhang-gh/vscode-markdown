@@ -1,11 +1,11 @@
 'use strict'
 
+import * as fs from 'fs';
 import * as sizeOf from 'image-size';
 import * as path from 'path';
-import * as fs from 'fs';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
-import { mdDocSelector, slugify } from './util';
 import { buildToc } from './toc';
+import { mathEnvCheck, mdDocSelector, slugify } from './util';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerCompletionItemProvider(mdDocSelector, new MdCompletionItemProvider(), '(', '\\', '/', '[', '#'));
@@ -433,25 +433,10 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             /* ┌────────────────┐
                │ Math functions │
                └────────────────┘ */
-            if (
-                /(^|[^\$])\$(|[^ \$].*)\\\w*$/.test(lineTextBefore)
-                && lineTextAfter.includes('$')
-            ) {
-                // Complete math functions (inline math)
-                return this.mathCompletions;
+            if (mathEnvCheck(document, position) === "") {
+                return [];
             } else {
-                const textBefore = document.getText(new Range(new Position(0, 0), position));
-                const textAfter = document.getText().substr(document.offsetAt(position));
-                if (
-                    (matches = textBefore.match(/\$\$/g)) !== null
-                    && matches.length % 2 !== 0
-                    && textAfter.includes('\$\$')
-                ) {
-                    // Complete math functions ($$ ... $$)
-                    return this.mathCompletions;
-                } else {
-                    return [];
-                }
+                return this.mathCompletions;
             }
         } else if (/\[[^\]]*?\]\[[^\]]*$/.test(lineTextBefore)) {
             /* ┌───────────────────────┐

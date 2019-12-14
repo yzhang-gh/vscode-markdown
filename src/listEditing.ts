@@ -1,7 +1,7 @@
 'use strict'
 
 import { commands, ExtensionContext, Position, Range, Selection, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
-import { isInFencedCodeBlock } from './util';
+import { isInFencedCodeBlock, mathEnvCheck } from './util';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
@@ -33,7 +33,7 @@ function onEnterKey(modifiers?: string) {
         lineBreakPos = line.range.end;
     }
 
-    if (modifiers == 'shift' || isInFencedCodeBlock(editor.document, cursorPos.line)) {
+    if (modifiers == 'shift' || isInFencedCodeBlock(editor.document, cursorPos.line) || mathEnvCheck(editor.document, cursorPos)) {
         return asNormal('enter', modifiers);
     }
 
