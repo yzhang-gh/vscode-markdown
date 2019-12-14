@@ -109,7 +109,7 @@ function onTabKey(modifiers?: string) {
     let cursorPos = editor.selection.start;
     let lineText = editor.document.lineAt(cursorPos.line).text;
 
-    if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
+    if (isInFencedCodeBlock(editor.document, cursorPos.line) || mathEnvCheck(editor.document, cursorPos)) {
         return asNormal('tab', modifiers);
     }
 
@@ -138,7 +138,7 @@ function onBackspaceKey() {
     let document = editor.document;
     let textBeforeCursor = document.lineAt(cursor.line).text.substr(0, cursor.character);
 
-    if (isInFencedCodeBlock(document, cursor.line)) {
+    if (isInFencedCodeBlock(document, cursor.line) || mathEnvCheck(editor.document, cursorPos)) {
         return asNormal('backspace');
     }
 
