@@ -138,7 +138,7 @@ function onBackspaceKey() {
     let document = editor.document;
     let textBeforeCursor = document.lineAt(cursor.line).text.substr(0, cursor.character);
 
-    if (isInFencedCodeBlock(document, cursor.line) || mathEnvCheck(editor.document, cursorPos)) {
+    if (isInFencedCodeBlock(document, cursor.line) || mathEnvCheck(editor.document, cursor)) {
         return asNormal('backspace');
     }
 
