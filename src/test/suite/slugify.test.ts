@@ -16,7 +16,8 @@ suite("Slugify function.", () => {
         "foo_foo_bar": "foo_foo_bar",
         "`a.b` c": "ab-c",
         "Via [remark-cli][]": "via-remark-cli",
-        "1. not a list": "1-not-a-list"
+        "1. not a list": "1-not-a-list",
+        "foo & < >  \"foo\"": "foo---foo"
     }
 
     for (const heading in headings) {

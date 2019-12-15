@@ -120,11 +120,17 @@ export function extractText(text: string) {
     return text;
 }
 
-//// Convert HTML entities (#175)
+//// Convert HTML entities (#175, #575)
 //// Strip HTML tags (#179)
 function textInHtml(html: string) {
+    //// HTML entities
     let text = html.replace(/(&emsp;)/g, _ => ' ')
-        .replace(/(<!--[^>]*?-->)/g, ''); //// remove <!-- HTML comments -->
+        .replace(/(&quot;)/g, _ => '"')
+        .replace(/(&lt;)/g, _ => '<')
+        .replace(/(&gt;)/g, _ => '>')
+        .replace(/(&amp;)/g, _ => '&');
+    //// remove <!-- HTML comments -->
+    text = text.replace(/(<!--[^>]*?-->)/g, '');
     //// remove HTML tags
     while (/<(span|em|strong|a|p|code)[^>]*>(.*?)<\/\1>/.test(text)) {
         text = text.replace(/<(span|em|strong|a|p|code)[^>]*>(.*?)<\/\1>/g, (_, _g1, g2) => g2)
