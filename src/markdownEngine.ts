@@ -22,7 +22,7 @@ class MarkdownEngine {
             let userMacros = JSON.parse(JSON.stringify(workspace.getConfiguration('markdown.extension.katex').get<object>('macros')));
             let katexOptions = { throwOnError: false };
             if (Object.keys(userMacros).length !== 0) {
-                katexOptions['userMacros'] = userMacros;
+                katexOptions['macros'] = userMacros;
             }
 
             this.md = (await import('markdown-it'))({
