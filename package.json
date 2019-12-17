@@ -346,6 +346,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "%config.toc.updateOnSave.description%"
+                },
+                "markdown.extension.toc.omittedFromToc": {
+                    "type": "object",
+                    "default": {},
+                    "description": "%config.toc.omittedFromToc.description%"
                 }
             }
         },

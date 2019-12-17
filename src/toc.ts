@@ -64,6 +64,45 @@ async function updateToc() {
     });
 }
 
+// Returns a list of user defined excluded headings for the given document.
+function getExcludedHeadings(doc: vscode.TextDocument): { level: number, text: string }[] {
+    const { workspace } = vscode;
+    const omittedFromToc = workspace.getConfiguration('markdown.extension.toc').get<object>('omittedFromToc');
+
+    if (typeof omittedFromToc !== 'object' || omittedFromToc === null) {
+        vscode.window.showErrorMessage(`\`omittedFromToc\` must be an object (e.g. \`{ "README.md": ["# Introduction"] }\`)`);
+        return [];
+    }
+
+    const docWorkspace = workspace.getWorkspaceFolder(doc.uri);
+
+    // If we are not in a workspace (i.e. in a standalone file), use the absolute path.
+    // Otherwise, use the workspace relative path.
+    const currentPath = docWorkspace
+        ? doc.fileName.replace(`${docWorkspace.uri.fsPath}/`, '')
+        : doc.fileName;
+
+    const omittedList = omittedFromToc[currentPath]|| [];
+
+    if (!Array.isArray(omittedList)) {
+        vscode.window.showErrorMessage(`\`omittedFromToc\` attributes must be arrays (e.g. \`{ "README.md": ["# Introduction"] }\`)`);
+        return [];
+    }
+
+    return omittedList.map(heading => {
+        const matches = heading.match(/^ *(#+) +(.*)$/);
+        if (matches === null) {
+            vscode.window.showErrorMessage(`Invalid entry "${heading}" in \`omittedFromToc\``);
+            return { level: -1, text: '' };
+        }
+        const [, sharps, name] = matches;
+        return {
+            level: sharps.length,
+            text: name
+        };
+    });
+}
+
 async function generateTocText(doc: vscode.TextDocument): Promise<string> {
     loadTocConfig();
     const orderedListMarkerIsOne: boolean = vscode.workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
@@ -76,6 +115,8 @@ async function generateTocText(doc: vscode.TextDocument): Promise<string> {
     let order = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
 
     let anchorOccurances = {};
+    let ignoredDepthBound = null;
+    const excludedHeadings = getExcludedHeadings(doc);
 
     tocEntries.forEach(entry => {
         if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
@@ -90,13 +131,23 @@ async function generateTocText(doc: vscode.TextDocument): Promise<string> {
                 anchorOccurances[anchorText] = 0;
             }
 
-            let row = [
-                docConfig.tab.repeat(relativeLvl),
-                (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLvl]) + '.' : tocConfig.listMarker) + ' ',
-                tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(anchorText)})`
-            ];
-            toc.push(row.join(''));
-            if (tocConfig.orderedList) order.fill(0, relativeLvl + 1);
+            // Filter out used excluded headings.
+            const isExcluded = excludedHeadings.some(({ level, text }) => level === entry.level && text === entry.text);
+            const isOmittedSubHeading = ignoredDepthBound !== null && entry.level > ignoredDepthBound;
+            if (isExcluded) {
+                // Keep track of the latest omitted heading's depth to also omit its subheadings.
+                ignoredDepthBound = entry.level;
+            } else if (!isOmittedSubHeading) {
+                // Reset ignore bound (not ignored sub heading anymore).
+                ignoredDepthBound = null;
+                let row = [
+                    docConfig.tab.repeat(relativeLvl),
+                    (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLvl]) + '.' : tocConfig.listMarker) + ' ',
+                    tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(anchorText)})`
+                ];
+                toc.push(row.join(''));
+                if (tocConfig.orderedList) order.fill(0, relativeLvl + 1);
+            }
         }
     });
     while (/^[ \t]/.test(toc[0])) {

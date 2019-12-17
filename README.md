@@ -29,6 +29,23 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
   - Use `<!-- omit in toc -->` to ignore specific heading in TOC  
     (It can also be placed above a heading)
 
+  - You can also use the `omittedFromToc` setting to omit some headings from TOC:
+    ```js
+    // In your settings.json
+    "markdown.extension.toc.omittedFromToc": {
+      // Use a path relative to your workspace.
+      "README.md": [
+          "# Introduction",
+          "## Also omitted",
+      ],
+      // Or an absolute path for standalone files.
+      "/home/foo/Documents/todo-list.md": [
+        "## Shame list (I'll never do these)",
+      ]
+    }
+    ```
+    Note: headings underlined with `===` or `---` can be omitted with `# ` and `## `, respectively.
+
 - **List editing**
 
   <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/on-enter-key.gif" alt="on enter key" width="214px"></p>
@@ -132,6 +149,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.tableFormatter.enabled`        | `true`     | Enable GFM table formatter                                                                       |
 | `markdown.extension.toc.downcaseLink`              | `true`     | Force the TOC links to be lowercase                                                              |
 | `markdown.extension.toc.githubCompatibility`       | `false`    | GitHub compatibility                                                                             |
+| `markdown.extension.toc.omittedFromToc`            | `{}`       | Lists of headings to omit by project file (e.g. `{ "README.md": ["# Introduction"] }`)           |
 | `markdown.extension.toc.levels`                    | `1..6`     | Control the heading levels to show in the table of contents.                                     |
 | `markdown.extension.toc.orderedList`               | `false`    | Use ordered list in the table of contents.                                                       |
 | `markdown.extension.toc.plaintext`                 | `false`    | Just plain text.                                                                                 |
