@@ -44,7 +44,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
       ]
     }
     ```
-    Note: headings underlined with `===` or `---` can be omitted with `# ` and `## `, respectively.
+    Note: headings underlined with `===` or `---` can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
 
 - **List editing**
 

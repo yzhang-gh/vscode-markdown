@@ -17,7 +17,7 @@
     "config.toc.updateOnSave.description": "Auto update on save",
     "config.toc.githubCompatibility.description": "GitHub Compatibility",
     "config.toc.downcaseLink.description": "Whether to downcase TOC links",
-    "config.toc.omittedFromToc.description": "Lists of headings to omit by project file (e.g. { \"README.md\": [\"# Introduction\"] })",
+    "config.toc.omittedFromToc.description": "Lists of headings to omit by project file (e.g. {\"README.md\": [\"# Introduction\"]})",
     "config.list.indentationSize.description": "Whether to use different indentation sizes on different contexts. (This also affects the generated TOC)",
     "config.list.indentationSize.enumDescriptions.adaptive": "Use 2 spaces for unordered list and 3 for the ordered",
     "config.list.indentationSize.enumDescriptions.inherit": "Use the configured tab size of the current document (see vscode status bar)",
