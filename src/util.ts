@@ -53,7 +53,7 @@ export function mathEnvCheck(doc: TextDocument, pos: Position): string {
     }
 }
 
-const sizeLimit = 128000; // ~128KB
+const sizeLimit = 50000; // ~50 KB
 let fileSizesCache = {}
 export function isFileTooLarge(document: TextDocument): boolean {
     const filePath = document.uri.fsPath;
