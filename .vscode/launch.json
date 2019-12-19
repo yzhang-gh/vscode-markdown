@@ -25,6 +25,7 @@
             "runtimeExecutable": "${execPath}",
             "args": [
                 "--disable-extensions",
+                "--user-data-dir=tmp",
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
             ],
