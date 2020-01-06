@@ -479,25 +479,28 @@ suite("TOC.", () => {
                 '# [text](link)',
                 '# **bold**',
                 '# *it1* _it2_',
+                '# `code`',
                 '# 1. Heading',
                 '# 1) Heading',
                 '',
                 ''
             ],
-            new Selection(6, 0, 6, 0),
+            new Selection(7, 0, 7, 0),
             [
                 '# [text](link)',
                 '# **bold**',
                 '# *it1* _it2_',
+                '# `code`',
                 '# 1. Heading',
                 '# 1) Heading',
                 '',
                 '- [text](#text)',
                 '- [**bold**](#bold)',
                 '- [*it1* _it2_](#it1-it2)',
+                '- [`code`](#code)',
                 '- [1. Heading](#1-heading)',
                 '- [1) Heading](#1-heading-1)'
             ],
-            new Selection(10, 28, 10, 28)).then(done, done);
+            new Selection(12, 28, 12, 28)).then(done, done);
     });
 });
