@@ -17,6 +17,7 @@ suite("Slugify function.", () => {
         "`a.b` c": "ab-c",
         "Via [remark-cli][]": "via-remark-cli",
         "1. not a list": "1-not-a-list",
+        "1) not a list": "1-not-a-list",
         "foo & < >  \"foo\"": "foo---foo"
     }
 

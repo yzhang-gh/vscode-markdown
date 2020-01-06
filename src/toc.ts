@@ -120,14 +120,15 @@ async function generateTocText(doc: TextDocument): Promise<string> {
     tocEntries.forEach(entry => {
         if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
             let relativeLvl = entry.level - startDepth;
-            let entryText = extractText(entry.text);
-            let anchorText = entryText;
+            //// `[text](link)` → `text`
+            let entryText = entry.text.replace(/\[([^\]]*)\]\([^\)]*\)/, (_, g1) => g1);
+            let slug = slugify(extractText(entryText));
 
-            if (anchorOccurances.hasOwnProperty(anchorText)) {
-                anchorOccurances[anchorText] += 1;
-                anchorText += ' ' + String(anchorOccurances[anchorText]);
+            if (anchorOccurances.hasOwnProperty(slug)) {
+                anchorOccurances[slug] += 1;
+                slug += '-' + String(anchorOccurances[slug]);
             } else {
-                anchorOccurances[anchorText] = 0;
+                anchorOccurances[slug] = 0;
             }
 
             // Filter out used excluded headings.
@@ -142,7 +143,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
                 let row = [
                     docConfig.tab.repeat(relativeLvl),
                     (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLvl]) + '.' : tocConfig.listMarker) + ' ',
-                    tocConfig.plaintext ? entryText : `[${entryText}](#${slugify(anchorText)})`
+                    tocConfig.plaintext ? entryText : `[${entryText}](#${slug})`
                 ];
                 toc.push(row.join(''));
                 if (tocConfig.orderedList) order.fill(0, relativeLvl + 1);

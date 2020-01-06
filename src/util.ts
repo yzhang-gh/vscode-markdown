@@ -99,14 +99,15 @@ export function showChangelog() {
    └─────────────────┘ */
 
 /**
- * For example: `[text](link)` -> `text`
+ * For example: `**bold**` -> `bold`
  * @param text
  */
 export function extractText(text: string) {
     //// Issue #515
     text = text.replace(/\[([^\]]*)\]\[[^\]]*\]/, (_, g1) => g1);
-    //// Escape leading `1.` (#567)
+    //// Escape leading `1.` and `1)` (#567, #585)
     text = text.replace(/^([\d]+)(\.)/, (_, g1) => g1 + '%dot%');
+    text = text.replace(/^([\d]+)(\))/, (_, g1) => g1 + '%par%');
 
     if (mdEngine.md === undefined) {
         return text;
@@ -116,7 +117,8 @@ export function extractText(text: string) {
     text = textInHtml(html);
 
     //// Unescape
-    text = text.replace('%dot%', '.')
+    text = text.replace('%dot%', '.');
+    text = text.replace('%par%', ')');
     return text;
 }
 
