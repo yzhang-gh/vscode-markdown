@@ -534,7 +534,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
             return workspace.findFiles('**/*', '**/node_modules/**').then(uris => {
                 let items = uris.map(uri => {
-                    const label = path.relative(basePath, uri.fsPath).replace(/\\/g, '/').replace(/ /g, '&#32;');
+                    const label = path.relative(basePath, uri.fsPath).replace(/\\/g, '/').replace(/ /g, '%20');
                     let item = new CompletionItem(label, CompletionItemKind.File);
                     item.sortText = label.replace(/\./g, '{');
                     return item;
