@@ -1,3 +1,22 @@
+### 2.7.0 (2020.01.11)
+
+- **New**: Option `omittedFromToc` ([#580](https://github.com/yzhang-gh/vscode-markdown/pull/580)). Thanks, [Dorian Marchal (@dorian-marchal)](https://github.com/dorian-marchal).
+
+<!--  -->
+
+- **Fix**: don't continue list item in math environment ([#574](https://github.com/yzhang-gh/vscode-markdown/issues/574)).
+- **Fix**: HTML entities in TOC ([#575](https://github.com/yzhang-gh/vscode-markdown/issues/575)).
+- **Fix**: User-defined KaTeX macros weren't included in the exported HTML ([#579](https://github.com/yzhang-gh/vscode-markdown/issues/579)).
+- **Fix**: Strange HTML tags in the generated TOC ([#585](https://github.com/yzhang-gh/vscode-markdown/issues/585)).
+- **Fix**: Use `%20` for space in URL ([#589](https://github.com/yzhang-gh/vscode-markdown/issues/589)).
+
+<!--  -->
+
+- **Other**: Update keybindings ([#571](https://github.com/yzhang-gh/vscode-markdown/issues/571)).
+- **Other**: Disable decorations for large files (threshold 128 KB → 50 KB) ([#578](https://github.com/yzhang-gh/vscode-markdown/issues/578)).
+
+---
+
 ### 2.6.1 (2019.12.12)
 
 - **Fix**: Strange HTML tags in TOC ([#567](https://github.com/yzhang-gh/vscode-markdown/issues/567)).

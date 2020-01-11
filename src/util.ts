@@ -99,7 +99,13 @@ export function showChangelog() {
    └─────────────────┘ */
 
 /**
- * For example: `**bold**` -> `bold`
+ * For example: `_italic_` -> `italic`
+ * This function is usually used before `slugify`
+ * 
+ * (Escape syntax like `1.`)
+ * 1. md.render(text)
+ * 2. textInHtml(text)
+ * (Unescape)
  * @param text
  */
 export function extractText(text: string) {
