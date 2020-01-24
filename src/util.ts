@@ -18,7 +18,7 @@ export function isMdEditor(editor: TextEditor) {
 
 export function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
     let textBefore = doc.getText(new Range(new Position(0, 0), new Position(lineNum, 0)));
-    let matches = textBefore.match(/^```[\w ]*$/gm);
+    let matches = textBefore.match(/^```[\w \+]*$/gm);
     if (matches == null) {
         return false;
     } else {
