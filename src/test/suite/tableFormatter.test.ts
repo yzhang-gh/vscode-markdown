@@ -267,4 +267,20 @@ suite("Table formatter.", () => {
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
+
+    test("Special characters (inaccurate `string.length`)", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '| คุณครู | รั้วริม | ไอ้หนูน้อย |',
+                '| --- | --- | --- |',
+                '| Teacher | The border | kids |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| คุณครู    | รั้วริม       | ไอ้หนูน้อย |',
+                '| ------- | ---------- | ------- |',
+                '| Teacher | The border | kids    |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
 });
