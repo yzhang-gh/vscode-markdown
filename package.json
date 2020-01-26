@@ -389,11 +389,12 @@
     },
     "dependencies": {
         "@neilsustc/markdown-it-katex": "^0.4.0",
+        "grapheme-splitter": "^1.0.4",
         "highlight.js": "^9.15.6",
         "image-size": "^0.7.4",
+        "markdown-it": "^10.0.0",
         "markdown-it-footnote": "^3.0.2",
         "markdown-it-task-lists": "^2.1.1",
-        "markdown-it": "^10.0.0",
         "string-similarity": "^3.0.0"
     },
     "devDependencies": {
