@@ -118,8 +118,8 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 if (num != 1) {
                     //// Treat CJK characters as 2 English ones because of Unicode stuff
                     const numOfUnicodeChars = splitter.countGraphemes(cell);
-                    const length = cjkRegex.test(cell) ? numOfUnicodeChars + cell.match(cjkRegex).length : numOfUnicodeChars;
-                    colWidth[i] = colWidth[i] > length ? colWidth[i] : length;
+                    const width = cjkRegex.test(cell) ? numOfUnicodeChars + cell.match(cjkRegex).length : numOfUnicodeChars;
+                    colWidth[i] = colWidth[i] > width ? colWidth[i] : width;
                 }
 
                 i++;
@@ -156,8 +156,8 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
 
         return lines.map(row => {
             let cells = row.map((cell, i) => {
-                const desiredLength = colWidth[i];
-                let jsLength = splitter.splitGraphemes(cell + ' '.repeat(desiredLength)).slice(0, desiredLength).join('').length;
+                const desiredWidth = colWidth[i];
+                let jsLength = splitter.splitGraphemes(cell + ' '.repeat(desiredWidth)).slice(0, desiredWidth).join('').length;
 
                 if (cjkRegex.test(cell)) {
                     jsLength -= cell.match(cjkRegex).length;
