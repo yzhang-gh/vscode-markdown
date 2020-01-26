@@ -4,6 +4,8 @@
 
 import { CancellationToken, Disposable, DocumentFormattingEditProvider, EndOfLine, ExtensionContext, FormattingOptions, languages, Range, TextDocument, TextEdit, workspace } from 'vscode';
 import { mdDocSelector } from './util';
+// import { GraphemeSplitter } from 'grapheme-splitter';
+import GraphemeSplitter = require('grapheme-splitter')
 
 export function activate(_: ExtensionContext) {
     let registration: Disposable | undefined;
@@ -153,6 +155,15 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 if (cjkRegex.test(cell)) {
                     cellLength -= cell.match(cjkRegex).length;
                 }
+
+                // calculate text shink
+                const splitter = new GraphemeSplitter();
+                const split: string[] = splitter.splitGraphemes(cell);
+                let visible_length = split.length;
+                
+                // add cell length to compensate text shink
+                cellLength += cell.length - visible_length
+                
                 //return (cell + ' '.repeat(cellLength)).slice(0, cellLength);
                 return this.alignText(cell, colAlign[i], cellLength);
             });
