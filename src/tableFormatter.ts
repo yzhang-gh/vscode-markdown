@@ -4,8 +4,11 @@
 
 import { CancellationToken, Disposable, DocumentFormattingEditProvider, EndOfLine, ExtensionContext, FormattingOptions, languages, Range, TextDocument, TextEdit, workspace } from 'vscode';
 import { mdDocSelector } from './util';
+//// This module can only be referenced with ECMAScript imports/exports by turning on the 'esModuleInterop' flag and referencing its default export.
 // import { GraphemeSplitter } from 'grapheme-splitter';
-import GraphemeSplitter = require('grapheme-splitter')
+import GraphemeSplitter = require('grapheme-splitter');
+
+const splitter = new GraphemeSplitter();
 
 export function activate(_: ExtensionContext) {
     let registration: Disposable | undefined;
@@ -110,10 +113,12 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 let cell = field[1].trim();
                 values.push(cell);
 
-                // Ignore length of dash-line to enable width reduction
+                //// Calculate `colWidth`
+                //// Ignore length of dash-line to enable width reduction
                 if (num != 1) {
-                    // Treat CJK characters as 2 English ones because of Unicode stuff
-                    let length = cjkRegex.test(cell) ? cell.length + cell.match(cjkRegex).length : cell.length;
+                    //// Treat CJK characters as 2 English ones because of Unicode stuff
+                    const numOfUnicodeChars = splitter.splitGraphemes(cell).length;
+                    const length = cjkRegex.test(cell) ? numOfUnicodeChars + cell.match(cjkRegex).length : numOfUnicodeChars;
                     colWidth[i] = colWidth[i] > length ? colWidth[i] : length;
                 }
 
@@ -156,15 +161,6 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                     cellLength -= cell.match(cjkRegex).length;
                 }
 
-                // calculate text shink
-                const splitter = new GraphemeSplitter();
-                const split: string[] = splitter.splitGraphemes(cell);
-                let visible_length = split.length;
-                
-                // add cell length to compensate text shink
-                cellLength += cell.length - visible_length
-                
-                //return (cell + ' '.repeat(cellLength)).slice(0, cellLength);
                 return this.alignText(cell, colAlign[i], cellLength);
             });
             return indentation + '| ' + cells.join(' | ') + ' |';
