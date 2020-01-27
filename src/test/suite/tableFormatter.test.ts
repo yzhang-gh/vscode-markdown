@@ -283,4 +283,52 @@ suite("Table formatter.", () => {
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
+
+    test("GitHub issue #431 left-aligned single column table", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '| h |',
+                '| --- |',
+                '| a |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| h   |',
+                '| --- |',
+                '| a   |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
+
+    test("GitHub issue #431 centre-aligned single column table", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '| h |',
+                '| :---: |',
+                '| a |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '|   h   |',
+                '| :---: |',
+                '|   a   |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
+
+    test("GitHub issue #431 right-aligned single column table", done => {
+        testCommand('editor.action.formatDocument', {},
+            [
+                '| h |',
+                '| ---: |',
+                '| a |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '|    h |',
+                '| ---: |',
+                '|    a |'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
 });

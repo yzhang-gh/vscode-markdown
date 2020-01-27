@@ -51,10 +51,20 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     private detectTables(text: string) {
         const lineBreak = '\\r?\\n';
         const contentLine = '\\|?.*\\|.*\\|?';
-        const hyphenLine = '[ \\t]*\\|?( *:?-+:? *\\|)+( *:?-+:? *\\|?)[ \\t]*';
+
+        const leftSideHyphenComponent = '(?:[ \\t]*(?:\\|? *:?-+:? *\\|){1}';
+        const middleHyphenComponent = '(?: *:?-+:? *\\|)*';
+        const rightSideHyphenComponent = '(?: *:?-+:? *\\|?){1}'
+        const multiColumnHyphenLine = leftSideHyphenComponent + middleHyphenComponent + rightSideHyphenComponent;
+
+        const singleColumnHyphenLine = '(?:\\| *:?-+:? *\\|){1})[ \\t]*'
+
+        const hyphenLine =  multiColumnHyphenLine + '|' + singleColumnHyphenLine;
+
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
         return text.match(tableRegex);
     }
+
 
     private getRange(document: TextDocument, text: string) {
         let documentText = document.getText();
