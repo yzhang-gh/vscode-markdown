@@ -4,6 +4,11 @@
 
 import { CancellationToken, Disposable, DocumentFormattingEditProvider, EndOfLine, ExtensionContext, FormattingOptions, languages, Range, TextDocument, TextEdit, workspace } from 'vscode';
 import { mdDocSelector } from './util';
+//// This module can only be referenced with ECMAScript imports/exports by turning on the 'esModuleInterop' flag and referencing its default export.
+// import { GraphemeSplitter } from 'grapheme-splitter';
+import GraphemeSplitter = require('grapheme-splitter');
+
+const splitter = new GraphemeSplitter();
 
 export function activate(_: ExtensionContext) {
     let registration: Disposable | undefined;
@@ -108,11 +113,13 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 let cell = field[1].trim();
                 values.push(cell);
 
-                // Ignore length of dash-line to enable width reduction
+                //// Calculate `colWidth`
+                //// Ignore length of dash-line to enable width reduction
                 if (num != 1) {
-                    // Treat CJK characters as 2 English ones because of Unicode stuff
-                    let length = cjkRegex.test(cell) ? cell.length + cell.match(cjkRegex).length : cell.length;
-                    colWidth[i] = colWidth[i] > length ? colWidth[i] : length;
+                    //// Treat CJK characters as 2 English ones because of Unicode stuff
+                    const numOfUnicodeChars = splitter.countGraphemes(cell);
+                    const width = cjkRegex.test(cell) ? numOfUnicodeChars + cell.match(cjkRegex).length : numOfUnicodeChars;
+                    colWidth[i] = colWidth[i] > width ? colWidth[i] : width;
                 }
 
                 i++;
@@ -149,12 +156,14 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
 
         return lines.map(row => {
             let cells = row.map((cell, i) => {
-                let cellLength = colWidth[i];
+                const desiredWidth = colWidth[i];
+                let jsLength = splitter.splitGraphemes(cell + ' '.repeat(desiredWidth)).slice(0, desiredWidth).join('').length;
+
                 if (cjkRegex.test(cell)) {
-                    cellLength -= cell.match(cjkRegex).length;
+                    jsLength -= cell.match(cjkRegex).length;
                 }
-                //return (cell + ' '.repeat(cellLength)).slice(0, cellLength);
-                return this.alignText(cell, colAlign[i], cellLength);
+
+                return this.alignText(cell, colAlign[i], jsLength);
             });
             return indentation + '| ' + cells.join(' | ') + ' |';
         }).join(doc.eol === EndOfLine.LF ? '\n' : '\r\n');

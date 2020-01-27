@@ -264,13 +264,13 @@ function getText(range: Range): string {
 }
 
 export function buildToc(doc: TextDocument) {
-    let toc;
     let lines = doc.getText()
-        .replace(/^ {0,3}```[\W\w]+?^ {0,3}```/gm, '')  //// Remove code blocks
+        .replace(/^( {0,3}|\t)```[\W\w]+?^( {0,3}|\t)```/gm, '')  //// Remove code blocks (and #603)
         .replace(/<!-- omit in (toc|TOC) -->/g, '&lt; omit in toc &gt;')  //// Escape magic comment
-        .replace(/<!--[\W\w]+?-->/, '')                 //// Remove comments
-        .replace(/^---[\W\w]+?(\r?\n)---/, '')          //// Remove YAML front matter
+        .replace(/<!--[\W\w]+?-->/, '')                           //// Remove comments
+        .replace(/^---[\W\w]+?(\r?\n)---/, '')                    //// Remove YAML front matter
         .split(/\r?\n/g);
+
     lines.forEach((lineText, i, arr) => {
         //// Transform setext headings to ATX headings
         if (
@@ -288,17 +288,19 @@ export function buildToc(doc: TextDocument) {
             arr[i] = '';
         }
     });
-    toc = lines.filter(lineText => {
+
+    const toc = lines.filter(lineText => {
         return lineText.trim().startsWith('#')
             && !lineText.startsWith('    ')  //// The opening `#` character may be indented 0-3 spaces
             && lineText.includes('# ')
             && !lineText.includes('&lt; omit in toc &gt;');
     }).map(lineText => {
         lineText = lineText.replace(/^ +/, '');
-        let entry = {};
-        let matches = /^(#+) (.*)/.exec(lineText);
-        entry['level'] = matches[1].length;
-        entry['text'] = matches[2].replace(/#+$/, '').trim();
+        const matches = /^(#+) (.*)/.exec(lineText);
+        const entry = {
+            level: matches[1].length,
+            text: matches[2].replace(/#+$/, '').trim()
+        };
         return entry;
     });
 
