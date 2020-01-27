@@ -296,10 +296,11 @@ export function buildToc(doc: TextDocument) {
             && !lineText.includes('&lt; omit in toc &gt;');
     }).map(lineText => {
         lineText = lineText.replace(/^ +/, '');
-        let entry = {};
-        let matches = /^(#+) (.*)/.exec(lineText);
-        entry['level'] = matches[1].length;
-        entry['text'] = matches[2].replace(/#+$/, '').trim();
+        const matches = /^(#+) (.*)/.exec(lineText);
+        const entry = {
+            level: matches[1].length,
+            text: matches[2].replace(/#+$/, '').trim()
+        };
         return entry;
     });
 
