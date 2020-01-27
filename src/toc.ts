@@ -266,10 +266,10 @@ function getText(range: Range): string {
 export function buildToc(doc: TextDocument) {
     let toc;
     let lines = doc.getText()
-        .replace(/^ {0,3}```[\W\w]+?^ {0,3}```/gm, '')  //// Remove code blocks
+        .replace(/^( {0,3}|\t)```[\W\w]+?^( {0,3}|\t)```/gm, '')  //// Remove code blocks (and #603)
         .replace(/<!-- omit in (toc|TOC) -->/g, '&lt; omit in toc &gt;')  //// Escape magic comment
-        .replace(/<!--[\W\w]+?-->/, '')                 //// Remove comments
-        .replace(/^---[\W\w]+?(\r?\n)---/, '')          //// Remove YAML front matter
+        .replace(/<!--[\W\w]+?-->/, '')                           //// Remove comments
+        .replace(/^---[\W\w]+?(\r?\n)---/, '')                    //// Remove YAML front matter
         .split(/\r?\n/g);
     lines.forEach((lineText, i, arr) => {
         //// Transform setext headings to ATX headings
