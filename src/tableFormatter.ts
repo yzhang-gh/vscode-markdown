@@ -52,14 +52,14 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         const lineBreak = '\\r?\\n';
         const contentLine = '\\|?.*\\|.*\\|?';
 
-        const leftSideHyphenComponent = '(?:[ \\t]*(?:\\|? *:?-+:? *\\|){1}';
+        const leftSideHyphenComponent = '(?:\\|? *:?-+:? *\\|)';
         const middleHyphenComponent = '(?: *:?-+:? *\\|)*';
-        const rightSideHyphenComponent = '(?: *:?-+:? *\\|?){1}'
+        const rightSideHyphenComponent = '(?: *:?-+:? *\\|?)'
         const multiColumnHyphenLine = leftSideHyphenComponent + middleHyphenComponent + rightSideHyphenComponent;
 
-        const singleColumnHyphenLine = '(?:\\| *:?-+:? *\\|){1})[ \\t]*'
+        const singleColumnHyphenLine = '(?:\\| *:?-+:? *\\|)'
 
-        const hyphenLine =  multiColumnHyphenLine + '|' + singleColumnHyphenLine;
+        const hyphenLine =  '[ \\t]*(?:' + multiColumnHyphenLine + '|' + singleColumnHyphenLine + ')[ \\t]*';
 
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
         return text.match(tableRegex);
