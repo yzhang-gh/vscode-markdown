@@ -57,6 +57,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         const rightSideHyphenComponent = '(?: *:?-+:? *\\|?)'
         const multiColumnHyphenLine = leftSideHyphenComponent + middleHyphenComponent + rightSideHyphenComponent;
 
+        //// GitHub issue #431
         const singleColumnHyphenLine = '(?:\\| *:?-+:? *\\|)'
 
         const hyphenLine =  '[ \\t]*(?:' + multiColumnHyphenLine + '|' + singleColumnHyphenLine + ')[ \\t]*';
@@ -64,7 +65,6 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
         return text.match(tableRegex);
     }
-
 
     private getRange(document: TextDocument, text: string) {
         let documentText = document.getText();
