@@ -58,6 +58,8 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
   - Command `Markdown: Print current document to HTML`
 
+  - Compatible with [Markdown Footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes)
+
   - It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others
 
 - **GitHub Flavored Markdown**
@@ -103,6 +105,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - Markdown: Create Table of Contents
 - Markdown: Update Table of Contents
 - Markdown: Toggle code span
+- Markdown: Toggle code block
 - Markdown: Print current document to HTML
 - Markdown: Toggle math environment
 - Markdown: Toggle list
