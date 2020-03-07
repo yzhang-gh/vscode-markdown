@@ -360,6 +360,10 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
         envSnippet.insertText = new SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
 
+        // TODO: import macros from configerations
+        // TODO: convert macros into cmds and numberof arguments
+        // TODO: convert it into CompletionItems
+        // TODO: add it into mathCompletions.
         this.mathCompletions = [...c1, ...c2, ...c3, envSnippet];
         // Sort
         this.mathCompletions.forEach(item => {
