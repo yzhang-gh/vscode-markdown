@@ -361,6 +361,12 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         envSnippet.insertText = new SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
 
         // TODO: import macros from configerations
+        let macros;
+        if (workspace.workspaceFolders !== undefined) {
+            macros = workspace.getConfiguration('markdown.extension.katex.macros');
+        }
+        // UNITTEST:
+            console.log(macros);
         // TODO: convert macros into cmds and numberof arguments
         // TODO: convert it into CompletionItems
         // TODO: add it into mathCompletions.
