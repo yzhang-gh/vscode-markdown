@@ -360,7 +360,34 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
         envSnippet.insertText = new SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
 
-        this.mathCompletions = [...c1, ...c2, ...c3, envSnippet];
+        // Import macros from configurations
+        let resource = null;
+        if (workspace.workspaceFolders !== undefined) {
+            resource = workspace.workspaceFolders[0].uri;
+        }
+        let configMacros = workspace.getConfiguration('markdown.extension.katex', resource).get<object>('macros');
+        var macroItems: CompletionItem[] = [];
+        for (const cmd in configMacros) {
+            if (configMacros.hasOwnProperty(cmd)) {
+                const expansion: string = configMacros[cmd];
+            let item = new CompletionItem(cmd, CompletionItemKind.Function);
+
+                // Find the number of arguments in the expansion 
+                let numArgs = 0;
+                for (let i = 1; i < 10; i++) {
+                    if (!expansion.includes(`#${i}`)) {
+                        numArgs = i - 1;
+                        break;
+                }
+            }
+
+                item.insertText = new SnippetString(cmd.slice(1) + [...Array(numArgs).keys()].map(i => `\{$${i + 1}\}`).join(""));
+                macroItems.push(item);
+            }
+        }
+        
+        this.mathCompletions = [...c1, ...c2, ...c3, envSnippet, ...macroItems];
+
         // Sort
         this.mathCompletions.forEach(item => {
             item.sortText = item.label.replace(/[a-zA-Z]/g, c => {
