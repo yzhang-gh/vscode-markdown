@@ -360,17 +360,40 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
         envSnippet.insertText = new SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
 
-        // TODO: import macros from configerations
-        let macros;
+        // import macros from configerations
+        let config_macros;
         if (workspace.workspaceFolders !== undefined) {
-            macros = workspace.getConfiguration('markdown.extension.katex.macros');
+            config_macros = workspace.getConfiguration('markdown.extension.katex.macros');
         }
-        // UNITTEST:
-            console.log(macros);
-        // TODO: convert macros into cmds and numberof arguments
-        // TODO: convert it into CompletionItems
-        // TODO: add it into mathCompletions.
-        this.mathCompletions = [...c1, ...c2, ...c3, envSnippet];
+        // extract the macros
+        let macro_entries = Object.entries(config_macros);
+        let len = macro_entries.length;
+        let macro_pair = macro_entries.slice(4, len); // first four are the methods of WorkspaceConfiguration
+        var macro_items :CompletionItem[] = [];
+        for (let i = 0; i < macro_pair.length; i++) {
+            let cmd = macro_pair[i][0].toString();
+            let expansion = macro_pair[i][1].toString();
+            let item = new CompletionItem(cmd, CompletionItemKind.Function);
+            // find the number of arguments in the expansion 
+            let numArg = 0;
+            while (numArg < 9) {
+                let token = "#".concat((numArg + 1).toString())
+                if (expansion.match(token) != null) {
+                    numArg += 1;
+                }
+                else break;
+            }
+
+            //construct insertText
+            let template = cmd.slice(1, cmd.length);
+            for (let i = 1; i <= numArg; i++) {
+                template = template + "\{$" + i.toString() + "\}";
+            }
+            item.insertText = new SnippetString(template);
+            macro_items.push(item);
+        }
+        
+        this.mathCompletions = [...c1, ...c2, ...c3, envSnippet,...macro_items];
         // Sort
         this.mathCompletions.forEach(item => {
             item.sortText = item.label.replace(/[a-zA-Z]/g, c => {
