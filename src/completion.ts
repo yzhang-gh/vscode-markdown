@@ -360,40 +360,34 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
         envSnippet.insertText = new SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
 
-        // import macros from configerations
-        let config_macros;
+        // Import macros from configurations
+        let resource = null;
         if (workspace.workspaceFolders !== undefined) {
-            config_macros = workspace.getConfiguration('markdown.extension.katex.macros');
+            resource = workspace.workspaceFolders[0].uri;
         }
-        // extract the macros
-        let macro_entries = Object.entries(config_macros);
-        let len = macro_entries.length;
-        let macro_pair = macro_entries.slice(4, len); // first four are the methods of WorkspaceConfiguration
-        var macro_items :CompletionItem[] = [];
-        for (let i = 0; i < macro_pair.length; i++) {
-            let cmd = macro_pair[i][0].toString();
-            let expansion = macro_pair[i][1].toString();
+        let configMacros = workspace.getConfiguration('markdown.extension.katex', resource).get<object>('macros');
+        var macroItems: CompletionItem[] = [];
+        for (const cmd in configMacros) {
+            if (configMacros.hasOwnProperty(cmd)) {
+                const expansion: string = configMacros[cmd];
             let item = new CompletionItem(cmd, CompletionItemKind.Function);
-            // find the number of arguments in the expansion 
-            let numArg = 0;
-            while (numArg < 9) {
-                let token = "#".concat((numArg + 1).toString())
-                if (expansion.match(token) != null) {
-                    numArg += 1;
+
+                // Find the number of arguments in the expansion 
+                let numArgs = 0;
+                for (let i = 1; i < 10; i++) {
+                    if (!expansion.includes(`#${i}`)) {
+                        numArgs = i - 1;
+                        break;
                 }
-                else break;
             }
 
-            //construct insertText
-            let template = cmd.slice(1, cmd.length);
-            for (let i = 1; i <= numArg; i++) {
-                template = template + "\{$" + i.toString() + "\}";
+                item.insertText = new SnippetString(cmd.slice(1) + [...Array(numArgs).keys()].map(i => `\{$${i + 1}\}`).join(""));
+                macroItems.push(item);
             }
-            item.insertText = new SnippetString(template);
-            macro_items.push(item);
         }
         
-        this.mathCompletions = [...c1, ...c2, ...c3, envSnippet,...macro_items];
+        this.mathCompletions = [...c1, ...c2, ...c3, envSnippet, ...macroItems];
+
         // Sort
         this.mathCompletions.forEach(item => {
             item.sortText = item.label.replace(/[a-zA-Z]/g, c => {
