@@ -20,6 +20,7 @@
     "config.list.indentationSize.description": "Markdown 列表的缩进量（包括目录列表的缩进大小）",
     "config.list.indentationSize.enumDescriptions.adaptive": "无序列表中使用 2 空格，有序列表中使用 3 空格",
     "config.list.indentationSize.enumDescriptions.inherit": "使用当前文档设置的缩进量（请查看 vscode 状态栏）",    
+    "config.math.enabled": "启用基本的数学支持（由 KaTeX 提供）",
     "config.preview.autoShowPreviewToSide.description": "自动在侧边栏显示预览",
     "config.orderedList.marker.description": "有序列表标记",
     "config.orderedList.marker.enumDescriptions.one": "总是使用 `1.` 作为有序列表标记",

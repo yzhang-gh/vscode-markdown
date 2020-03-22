@@ -21,6 +21,7 @@
     "config.list.indentationSize.description": "Whether to use different indentation sizes on different contexts. (This also affects the generated TOC)",
     "config.list.indentationSize.enumDescriptions.adaptive": "Use 2 spaces for unordered list and 3 for the ordered",
     "config.list.indentationSize.enumDescriptions.inherit": "Use the configured tab size of the current document (see vscode status bar)",
+    "config.math.enabled": "Enable basic math support (with KaTeX)",
     "config.preview.autoShowPreviewToSide.description": "Auto show preview to side",
     "config.orderedList.marker.description": "Ordered list marker",
     "config.orderedList.marker.enumDescriptions.one": "Always use `1.` as ordered list marker",

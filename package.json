@@ -231,6 +231,11 @@
                     "description": "%config.list.indentationSize.description%",
                     "scope": "resource"
                 },
+                "markdown.extension.math.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%config.math.enabled%"
+                },
                 "markdown.extension.orderedList.autoRenumber": {
                     "type": "boolean",
                     "default": true,
