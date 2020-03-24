@@ -26,10 +26,10 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
   - To make TOC compatible with GitHub, set option `githubCompatibility` to `true`
 
-  - Use `<!-- omit in toc -->` to ignore specific heading in TOC  
+  - Use `<!-- omit in toc -->` to ignore a specific heading in TOC  
     (It can also be placed above a heading)
 
-  - You can also use the `omittedFromToc` setting to omit some headings from TOC:
+  - You can also use the `omittedFromToc` setting to omit some headings (and their subheadings) from TOC:
     ```js
     // In your settings.json
     "markdown.extension.toc.omittedFromToc": {
