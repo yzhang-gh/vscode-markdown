@@ -76,7 +76,7 @@ function getExcludedHeadings(doc: TextDocument): { level: number, text: string }
     let omittedTocPerFile = {};
     for (const key in configObj) {
         if (configObj.hasOwnProperty(key)) {
-            omittedTocPerFile[key.toLowerCase()] = configObj[key];
+            omittedTocPerFile[key.replace(/\\/g, '/').toLowerCase()] = configObj[key];
         }
     }
 
@@ -84,11 +84,12 @@ function getExcludedHeadings(doc: TextDocument): { level: number, text: string }
 
     // If we are not in a workspace (i.e. in a standalone file), use the absolute path.
     // Otherwise, use the workspace relative path.
-    const currentPath = docWorkspace
-        ? doc.fileName.replace('\\\\', '/').replace(`${docWorkspace.uri.fsPath}/`, '')
+    let currentPath = docWorkspace
+        ? doc.fileName.replace(`${docWorkspace.uri.fsPath}/`, '')
         : doc.fileName;
+    currentPath = currentPath.replace(/\\/g, '/').toLowerCase();
 
-    const omittedList = omittedTocPerFile[currentPath.toLowerCase()] || [];
+    const omittedList = omittedTocPerFile[currentPath] || [];
 
     if (!Array.isArray(omittedList)) {
         window.showErrorMessage(`\`omittedFromToc\` attributes must be arrays (e.g. \`{"README.md": ["# Introduction"]}\`)`);
