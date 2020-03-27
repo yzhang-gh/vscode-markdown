@@ -42,7 +42,7 @@ jobs:
         run: npm test
     
     - name: Upload artifact
-      uses: actions/upload-artifact@v1.0.0
+      uses: actions/upload-artifact@v2-preview
       with:
         name: Markdown-all-in-one GitHub build
         path: '*.vsix'
