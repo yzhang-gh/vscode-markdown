@@ -44,5 +44,5 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v2-preview
       with:
-        name: Markdown-all-in-one GitHub build
+        name: Markdown-all-in-one-GitHub-Build
         path: ./*.vsix
