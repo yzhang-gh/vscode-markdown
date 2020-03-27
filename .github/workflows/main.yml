@@ -37,7 +37,9 @@ jobs:
       run: vsce package
     
     - name: Test
-      run: npm test
+      uses: GabrielBB/xvfb-action@v1.0
+      with:
+        run: npm test
     
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
