@@ -1,5 +1,6 @@
 'use strict';
 
+import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
 import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, window, workspace } from 'vscode';
 import { extractText, isMdEditor, mdDocSelector, slugify } from './util';
@@ -64,7 +65,11 @@ async function updateToc() {
     });
 }
 
-// Returns a list of user defined excluded headings for the given document.
+function normalizePath(path: string): string {
+    return path.replace(/\\/g, '/').toLowerCase();
+}
+
+//// Returns a list of user defined excluded headings for the given document.
 function getExcludedHeadings(doc: TextDocument): { level: number, text: string }[] {
     const configObj = workspace.getConfiguration('markdown.extension.toc').get<object>('omittedFromToc');
 
@@ -73,23 +78,24 @@ function getExcludedHeadings(doc: TextDocument): { level: number, text: string }
         return [];
     }
 
+    const docWorkspace = workspace.getWorkspaceFolder(doc.uri);
+
     let omittedTocPerFile = {};
-    for (const key in configObj) {
-        if (configObj.hasOwnProperty(key)) {
-            omittedTocPerFile[key.replace(/\\/g, '/').toLowerCase()] = configObj[key];
+    for (const filePath in configObj) {
+        if (configObj.hasOwnProperty(filePath)) {
+            let normedPath: string;
+            //// Converts paths to absolute paths if a workspace is opened
+            if (docWorkspace !== undefined && !path.isAbsolute(filePath)) {
+                normedPath = normalizePath(path.join(docWorkspace.uri.fsPath, filePath));
+            } else {
+                normedPath = normalizePath(filePath);
+            }
+            omittedTocPerFile[normedPath] = [...(omittedTocPerFile[normedPath] || []), ...configObj[filePath]];
         }
     }
 
-    const docWorkspace = workspace.getWorkspaceFolder(doc.uri);
-
-    // If we are not in a workspace (i.e. in a standalone file), use the absolute path.
-    // Otherwise, use the workspace relative path.
-    let currentPath = docWorkspace
-        ? doc.fileName.replace(`${docWorkspace.uri.fsPath}/`, '')
-        : doc.fileName;
-    currentPath = currentPath.replace(/\\/g, '/').toLowerCase();
-
-    const omittedList = omittedTocPerFile[currentPath] || [];
+    const currentFile = normalizePath(doc.fileName);
+    const omittedList = omittedTocPerFile[currentFile] || [];
 
     if (!Array.isArray(omittedList)) {
         window.showErrorMessage(`\`omittedFromToc\` attributes must be arrays (e.g. \`{"README.md": ["# Introduction"]}\`)`);
