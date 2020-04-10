@@ -1,10 +1,32 @@
+### 2.8.0 (2020.04.10)
+
+- **New**: Path auto-completion now respects option `search.exclude` ([#614](https://github.com/yzhang-gh/vscode-markdown/issue/614)).
+- **New**: Suggest `katex.macros` in math environments ([#633](https://github.com/yzhang-gh/vscode-markdown/pull/633)). Thanks, [Y. Ding (@yd278)](https://github.com/yd278).
+- **New**: Option `math.enabled`.
+
+<!--  -->
+
+- **Fix**: Escape spaces in file path completions ([#590](https://github.com/yzhang-gh/vscode-markdown/pull/590)). Thanks, [Tomoki Aonuma (@uasi)](https://github.com/uasi).
+- **Fix**: TOC issues ([#593](https://github.com/yzhang-gh/vscode-markdown/issues/593), [#603](https://github.com/yzhang-gh/vscode-markdown/issues/603), [#629](https://github.com/yzhang-gh/vscode-markdown/issues/629)).
+- **Fix**: Table formatter for Thai characters ([#602](https://github.com/yzhang-gh/vscode-markdown/pull/602)). Thanks, [Nutchanon Ninyawee (@CircleOnCircles)](https://github.com/CircleOnCircles).
+- **Fix**: Single column table formatting ([#604](https://github.com/yzhang-gh/vscode-markdown/pull/604)). Thanks, [@chnicholas](https://github.com/chnicholas).
+- **Fix**: Issues with option `omitFromToc` ([#644](https://github.com/yzhang-gh/vscode-markdown/issue/644)).
+
+<!--  -->
+
+- **Other**: Added Japanese translation ([#608](https://github.com/yzhang-gh/vscode-markdown/pull/608)). Thanks, [にせ十字 (@falsecross)](https://github.com/falsecross).
+- **Other**: Upgraded KaTeX.
+- **Other**: Moved from AppVeyor to GitHub Actions. Thank [雪松 (@yxs)](https://github.com/yxs) for the CI badge.
+
+---
+
 ### 2.7.0 (2020.01.11)
 
 - **New**: Option `omittedFromToc` ([#580](https://github.com/yzhang-gh/vscode-markdown/pull/580)). Thanks, [Dorian Marchal (@dorian-marchal)](https://github.com/dorian-marchal).
 
 <!--  -->
 
-- **Fix**: don't continue list item in math environment ([#574](https://github.com/yzhang-gh/vscode-markdown/issues/574)).
+- **Fix**: Don't continue list item in math environment ([#574](https://github.com/yzhang-gh/vscode-markdown/issues/574)).
 - **Fix**: HTML entities in TOC ([#575](https://github.com/yzhang-gh/vscode-markdown/issues/575)).
 - **Fix**: User-defined KaTeX macros weren't included in the exported HTML ([#579](https://github.com/yzhang-gh/vscode-markdown/issues/579)).
 - **Fix**: Strange HTML tags in the generated TOC ([#585](https://github.com/yzhang-gh/vscode-markdown/issues/585)).
