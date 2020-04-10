@@ -76,6 +76,8 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
   <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/math.png" alt="math" width="544px"></p>
 
+  Please use [Markdown+Math](https://marketplace.visualstudio.com/items?itemName=goessner.mdmath) for dedicated math support. Be sure to disable `math.enabled` option of this extension.
+
 - **Auto completions**
 
   Tip: also support the option `completion.root`
