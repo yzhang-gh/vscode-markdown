@@ -21,21 +21,17 @@ suite("Slugify function.", () => {
         "foo & < >  \"foo\"": "foo---foo"
     }
 
-    for (const heading in headings) {
-        if (headings.hasOwnProperty(heading)) {
-            const slug = headings[heading];
-            test(`(VSCode) ${heading} → ${slug}`, () => {
-                assert.strictEqual(util.slugify(heading, false), slug);
-            });
-        }
+    for (const heading of Object.keys(headings)) {
+        const slug = headings[heading];
+        test(`(VSCode) ${heading} → ${slug}`, () => {
+            assert.strictEqual(util.slugify(heading, false), slug);
+        });
     }
 
-    for (const heading in headings_github) {
-        if (headings_github.hasOwnProperty(heading)) {
-            const slug = headings_github[heading];
-            test(`(GitHub) ${heading} → ${slug}`, () => {
-                assert.strictEqual(util.slugify(heading, true), slug);
-            });
-        }
+    for (const heading of Object.keys(headings_github)) {
+        const slug = headings_github[heading];
+        test(`(GitHub) ${heading} → ${slug}`, () => {
+            assert.strictEqual(util.slugify(heading, true), slug);
+        });
     }
 });

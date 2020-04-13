@@ -367,25 +367,23 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         }
         let configMacros = workspace.getConfiguration('markdown.extension.katex', resource).get<object>('macros');
         var macroItems: CompletionItem[] = [];
-        for (const cmd in configMacros) {
-            if (configMacros.hasOwnProperty(cmd)) {
-                const expansion: string = configMacros[cmd];
+        for (const cmd of Object.keys(configMacros)) {
+            const expansion: string = configMacros[cmd];
             let item = new CompletionItem(cmd, CompletionItemKind.Function);
 
-                // Find the number of arguments in the expansion 
-                let numArgs = 0;
-                for (let i = 1; i < 10; i++) {
-                    if (!expansion.includes(`#${i}`)) {
-                        numArgs = i - 1;
-                        break;
+            // Find the number of arguments in the expansion
+            let numArgs = 0;
+            for (let i = 1; i < 10; i++) {
+                if (!expansion.includes(`#${i}`)) {
+                    numArgs = i - 1;
+                    break;
                 }
             }
 
-                item.insertText = new SnippetString(cmd.slice(1) + [...Array(numArgs).keys()].map(i => `\{$${i + 1}\}`).join(""));
-                macroItems.push(item);
-            }
+            item.insertText = new SnippetString(cmd.slice(1) + [...Array(numArgs).keys()].map(i => `\{$${i + 1}\}`).join(""));
+            macroItems.push(item);
         }
-        
+
         this.mathCompletions = [...c1, ...c2, ...c3, envSnippet, ...macroItems];
 
         // Sort
@@ -402,8 +400,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         let excludePatterns = ['**/node_modules', '**/bower_components', '**/*.code-search'];
         if (workspace.workspaceFolders !== undefined) {
             const configExclude = workspace.getConfiguration('search', workspace.workspaceFolders[0].uri).get<object>('exclude');
-            for (const key in configExclude) {
-                if (configExclude.hasOwnProperty(key) && configExclude[key] === true) {
+            for (const key of Object.keys(configExclude)) {
+                if (configExclude[key] === true) {
                     excludePatterns.push(key);
                 }
             }

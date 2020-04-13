@@ -81,17 +81,15 @@ function getExcludedHeadings(doc: TextDocument): { level: number, text: string }
     const docWorkspace = workspace.getWorkspaceFolder(doc.uri);
 
     let omittedTocPerFile = {};
-    for (const filePath in configObj) {
-        if (configObj.hasOwnProperty(filePath)) {
-            let normedPath: string;
-            //// Converts paths to absolute paths if a workspace is opened
-            if (docWorkspace !== undefined && !path.isAbsolute(filePath)) {
-                normedPath = normalizePath(path.join(docWorkspace.uri.fsPath, filePath));
-            } else {
-                normedPath = normalizePath(filePath);
-            }
-            omittedTocPerFile[normedPath] = [...(omittedTocPerFile[normedPath] || []), ...configObj[filePath]];
+    for (const filePath of Object.keys(configObj)) {
+        let normedPath: string;
+        //// Converts paths to absolute paths if a workspace is opened
+        if (docWorkspace !== undefined && !path.isAbsolute(filePath)) {
+            normedPath = normalizePath(path.join(docWorkspace.uri.fsPath, filePath));
+        } else {
+            normedPath = normalizePath(filePath);
         }
+        omittedTocPerFile[normedPath] = [...(omittedTocPerFile[normedPath] || []), ...configObj[filePath]];
     }
 
     const currentFile = normalizePath(doc.fileName);
