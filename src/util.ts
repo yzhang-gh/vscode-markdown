@@ -109,8 +109,12 @@ export function showChangelog() {
  * @param text
  */
 export function extractText(text: string) {
+    //// `[text](link)` → `text`
+    text=text.replace(/\[([^\]]*)\]\([^\)]*\)/, (_, g1) => g1)
+
     //// Issue #515
-    text = text.replace(/\[([^\]]*)\]\[[^\]]*\]/, (_, g1) => g1);
+    text = text.replace(/\[([^\]]*)\](?:\[[^\]]*\])*/, (_, g1) => g1);
+
     //// Escape leading `1.` and `1)` (#567, #585)
     text = text.replace(/^([\d]+)(\.)/, (_, g1) => g1 + '%dot%');
     text = text.replace(/^([\d]+)(\))/, (_, g1) => g1 + '%par%');
