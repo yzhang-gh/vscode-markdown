@@ -134,9 +134,9 @@ async function generateTocText(doc: TextDocument): Promise<string> {
             let relativeLvl = entry.level - startDepth;
 
             //// Remove certain Markdown syntaxes
-            //// `[text](link)`
+            //// `[text](link)` → `text`
             let headingText = entry.text.replace(/\[([^\]]*)\]\([^\)]*\)/, (_, g1) => g1);
-            //// `[text][label]` and `[text]` → `text` → `text`
+            //// `[text][label]` and `[text]` → `text`
             headingText = headingText.replace(/\[([^\]]*)\](?:\[[^\]]*\])*/, (_, g1) => g1);
 
             let slug = slugify(mdHeadingToPlaintext(entry.text));
