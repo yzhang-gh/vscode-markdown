@@ -502,6 +502,7 @@ suite("TOC.", () => {
         testCommand('markdown.extension.toc.create', {},
             [
                 '# [text](link)',
+                '# [text2][label]',
                 '# **bold**',
                 '# *it1* _it2_',
                 '# `code`',
@@ -510,9 +511,10 @@ suite("TOC.", () => {
                 '',
                 ''
             ],
-            new Selection(7, 0, 7, 0),
+            new Selection(8, 0, 8, 0),
             [
                 '# [text](link)',
+                '# [text2][label]',
                 '# **bold**',
                 '# *it1* _it2_',
                 '# `code`',
@@ -520,12 +522,13 @@ suite("TOC.", () => {
                 '# 1) Heading',
                 '',
                 '- [text](#text)',
+                '- [text2](#text2)',
                 '- [**bold**](#bold)',
                 '- [*it1* _it2_](#it1-it2)',
                 '- [`code`](#code)',
                 '- [1. Heading](#1-heading)',
                 '- [1) Heading](#1-heading-1)'
             ],
-            new Selection(12, 28, 12, 28)).then(done, done);
+            new Selection(14, 28, 14, 28)).then(done, done);
     });
 });

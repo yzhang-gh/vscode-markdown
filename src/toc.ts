@@ -3,7 +3,7 @@
 import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
 import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, window, workspace } from 'vscode';
-import { extractText, isMdEditor, mdDocSelector, slugify } from './util';
+import { isMdEditor, mdDocSelector, mdHeadingToPlaintext, slugify } from './util';
 
 /**
  * Workspace config
@@ -132,9 +132,14 @@ async function generateTocText(doc: TextDocument): Promise<string> {
     tocEntries.forEach(entry => {
         if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
             let relativeLvl = entry.level - startDepth;
+
+            //// Remove certain Markdown syntaxes
             //// `[text](link)` → `text`
-            let entryText = entry.text.replace(/\[([^\]]*)\]\([^\)]*\)/, (_, g1) => g1);
-            let slug = slugify(extractText(entryText));
+            let headingText = entry.text.replace(/\[([^\]]*)\]\([^\)]*\)/, (_, g1) => g1);
+            //// `[text][label]` → `text`
+            headingText = headingText.replace(/\[([^\]]*)\]\[[^\)]*\]/, (_, g1) => g1);
+
+            let slug = slugify(mdHeadingToPlaintext(entry.text));
 
             if (anchorOccurances.hasOwnProperty(slug)) {
                 anchorOccurances[slug] += 1;
@@ -155,7 +160,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
                 let row = [
                     docConfig.tab.repeat(relativeLvl),
                     (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLvl]) + '.' : tocConfig.listMarker) + ' ',
-                    tocConfig.plaintext ? entryText : `[${entryText}](#${slug})`
+                    tocConfig.plaintext ? headingText : `[${headingText}](#${slug})`
                 ];
                 toc.push(row.join(''));
                 if (tocConfig.orderedList) order.fill(0, relativeLvl + 1);

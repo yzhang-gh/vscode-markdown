@@ -99,16 +99,18 @@ export function showChangelog() {
    └─────────────────┘ */
 
 /**
+ * Remove Markdown syntax (bold, italic, links etc.) in a heading
  * For example: `_italic_` -> `italic`
- * This function is usually used before `slugify`
+ * This function is used before `slugify`
  * 
  * (Escape syntax like `1.`)
  * 1. md.render(text)
  * 2. textInHtml(text)
  * (Unescape)
+ * 
  * @param text
  */
-export function extractText(text: string) {
+export function mdHeadingToPlaintext(text: string) {
     //// Issue #515
     text = text.replace(/\[([^\]]*)\]\[[^\]]*\]/, (_, g1) => g1);
     //// Escape leading `1.` and `1)` (#567, #585)
@@ -167,7 +169,7 @@ export function slugify(heading: string, github?: boolean, downcase?: boolean) {
     if (github) {
         // GitHub slugify function
         // <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
-        let slug = extractText(heading.trim())
+        let slug = mdHeadingToPlaintext(heading.trim())
             // .replace(/[A-Z]/g, match => match.toLowerCase()) // only downcase ASCII region
             .replace(PUNCTUATION_REGEXP, '')
             .replace(/ /g, '-');
