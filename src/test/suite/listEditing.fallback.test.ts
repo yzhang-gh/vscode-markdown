@@ -8,18 +8,14 @@ suite("No list editing.", () => {
         // 💩 Preload file to prevent the first test timeout
         await workspace.openTextDocument(testMdFile);
 
-        for (let key in previousConfigs) {
-            if (previousConfigs.hasOwnProperty(key)) {
-                previousConfigs[key] = workspace.getConfiguration('', null).get(key);
-            }
+        for (let key of Object.keys(previousConfigs)) {
+            previousConfigs[key] = workspace.getConfiguration('', null).get(key);
         }
     });
 
     suiteTeardown(async () => {
-        for (let key in previousConfigs) {
-            if (previousConfigs.hasOwnProperty(key)) {
-                await workspace.getConfiguration('', null).update(key, previousConfigs[key], true);
-            }
+        for (let key of Object.keys(previousConfigs)) {
+            await workspace.getConfiguration('', null).update(key, previousConfigs[key], true);
         }
     });
 

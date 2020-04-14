@@ -24,15 +24,11 @@ export let defaultConfigs = {
 
 export async function testCommand(command: string, configs, lines: string[], selection: Selection, expLines: string[], expSelection: Selection) {
     let tempConfigs = Object.assign({}, defaultConfigs);
-    for (let key in configs) {
-        if (configs.hasOwnProperty(key)) {
-            tempConfigs[key] = configs[key];
-        }
+    for (let key of Object.keys(configs)) {
+        tempConfigs[key] = configs[key];
     }
-    for (let key in tempConfigs) {
-        if (tempConfigs.hasOwnProperty(key)) {
-            await workspace.getConfiguration().update(key, tempConfigs[key], true);
-        }
+    for (let key of Object.keys(tempConfigs)) {
+        await workspace.getConfiguration().update(key, tempConfigs[key], true);
     }
     return workspace.openTextDocument(testMdFile).then(document => {
         return window.showTextDocument(document).then(editor => {
