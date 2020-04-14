@@ -111,6 +111,8 @@ export function showChangelog() {
  * @param text
  */
 export function mdHeadingToPlaintext(text: string) {
+    //// `[text](link)`
+    text = text.replace(/\[([^\]]*)\]\([^\)]*\)/, (_, g1) => g1);
     //// Issue #515
     text = text.replace(/\[([^\]]*)\](?:\[[^\]]*\])*/, (_, g1) => g1);
     //// Escape leading `1.` and `1)` (#567, #585)
