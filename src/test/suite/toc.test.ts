@@ -503,6 +503,8 @@ suite("TOC.", () => {
             [
                 '# [text](link)',
                 '# [text2][label]',
+                '# [text3][]',
+                '# [text4]',
                 '# **bold**',
                 '# *it1* _it2_',
                 '# `code`',
@@ -511,10 +513,12 @@ suite("TOC.", () => {
                 '',
                 ''
             ],
-            new Selection(8, 0, 8, 0),
+            new Selection(10, 0, 10, 0),
             [
                 '# [text](link)',
                 '# [text2][label]',
+                '# [text3][]',
+                '# [text4]',
                 '# **bold**',
                 '# *it1* _it2_',
                 '# `code`',
@@ -523,12 +527,14 @@ suite("TOC.", () => {
                 '',
                 '- [text](#text)',
                 '- [text2](#text2)',
+                '- [text3](#text3)',
+                '- [text4](#text4)',
                 '- [**bold**](#bold)',
                 '- [*it1* _it2_](#it1-it2)',
                 '- [`code`](#code)',
                 '- [1. Heading](#1-heading)',
                 '- [1) Heading](#1-heading-1)'
             ],
-            new Selection(14, 28, 14, 28)).then(done, done);
+            new Selection(18, 28, 18, 28)).then(done, done);
     });
 });
