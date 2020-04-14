@@ -133,8 +133,15 @@ async function generateTocText(doc: TextDocument): Promise<string> {
         if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
             let relativeLvl = entry.level - startDepth;
             
-            let entryText = extractText(entry.text)
-            let slug = slugify(entryText);
+            let entryText = entry.text;
+            
+            //// `[text](link)` → `text`
+            entryText=entryText.replace(/\[([^\]]*)\]\([^\)]*\)/, (_, g1) => g1)
+
+            //// Issue #515
+            entryText = entryText.replace(/\[([^\]]*)\](?:\[[^\]]*\])*/, (_, g1) => g1);
+            
+            let slug = slugify(extractText(entryText));
 
             if (anchorOccurances.hasOwnProperty(slug)) {
                 anchorOccurances[slug] += 1;
