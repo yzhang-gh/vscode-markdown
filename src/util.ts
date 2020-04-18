@@ -117,11 +117,11 @@ export function mdHeadingToPlaintext(text: string) {
     text = text.replace(/^([\d]+)(\.)/, (_, g1) => g1 + '%dot%');
     text = text.replace(/^([\d]+)(\))/, (_, g1) => g1 + '%par%');
 
-    if (mdEngine.md === undefined) {
+    if (mdEngine.cacheMd === undefined) {
         return text;
     }
 
-    const html = mdEngine.md.render(text).replace(/\r?\n$/, '');
+    const html = mdEngine.cacheMd.render(text).replace(/\r?\n$/, '');
     text = textInHtml(html);
 
     //// Unescape

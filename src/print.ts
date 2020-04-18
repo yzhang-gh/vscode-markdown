@@ -102,14 +102,17 @@ async function print(type: string) {
     }
 
     const hasMath = hasMathEnv(doc.getText());
-
+    const extensionStyles = await getPreviewExtensionStyles();
+    const extensionScripts = await getPreviewExtensionScripts();
     const html = `<!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
         <title>${title ? title : ''}</title>
+        ${extensionStyles}
         ${getStyles(doc.uri, hasMath)}
         ${hasMath ? '<script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>' : ''}
+        ${extensionScripts}
     </head>
     <body${config.get<string>('print.theme') === 'light' ? ' class="vscode-light"' : ''}>
         ${body}
@@ -217,4 +220,52 @@ function getPreviewSettingStyles(): string {
                 ${+lineHeight > 0 ? `line-height: ${lineHeight};` : ''}
             }
         </style>`;
+}
+
+// extensions that treat specially
+const extensionBlacklist = new Set<string>(["vscode.markdown-language-features", "yzhang.markdown-all-in-one"]);
+
+async function getPreviewExtensionStyles() {
+    var result = "<style>\n"
+    for (const contribute of mdEngine.contributionsProvider.contributions) {
+        if (extensionBlacklist.has(contribute.extensionId)) {
+            continue;
+        }
+        if (!contribute.previewStyles || !contribute.previewStyles.length) {
+            continue;
+        }
+        result += `/* From extension ${contribute.extensionId} */\n`;
+        for (const styleFile of contribute.previewStyles) {
+            try {
+                result += await fs.promises.readFile(styleFile.fsPath, { encoding: "utf8" });
+            } catch (error) {
+                result += "/* Error */";
+            }
+            result += "\n";
+        }
+    }
+    result += "</style>";
+    return result;
+}
+
+async function getPreviewExtensionScripts() {
+    var result = "";
+    for (const contribute of mdEngine.contributionsProvider.contributions) {
+        if (extensionBlacklist.has(contribute.extensionId)) {
+            continue;
+        }
+        if (!contribute.previewScripts || !contribute.previewScripts.length) {
+            continue;
+        }
+        for (const scriptFile of contribute.previewScripts) {
+            result += `<script type="text/javascript">\n/* From extension ${contribute.extensionId} */\n`;
+            try {
+                result += await fs.promises.readFile(scriptFile.fsPath, { encoding: "utf8" });
+            } catch (error) {
+                result += "/* Error */";
+            }
+            result += `\n</script>\n`;
+        }
+    }
+    return result;
 }
