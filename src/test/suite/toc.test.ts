@@ -223,10 +223,10 @@ suite("TOC.", () => {
             new Selection(7, 30, 7, 30)).then(done, done);
     });
 
-    test("Non-Latin symbols (Option `toc.githubCompatibility`)", done => {
+    test("Non-Latin symbols (Option `toc.slugifyMode: github`)", done => {
         testCommand('markdown.extension.toc.create',
             {
-                "markdown.extension.toc.githubCompatibility": true
+                "markdown.extension.toc.slugifyMode": "github"
             },
             [
                 '# Секция 1',
@@ -247,10 +247,35 @@ suite("TOC.", () => {
             new Selection(5, 28, 5, 28)).then(done, done);
     });
 
+    // https://github.com/yzhang-gh/vscode-markdown/issues/469
+    test("Non-Latin symbols (Option `toc.slugifyMode = gitlab`)", done => {
+        testCommand('markdown.extension.toc.create',
+            {
+                "markdown.extension.toc.slugifyMode": "gitlab"
+            },
+            [
+                '# Секция 1',
+                '',
+                '## Секция 1.1',
+                '',
+                ''
+            ],
+            new Selection(4, 0, 4, 0),
+            [
+                '# Секция 1',
+                '',
+                '## Секция 1.1',
+                '',
+                '- [Секция 1](#секция-1)',
+                '  - [Секция 1.1](#секция-11)'
+            ],
+            new Selection(5, 28, 5, 28)).then(done, done);
+    });
+
     test("Update multiple TOCs", done => {
         testCommand('markdown.extension.toc.update',
             {
-                "markdown.extension.toc.githubCompatibility": true
+                "markdown.extension.toc.slugifyMode": "github"
             },
             [
                 '# Head 1',
@@ -530,5 +555,25 @@ suite("TOC.", () => {
                 '- [1) Heading](#1-heading-1)'
             ],
             new Selection(14, 28, 14, 28)).then(done, done);
+    });
+
+    // https://github.com/yzhang-gh/vscode-markdown/issues/469
+    test("Multiple removed symbols in a row (Option `toc.slugifyMode = gitlab`)", done => {
+        testCommand('markdown.extension.toc.create',
+            {
+                "markdown.extension.toc.slugifyMode": "gitlab"
+            },
+            [
+                '# Test + Heading',
+                '',
+                ''
+            ],
+            new Selection(2, 0, 2, 0),
+            [
+                '# Test + Heading',
+                '',
+                '- [Test + Heading](#test-heading)'
+            ],
+            new Selection(2, 33, 2, 33)).then(done, done);
     });
 });
