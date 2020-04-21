@@ -317,10 +317,15 @@
                     "default": true,
                     "description": "%config.toc.downcaseLink.description%"
                 },
-                "markdown.extension.toc.githubCompatibility": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "%config.toc.githubCompatibility.description%"
+                "markdown.extension.toc.slugifyMode": {
+                    "type": "string",
+                    "default": "vscode",
+                    "enum": [
+                        "github",
+                        "gitlab",
+                        "vscode"
+                    ],
+                    "description": "%config.toc.slugifyMode.description%"
                 },
                 "markdown.extension.toc.levels": {
                     "type": "string",

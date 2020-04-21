@@ -24,7 +24,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
   - The indentation rule (tab or spaces) of TOC will be the same of your current file (find it in the right bottom corner)
 
-  - To make TOC compatible with GitHub, set option `githubCompatibility` to `true`
+  - To make TOC compatible with GitHub or GitLab, set option `slugifyMode` accordingly
 
   - Use `<!-- omit in toc -->` to ignore a specific heading in TOC  
     (It can also be placed above a heading)
@@ -153,7 +153,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 | `markdown.extension.syntax.plainTheme`             | `false`    | A distraction-free theme                                                                         |
 | `markdown.extension.tableFormatter.enabled`        | `true`     | Enable GFM table formatter                                                                       |
 | `markdown.extension.toc.downcaseLink`              | `true`     | Force the TOC links to be lowercase                                                              |
-| `markdown.extension.toc.githubCompatibility`       | `false`    | GitHub compatibility                                                                             |
+| `markdown.extension.toc.slugifyMode`               | `vscode`   | Slugify mode for TOC link generation                                                             |
 | `markdown.extension.toc.omittedFromToc`            | `{}`       | Lists of headings to omit by project file (e.g. `{ "README.md": ["# Introduction"] }`)           |
 | `markdown.extension.toc.levels`                    | `1..6`     | Control the heading levels to show in the table of contents.                                     |
 | `markdown.extension.toc.orderedList`               | `false`    | Use ordered list in the table of contents.                                                       |
