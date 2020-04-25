@@ -1,3 +1,5 @@
+// Reference to https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/src/markdownExtensions.ts
+// Changes have been made to differentiate contributions by extension id
 import { extensions, Disposable, Uri, Extension, Event, EventEmitter } from 'vscode';
 import * as path from 'path';
 
