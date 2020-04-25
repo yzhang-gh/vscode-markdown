@@ -117,7 +117,7 @@ export function mdHeadingToPlaintext(text: string) {
     text = text.replace(/^([\d]+)(\.)/, (_, g1) => g1 + '%dot%');
     text = text.replace(/^([\d]+)(\))/, (_, g1) => g1 + '%par%');
 
-    if (mdEngine.cacheMd === undefined) {
+    if (!mdEngine.cacheMd) {
         return text;
     }
 
