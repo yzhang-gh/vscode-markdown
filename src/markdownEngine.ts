@@ -2,70 +2,74 @@
 
 import { extensions, workspace, WorkspaceConfiguration } from 'vscode';
 import { slugify } from './util';
+import { MarkdownContribution, MarkdownContributionProvider, getMarkdownContributionProvider } from './markdownExtensions'
 
 class MarkdownEngine {
-    public md?;
+    public cacheMd;
 
+    public async getEngine() {
+        if (!this.cacheMd) {
+            this.cacheMd = await this.newEngine();
+        }
+        return this.cacheMd;
+    }
+
+    public contributionsProvider = getMarkdownContributionProvider();
     private _slugCount = new Map<string, number>();
 
     constructor() {
-        this.initMdIt();
+        this.cacheMd = null;
+        this.contributionsProvider.onContributionsChanged(() => {
+            this.newEngine().then((engine) => {
+                this.cacheMd = engine;
+            })
+        });
+        this.newEngine().then((engine) => {
+            this.cacheMd = engine;
+        })
     }
 
-    private async initMdIt() {
-        if (!this.md) {
-            const hljs = await import('highlight.js');
-            const mdtl = await import('markdown-it-task-lists');
-            const mdkt = await import('@neilsustc/markdown-it-katex');
+    private async newEngine() {
+        let md;
 
-            //// Make a deep copy as `macros` will be modified by KaTeX during initialization
-            let userMacros = JSON.parse(JSON.stringify(workspace.getConfiguration('markdown.extension.katex').get<object>('macros')));
-            let katexOptions = { throwOnError: false };
-            if (Object.keys(userMacros).length !== 0) {
-                katexOptions['macros'] = userMacros;
-            }
+        const hljs = await import('highlight.js');
 
-            this.md = (await import('markdown-it'))({
-                html: true,
-                highlight: (str: string, lang?: string) => {
-                    lang = normalizeHighlightLang(lang);
-                    if (lang && hljs.getLanguage(lang)) {
-                        try {
-                            return `<div>${hljs.highlight(lang, str, true).value}</div>`;
-                        }
-                        catch (error) { }
+        md = (await import('markdown-it'))({
+            html: true,
+            highlight: (str: string, lang?: string) => {
+                lang = normalizeHighlightLang(lang);
+                if (lang && hljs.getLanguage(lang)) {
+                    try {
+                        return `<div>${hljs.highlight(lang, str, true).value}</div>`;
                     }
-                    return `<code><div>${this.md.utils.escapeHtml(str)}</div></code>`;
+                    catch (error) { }
                 }
-            }).use(mdtl).use(mdkt, katexOptions);
-
-            //// Conditional modules
-            if (extensions.getExtension('bierner.markdown-footnotes') !== undefined) {
-                const mdfn = await import('markdown-it-footnote');
-                this.md = this.md.use(mdfn);
+                return `<code><div>${md.utils.escapeHtml(str)}</div></code>`;
             }
+        });
 
-            if (!workspace.getConfiguration('markdown.extension.print').get<boolean>('validateUrls', true)) {
-                this.md.validateLink = () => true;
-            }
-
-            this.addNamedHeaders(this.md);
+        if (!workspace.getConfiguration('markdown.extension.print').get<boolean>('validateUrls', true)) {
+            md.validateLink = () => true;
         }
+        this.addNamedHeaders(md);
+
+        for (const contribute of this.contributionsProvider.contributions) {
+            md = await contribute.extendMarkdownIt(md);
+        }
+        return md;
     }
 
     public async render(text: string, config: WorkspaceConfiguration): Promise<string> {
-        if (this.md === undefined) {
-            await this.initMdIt();
-        }
+        const md = await this.getEngine();
 
-        this.md.set({
+        md.set({
             breaks: config.get<boolean>('breaks', false),
             linkify: config.get<boolean>('linkify', true)
         });
 
         this._slugCount = new Map<string, number>();
 
-        return this.md.render(text);
+        return md.render(text);
     }
 
     private addNamedHeaders(md: any): void {

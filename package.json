@@ -403,7 +403,6 @@
         "highlight.js": "^9.15.6",
         "image-size": "^0.7.4",
         "markdown-it": "^10.0.0",
-        "markdown-it-footnote": "^3.0.2",
         "markdown-it-task-lists": "^2.1.1",
         "string-similarity": "^4.0.1"
     },
