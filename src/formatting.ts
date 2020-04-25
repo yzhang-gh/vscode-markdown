@@ -15,7 +15,8 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown),
         commands.registerCommand('markdown.extension.editing.toggleList', toggleList),
         commands.registerCommand('markdown.extension.editing.toggleCodeBlock', toggleCodeBlock),
-        commands.registerCommand('markdown.extension.editing.paste', paste)
+        commands.registerCommand('markdown.extension.editing.paste', paste),
+        commands.registerCommand('markdown.extension.editing._wrapBy', (before, after) => styleByWrapping(before, after))
     );
 }
 
