@@ -27,7 +27,7 @@ class MarkdownEngine {
     }
 
     private async newEngine() {
-        var md;
+        let md;
 
         const hljs = await import('highlight.js');
 
