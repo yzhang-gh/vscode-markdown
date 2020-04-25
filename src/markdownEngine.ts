@@ -4,6 +4,9 @@ import { extensions, workspace, WorkspaceConfiguration } from 'vscode';
 import { slugify } from './util';
 import { MarkdownContribution, MarkdownContributionProvider, getMarkdownContributionProvider } from './markdownExtensions'
 
+// extensions that treat specially
+export const extensionBlacklist = new Set<string>(["vscode.markdown-language-features", "yzhang.markdown-all-in-one"]);
+
 class MarkdownEngine {
     public cacheMd;
 
@@ -33,6 +36,15 @@ class MarkdownEngine {
         let md;
 
         const hljs = await import('highlight.js');
+        const mdtl = await import('markdown-it-task-lists');
+        const mdkt = await import('@neilsustc/markdown-it-katex');
+
+        //// Make a deep copy as `macros` will be modified by KaTeX during initialization
+        let userMacros = JSON.parse(JSON.stringify(workspace.getConfiguration('markdown.extension.katex').get<object>('macros')));
+        let katexOptions = { throwOnError: false };
+        if (Object.keys(userMacros).length !== 0) {
+            katexOptions['macros'] = userMacros;
+        }
 
         md = (await import('markdown-it'))({
             html: true,
@@ -47,6 +59,10 @@ class MarkdownEngine {
                 return `<code><div>${md.utils.escapeHtml(str)}</div></code>`;
             }
         });
+        
+        // contributions provided by this extension must be processed specially, 
+        // since this extension may not finish activing when a engine is needed to be created.
+        md.use(mdtl).use(mdkt, katexOptions);
 
         if (!workspace.getConfiguration('markdown.extension.print').get<boolean>('validateUrls', true)) {
             md.validateLink = () => true;
@@ -54,6 +70,9 @@ class MarkdownEngine {
         this.addNamedHeaders(md);
 
         for (const contribute of this.contributionsProvider.contributions) {
+            if (extensionBlacklist.has(contribute.extensionId)) {
+                continue;
+            }
             md = await contribute.extendMarkdownIt(md);
         }
         return md;
