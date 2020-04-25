@@ -18,12 +18,15 @@ class MarkdownEngine {
     private _slugCount = new Map<string, number>();
 
     constructor() {
-        this.contributionsProvider.onContributionsChanged(() => {
-            this.cacheMd = null;
-            this.getEngine();
-        });
         this.cacheMd = null;
-        this.getEngine();
+        this.contributionsProvider.onContributionsChanged(() => {
+            this.newEngine().then((engine) => {
+                this.cacheMd = engine;
+            })
+        });
+        this.newEngine().then((engine) => {
+            this.cacheMd = engine;
+        })
     }
 
     private async newEngine() {
