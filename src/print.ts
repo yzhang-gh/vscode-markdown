@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as path from 'path';
 import { commands, ExtensionContext, TextDocument, Uri, window, workspace } from 'vscode';
 import localize from './localize';
-import { mdEngine } from "./markdownEngine";
+import { mdEngine, extensionBlacklist } from "./markdownEngine";
 import { isMdEditor } from './util';
 
 let thisContext: ExtensionContext;
@@ -221,9 +221,6 @@ function getPreviewSettingStyles(): string {
             }
         </style>`;
 }
-
-// extensions that treat specially
-const extensionBlacklist = new Set<string>(["vscode.markdown-language-features", "yzhang.markdown-all-in-one"]);
 
 async function getPreviewExtensionStyles() {
     var result = "<style>\n"
