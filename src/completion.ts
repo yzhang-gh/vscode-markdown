@@ -360,11 +360,13 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
         envSnippet.insertText = new SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
 
-        // Import macros from configurations
+        // Pretend to support multi-workspacefolders
         let resource = null;
-        if (workspace.workspaceFolders !== undefined) {
+        if (workspace.workspaceFolders !== undefined && workspace.workspaceFolders.length > 0) {
             resource = workspace.workspaceFolders[0].uri;
         }
+
+        // Import macros from configurations
         let configMacros = workspace.getConfiguration('markdown.extension.katex', resource).get<object>('macros');
         var macroItems: CompletionItem[] = [];
         for (const cmd of Object.keys(configMacros)) {
@@ -398,12 +400,10 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         });
 
         let excludePatterns = ['**/node_modules', '**/bower_components', '**/*.code-search'];
-        if (workspace.workspaceFolders !== undefined) {
-            const configExclude = workspace.getConfiguration('search', workspace.workspaceFolders[0].uri).get<object>('exclude');
-            for (const key of Object.keys(configExclude)) {
-                if (configExclude[key] === true) {
-                    excludePatterns.push(key);
-                }
+        const configExclude = workspace.getConfiguration('search', resource).get<object>('exclude');
+        for (const key of Object.keys(configExclude)) {
+            if (configExclude[key] === true) {
+                excludePatterns.push(key);
             }
         }
 
