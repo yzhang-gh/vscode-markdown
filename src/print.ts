@@ -101,6 +101,16 @@ async function print(type: string) {
         });
     }
 
+    //// Convert `.md` links to `.html` by default (#667)
+    const hrefRegex = /(<a[^>]+href=")([^"]+)("[^>]*>)/g;  // Match '<a...href="..."...>'
+    body = body.replace(hrefRegex, function (_, g1, g2, g3) {
+        if (g2.endsWith('.md')) {
+            return `${g1}${g2.replace(/\.md$/, '.html')}${g3}`;
+        } else {
+            return _;
+        }
+    });
+
     const hasMath = hasMathEnv(doc.getText());
     const extensionStyles = await getPreviewExtensionStyles();
     const extensionScripts = await getPreviewExtensionScripts();
