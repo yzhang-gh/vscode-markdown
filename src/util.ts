@@ -176,7 +176,7 @@ export function slugify(heading: string, mode?: string, downcase?: boolean) {
             .replace(/ /g, '-');
 
         if (downcase) {
-            slug = slug.replace(/[A-Z]/g, match => match.toLowerCase())
+            slug = slug.toLowerCase()
         }
     } else if (mode === 'gitlab') {
         // GitLab slugify function, translated to JS
