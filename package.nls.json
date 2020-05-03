@@ -3,6 +3,7 @@
     "ext.description": "All you need to write Markdown (keyboard shortcuts, table of contents, auto preview and more)",
     "command.toc.create.title": "Create Table of Contents",
     "command.toc.update.title": "Update Table of Contents",
+    "command.toc.addSecNumbers.title": "Add/Update section numbers",
     "command.printToHtml.title": "Print current document to HTML",
     "command.editing.toggleCodeSpan.title": "Toggle code span",
     "command.editing.toggleMath.title": "Toggle math environment",

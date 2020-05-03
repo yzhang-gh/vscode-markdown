@@ -40,6 +40,11 @@
                 "category": "Markdown All in One"
             },
             {
+                "command": "markdown.extension.toc.addSecNumbers",
+                "title": "%command.toc.addSecNumbers.title%",
+                "category": "Markdown All in One"
+            },
+            {
                 "command": "markdown.extension.printToHtml",
                 "title": "%command.printToHtml.title%",
                 "category": "Markdown All in One"
