@@ -2,7 +2,7 @@
 
 import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
-import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, window, workspace } from 'vscode';
+import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, window, workspace, WorkspaceEdit } from 'vscode';
 import { isMdEditor, mdDocSelector, mdHeadingToPlaintext, slugify } from './util';
 
 /**
@@ -11,10 +11,13 @@ import { isMdEditor, mdDocSelector, mdHeadingToPlaintext, slugify } from './util
 const docConfig = { tab: '  ', eol: '\r\n' };
 const tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false, tabSize: 2 };
 
+const REGEX_SECNUMBER = /^(\s{0,3}#+ +)((?:\d\.)* )?(.*)/;
+
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand('markdown.extension.toc.create', createToc),
         commands.registerCommand('markdown.extension.toc.update', updateToc),
+        commands.registerCommand('markdown.extension.toc.addSecNumbers', addSectionNumbers),
         workspace.onWillSaveTextDocument(onWillSave),
         languages.registerCodeLensProvider(mdDocSelector, new TocCodeLensProvider())
     );
@@ -63,6 +66,42 @@ async function updateToc() {
             }
         }
     });
+}
+
+function addSectionNumbers() {
+    const editor = window.activeTextEditor;
+    if (!isMdEditor(editor)) {
+        return;
+    }
+    const activeDoc = editor.document;
+
+    let isInCodeBlocks = false;
+    let secNumbers = [0, 0, 0, 0, 0, 0];
+    let edit = new WorkspaceEdit();
+    for (let i = 0; i < activeDoc.lineCount; i++) {
+        const lineText = activeDoc.lineAt(i).text;
+        if (!isInCodeBlocks) {
+            if (/^\s{0,3}```.*$/.test(lineText)) {
+                isInCodeBlocks = true;
+            } else {
+                if (REGEX_SECNUMBER.test(lineText)) {
+                    const newText = lineText.replace(REGEX_SECNUMBER, (_, g1, _g2, g3) => {
+                        const level = g1.trim().length;
+                        secNumbers[level - 1] += 1;
+                        const secNumStr = [...Array(level).keys()].map(num => `${secNumbers[num]}.`).join('');
+                        return `${g1}${secNumStr} ${g3}`;
+                    });
+                    edit.replace(activeDoc.uri, activeDoc.lineAt(i).range, newText);
+                }
+            }
+        } else {
+            if (/^\s{0,3}```\s*$/.test(lineText)) {
+                isInCodeBlocks = false;
+            }
+        }
+    }
+
+    return workspace.applyEdit(edit);
 }
 
 function normalizePath(path: string): string {
