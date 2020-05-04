@@ -6,3 +6,4 @@ ROADMAP.md
 *.log
 /.vscode-test
 dist
+tmp
