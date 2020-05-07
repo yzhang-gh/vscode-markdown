@@ -81,7 +81,7 @@ function addSectionNumbers() {
     for (let i = 0; i < activeDoc.lineCount; i++) {
         const lineText = activeDoc.lineAt(i).text;
         if (!isInCodeBlocks) {
-            if (/^\s{0,3}```.*$/.test(lineText)) {
+            if (/^ {0,3}```[\w \+]*$/.test(lineText)) {
                 isInCodeBlocks = true;
             } else {
                 if (REGEX_SECNUMBER.test(lineText)) {
@@ -321,8 +321,8 @@ function getText(range: Range): string {
 
 export function buildToc(doc: TextDocument) {
     let lines = doc.getText()
-        .replace(/^( {0,3}|\t)```[\W\w]+?^( {0,3}|\t)```/gm, '')  //// Remove code blocks (and #603)
-        .replace(/<!-- omit in (toc|TOC) -->/g, '&lt; omit in toc &gt;')  //// Escape magic comment
+        .replace(/^( {0,3}|\t)```[\w \+]*$[\w\W]+?^( {0,3}|\t)``` *$/gm, '')  //// Remove fenced code blocks (and #603, #675)
+        .replace(/<!-- omit in (toc|TOC) -->/g, '&lt; omit in toc &gt;')      //// Escape magic comment
         .replace(/<!--[\W\w]+?-->/, '')                           //// Remove comments
         .replace(/^---[\W\w]+?(\r?\n)---/, '')                    //// Remove YAML front matter
         .split(/\r?\n/g);
