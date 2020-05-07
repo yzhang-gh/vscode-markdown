@@ -167,7 +167,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 - **Error "command 'markdown.extension.onXXXKey' not found"**
   
-  In most cases, it is because VSCode needs a few seconds to load this extension when you open a Markdown file *for the first time*. (You will see a message "activating extensions..." on the status bar.)
+  In most cases, it is because VSCode needs a few seconds to load this extension when you open a Markdown file *for the first time*. (You will see a message "Activating Extensions..." on the status bar.)
 
   If you still see this "command not found" error after waiting for a long time, please try to restart VSCode (or reinstall this extension if needed). Otherwise feel free to open a new issue on GitHub.
 
