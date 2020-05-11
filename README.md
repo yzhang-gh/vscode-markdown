@@ -1,4 +1,4 @@
-# Markdown Support for Visual Studio Code
+# Markdown Support for Visual Studio Code <!-- omit in toc -->
 
 [![version](https://img.shields.io/vscode-marketplace/v/yzhang.markdown-all-in-one.svg?style=flat-square&label=vscode%20marketplace)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
 [![installs](https://img.shields.io/vscode-marketplace/d/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
@@ -8,9 +8,29 @@
 
 All you need for Markdown (keyboard shortcuts, table of contents, auto preview and more).
 
+#### Table of contents  <!-- omit in toc -->
+
+* [Features](#features)
+  * [Keyboard shortcuts (toggle bold, italic, code span, strikethrough and heading)](#keyboard-shortcuts-toggle-bold-italic-code-span-strikethrough-and-heading)
+  * [Table of contents](#table-of-contents)
+  * [List editing](#list-editing)
+  * [Print Markdown to HTML](#print-markdown-to-html)
+  * [GitHub Flavored Markdown](#github-flavored-markdown)
+  * [Math](#math)
+  * [Auto completions](#auto-completions)
+  * [Others](#others)
+* [Available Commands](#available-commands)
+* [Keyboard Shortcuts](#keyboard-shortcuts)
+* [Supported Settings](#supported-settings)
+* [FAQ](#faq)
+* [Changelog](#changelog)
+* [Latest Development Build](#latest-development-build)
+* [Contributing](#contributing)
+* [Related](#related)
+
 ## Features
 
-- **Keyboard shortcuts** (toggle bold, italic, code span, strikethrough and heading)
+### Keyboard shortcuts (toggle bold, italic, code span, strikethrough and heading)
 
   <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/toggle-bold.gif" alt="toggle bold gif" width="282px"></p>
 
@@ -18,7 +38,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
   See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts) section
 
-- **Table of contents**
+### Table of contents
 
   <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/toc.png" alt="toc" width="305px"></p>
 
@@ -48,7 +68,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
     ```
     *Note*: headings underlined with `===` or `---` can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
 
-- **List editing**
+### List editing
 
   <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/on-enter-key.gif" alt="on enter key" width="214px"></p>
 
@@ -56,7 +76,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
   <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/fix-marker.gif" alt="fix ordered list markers" width="214px"></p>
 
-- **Print Markdown to HTML**
+### Print Markdown to HTML
 
   - Command `Markdown: Print current document to HTML`
 
@@ -64,7 +84,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
   - It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others
 
-- **GitHub Flavored Markdown**
+### GitHub Flavored Markdown
 
   - Table formatter
 
@@ -74,13 +94,13 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
   - Task list
 
-- **Math**
+### Math
 
   <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/math.png" alt="math" width="544px"></p>
 
   Please use [Markdown+Math](https://marketplace.visualstudio.com/items?itemName=goessner.mdmath) for dedicated math support. Be sure to disable `math.enabled` option of this extension.
 
-- **Auto completions**
+### Auto completions
 
   Tip: also support the option `completion.root`
 
@@ -96,7 +116,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
     <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/reference-link.png" alt="reference links" width="301px"></p>
 
-- **Others**
+### Others
 
   - Paste link on selected text
 
