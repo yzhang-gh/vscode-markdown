@@ -22,7 +22,9 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
   <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/toc.png" alt="toc" width="305px"></p>
 
-  - The indentation rule (tab or spaces) of TOC will be the same of your current file (find it in the right bottom corner)
+  - The indentation type (tab or spaces) of TOC can be configured per file (find it in the right bottom corner)
+
+    *Note*: be sure to also check the `list.indentationSize` option
 
   - To make TOC compatible with GitHub or GitLab, set option `slugifyMode` accordingly
 
@@ -44,7 +46,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
       ]
     }
     ```
-    Note: headings underlined with `===` or `---` can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
+    *Note*: headings underlined with `===` or `---` can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
 
 - **List editing**
 
