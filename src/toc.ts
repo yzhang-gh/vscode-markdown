@@ -240,8 +240,8 @@ async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string
                 continue;
             }
         } else {
-            //// GitHub issue #304 & #549
-            if (!(firstLine.includes('](#') && firstLine.trim().split(' ')[1].startsWith('['))) {
+            //// GitHub issue #304 (must contain `#`), #549 and #683 (shouldn't contain text other than links)
+            if (!/^[-\*+] +\[[^\]]+\]\(\#[^\)]+\)$/.test(firstLine)) {
                 continue;
             }
         }
