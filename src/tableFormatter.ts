@@ -39,8 +39,11 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         let edits: TextEdit[] = [];
         let tables = this.detectTables(document.getText());
         if (tables !== null) {
+            let startingPos = 0;
             tables.forEach(table => {
-                edits.push(new TextEdit(this.getRange(document, table), this.formatTable(table, document, options)));
+                const tableRange = this.getRange(document, table, startingPos);
+                edits.push(new TextEdit(tableRange, this.formatTable(table, document, options)));
+                startingPos += document.offsetAt(tableRange.end);
             });
             return edits;
         } else {
@@ -66,10 +69,10 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         return text.match(tableRegex);
     }
 
-    private getRange(document: TextDocument, text: string) {
+    private getRange(document: TextDocument, text: string, startingPos: number) {
         let documentText = document.getText();
-        let start = document.positionAt(documentText.indexOf(text));
-        let end = document.positionAt(documentText.indexOf(text) + text.length);
+        let start = document.positionAt(documentText.indexOf(text, startingPos));
+        let end = document.positionAt(documentText.indexOf(text, startingPos) + text.length);
         return new Range(start, end);
     }
 
