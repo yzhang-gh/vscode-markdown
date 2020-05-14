@@ -42,6 +42,8 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts) secti
 
 <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/toc.png" alt="toc" width="305px"></p>
 
+- The TOC is automatically updated on file save. To disable please change the `toc.updateOnSave` option.
+
 - The indentation type (tab or spaces) of TOC can be configured per file (find it in the right bottom corner)
 
   *Note*: be sure to also check the `list.indentationSize` option
