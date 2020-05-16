@@ -43,7 +43,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
             tables.forEach(table => {
                 const tableRange = this.getRange(document, table, startingPos);
                 edits.push(new TextEdit(tableRange, this.formatTable(table, document, options)));
-                startingPos += document.offsetAt(tableRange.end);
+                startingPos = document.offsetAt(tableRange.end);
             });
             return edits;
         } else {
