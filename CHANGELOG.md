@@ -1,3 +1,35 @@
+### 3.0.0 (2020.5.24)
+
+#### Highlights
+
+<p><img src="images/gifs/section-numbers.gif" alt="section numbers" width="768px"></p>
+
+<p><img src="images/md-extension.png" alt="markdown extensions" width="1146px"></p>
+
+- **Breaking change**: Replace `toc.githubCompatibility` with `toc.slugifyMode`. Now GitLab-style TOC is supported ([#660](https://github.com/yzhang-gh/vscode-markdown/pull/660)). Thanks, [@BeeeWall](https://github.com/BeeeWall).
+
+<!--  -->
+
+- **New**: Command to add/update numbering to headings ([#457](https://github.com/yzhang-gh/vscode-markdown/issue/457), [#555](https://github.com/yzhang-gh/vscode-markdown/issue/555)).
+- **New**: Automatically include other installed Markdown plugins when exporting Markdown to HTML ([#658](https://github.com/yzhang-gh/vscode-markdown/pull/658)). Thanks, [qiqiworld (@1354092549)](https://github.com/1354092549).
+- **New**: The links to `.md` files will be renamed to `.html` in the exported HTML ([#667](https://github.com/yzhang-gh/vscode-markdown/issue/667)).
+
+<!--  -->
+
+- **Fix**: Properly handle Markdown syntax in TOC entries ([#654](https://github.com/yzhang-gh/vscode-markdown/pull/654)).
+- **Fix**: An issue with `workspaceFolders` ([#666](https://github.com/yzhang-gh/vscode-markdown/issue/666)).
+- **Fix**: Slugify function `github` should downcase also non-Latin characters ([#670](https://github.com/yzhang-gh/vscode-markdown/pull/670)). Thanks, [lesha (@lesha-co)](https://github.com/lesha-co).
+- **Fix**: TOC issues ([#675](https://github.com/yzhang-gh/vscode-markdown/issue/675), [#683](https://github.com/yzhang-gh/vscode-markdown/issue/683)).
+- **Fix**: Table formatter fails if there are two identical tables ([#682](https://github.com/yzhang-gh/vscode-markdown/issue/682)).
+- **Fix**: CJ**K** characters in Markdown Tables ([#685](https://github.com/yzhang-gh/vscode-markdown/issue/685)).
+
+<!--  -->
+
+- **Other**: Expose `wrapBy` function ([#663](https://github.com/yzhang-gh/vscode-markdown/issue/663)).
+- **Other**: `README` improvements ([#681](https://github.com/yzhang-gh/vscode-markdown/pull/681)). Thanks, [Kaspar (@casaper)](https://github.com/casaper).
+
+---
+
 ### 2.8.0 (2020.04.10)
 
 - **New**: Path auto-completion now respects option `search.exclude` ([#614](https://github.com/yzhang-gh/vscode-markdown/issue/614)).

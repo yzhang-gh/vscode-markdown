@@ -70,6 +70,10 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts) secti
   ```
   *Note*: headings underlined with `===` or `---` can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
 
+- Easily add/update section numbers
+
+  <img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/section-numbers.gif" alt="section numbers" width="768px">
+
 ### List editing
 
 <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/on-enter-key.gif" alt="on enter key" width="214px"></p>
@@ -82,9 +86,12 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts) secti
 
 - Command `Markdown: Print current document to HTML`
 
-- Compatible with [Markdown Footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes)
+- Compatible with other installed Markdown plugins (e.g. [Markdown Footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes))
+  The exported HTML should look the same as inside VSCode.
 
-- It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others
+- Plain links to `.md` files will be converted to `.html`.
+
+- It's recommended to print the exported HTML to PDF with browser (e.g. Chrome) if you want to share your documents with others.
 
 ### GitHub Flavored Markdown
 
@@ -106,11 +113,11 @@ Please use [Markdown+Math](https://marketplace.visualstudio.com/items?itemName=g
 
 Tip: also support the option `completion.root`
 
-- Images/Files
+- Images/Files (respects option `search.exclude`)
 
   <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/image-completions.png" alt="image completions" width="351px"></p>
 
-- Math functions
+- Math functions (including option `katex.macros`)
 
   <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/math-completions.png" alt="math completions" width="154px"></p>
 
@@ -177,7 +184,7 @@ Tip: also support the option `completion.root`
 | `markdown.extension.syntax.plainTheme`             | `false`    | A distraction-free theme                                                                         |
 | `markdown.extension.tableFormatter.enabled`        | `true`     | Enable GFM table formatter                                                                       |
 | `markdown.extension.toc.downcaseLink`              | `true`     | Force the TOC links to be lowercase                                                              |
-| `markdown.extension.toc.slugifyMode`               | `vscode`   | Slugify mode for TOC link generation                                                             |
+| `markdown.extension.toc.slugifyMode`               | `github`   | Slugify mode for TOC link generation (`vscode`, `github` or `gitlab`)                            |
 | `markdown.extension.toc.omittedFromToc`            | `{}`       | Lists of headings to omit by project file (e.g. `{ "README.md": ["# Introduction"] }`)           |
 | `markdown.extension.toc.levels`                    | `1..6`     | Control the heading levels to show in the table of contents.                                     |
 | `markdown.extension.toc.orderedList`               | `false`    | Use ordered list in the table of contents.                                                       |

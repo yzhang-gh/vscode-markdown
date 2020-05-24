@@ -3,7 +3,7 @@
     "displayName": "%ext.displayName%",
     "description": "%ext.description%",
     "icon": "images/Markdown-mark.png",
-    "version": "2.8.0",
+    "version": "3.0.0",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.38.0"
@@ -324,7 +324,7 @@
                 },
                 "markdown.extension.toc.slugifyMode": {
                     "type": "string",
-                    "default": "vscode",
+                    "default": "github",
                     "enum": [
                         "github",
                         "gitlab",

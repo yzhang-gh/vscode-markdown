@@ -55,5 +55,6 @@
     "1.4.0 msg": "Many new features of Markdown-All-in-One v1.4.0",
     "1.5.0 msg": "Long time no see. Welcome to Markdown-All-in-One v1.5.0.",
     "2.1.0 msg": "Markdown All in One v2.1.0! Paste URL as link, multi-cursor support, and more.",
-    "2.4.0 msg": "Markdown All in One v2.4.0! New command 'toggleList' and KaTeX macros support."
+    "2.4.0 msg": "Markdown All in One v2.4.0! New command 'toggleList' and KaTeX macros support.",
+    "3.0.0 msg": "Markdown All in One v3.0.0! New command 'add section numbers' and better compatibility with other Markdown syntax extensions."
 }
