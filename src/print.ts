@@ -76,7 +76,12 @@ async function print(type: string) {
 
             const imgSrc = relToAbsPath(doc.uri, p2);
             try {
-                const imgExt = path.extname(imgSrc).slice(1);
+                let imgExt = path.extname(imgSrc).slice(1);
+                if (imgExt === "jpg") {
+                    imgExt = "jpeg";
+                } else if (imgExt === "svg") {
+                    imgExt += "+xml";
+                }
                 const file = fs.readFileSync(imgSrc).toString('base64');
                 return `${p1}data:image/${imgExt};base64,${file}${p3}`;
             } catch (e) {
