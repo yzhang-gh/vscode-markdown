@@ -10,7 +10,7 @@
 
 <!--  -->
 
-- **New**: Command to add/update numbering to headings ([#457](https://github.com/yzhang-gh/vscode-markdown/issue/457), [#555](https://github.com/yzhang-gh/vscode-markdown/issue/555)).
+- **New**: Command to add/update/remove numbering to headings ([#457](https://github.com/yzhang-gh/vscode-markdown/issue/457), [#555](https://github.com/yzhang-gh/vscode-markdown/issue/555)).
 - **New**: Automatically include other installed Markdown plugins when exporting Markdown to HTML ([#658](https://github.com/yzhang-gh/vscode-markdown/pull/658)). Thanks, [qiqiworld (@1354092549)](https://github.com/1354092549).
 - **New**: The links to `.md` files will be renamed to `.html` in the exported HTML ([#667](https://github.com/yzhang-gh/vscode-markdown/issue/667)).
 

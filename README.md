@@ -70,7 +70,7 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts) secti
   ```
   *Note*: headings underlined with `===` or `---` can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
 
-- Easily add/update section numbers
+- Easily add/update/remove section numbers
 
   <img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/section-numbers.gif" alt="section numbers" width="768px">
 
@@ -135,13 +135,15 @@ Tip: also support the option `completion.root`
 
 ## Available Commands
 
-- Markdown: Create Table of Contents
-- Markdown: Update Table of Contents
-- Markdown: Toggle code span
-- Markdown: Toggle code block
-- Markdown: Print current document to HTML
-- Markdown: Toggle math environment
-- Markdown: Toggle list
+- Markdown All in One: Create Table of Contents
+- Markdown All in One: Update Table of Contents
+- Markdown All in One: Add/Update section numbers
+- Markdown All in One: Remove section numbers
+- Markdown All in One: Toggle code span
+- Markdown All in One: Toggle code block
+- Markdown All in One: Print current document to HTML
+- Markdown All in One: Toggle math environment
+- Markdown All in One: Toggle list
 
 ## Keyboard Shortcuts
 
