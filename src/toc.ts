@@ -18,6 +18,7 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.toc.create', createToc),
         commands.registerCommand('markdown.extension.toc.update', updateToc),
         commands.registerCommand('markdown.extension.toc.addSecNumbers', addSectionNumbers),
+        commands.registerCommand('markdown.extension.toc.removeSecNumbers', removeSectionNumbers),
         workspace.onWillSaveTextDocument(onWillSave),
         languages.registerCodeLensProvider(mdDocSelector, new TocCodeLensProvider())
     );
@@ -88,9 +89,40 @@ function addSectionNumbers() {
                     const newText = lineText.replace(REGEX_SECNUMBER, (_, g1, _g2, g3) => {
                         const level = g1.trim().length;
                         secNumbers[level - 1] += 1;
+                        secNumbers.fill(0, level);
                         const secNumStr = [...Array(level).keys()].map(num => `${secNumbers[num]}.`).join('');
                         return `${g1}${secNumStr} ${g3}`;
                     });
+                    edit.replace(activeDoc.uri, activeDoc.lineAt(i).range, newText);
+                }
+            }
+        } else {
+            if (/^\s{0,3}```\s*$/.test(lineText)) {
+                isInCodeBlocks = false;
+            }
+        }
+    }
+
+    return workspace.applyEdit(edit);
+}
+
+function removeSectionNumbers() {
+    const editor = window.activeTextEditor;
+    if (!isMdEditor(editor)) {
+        return;
+    }
+    const activeDoc = editor.document;
+
+    let isInCodeBlocks = false;
+    let edit = new WorkspaceEdit();
+    for (let i = 0; i < activeDoc.lineCount; i++) {
+        const lineText = activeDoc.lineAt(i).text;
+        if (!isInCodeBlocks) {
+            if (/^ {0,3}```[\w \+]*$/.test(lineText)) {
+                isInCodeBlocks = true;
+            } else {
+                if (REGEX_SECNUMBER.test(lineText)) {
+                    const newText = lineText.replace(REGEX_SECNUMBER, (_, g1, _g2, g3) => `${g1}${g3}`);
                     edit.replace(activeDoc.uri, activeDoc.lineAt(i).range, newText);
                 }
             }

@@ -45,6 +45,11 @@
                 "category": "Markdown All in One"
             },
             {
+                "command": "markdown.extension.toc.removeSecNumbers",
+                "title": "%command.toc.removeSecNumbers.title%",
+                "category": "Markdown All in One"
+            },
+            {
                 "command": "markdown.extension.printToHtml",
                 "title": "%command.printToHtml.title%",
                 "category": "Markdown All in One"

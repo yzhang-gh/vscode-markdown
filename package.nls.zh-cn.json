@@ -4,6 +4,7 @@
     "command.toc.create.title": "创建目录",
     "command.toc.update.title": "更新目录",
     "command.toc.addSecNumbers.title": "添加/更新章节序号",
+    "command.toc.removeSecNumbers.title": "删除章节序号",
     "command.printToHtml.title": "将当前文档打印到 HTML",
     "command.editing.toggleCodeSpan.title": "触发代码块",
     "command.editing.toggleMath.title": "触发数学环境",
