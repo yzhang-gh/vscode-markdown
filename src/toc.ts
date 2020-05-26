@@ -11,7 +11,7 @@ import { isMdEditor, mdDocSelector, mdHeadingToPlaintext, slugify } from './util
 const docConfig = { tab: '  ', eol: '\r\n' };
 const tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false, tabSize: 2 };
 
-const REGEX_SECNUMBER = /^(\s{0,3}#+ +)((?:\d\.)* )?(.*)/;
+const REGEX_SECNUMBER = /^(\s{0,3}#+ +)((?:\d{1,2}\.)* )?(.*)/;
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
