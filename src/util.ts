@@ -16,14 +16,13 @@ export function isMdEditor(editor: TextEditor) {
     return editor && editor.document && editor.document.languageId === 'markdown';
 }
 
+export const REGEX_FENCED_CODE_BLOCK = /^( {0,3}|\t)```[^`\r\n]*$[\w\W]+?^( {0,3}|\t)``` *$/gm;
+
 export function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
     let textBefore = doc.getText(new Range(new Position(0, 0), new Position(lineNum, 0)));
-    let matches = textBefore.match(/^ {0,3}```[^`\n]*$/gm);
-    if (matches == null) {
-        return false;
-    } else {
-        return matches.length % 2 != 0;
-    }
+    textBefore = textBefore.replace(REGEX_FENCED_CODE_BLOCK, '').replace(/<!--[\W\w]+?-->/g, '');
+    //// So far `textBefore` should contain no valid fenced code block or comment
+    return /^( {0,3}|\t)```[^`\r\n]*$[\w\W]*$/gm.test(textBefore);
 }
 
 export function mathEnvCheck(doc: TextDocument, pos: Position): string {

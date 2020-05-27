@@ -3,7 +3,7 @@
 import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
 import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, window, workspace, WorkspaceEdit } from 'vscode';
-import { isMdEditor, mdDocSelector, mdHeadingToPlaintext, slugify } from './util';
+import { isMdEditor, mdDocSelector, mdHeadingToPlaintext, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
 
 /**
  * Workspace config
@@ -353,10 +353,10 @@ function getText(range: Range): string {
 
 export function buildToc(doc: TextDocument) {
     let lines = doc.getText()
-        .replace(/^( {0,3}|\t)```[\w \+]*$[\w\W]+?^( {0,3}|\t)``` *$/gm, '')  //// Remove fenced code blocks (and #603, #675)
-        .replace(/<!-- omit in (toc|TOC) -->/g, '&lt; omit in toc &gt;')      //// Escape magic comment
-        .replace(/<!--[\W\w]+?-->/, '')                           //// Remove comments
-        .replace(/^---[\W\w]+?(\r?\n)---/, '')                    //// Remove YAML front matter
+        .replace(REGEX_FENCED_CODE_BLOCK, '')                   //// Remove fenced code blocks (and #603, #675)
+        .replace(/<!-- omit in (toc|TOC) -->/g, '&lt; omit in toc &gt;')    //// Escape magic comment
+        .replace(/<!--[\W\w]+?-->/g, '')                        //// Remove comments
+        .replace(/^---[\W\w]+?(\r?\n)---/, '')                  //// Remove YAML front matter
         .split(/\r?\n/g);
 
     lines.forEach((lineText, i, arr) => {
