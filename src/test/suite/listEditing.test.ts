@@ -220,7 +220,7 @@ suite("List editing.", () => {
             [
                 '- [x] test',
                 '- [x] test',
-                '- [ ] test'
+                '- [ ] test',
             ],
             new Selection(0, 0, 1, 1),
         ).then(done, done)
@@ -237,7 +237,7 @@ suite("List editing.", () => {
             [
                 '- [ ] test',
                 '- [ ] test',
-                '- [ ] test'
+                '- [ ] test',
             ],
             new Selection(0, 0, 2, 1),
         ).then(done, done)
