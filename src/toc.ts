@@ -11,8 +11,6 @@ import { isMdEditor, mdDocSelector, mdHeadingToPlaintext, REGEX_FENCED_CODE_BLOC
 const docConfig = { tab: '  ', eol: '\r\n' };
 const tocConfig = { startDepth: 1, endDepth: 6, listMarker: '-', orderedList: false, updateOnSave: false, plaintext: false, tabSize: 2 };
 
-const REGEX_SECNUMBER = /^(\s{0,3}#+ +)((?:\d{1,2}\.)* )?(.*)/;
-
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand('markdown.extension.toc.create', createToc),
@@ -74,34 +72,24 @@ function addSectionNumbers() {
     if (!isMdEditor(editor)) {
         return;
     }
-    const activeDoc = editor.document;
-
-    let isInCodeBlocks = false;
+    const doc = editor.document;
+    const toc = buildToc(editor.document);
     let secNumbers = [0, 0, 0, 0, 0, 0];
     let edit = new WorkspaceEdit();
-    for (let i = 0; i < activeDoc.lineCount; i++) {
-        const lineText = activeDoc.lineAt(i).text;
-        if (!isInCodeBlocks) {
-            if (/^ {0,3}```[\w \+]*$/.test(lineText)) {
-                isInCodeBlocks = true;
-            } else {
-                if (REGEX_SECNUMBER.test(lineText)) {
-                    const newText = lineText.replace(REGEX_SECNUMBER, (_, g1, _g2, g3) => {
-                        const level = g1.trim().length;
-                        secNumbers[level - 1] += 1;
-                        secNumbers.fill(0, level);
-                        const secNumStr = [...Array(level).keys()].map(num => `${secNumbers[num]}.`).join('');
-                        return `${g1}${secNumStr} ${g3}`;
-                    });
-                    edit.replace(activeDoc.uri, activeDoc.lineAt(i).range, newText);
-                }
-            }
-        } else {
-            if (/^\s{0,3}```\s*$/.test(lineText)) {
-                isInCodeBlocks = false;
-            }
-        }
-    }
+    toc.forEach(entry => {
+        const level = entry.level;
+        const lineNum = entry.lineNum;
+
+        secNumbers[level - 1] += 1;
+        secNumbers.fill(0, level);
+        const secNumStr = [...Array(level).keys()].map(num => `${secNumbers[num]}.`).join('');
+
+        const lineText = doc.lineAt(lineNum).text;
+        const newText = lineText.includes('#')
+            ? lineText.replace(/^(\s{0,3}#+ +)((?:\d{1,2}\.)* )?(.*)/, (_, g1, _g2, g3) => `${g1}${secNumStr} ${g3}`)
+            : lineText.replace(/^(\s{0,3})((?:\d{1,2}\.)* )?(.*)/, (_, g1, _g2, g3) => `${g1}${secNumStr} ${g3}`);
+        edit.replace(doc.uri, doc.lineAt(lineNum).range, newText);
+    });
 
     return workspace.applyEdit(edit);
 }
@@ -111,27 +99,17 @@ function removeSectionNumbers() {
     if (!isMdEditor(editor)) {
         return;
     }
-    const activeDoc = editor.document;
-
-    let isInCodeBlocks = false;
+    const doc = editor.document;
+    const toc = buildToc(editor.document);
     let edit = new WorkspaceEdit();
-    for (let i = 0; i < activeDoc.lineCount; i++) {
-        const lineText = activeDoc.lineAt(i).text;
-        if (!isInCodeBlocks) {
-            if (/^ {0,3}```[\w \+]*$/.test(lineText)) {
-                isInCodeBlocks = true;
-            } else {
-                if (REGEX_SECNUMBER.test(lineText)) {
-                    const newText = lineText.replace(REGEX_SECNUMBER, (_, g1, _g2, g3) => `${g1}${g3}`);
-                    edit.replace(activeDoc.uri, activeDoc.lineAt(i).range, newText);
-                }
-            }
-        } else {
-            if (/^\s{0,3}```\s*$/.test(lineText)) {
-                isInCodeBlocks = false;
-            }
-        }
-    }
+    toc.forEach(entry => {
+        const lineNum = entry.lineNum;
+        const lineText = doc.lineAt(lineNum).text;
+        const newText = lineText.includes('#')
+            ? lineText.replace(/^(\s{0,3}#+ +)((?:\d{1,2}\.)* )?(.*)/, (_, g1, _g2, g3) => `${g1}${g3}`)
+            : lineText.replace(/^(\s{0,3})((?:\d{1,2}\.)* )?(.*)/, (_, g1, _g2, g3) => `${g1}${g3}`);
+        edit.replace(doc.uri, doc.lineAt(lineNum).range, newText);
+    });
 
     return workspace.applyEdit(edit);
 }
