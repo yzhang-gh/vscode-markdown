@@ -352,13 +352,15 @@ function getText(range: Range): string {
 }
 
 export function buildToc(doc: TextDocument) {
+    const replacer = (foundStr: string) => foundStr.replace(/[^\r\n]/g, '');
     let lines = doc.getText()
-        .replace(REGEX_FENCED_CODE_BLOCK, '')                   //// Remove fenced code blocks (and #603, #675)
+        .replace(REGEX_FENCED_CODE_BLOCK, replacer)                 //// Remove fenced code blocks (and #603, #675)
         .replace(/<!-- omit in (toc|TOC) -->/g, '&lt; omit in toc &gt;')    //// Escape magic comment
-        .replace(/<!--[\W\w]+?-->/g, '')                        //// Remove comments
-        .replace(/^---[\W\w]+?(\r?\n)---/, '')                  //// Remove YAML front matter
+        .replace(/<!--[\W\w]+?-->/g, replacer)                      //// Remove comments
+        .replace(/^---[\W\w]+?(\r?\n)---/, replacer)                //// Remove YAML front matter
         .split(/\r?\n/g);
 
+    //// Some special cases that we need to look at multiple lines to decide
     lines.forEach((lineText, i, arr) => {
         //// Transform setext headings to ATX headings
         if (
@@ -378,20 +380,25 @@ export function buildToc(doc: TextDocument) {
         }
     });
 
-    const toc = lines.filter(lineText => {
-        return lineText.trim().startsWith('#')
+    const toc = lines.map((lineText, index) => {
+        if (
+            lineText.trim().startsWith('#')
             && !lineText.startsWith('    ')  //// The opening `#` character may be indented 0-3 spaces
             && lineText.includes('# ')
-            && !lineText.includes('&lt; omit in toc &gt;');
-    }).map(lineText => {
-        lineText = lineText.replace(/^ +/, '');
-        const matches = /^(#+) (.*)/.exec(lineText);
-        const entry = {
-            level: matches[1].length,
-            text: matches[2].replace(/#+$/, '').trim()
-        };
-        return entry;
-    });
+            && !lineText.includes('&lt; omit in toc &gt;')
+        ) {
+            lineText = lineText.replace(/^ +/, '');
+            const matches = /^(#+) (.*)/.exec(lineText);
+            const entry = {
+                level: matches[1].length,
+                text: matches[2].replace(/#+$/, '').trim(),
+                lineNum: index,
+            };
+            return entry;
+        } else {
+            return null;
+        }
+    }).filter(entry => entry !== null);
 
     return toc;
 }
