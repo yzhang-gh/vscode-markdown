@@ -78,6 +78,42 @@ suite("TOC.", () => {
             new Selection(0, 0, 0, 0)).then(done, done);
     });
 
+    test("Update (ordered list)", done => {
+        testCommand('markdown.extension.toc.update',
+            {
+                "markdown.extension.toc.orderedList": true
+            },
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1',
+                '',
+                '# Section 2',
+                '',
+                '## Section 2.1',
+                '',
+                '1. [Section 1](#section-1)',
+                '   1. [Section 1.1](#section-11)',
+                '2. [Section 2](#section-2)'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1',
+                '',
+                '# Section 2',
+                '',
+                '## Section 2.1',
+                '',
+                '1. [Section 1](#section-1)',
+                '   1. [Section 1.1](#section-11)',
+                '2. [Section 2](#section-2)',
+                '   1. [Section 2.1](#section-21)'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
+
     test("Create (levels 2..3)", done => {
         testCommand('markdown.extension.toc.create',
             {

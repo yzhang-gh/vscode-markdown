@@ -273,7 +273,7 @@ async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string
             }
         } else {
             //// GitHub issue #304 (must contain `#`), #549 and #683 (shouldn't contain text other than links)
-            if (!/^[-\*+] +\[[^\]]+\]\(\#[^\)]+\)$/.test(firstLine)) {
+            if (!/^([-\*+]|[0-9]+[.)]) +\[[^\]]+\]\(\#[^\)]+\)$/.test(firstLine)) {
                 continue;
             }
         }
