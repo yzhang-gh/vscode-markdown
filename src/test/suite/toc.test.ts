@@ -620,8 +620,8 @@ suite("TOC.", () => {
                 'title: test',
                 '---',
                 '# Heading 1',
-                '## Heading 1.1',
-                'Heading 2',
+                '##  Heading 1.1',
+                '   Heading 2',
                 '===',
                 '```markdown',
                 '# _Heading 3',
@@ -639,8 +639,8 @@ suite("TOC.", () => {
                 'title: test',
                 '---',
                 '# 1. Heading 1',
-                '## 1.1. Heading 1.1',
-                '2. Heading 2',
+                '##  1.1. Heading 1.1',
+                '   2. Heading 2',
                 '===',
                 '```markdown',
                 '# _Heading 3',
@@ -735,6 +735,45 @@ suite("TOC.", () => {
                 '## _Heading 2.3',
                 '-->',
                 '## Heading 2.2',
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
+
+    test("Section numbering starting level", done => {
+        testCommand('markdown.extension.toc.addSecNumbers', {},
+            [
+                '# Heading <!-- omit in toc -->',
+                '## Heading 1',
+                '## Heading 2',
+                '## Heading 3',
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '# Heading <!-- omit in toc -->',
+                '## 1. Heading 1',
+                '## 2. Heading 2',
+                '## 3. Heading 3',
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
+    });
+
+    test("Section numbering and `toc.levels`", done => {
+        testCommand('markdown.extension.toc.addSecNumbers',
+            {
+                "markdown.extension.toc.levels": "2..6"
+            },
+            [
+                '# Heading',
+                '## Heading 1',
+                '## Heading 2',
+                '## Heading 3',
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '# Heading',
+                '## 1. Heading 1',
+                '## 2. Heading 2',
+                '## 3. Heading 3',
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });

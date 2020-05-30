@@ -73,16 +73,23 @@ function addSectionNumbers() {
         return;
     }
     const doc = editor.document;
+
+    loadTocConfig();
     const toc = buildToc(editor.document);
+    if (toc === null || toc === undefined || toc.length < 1) return;
+    const startDepth = Math.max(tocConfig.startDepth, Math.min(...toc.map(h => h.level)));
+
     let secNumbers = [0, 0, 0, 0, 0, 0];
     let edit = new WorkspaceEdit();
     toc.forEach(entry => {
         const level = entry.level;
         const lineNum = entry.lineNum;
 
+        if (level < startDepth) return;
+
         secNumbers[level - 1] += 1;
         secNumbers.fill(0, level);
-        const secNumStr = [...Array(level).keys()].map(num => `${secNumbers[num]}.`).join('');
+        const secNumStr = [...Array(level - startDepth + 1).keys()].map(num => `${secNumbers[num + startDepth - 1]}.`).join('');
 
         const lineText = doc.lineAt(lineNum).text;
         const newText = lineText.includes('#')
@@ -171,7 +178,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
     let tocEntries = buildToc(doc);
     if (tocEntries === null || tocEntries === undefined || tocEntries.length < 1) return '';
 
-    let startDepth = Math.max(tocConfig.startDepth, Math.min.apply(null, tocEntries.map(h => h.level)));
+    const startDepth = Math.max(tocConfig.startDepth, Math.min(...tocEntries.map(h => h.level)));
     let order = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
 
     let anchorOccurances = {};
