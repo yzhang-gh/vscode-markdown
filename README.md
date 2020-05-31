@@ -36,7 +36,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/check-task-list.gif" alt="check task list" width="240px"></p>
 
-See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts) section
+See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) section
 
 ### Table of contents
 
