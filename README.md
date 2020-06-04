@@ -10,23 +10,23 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 #### Table of contents  <!-- omit in toc -->
 
-- [Features](#features)
-  - [Keyboard shortcuts](#keyboard-shortcuts)
-  - [Table of contents](#table-of-contents)
-  - [List editing](#list-editing)
-  - [Print Markdown to HTML](#print-markdown-to-html)
-  - [GitHub Flavored Markdown](#github-flavored-markdown)
-  - [Math](#math)
-  - [Auto completions](#auto-completions)
-  - [Others](#others)
-- [Available Commands](#available-commands)
-- [Keyboard Shortcuts](#keyboard-shortcuts-1)
-- [Supported Settings](#supported-settings)
-- [FAQ](#faq)
-- [Changelog](#changelog)
-- [Latest Development Build](#latest-development-build)
-- [Contributing](#contributing)
-- [Related](#related)
+1. [Features](#features)
+   1. [Keyboard shortcuts](#keyboard-shortcuts)
+   2. [Table of contents](#table-of-contents)
+   3. [List editing](#list-editing)
+   4. [Print Markdown to HTML](#print-markdown-to-html)
+   5. [GitHub Flavored Markdown](#github-flavored-markdown)
+   6. [Math](#math)
+   7. [Auto completions](#auto-completions)
+   8. [Others](#others)
+2. [Available Commands](#available-commands)
+3. [Keyboard Shortcuts](#keyboard-shortcuts-1)
+4. [Supported Settings](#supported-settings)
+5. [FAQ](#faq)
+6. [Changelog](#changelog)
+7. [Latest Development Build](#latest-development-build)
+8. [Contributing](#contributing)
+9. [Related](#related)
 
 ## Features
 
@@ -144,6 +144,7 @@ Tip: also support the option `completion.root`
 - Markdown All in One: Print current document to HTML
 - Markdown All in One: Toggle math environment
 - Markdown All in One: Toggle list
+  - It will cycle through list markers (`-`, `*`, `+`, `1.` and `1)`)
 
 ## Keyboard Shortcuts
 
