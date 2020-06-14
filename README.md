@@ -50,25 +50,29 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
 - To make TOC compatible with GitHub or GitLab, set option `slugifyMode` accordingly
 
-- Use `<!-- omit in toc -->` to ignore a specific heading in TOC  
-  (It can also be placed above a heading)
+- Three ways to control which headings are present in the TOC:
 
-- You can also use the `omittedFromToc` setting to omit some headings (and their subheadings) from TOC:
-  ```js
-  // In your settings.json
-  "markdown.extension.toc.omittedFromToc": {
-    // Use a path relative to your workspace.
-    "README.md": [
-        "# Introduction",
-        "## Also omitted",
-    ],
-    // Or an absolute path for standalone files.
-    "/home/foo/Documents/todo-list.md": [
-      "## Shame list (I'll never do these)",
-    ]
-  }
-  ```
-  *Note*: headings underlined with `===` or `---` can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
+  1. Use `<!-- omit in toc -->` to ignore a specific heading in TOC  
+    (It can also be placed above a heading)
+
+  2. Use `toc.levels` setting.
+
+  3. You can also use the `toc.omittedFromToc` setting to omit some headings (and their subheadings) from TOC:
+     ```js
+     // In your settings.json
+     "markdown.extension.toc.omittedFromToc": {
+       // Use a path relative to your workspace.
+       "README.md": [
+           "# Introduction",
+           "## Also omitted",
+       ],
+       // Or an absolute path for standalone files.
+       "/home/foo/Documents/todo-list.md": [
+         "## Shame list (I'll never do these)",
+       ]
+     }
+     ```
+     *Note*: headings underlined with `===` or `---` can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
 
 - Easily add/update/remove section numbers
 
