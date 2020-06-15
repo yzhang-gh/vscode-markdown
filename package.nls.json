@@ -38,6 +38,7 @@
     "config.print.onFileSave.description": "Print current document to HTML when file is saved",
     "config.print.validateUrls.description": "Enable/disable URL validation when printing",
     "config.print.theme": "Theme of the exported HTML",
+    "config.print.useDefaultCSS": "Use default external CSS links",
     "config.syntax.decorations.description": "Add syntax decorations",
     "config.syntax.plainTheme.description": "Only take effect when `extension.syntax.decorations` is enabled",
     "config.katex.macros.description": "User-defined KaTeX macros",
