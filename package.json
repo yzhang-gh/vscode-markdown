@@ -302,7 +302,6 @@
                     "description": "%config.print.theme%",
                     "scope": "resource"
                 },
-                ,
                 "markdown.extension.print.useDefaultCSS": {
                     "type": "boolean",
                     "default": true,
