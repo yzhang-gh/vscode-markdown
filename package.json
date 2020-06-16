@@ -302,6 +302,11 @@
                     "description": "%config.print.theme%",
                     "scope": "resource"
                 },
+                "markdown.extension.print.includeVscodeStylesheets": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%config.print.includeVscodeStylesheets%"
+                },
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
                     "default": true,
