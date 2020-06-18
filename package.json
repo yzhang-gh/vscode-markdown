@@ -317,6 +317,11 @@
                     "default": false,
                     "description": "%config.syntax.plainTheme.description%"
                 },
+                "markdown.extension.syntax.textDecorationFileSizeLimit": {
+                    "type": "number",
+                    "default": 50000,
+                    "description": "The size above which we shouldn't attempt to render text decorations"
+                },
                 "markdown.extension.tableFormatter.enabled": {
                     "type": "boolean",
                     "default": true,

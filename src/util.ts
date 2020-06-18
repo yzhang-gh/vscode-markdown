@@ -52,9 +52,9 @@ export function mathEnvCheck(doc: TextDocument, pos: Position): string {
     }
 }
 
-const sizeLimit = 50000; // ~50 KB
 let fileSizesCache = {}
 export function isFileTooLarge(document: TextDocument): boolean {
+    const sizeLimit = workspace.getConfiguration('markdown.extension.syntax').get<number>('textDecorationFileSizeLimit');
     const filePath = document.uri.fsPath;
     if (!filePath || !fs.existsSync(filePath)) {
         return false;
@@ -103,12 +103,12 @@ export function showChangelog() {
  * Remove Markdown syntax (bold, italic, links etc.) in a heading
  * For example: `_italic_` -> `italic`
  * This function is used before `slugify`
- * 
+ *
  * (Escape syntax like `1.`)
  * 1. md.render(text)
  * 2. textInHtml(text)
  * (Unescape)
- * 
+ *
  * @param text
  */
 export function mdHeadingToPlaintext(text: string) {
