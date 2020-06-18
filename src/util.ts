@@ -54,7 +54,7 @@ export function mathEnvCheck(doc: TextDocument, pos: Position): string {
 
 let fileSizesCache = {}
 export function isFileTooLarge(document: TextDocument): boolean {
-    const sizeLimit = workspace.getConfiguration('markdown.extension.syntax').get<number>('textDecorationFileSizeLimit');
+    const sizeLimit = workspace.getConfiguration('markdown.extension.syntax').get<number>('decorationFileSizeLimit');
     const filePath = document.uri.fsPath;
     if (!filePath || !fs.existsSync(filePath)) {
         return false;
