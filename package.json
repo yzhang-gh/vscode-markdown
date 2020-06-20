@@ -3,7 +3,7 @@
     "displayName": "%ext.displayName%",
     "description": "%ext.description%",
     "icon": "images/Markdown-mark.png",
-    "version": "3.0.0",
+    "version": "3.1.0",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.38.0"
@@ -438,7 +438,7 @@
         "ts-loader": "^6.2.2",
         "typescript": "^3.5.2",
         "vscode-test": "^1.2.3",
-        "webpack": "^4.42.1",
+        "webpack": "^4.43.0",
         "webpack-cli": "^3.3.11"
     }
 }

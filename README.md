@@ -173,31 +173,33 @@ Tip: also support the option `completion.root`
 <details>
 <summary>Table</summary>
 
-| Name                                               | Default    | Description                                                                                      |
-| -------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------ |
-| `markdown.extension.completion.root`               |            | Root folder when providing file path completions (It takes effect when the path starts with `/`) |
-| `markdown.extension.italic.indicator`              | `*`        | Use `*` or `_` to wrap italic text                                                               |
-| `markdown.extension.katex.macros`                  | `{}`       | KaTeX macros e.g. `{ "\\name": "expansion", ... }`                                               |
-| `markdown.extension.list.indentationSize`          | `adaptive` | Use different indentation size for ordered and unordered list                                    |
-| `markdown.extension.orderedList.autoRenumber`      | `true`     | Auto fix list markers as you edits                                                               |
-| `markdown.extension.orderedList.marker`            | `ordered`  | Or `one`: always use `1.` as ordered list marker                                                 |
-| `markdown.extension.preview.autoShowPreviewToSide` | `false`    | Automatically show preview when opening a Markdown file.                                         |
-| `markdown.extension.print.absoluteImgPath`         | `true`     | Convert image path to absolute path                                                              |
-| `markdown.extension.print.imgToBase64`             | `false`    | Convert images to base64 when printing to HTML                                                   |
-| `markdown.extension.print.onFileSave`              | `false`    | Print to HTML on file save                                                                       |
-| `markdown.extension.print.validateUrls`            | `true`     | Enable/disable URL validation when printing                                                      |
-| `markdown.extension.print.theme`                   | `light`    | Theme of the exported HTML                                                                       |
-| `markdown.extension.syntax.decorations`            | `true`     | Add decorations to strikethrough and code spans                                                  |
-| `markdown.extension.syntax.plainTheme`             | `false`    | A distraction-free theme                                                                         |
-| `markdown.extension.tableFormatter.enabled`        | `true`     | Enable GFM table formatter                                                                       |
-| `markdown.extension.toc.downcaseLink`              | `true`     | Force the TOC links to be lowercase                                                              |
-| `markdown.extension.toc.slugifyMode`               | `github`   | Slugify mode for TOC link generation (`vscode`, `github` or `gitlab`)                            |
-| `markdown.extension.toc.omittedFromToc`            | `{}`       | Lists of headings to omit by project file (e.g. `{ "README.md": ["# Introduction"] }`)           |
-| `markdown.extension.toc.levels`                    | `1..6`     | Control the heading levels to show in the table of contents.                                     |
-| `markdown.extension.toc.orderedList`               | `false`    | Use ordered list in the table of contents.                                                       |
-| `markdown.extension.toc.plaintext`                 | `false`    | Just plain text.                                                                                 |
-| `markdown.extension.toc.unorderedList.marker`      | `-`        | Use `-`, `*` or `+` in the table of contents (for unordered list)                                |
-| `markdown.extension.toc.updateOnSave`              | `true`     | Automatically update the table of contents on save.                                              |
+| Name                                                | Default    | Description                                                                                      |
+| --------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------ |
+| `markdown.extension.completion.root`                |            | Root folder when providing file path completions (It takes effect when the path starts with `/`) |
+| `markdown.extension.italic.indicator`               | `*`        | Use `*` or `_` to wrap italic text                                                               |
+| `markdown.extension.katex.macros`                   | `{}`       | KaTeX macros e.g. `{ "\\name": "expansion", ... }`                                               |
+| `markdown.extension.list.indentationSize`           | `adaptive` | Use different indentation size for ordered and unordered list                                    |
+| `markdown.extension.orderedList.autoRenumber`       | `true`     | Auto fix list markers as you edits                                                               |
+| `markdown.extension.orderedList.marker`             | `ordered`  | Or `one`: always use `1.` as ordered list marker                                                 |
+| `markdown.extension.preview.autoShowPreviewToSide`  | `false`    | Automatically show preview when opening a Markdown file.                                         |
+| `markdown.extension.print.absoluteImgPath`          | `true`     | Convert image path to absolute path                                                              |
+| `markdown.extension.print.imgToBase64`              | `false`    | Convert images to base64 when printing to HTML                                                   |
+| `markdown.extension.print.includeVscodeStylesheets` | `true`     | Whether to include VSCode's default styles                                                       |
+| `markdown.extension.print.onFileSave`               | `false`    | Print to HTML on file save                                                                       |
+| `markdown.extension.print.theme`                    | `light`    | Theme of the exported HTML                                                                       |
+| `markdown.extension.print.validateUrls`             | `true`     | Enable/disable URL validation when printing                                                      |
+| `markdown.extension.syntax.decorations`             | `true`     | Add decorations to ~~strikethrough~~ and `code span`                                             |
+| `markdown.extension.syntax.decorationFileSizeLimit` | 50000      | Don't render syntax decorations if a file is larger than this size (in byte/B)                   |
+| `markdown.extension.syntax.plainTheme`              | `false`    | A distraction-free theme                                                                         |
+| `markdown.extension.tableFormatter.enabled`         | `true`     | Enable GFM table formatter                                                                       |
+| `markdown.extension.toc.downcaseLink`               | `true`     | Force the TOC links to be lowercase                                                              |
+| `markdown.extension.toc.slugifyMode`                | `github`   | Slugify mode for TOC link generation (`vscode`, `github` or `gitlab`)                            |
+| `markdown.extension.toc.omittedFromToc`             | `{}`       | Lists of headings to omit by project file (e.g. `{ "README.md": ["# Introduction"] }`)           |
+| `markdown.extension.toc.levels`                     | `1..6`     | Control the heading levels to show in the table of contents.                                     |
+| `markdown.extension.toc.orderedList`                | `false`    | Use ordered list in the table of contents.                                                       |
+| `markdown.extension.toc.plaintext`                  | `false`    | Just plain text.                                                                                 |
+| `markdown.extension.toc.unorderedList.marker`       | `-`        | Use `-`, `*` or `+` in the table of contents (for unordered list)                                |
+| `markdown.extension.toc.updateOnSave`               | `true`     | Automatically update the table of contents on save.                                              |
 
 </details>
 

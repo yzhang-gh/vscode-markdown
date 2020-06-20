@@ -1,3 +1,21 @@
+### 3.1.0 (2020.06.20)
+
+- **New**: Option `print.includeVscodeStylesheets` ([#726](https://github.com/yzhang-gh/vscode-markdown/pull/726)). Thanks, [Gluck_S (@Glucksistemi)](https://github.com/Glucksistemi).
+- **New**: Option `syntax.decorationFileSizeLimit` ([#728](https://github.com/yzhang-gh/vscode-markdown/pull/728)). Thanks, [Rohit Patnaik (@quanticle)](https://github.com/quanticle).
+
+<!--  -->
+
+- **Fix**: Wrong mime type of SVG in exported HTML ([#694](https://github.com/yzhang-gh/vscode-markdown/issues/694)).
+- **Fix**: Heading numbering issues ([#695](https://github.com/yzhang-gh/vscode-markdown/issues/695), [#701](https://github.com/yzhang-gh/vscode-markdown/issues/701)).
+- **Fix**: TOC issues ([#555](https://github.com/yzhang-gh/vscode-markdown/issues/555), [#699](https://github.com/yzhang-gh/vscode-markdown/issues/699), [#706](https://github.com/yzhang-gh/vscode-markdown/issues/706))
+- **Fix**: Counterintuitive behavior of command `checkTaskList` ([#700](https://github.com/yzhang-gh/vscode-markdown/issues/700)).
+
+<!--  -->
+
+- **Other**: `README` improvements ([#709](https://github.com/yzhang-gh/vscode-markdown/pull/709)). Thanks, [Quang Vu (@vhquang)](https://github.com/vhquang).
+
+---
+
 ### 3.0.0 (2020.05.24)
 
 #### Highlights
