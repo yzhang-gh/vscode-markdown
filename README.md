@@ -32,7 +32,8 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 
 ### Keyboard shortcuts
 
-<p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/toggle-bold.gif" alt="toggle bold gif" width="282px"></p>
+<p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/toggle-bold.gif" alt="toggle bold gif" width="282px">
+<br>(Typo: multiple words)</p>
 
 <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/check-task-list.gif" alt="check task list" width="240px"></p>
 
