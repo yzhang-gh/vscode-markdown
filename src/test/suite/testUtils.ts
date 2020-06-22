@@ -9,7 +9,7 @@ export let defaultConfigs = {
     "markdown.extension.toc.orderedList": false,
     "markdown.extension.toc.plaintext": false,
     "markdown.extension.toc.updateOnSave": true,
-    "markdown.extension.toc.slugifyMode": "vscode",
+    "markdown.extension.toc.slugifyMode": "github",
     "markdown.extension.toc.omittedFromToc": {},
     "markdown.extension.toc.downcaseLink": true,
     "markdown.extension.preview.autoShowPreviewToSide": false,

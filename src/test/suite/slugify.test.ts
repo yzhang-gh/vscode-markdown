@@ -18,7 +18,8 @@ suite("Slugify function.", () => {
         "Via [remark-cli][]": "via-remark-cli",
         "1. not a list": "1-not-a-list",
         "1) not a list": "1-not-a-list",
-        "foo & < >  \"foo\"": "foo---foo"
+        "foo & < >  \"foo\"": "foo---foo",
+        "$\\LaTeX equations$": "latex-equations"
     }
 
     const headings_gitlab = {

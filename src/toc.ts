@@ -195,7 +195,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
             //// `[text][label]` → `text`
             headingText = headingText.replace(/\[([^\]]*)\]\[[^\)]*\]/, (_, g1) => g1);
 
-            let slug = slugify(mdHeadingToPlaintext(entry.text));
+            let slug = slugify(entry.text);
 
             if (anchorOccurances.hasOwnProperty(slug)) {
                 anchorOccurances[slug] += 1;

@@ -117,6 +117,8 @@ export function mdHeadingToPlaintext(text: string) {
     //// Escape leading `1.` and `1)` (#567, #585)
     text = text.replace(/^([\d]+)(\.)/, (_, g1) => g1 + '%dot%');
     text = text.replace(/^([\d]+)(\))/, (_, g1) => g1 + '%par%');
+    //// Escape math environment
+    text = text.replace(/\$/g, '%dollar%');
 
     if (!mdEngine.cacheMd) {
         return text;
@@ -128,6 +130,7 @@ export function mdHeadingToPlaintext(text: string) {
     //// Unescape
     text = text.replace('%dot%', '.');
     text = text.replace('%par%', ')');
+    text = text.replace(/%dollar%/g, '$');
     return text;
 }
 
@@ -166,14 +169,13 @@ export function slugify(heading: string, mode?: string, downcase?: boolean) {
         downcase = workspace.getConfiguration('markdown.extension.toc').get<boolean>('downcaseLink');
     }
 
-    let slug = heading;
+    let slug = mdHeadingToPlaintext(heading.trim());
 
     if (mode === 'github') {
         // GitHub slugify function
         // <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
-        slug = mdHeadingToPlaintext(heading.trim())
+        slug = slug.replace(PUNCTUATION_REGEXP, '')
             // .replace(/[A-Z]/g, match => match.toLowerCase()) // only downcase ASCII region
-            .replace(PUNCTUATION_REGEXP, '')
             .replace(/ /g, '-');
 
         if (downcase) {
@@ -184,9 +186,7 @@ export function slugify(heading: string, mode?: string, downcase?: boolean) {
         // <https://gitlab.com/gitlab-org/gitlab/blob/master/lib/banzai/filter/table_of_contents_filter.rb#L32>
         // Some bits from their other slugify function
         // <https://gitlab.com/gitlab-org/gitlab/blob/master/app/assets/javascripts/lib/utils/text_utility.js#L49>
-        slug = mdHeadingToPlaintext(heading)
-            .trim()
-            .replace(PUNCTUATION_REGEXP, '')
+        slug = slug.replace(PUNCTUATION_REGEXP, '')
             .replace(/ /g, '-')
             // Remove any duplicate separators or separator prefixes/suffixes
             .split('-')
@@ -202,9 +202,7 @@ export function slugify(heading: string, mode?: string, downcase?: boolean) {
         // VSCode slugify function
         // <https://github.com/Microsoft/vscode/blob/f5738efe91cb1d0089d3605a318d693e26e5d15c/extensions/markdown-language-features/src/slugify.ts#L22-L29>
         slug = encodeURI(
-            heading.trim()
-                // .toLowerCase()
-                .replace(/\s+/g, '-') // Replace whitespace with -
+            slug.replace(/\s+/g, '-') // Replace whitespace with -
                 .replace(/[\]\[\!\'\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\_\{\|\}\~\`。，、；：？！…—·ˉ¨‘’“”々～‖∶＂＇｀｜〃〔〕〈〉《》「」『』．〖〗【】（）［］｛｝]/g, '') // Remove known punctuators
                 .replace(/^\-+/, '') // Remove leading -
                 .replace(/\-+$/, '') // Remove trailing -
