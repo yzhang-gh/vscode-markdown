@@ -82,7 +82,7 @@ async function print(type: string) {
                 } else if (imgExt === "svg") {
                     imgExt += "+xml";
                 }
-                const file = fs.readFileSync(imgSrc).toString('base64');
+                const file = fs.readFileSync(imgSrc.replace(/%20/g, '\ ')).toString('base64');
                 return `${p1}data:image/${imgExt};base64,${file}${p3}`;
             } catch (e) {
                 window.showWarningMessage(localize("unableToReadFile") + ` ${imgSrc}, ` + localize("revertingToImagePaths"));
