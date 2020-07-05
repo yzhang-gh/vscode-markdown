@@ -43,15 +43,15 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
 <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/toc.png" alt="toc" width="305px"></p>
 
-- The TOC is automatically updated on file save. To disable please change the `toc.updateOnSave` option.
+- The TOC is **automatically updated** on file save. To disable please change the `toc.updateOnSave` option.
 
-- The indentation type (tab or spaces) of TOC can be configured per file (find it in the right bottom corner)
+- The **indentation type (tab or spaces)** of TOC can be configured per file (find it in the right bottom corner)
 
   *Note*: be sure to also check the `list.indentationSize` option
 
-- To make TOC compatible with GitHub or GitLab, set option `slugifyMode` accordingly
+- To make TOC **compatible with GitHub or GitLab**, set option `slugifyMode` accordingly
 
-- Three ways to control which headings are present in the TOC:
+- Three ways to **control which headings are present** in the TOC:
 
   1. Use `<!-- omit in toc -->` to ignore a specific heading in TOC  
     (It can also be placed above a heading)
@@ -75,9 +75,11 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
      ```
      *Note*: headings underlined with `===` or `---` can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
 
-- Easily add/update/remove section numbers
+- Easily add/update/remove **section numbering**
 
   <img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/section-numbers.gif" alt="section numbers" width="768px">
+
+- *In case you are seeing **unexpected TOC recognition**, you can add a `<!-- no toc -->` comment above the list*.
 
 ### List editing
 
@@ -91,7 +93,7 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
 - Command `Markdown: Print current document to HTML`
 
-- Compatible with other installed Markdown plugins (e.g. [Markdown Footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes))
+- **Compatible** with other installed Markdown plugins (e.g. [Markdown Footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes))
   The exported HTML should look the same as inside VSCode.
 
 - Plain links to `.md` files will be converted to `.html`.
