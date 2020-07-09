@@ -13,6 +13,7 @@ export function activate(context: ExtensionContext) {
     thisContext = context;
     context.subscriptions.push(
         commands.registerCommand('markdown.extension.printToHtml', () => { print('html'); }),
+        commands.registerCommand('markdown.extension.printToHtmlBatch', () => { batchPrint(); }),
         workspace.onDidSaveTextDocument(onDidSave)
     );
 }
@@ -28,7 +29,7 @@ function onDidSave(doc: TextDocument) {
     }
 }
 
-async function print(type: string) {
+async function print(type: string, uri?: Uri, outFolder?: string) {
     const editor = window.activeTextEditor;
 
     if (!isMdEditor(editor)) {
@@ -36,19 +37,24 @@ async function print(type: string) {
         return;
     }
 
-    const doc = editor.document;
+    const doc = uri ? await workspace.openTextDocument(uri) : editor.document;
     if (doc.isDirty || doc.isUntitled) {
         doc.save();
     }
 
     window.setStatusBarMessage(localize("printing") + ` '${path.basename(doc.fileName)}' ` + localize("to") + ` '${type.toUpperCase()}' ...`, 1000);
 
+    if (outFolder && !fs.existsSync(outFolder)) {
+        fs.mkdirSync(outFolder, { recursive: true });
+    }
+
     /**
      * Modified from <https://github.com/Microsoft/vscode/tree/master/extensions/markdown>
      * src/previewContentProvider MDDocumentContentProvider provideTextDocumentContent
      */
-    let outPath = doc.fileName.replace(/\.\w+?$/, `.${type}`);
-    outPath = outPath.replace(/^([cdefghij]):\\/, function (match, p1: string) {
+    let outPath = outFolder ? path.join(outFolder, path.basename(doc.fileName)) : doc.fileName;
+    outPath = outPath.replace(/\.\w+?$/, `.${type}`);
+    outPath = outPath.replace(/^([cdefghij]):\\/, function (_, p1: string) {
         return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
     });
     if (!outPath.endsWith(`.${type}`)) {
@@ -85,7 +91,7 @@ async function print(type: string) {
                 const file = fs.readFileSync(imgSrc.replace(/%20/g, '\ ')).toString('base64');
                 return `${p1}data:image/${imgExt};base64,${file}${p3}`;
             } catch (e) {
-                window.showWarningMessage(localize("unableToReadFile") + ` ${imgSrc}, ` + localize("revertingToImagePaths"));
+                window.showWarningMessage(`${localize("unableToReadFile")} ${imgSrc}, ${localize("revertingToImagePaths")}. (${doc.fileName})`);
             }
 
             if (configAbsPath) {
@@ -144,6 +150,34 @@ async function print(type: string) {
         case 'pdf':
             break;
     }
+}
+
+function batchPrint() {
+    const doc = window.activeTextEditor.document;
+    const root = workspace.getWorkspaceFolder(doc.uri).uri;
+    window.showOpenDialog({ defaultUri: root, openLabel: 'Select source folder', canSelectFiles: false, canSelectFolders: true }).then(uris => {
+        if (uris && uris.length > 0) {
+            const selectedPath = uris[0].fsPath;
+            const relPath = path.relative(root.fsPath, selectedPath);
+
+            if (relPath.startsWith('..')) {
+                window.showErrorMessage('Cannot use a path outside the current folder');
+                return;
+            }
+
+            workspace.findFiles((relPath.length > 0 ? relPath + '/' : '') + '**/*.{md}', '{**/node_modules,**/bower_components,**/*.code-search}').then(uris => {
+                window.showInputBox({
+                    value: selectedPath + path.sep + 'out',
+                    valueSelection: [selectedPath.length + 1, selectedPath.length + 4],
+                    prompt: 'Please specify an output folder'
+                }).then(outFolder => {
+                    uris.forEach(uri => {
+                        print('html', uri, path.join(outFolder, path.relative(selectedPath, path.dirname(uri.fsPath))));
+                    });
+                });
+            });
+        }
+    });
 }
 
 function hasMathEnv(text: string) {

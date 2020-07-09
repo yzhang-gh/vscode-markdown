@@ -55,6 +55,11 @@
                 "category": "Markdown All in One"
             },
             {
+                "command": "markdown.extension.printToHtmlBatch",
+                "title": "%command.printToHtmlBatch.title%",
+                "category": "Markdown All in One"
+            },
+            {
                 "command": "markdown.extension.editing.toggleCodeSpan",
                 "title": "%command.editing.toggleCodeSpan.title%",
                 "category": "Markdown All in One"

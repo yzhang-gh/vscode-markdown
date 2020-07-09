@@ -6,6 +6,7 @@
     "command.toc.addSecNumbers.title": "Add/Update section numbers",
     "command.toc.removeSecNumbers.title": "Remove section numbers",
     "command.printToHtml.title": "Print current document to HTML",
+    "command.printToHtmlBatch.title": "Print documents to HTML (select a source folder)",
     "command.editing.toggleCodeSpan.title": "Toggle code span",
     "command.editing.toggleMath.title": "Toggle math environment",
     "command.editing.toggleMathReverse.title": "Toggle math environment (in reverse order)",
