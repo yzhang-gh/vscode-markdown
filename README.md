@@ -214,6 +214,15 @@ Tip: also support the option `completion.root`
 
   If you still see this "command not found" error after waiting for a long time, please try to restart VSCode (or reinstall this extension if needed). Otherwise feel free to open a new issue on GitHub.
 
+- **Which Markdown syntax is supported?**
+
+  - [CommonMark](https://spec.commonmark.org/)
+  - [Tables](https://help.github.com/articles/organizing-information-with-tables/), [strikethrough](https://help.github.com/articles/basic-writing-and-formatting-syntax/#styling-text) and [task lists](https://docs.github.com/en/github/writing-on-github/basic-writing-and-formatting-syntax#task-lists) (from GitHub Flavored Markdown)
+  - [Math support](https://github.com/waylonflinn/markdown-it-katex#syntax) (from KaTeX)
+  - [Front matter](https://github.com/ParkSB/markdown-it-front-matter#valid-front-matter)
+
+  For other Markdown syntax, you need to install the corresponding extensions from VSCode marketplace (e.g. [Mermaid diagram](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid), [emoji](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-emoji), [footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes) and [superscript](https://marketplace.visualstudio.com/items?itemName=DevHawk.markdown-sup)). Once installed, they will take effect in VSCode and also the exported HTML file.
+
 ## Changelog
 
 See [CHANGELOG](CHANGELOG.md) for more information.
@@ -237,9 +246,3 @@ Special thanks to all the [contributors](https://github.com/yzhang-gh/vscode-mar
 ## Related
 
 [More extensions of mine](https://marketplace.visualstudio.com/publishers/yzhang)
-
----
-
-Thank [VSCode Power User Course](https://VSCode.pro?utm_source=MarkdownAllInOne) for sharing many VSCode tips with me.
-
-[![VSCode Power User course](https://img.shields.io/badge/Learn%20-VSCode%20Power%20User%20Course%20%E2%86%92-gray.svg?style=flat-square&colorA=444444&colorB=4F44D6)](https://VSCode.pro?utm_source=MarkdownAllInOne)
