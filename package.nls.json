@@ -48,6 +48,7 @@
     "showMe": "Show Me",
     "dismiss": "Dismiss",
     "noValidMarkdownFile": "No valid Markdown file",
+    "warnMDXFileConvert": "Warning: MDX Files won't be properly converted, unless they only contain Markdown.",
     "printing": "Printing",
     "to": "to",
     "unableToReadFile": "Unable to read file",

@@ -37,6 +37,10 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
         return;
     }
 
+    if (editor.document.languageId === 'mdx') {
+        window.showWarningMessage(localize("warnMDXFileConvert"));
+    }
+
     const doc = uri ? await workspace.openTextDocument(uri) : editor.document;
     if (doc.isDirty || doc.isUntitled) {
         doc.save();
