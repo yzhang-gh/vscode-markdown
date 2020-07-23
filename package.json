@@ -412,7 +412,7 @@
                 }
             }
         },
-        "markdown.markdownItPlugins": true, 
+        "markdown.markdownItPlugins": true,
         "markdown.previewStyles": [
             "./media/checkbox.css",
             "./node_modules/katex/dist/katex.min.css"
