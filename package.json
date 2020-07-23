@@ -24,6 +24,7 @@
     "license": "MIT",
     "activationEvents": [
         "onLanguage:markdown",
+        "onLanguage:mdx",
         "workspaceContains:README.md"
     ],
     "main": "./dist/extension",
@@ -90,122 +91,144 @@
                 "command": "markdown.extension.editing.toggleBold",
                 "key": "ctrl+b",
                 "mac": "cmd+b",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.editing.toggleItalic",
                 "key": "ctrl+i",
                 "mac": "cmd+i",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.editing.toggleStrikethrough",
                 "key": "alt+s",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !isMac"
+                "when": "editorTextFocus && !editorReadonly && !isMac",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.editing.toggleHeadingUp",
                 "key": "ctrl+shift+]",
                 "mac": "ctrl+shift+]",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.editing.toggleHeadingDown",
                 "key": "ctrl+shift+[",
                 "mac": "ctrl+shift+[",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.editing.toggleMath",
                 "key": "ctrl+m",
                 "mac": "cmd+m",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.onEnterKey",
                 "key": "enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
+                "when": "editorTextFocus && !editorReadonly && !suggestWidgetVisible && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.onCtrlEnterKey",
                 "key": "ctrl+enter",
                 "mac": "cmd+enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && !suggestWidgetVisible",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.onShiftEnterKey",
                 "key": "shift+enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && !suggestWidgetVisible",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.onTabKey",
                 "key": "tab",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions"
+                "when": "editorTextFocus && !editorReadonly && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.onShiftTabKey",
                 "key": "shift+tab",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions"
+                "when": "editorTextFocus && !editorReadonly  && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.onBackspaceKey",
                 "key": "backspace",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
+                "when": "editorTextFocus && !editorReadonly  && !suggestWidgetVisible && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.onMoveLineUp",
                 "key": "alt+up",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly  && !suggestWidgetVisible",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.onMoveLineDown",
                 "key": "alt+down",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly  && !suggestWidgetVisible",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.onCopyLineUp",
                 "key": "shift+alt+up",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly  && !suggestWidgetVisible",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.onCopyLineDown",
                 "key": "shift+alt+down",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly  && !suggestWidgetVisible",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.onIndentLines",
                 "key": "ctrl+]",
                 "mac": "cmd+]",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus  && !suggestWidgetVisible",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.onOutdentLines",
                 "key": "ctrl+[",
                 "mac": "cmd+[",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus  && !suggestWidgetVisible",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.checkTaskList",
                 "key": "alt+c",
-                "when": "editorTextFocus && editorLangId == markdown"
+                "when": "editorTextFocus",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.togglePreview",
                 "key": "ctrl+shift+v",
                 "mac": "cmd+shift+v",
-                "when": "!terminalFocus"
+                "when": "!terminalFocus",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.togglePreviewToSide",
                 "key": "ctrl+k v",
                 "mac": "cmd+k v",
-                "when": "!terminalFocus"
+                "when": "!terminalFocus",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             },
             {
                 "command": "markdown.extension.editing.paste",
                 "key": "ctrl+v",
                 "mac": "cmd+v",
-                "when": "editorTextFocus && editorLangId == markdown && editorHasSelection"
+                "when": "editorTextFocus  && editorHasSelection",
+                "injectTo": ["text.html.markdown.jsx", "text.html.markdown"]
             }
         ],
         "configuration": {
@@ -399,19 +422,25 @@
                 "scopeName": "markdown.math_display",
                 "path": "./syntaxes/math_display.markdown.tmLanguage.json",
                 "injectTo": [
-                    "text.html.markdown"
+                    "text.html.markdown",
+                    "text.html.markdown.jsx"
                 ]
             },
             {
                 "scopeName": "markdown.math_inline",
                 "path": "./syntaxes/math_inline.markdown.tmLanguage.json",
                 "injectTo": [
-                    "text.html.markdown"
+                    "text.html.markdown",
+                    "text.html.markdown.jsx"
                 ]
             },
             {
                 "scopeName": "text.katex",
-                "path": "./syntaxes/katex.tmLanguage.json"
+                "path": "./syntaxes/katex.tmLanguage.json",
+                "injectTo": [
+                    "text.html.markdown",
+                    "text.html.markdown.jsx"
+                ]
             }
         ]
     },
