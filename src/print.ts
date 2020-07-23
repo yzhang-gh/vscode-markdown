@@ -115,8 +115,8 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
     //// Convert `.md` links to `.html` by default (#667)
     const hrefRegex = /(<a[^>]+href=")([^"]+)("[^>]*>)/g;  // Match '<a...href="..."...>'
     body = body.replace(hrefRegex, function (_, g1, g2, g3) {
-        if (g2.endsWith('.md')) {
-            return `${g1}${g2.replace(/\.md$/, '.html')}${g3}`;
+        if (g2.endsWith('.md') || g2.endsWith('.mdx')) {
+            return `${g1}${g2.replace(/\.mdx?$/, '.html')}${g3}`;
         } else {
             return _;
         }
