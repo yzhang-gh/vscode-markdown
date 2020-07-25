@@ -29,18 +29,19 @@ suite("Slugify function.", () => {
         "Via [remark-cli][]": "via-remark-cli",
         "1. not a list": "1-not-a-list",
         "1) not a list": "1-not-a-list",
-        ":foo_foo: foo": "foo-foo-foo"
+        "foo & < >  \"foo\"": "foo-foo",
+        "1": "anchor-1" // GitLab adds "anchor-" before digit-only IDs
     }
 
     const headings_gitea = {
         "foo _italic_ bar": "foo-italic-bar",
-        "foo_foo_bar": "foo_foo_bar",
+        "foo_foo_bar": "foo-foo-bar",
         "`a.b` c": "ab-c",
         "Via [remark-cli][]": "via-remark-cli",
         "1. not a list": "1-not-a-list",
         "1) not a list": "1-not-a-list",
-        "foo & < >  \"foo\"": "foo-foo",
-        "1": "anchor-1" // GitLab adds "anchor-" before digit-only IDs
+        "foo & < >  \"foo\"": "foo---foo",
+        "$\\LaTeX equations$": "latex-equations"
     }
 
     for (const heading of Object.keys(headings)) {
@@ -65,7 +66,7 @@ suite("Slugify function.", () => {
     }
 
     for (const heading of Object.keys(headings_gitea)) {
-        const slug = headings_gitlab[heading];
+        const slug = headings_gitea[heading];
         test(`(Gitea) ${heading} → ${slug}`, () => {
             assert.strictEqual(util.slugify(heading, "gitea"), slug);
         });
