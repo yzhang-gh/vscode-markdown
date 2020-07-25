@@ -40,7 +40,6 @@
     "showMe": "显示更新日志",
     "dismiss": "忽略",
     "noValidMarkdownFile": "未选中有效的 Markdown 文件",
-    "warnMDXFileConvert": "Warning: MDX Files won't be properly converted, unless they only contain Markdown.",
     "printing": "将",
     "to": "打印到",
     "unableToReadFile": "无法读取文件",

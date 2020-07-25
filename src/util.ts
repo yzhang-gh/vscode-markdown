@@ -10,10 +10,10 @@ import { mdEngine } from './markdownEngine';
    └────────┘ */
 
 /** Scheme `File` or `Untitled` */
-export const mdDocSelector = [{ language: 'markdown', scheme: 'file' }, { language: 'markdown', scheme: 'untitled' }, { language: 'mdx', scheme: 'file' }, { language: 'mdx', scheme: 'file' }];
+export const mdDocSelector = [{ language: 'markdown', scheme: 'file' }, { language: 'markdown', scheme: 'untitled' }];
 
 export function isMdEditor(editor: TextEditor) {
-    return editor && editor.document && (editor.document.languageId === 'mdx' || editor.document.languageId === 'markdown');
+    return editor && editor.document && editor.document.languageId === 'markdown';
 }
 
 export const REGEX_FENCED_CODE_BLOCK = /^( {0,3}|\t)```[^`\r\n]*$[\w\W]+?^( {0,3}|\t)``` *$/gm;
