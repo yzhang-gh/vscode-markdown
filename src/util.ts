@@ -181,6 +181,15 @@ export function slugify(heading: string, mode?: string, downcase?: boolean) {
         if (downcase) {
             slug = slug.toLowerCase()
         }
+    } else if (mode === 'gitea') {
+        // Gitea slugify function still to be found
+        slug = slug.replace(PUNCTUATION_REGEXP, '')
+            .replace(/ /g, '-')
+            .replace(/_/g, '-');
+
+        if (downcase) {
+            slug = slug.toLowerCase()
+        }
     } else if (mode === 'gitlab') {
         // GitLab slugify function, translated to JS
         // <https://gitlab.com/gitlab-org/gitlab/blob/master/lib/banzai/filter/table_of_contents_filter.rb#L32>

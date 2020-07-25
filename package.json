@@ -348,6 +348,7 @@
                     "enum": [
                         "github",
                         "gitlab",
+                        "gitea",
                         "vscode"
                     ],
                     "description": "%config.toc.slugifyMode.description%"

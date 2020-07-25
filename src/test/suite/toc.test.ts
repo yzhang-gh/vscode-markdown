@@ -308,6 +308,30 @@ suite("TOC.", () => {
             new Selection(5, 28, 5, 28)).then(done, done);
     });
 
+    test("Non-Latin symbols (Option `toc.slugifyMode = gitea`)", done => {
+        testCommand('markdown.extension.toc.create',
+            {
+                "markdown.extension.toc.slugifyMode": "gitea"
+            },
+            [
+                '# Секция 1',
+                '',
+                '## Секция 1.1',
+                '',
+                ''
+            ],
+            new Selection(4, 0, 4, 0),
+            [
+                '# Секция 1',
+                '',
+                '## Секция 1.1',
+                '',
+                '- [Секция 1](#секция-1)',
+                '  - [Секция 1.1](#секция-11)'
+            ],
+            new Selection(5, 28, 5, 28)).then(done, done);
+    });
+
     test("Update multiple TOCs", done => {
         testCommand('markdown.extension.toc.update',
             {
