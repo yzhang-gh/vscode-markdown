@@ -327,9 +327,9 @@ suite("TOC.", () => {
                 '## Секция 1.1',
                 '',
                 '- [Секция 1](#секция-1)',
-                '  - [Секция 1.1](#секция-11)'
+                '  - [Секция 1.1](#секция-1-1)'
             ],
-            new Selection(5, 28, 5, 28)).then(done, done);
+            new Selection(5, 29, 5, 29)).then(done, done);
     });
 
     test("Update multiple TOCs", done => {

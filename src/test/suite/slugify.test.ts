@@ -36,12 +36,13 @@ suite("Slugify function.", () => {
     const headings_gitea = {
         "foo _italic_ bar": "foo-italic-bar",
         "foo_foo_bar": "foo-foo-bar",
-        "`a.b` c": "ab-c",
+        "`a.b` c": "a-b-c",
         "Via [remark-cli][]": "via-remark-cli",
         "1. not a list": "1-not-a-list",
         "1) not a list": "1-not-a-list",
-        "foo & < >  \"foo\"": "foo---foo",
-        "$\\LaTeX equations$": "latex-equations"
+        "foo & < >  \"foo\"": "foo-foo",
+        "$\\LaTeX equations$": "latex-equations",
+        ":checkered_flag: with emoji shortname": "checkered-flag-with-emoji-shortname"
     }
 
     for (const heading of Object.keys(headings)) {
