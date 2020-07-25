@@ -23,6 +23,8 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - [Keyboard Shortcuts](#keyboard-shortcuts-1)
 - [Supported Settings](#supported-settings)
 - [FAQ](#faq)
+    - [Q: Error "command 'markdown.extension.onXXXKey' not found"](#q-error-command-markdownextensiononxxxkey-not-found)
+    - [Q: Which Markdown syntax is supported?](#q-which-markdown-syntax-is-supported)
 - [Changelog](#changelog)
 - [Latest Development Build](#latest-development-build)
 - [Contributing](#contributing)
@@ -91,7 +93,8 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
 ### Print Markdown to HTML
 
-- Command `Markdown: Print current document to HTML`
+- Commands `Markdown: Print current document to HTML`
+  and `Markdown: Print documents to HTML`
 
 - **Compatible** with other installed Markdown plugins (e.g. [Markdown Footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes))
   The exported HTML should look the same as inside VSCode.
@@ -108,7 +111,7 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
   (Note that the keybinding is <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd> on Linux)
 
-- Task list
+- Task lists
 
 ### Math
 
@@ -149,6 +152,7 @@ Tip: also support the option `completion.root`
 - Markdown All in One: Toggle code span
 - Markdown All in One: Toggle code block
 - Markdown All in One: Print current document to HTML
+- Markdown All in One: Print documents to HTML
 - Markdown All in One: Toggle math environment
 - Markdown All in One: Toggle list
   - It will cycle through list markers (`-`, `*`, `+`, `1.` and `1)`)
@@ -208,20 +212,20 @@ Tip: also support the option `completion.root`
 
 ## FAQ
 
-- **Error "command 'markdown.extension.onXXXKey' not found"**
+#### Q: Error "command 'markdown.extension.onXXXKey' not found"
   
-  In most cases, it is because VSCode needs a few seconds to load this extension when you open a Markdown file *for the first time*. (You will see a message "Activating Extensions..." on the status bar.)
+In most cases, it is because VSCode needs a few seconds to load this extension when you open a Markdown file *for the first time*. (You will see a message "Activating Extensions..." on the status bar.)
 
-  If you still see this "command not found" error after waiting for a long time, please try to restart VSCode (or reinstall this extension if needed). Otherwise feel free to open a new issue on GitHub.
+If you still see this "command not found" error after waiting for a long time, please try to restart VSCode (or reinstall this extension if needed). Otherwise feel free to open a new issue on GitHub.
 
-- **Which Markdown syntax is supported?**
+#### Q: Which Markdown syntax is supported?
 
-  - [CommonMark](https://spec.commonmark.org/)
-  - [Tables](https://help.github.com/articles/organizing-information-with-tables/), [strikethrough](https://help.github.com/articles/basic-writing-and-formatting-syntax/#styling-text) and [task lists](https://docs.github.com/en/github/writing-on-github/basic-writing-and-formatting-syntax#task-lists) (from GitHub Flavored Markdown)
-  - [Math support](https://github.com/waylonflinn/markdown-it-katex#syntax) (from KaTeX)
-  - [Front matter](https://github.com/ParkSB/markdown-it-front-matter#valid-front-matter)
+- [CommonMark](https://spec.commonmark.org/)
+- [Tables](https://help.github.com/articles/organizing-information-with-tables/), [strikethrough](https://help.github.com/articles/basic-writing-and-formatting-syntax/#styling-text) and [task lists](https://docs.github.com/en/github/writing-on-github/basic-writing-and-formatting-syntax#task-lists) (from GitHub Flavored Markdown)
+- [Math support](https://github.com/waylonflinn/markdown-it-katex#syntax) (from KaTeX)
+- [Front matter](https://github.com/ParkSB/markdown-it-front-matter#valid-front-matter)
 
-  For other Markdown syntax, you need to install the corresponding extensions from VSCode marketplace (e.g. [Mermaid diagram](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid), [emoji](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-emoji), [footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes) and [superscript](https://marketplace.visualstudio.com/items?itemName=DevHawk.markdown-sup)). Once installed, they will take effect in VSCode and also the exported HTML file.
+For other Markdown syntax, you need to install the corresponding extensions from VSCode marketplace (e.g. [Mermaid diagram](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid), [emoji](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-emoji), [footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes) and [superscript](https://marketplace.visualstudio.com/items?itemName=DevHawk.markdown-sup)). Once installed, they will take effect in VSCode and also the exported HTML file.
 
 ## Changelog
 

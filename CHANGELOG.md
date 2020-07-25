@@ -1,3 +1,18 @@
+### 3.2.0 (2020.07.25)
+
+- **New**: [Batch export] command "print document**s** to HTML" ([#594](https://github.com/yzhang-gh/vscode-markdown/issues/594), [#747](https://github.com/yzhang-gh/vscode-markdown/issues/747)).
+
+<!--  -->
+
+- **Fix**: [HTML export] escape spaces in image path ([#731](https://github.com/yzhang-gh/vscode-markdown/issues/731)).
+- **Fix**: [TOC] headings with LaTeX ([#732](https://github.com/yzhang-gh/vscode-markdown/issues/732)).
+
+<!--  -->
+
+- **Other**: A lot of `README` improvements.
+
+---
+
 ### 3.1.0 (2020.06.20)
 
 - **New**: Option `print.includeVscodeStylesheets` ([#726](https://github.com/yzhang-gh/vscode-markdown/pull/726)). Thanks, [Gluck_S (@Glucksistemi)](https://github.com/Glucksistemi).
