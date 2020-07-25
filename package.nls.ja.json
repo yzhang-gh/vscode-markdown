@@ -41,7 +41,6 @@
     "showMe": "表示する",
     "dismiss": "却下",
     "noValidMarkdownFile": "有効なMarkdownファイルがありません",
-    "warnMDXFileConvert": "Warning: MDX Files won't be properly converted, unless they only contain Markdown.",
     "printing": "出力中",
     "to": "へ",
     "unableToReadFile": "ファイルを読み取れません",
