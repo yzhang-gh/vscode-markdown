@@ -182,10 +182,14 @@ export function slugify(heading: string, mode?: string, downcase?: boolean) {
             slug = slug.toLowerCase()
         }
     } else if (mode === 'gitea') {
-        // Gitea slugify function still to be found
-        slug = slug.replace(PUNCTUATION_REGEXP, '')
+        // Gitea uses the blackfriday parser
+        // https://godoc.org/github.com/russross/blackfriday#hdr-Sanitized_Anchor_Names
+        slug = slug.replace(PUNCTUATION_REGEXP, '-')
             .replace(/ /g, '-')
-            .replace(/_/g, '-');
+            .replace(/_/g, '-')
+            .split('-')
+            .filter(Boolean)
+            .join('-');
 
         if (downcase) {
             slug = slug.toLowerCase()
