@@ -467,6 +467,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 }
             });
         } else if (
+            //// ends with an odd number of backslashes
             (matches = lineTextBefore.match(/\\+$/)) !== null
             && matches[0].length % 2 !== 0
         ) {
