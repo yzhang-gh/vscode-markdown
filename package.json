@@ -24,6 +24,7 @@
     "license": "MIT",
     "activationEvents": [
         "onLanguage:markdown",
+        "onCommand:markdown.extension.printToHtmlBatch",
         "workspaceContains:README.md"
     ],
     "main": "./dist/extension",
