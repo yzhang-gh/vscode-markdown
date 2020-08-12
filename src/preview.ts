@@ -25,13 +25,8 @@ export function activate(context: ExtensionContext) {
                 commands.executeCommand('markdown.showPreview');
             }
         }),
-        commands.registerCommand('markdown.extension.togglePreviewToSide', () => {
-            let editor = window.activeTextEditor;
-            if (!editor) {
-                commands.executeCommand('workbench.action.closeActiveEditor');
-            } else if (editor.document.languageId === 'markdown') {
-                commands.executeCommand('markdown.showPreviewToSide');
-            }
+        commands.registerCommand('markdown.extension.closePreviewToSide', () => {
+            commands.executeCommand('workbench.action.closeActiveEditor');
         })
     );
 }
