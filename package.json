@@ -197,10 +197,10 @@
                 "when": "!terminalFocus"
             },
             {
-                "command": "markdown.extension.togglePreviewToSide",
+                "command": "markdown.extension.closePreviewToSide",
                 "key": "ctrl+k v",
                 "mac": "cmd+k v",
-                "when": "!terminalFocus"
+                "when": "markdownPreviewFocus"
             },
             {
                 "command": "markdown.extension.editing.paste",
