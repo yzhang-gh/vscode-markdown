@@ -37,7 +37,18 @@ function onEnterKey(modifiers?: string) {
         return asNormal('enter', modifiers);
     }
 
-    // If it's an empty list item, remove it
+    //// This is a possibility that the current line is a thematic break `<hr>` (GitHub #785)
+    const lineTextNoSpace = line.text.replace(/\s/g, '');
+    if (lineTextNoSpace.length > 2
+        && (
+            lineTextNoSpace.replace(/\-/g, '').length === 0
+            || lineTextNoSpace.replace(/\*/g, '').length === 0
+        )
+    ) {
+        return asNormal('enter', modifiers);
+    }
+
+    //// If it's an empty list item, remove it
     if (/^(>|([-+*]|[0-9]+[.)])( +\[[ x]\])?)$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
         return editor.edit(editBuilder => {
             editBuilder.delete(line.range);
