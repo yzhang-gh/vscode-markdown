@@ -64,12 +64,13 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
     //// HTML title (GitHub #506)
     let title: string;
     const firstLineText = doc.lineAt(0).text;
-    if (!!(let m = /^<!-- title: (.+) -->/.exec(firstLineText))) {
+    let m: RegExpExecArray | null;
+    if (!!(m = /^<!-- title: (.+) -->/.exec(firstLineText))) {
         title = m[1].trim();
     } else {
         title = doc.getText().split(/\r?\n/g).find(lineText => lineText.startsWith('#'));
         if (title) {
-            title = title.replace(/^#+ (.+) #+$/, '$1').trim();
+            title = title.replace(/^#+/, '').replace(/#+$/, '').trim();
         }
     }
 
