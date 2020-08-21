@@ -61,14 +61,21 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
         outPath += `.${type}`;
     }
 
-    let title = doc.getText().split(/\r?\n/g).find(lineText => lineText.startsWith('#'));
-    if (title) {
-        title = title.replace(/^#+/, '').replace(/#+$/, '').trim();
+    //// HTML title (GitHub #506)
+    let title: string;
+    const firstLineText = doc.lineAt(0).text;
+    if (!!(let m = /^<!-- title: (.+) -->/.exec(firstLineText))) {
+        title = m[1].trim();
+    } else {
+        title = doc.getText().split(/\r?\n/g).find(lineText => lineText.startsWith('#'));
+        if (title) {
+            title = title.replace(/^#+ (.+) #+$/, '$1').trim();
+        }
     }
 
     let body: string = await mdEngine.render(doc.getText(), workspace.getConfiguration('markdown.preview', doc.uri));
 
-    // Image paths
+    //// Image paths
     const config = workspace.getConfiguration('markdown.extension', doc.uri);
     const configToBase64 = config.get<boolean>('print.imgToBase64');
     const configAbsPath = config.get<boolean>('print.absoluteImgPath');
