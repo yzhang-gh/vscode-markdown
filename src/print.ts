@@ -65,7 +65,7 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
     let title: string;
     const firstLineText = doc.lineAt(0).text;
     let m: RegExpExecArray | null;
-    if (!!(m = /^<!-- title: (.+) -->/.exec(firstLineText))) {
+    if (!!(m = /^<!-- title:\s*(\S.+)-->/.exec(firstLineText))) {
         title = m[1].trim();
     } else {
         title = doc.getText().split(/\r?\n/g).find(lineText => lineText.startsWith('#'));
