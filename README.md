@@ -25,6 +25,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - [FAQ](#faq)
     - [Q: Error "command 'markdown.extension.onXXXKey' not found"](#q-error-command-markdownextensiononxxxkey-not-found)
     - [Q: Which Markdown syntax is supported?](#q-which-markdown-syntax-is-supported)
+    - [Q: This extension has overridden some of my key bindings (e.g. <kbd>Ctrl</kbd> + <kbd>B</kbd>, <kbd>Alt</kbd> + <kbd>C</kbd>)](#q-this-extension-has-overridden-some-of-my-key-bindings-eg-kbdctrlkbd--kbdbkbd-kbdaltkbd--kbdckbd)
 - [Changelog](#changelog)
 - [Latest Development Build](#latest-development-build)
 - [Contributing](#contributing)
@@ -226,6 +227,10 @@ If you still see this "command not found" error after waiting for a long time, p
 - [Front matter](https://github.com/ParkSB/markdown-it-front-matter#valid-front-matter)
 
 For other Markdown syntax, you need to install the corresponding extensions from VSCode marketplace (e.g. [Mermaid diagram](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid), [emoji](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-emoji), [footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes) and [superscript](https://marketplace.visualstudio.com/items?itemName=DevHawk.markdown-sup)). Once installed, they will take effect in VSCode and also the exported HTML file.
+
+#### Q: This extension has overridden some of my key bindings (e.g. <kbd>Ctrl</kbd> + <kbd>B</kbd>, <kbd>Alt</kbd> + <kbd>C</kbd>)
+
+You can easily manage key bindings with [VSCode's "Keyboard Shortcuts" page](https://code.visualstudio.com/docs/getstarted/keybindings). (Commands provided by this extension have prefix `markdown.extension`.)
 
 ## Changelog
 
