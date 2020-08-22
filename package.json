@@ -219,6 +219,12 @@
                     "description": "%config.completion.root%",
                     "scope": "resource"
                 },
+                "markdown.extension.completion.respectVscodeSearchExclude": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "%config.completion.respectVscodeSearchExclude%",
+                    "scope": "resource"
+                },
                 "markdown.extension.italic.indicator": {
                     "type": "string",
                     "default": "*",

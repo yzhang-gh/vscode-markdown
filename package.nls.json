@@ -45,6 +45,7 @@
     "config.syntax.plainTheme.description": "Only take effect when `extension.syntax.decorations` is enabled",
     "config.katex.macros.description": "User-defined KaTeX macros",
     "config.completion.root": "The root folder for path auto-completion",
+    "config.completion.respectVscodeSearchExclude": "Whether to exclude files using VSCode's `search.exclude` option. (`node_modules`, `bower_components` and `*.code-search` are always excluded, not affected by this option.)",
     "showMe": "Show Me",
     "dismiss": "Dismiss",
     "noValidMarkdownFile": "No valid Markdown file",
