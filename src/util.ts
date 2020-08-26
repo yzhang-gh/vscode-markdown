@@ -100,18 +100,22 @@ export function showChangelog() {
    └─────────────────┘ */
 
 /**
- * Remove Markdown syntax (bold, italic, links etc.) in a heading
- * For example: `_italic_` -> `italic`
- * This function is used before `slugify`
+ * Remove Markdown syntax (bold, italic, links etc.) in a heading.
+ * This function is only used before the `slugify` function.
+ * 
+ * A Markdown heading may contain Markdown styles, e.g. `_italic_`.
+ * It can also have HTML tags, e.g. `<code>`.
+ * They should not be passed to the `slugify` function.
  *
- * (Escape syntax like `1.`)
- * 1. md.render(text)
- * 2. textInHtml(text)
- * (Unescape)
+ * What this function actually does:
+ * 1. (Escape syntax like `1.`)
+ * 2. `md.render(text)`
+ * 3. `getTextInHtml(text)`
+ * 4. (Unescape)
  *
- * @param text
+ * @param text A Markdown heading
  */
-export function mdHeadingToPlaintext(text: string) {
+function mdHeadingToPlaintext(text: string) {
     //// Issue #515
     text = text.replace(/\[([^\]]*)\]\[[^\]]*\]/, (_, g1) => g1);
     //// Escape leading `1.` and `1)` (#567, #585)
@@ -125,7 +129,7 @@ export function mdHeadingToPlaintext(text: string) {
     }
 
     const html = mdEngine.cacheMd.render(text).replace(/\r?\n$/, '');
-    text = textInHtml(html);
+    text = getTextInHtml(html);
 
     //// Unescape
     text = text.replace('%dot%', '.');
@@ -134,9 +138,15 @@ export function mdHeadingToPlaintext(text: string) {
     return text;
 }
 
-//// Convert HTML entities (#175, #575)
-//// Strip HTML tags (#179)
-function textInHtml(html: string) {
+/**
+ * Get plaintext from a HTML string
+ * 
+ * 1. Convert HTML entities (#175, #575)
+ * 2. Strip HTML tags (#179)
+ * 
+ * @param html 
+ */
+function getTextInHtml(html: string) {
     //// HTML entities
     let text = html.replace(/(&emsp;)/g, _ => ' ')
         .replace(/(&quot;)/g, _ => '"')
@@ -147,7 +157,7 @@ function textInHtml(html: string) {
     text = text.replace(/(<!--[^>]*?-->)/g, '');
     //// remove HTML tags
     while (/<(span|em|strong|a|p|code)[^>]*>(.*?)<\/\1>/.test(text)) {
-        text = text.replace(/<(span|em|strong|a|p|code)[^>]*>(.*?)<\/\1>/g, (_, _g1, g2) => g2)
+        text = text.replace(/<(span|em|strong|a|p|code|kbd)[^>]*>(.*?)<\/\1>/g, (_, _g1, g2) => g2)
     }
     text = text.replace(/ +/g, ' ');
     return text;

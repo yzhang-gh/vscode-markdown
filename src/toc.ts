@@ -3,7 +3,7 @@
 import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
 import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, window, workspace, WorkspaceEdit } from 'vscode';
-import { isMdEditor, mdDocSelector, mdHeadingToPlaintext, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
+import { isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
 
 /**
  * Workspace config
