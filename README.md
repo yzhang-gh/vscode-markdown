@@ -25,7 +25,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - [FAQ](#faq)
     - [Q: Error "command 'markdown.extension.onXXXKey' not found"](#q-error-command-markdownextensiononxxxkey-not-found)
     - [Q: Which Markdown syntax is supported?](#q-which-markdown-syntax-is-supported)
-    - [Q: This extension has overridden some of my key bindings (e.g. <kbd>Ctrl</kbd> + <kbd>B</kbd>, <kbd>Alt</kbd> + <kbd>C</kbd>)](#q-this-extension-has-overridden-some-of-my-key-bindings-eg-kbdctrlkbd--kbdbkbd-kbdaltkbd--kbdckbd)
+    - [Q: This extension has overridden some of my key bindings (e.g. <kbd>Ctrl</kbd> + <kbd>B</kbd>, <kbd>Alt</kbd> + <kbd>C</kbd>)](#q-this-extension-has-overridden-some-of-my-key-bindings-eg-ctrl--b-alt--c)
 - [Changelog](#changelog)
 - [Latest Development Build](#latest-development-build)
 - [Contributing](#contributing)
@@ -217,7 +217,9 @@ Tip: also support the option `completion.root`
   
 In most cases, it is because VSCode needs a few seconds to load this extension when you open a Markdown file *for the first time*. (You will see a message "Activating Extensions..." on the status bar.)
 
-If you still see this "command not found" error after waiting for a long time, please try to restart VSCode (or reinstall this extension if needed). Otherwise feel free to open a new issue on GitHub.
+If you still see this "command not found" error after waiting for a long time, please try to restart VSCode (or reinstall this extension<sup>1</sup> if needed). Otherwise feel free to open a new issue on GitHub.
+
+<sup>1. uninstall this extension, <b>restart VSCode (important!)</b> and then reinstall</sup>
 
 #### Q: Which Markdown syntax is supported?
 
