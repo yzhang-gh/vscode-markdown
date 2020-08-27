@@ -156,7 +156,7 @@ function getTextInHtml(html: string) {
     //// remove <!-- HTML comments -->
     text = text.replace(/(<!--[^>]*?-->)/g, '');
     //// remove HTML tags
-    while (/<(span|em|strong|a|p|code)[^>]*>(.*?)<\/\1>/.test(text)) {
+    while (/<(span|em|strong|a|p|code|kbd)[^>]*>(.*?)<\/\1>/.test(text)) {
         text = text.replace(/<(span|em|strong|a|p|code|kbd)[^>]*>(.*?)<\/\1>/g, (_, _g1, g2) => g2)
     }
     text = text.replace(/ +/g, ' ');
