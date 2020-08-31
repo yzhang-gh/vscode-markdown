@@ -1,3 +1,21 @@
+### 3.3.0 (2020.08.31)
+
+- **New**: You can now use `<!-- title: Your Title Here -->` comment to specify a title of the exported HTML ([#506](https://github.com/yzhang-gh/vscode-markdown/issues/506)).
+- **New**: Added a `toc.slugifyMode` option `gitea` ([#763](https://github.com/yzhang-gh/vscode-markdown/pull/763)). Thanks, [Rodolphe Houdas (@rodolpheh)](https://github.com/rodolpheh).
+- **New**: Option `completion.respectVscodeSearchExclude` controlling where to look for file path completions ([#789](https://github.com/yzhang-gh/vscode-markdown/issues/789)).
+
+<!--  -->
+
+- **Fix**: Failure of `toggleList` command if there are more than 9 list items ([#776](https://github.com/yzhang-gh/vscode-markdown/issues/776)).
+- **Fix**: Command `togglePreviewToSide` wouldn't close the preview tab ([#780](https://github.com/yzhang-gh/vscode-markdown/pull/780)). Thanks, [Anton Tuchkov (@Technik-J)](https://github.com/Technik-J).
+- **Fix**: `- - -` was wrongly treated as a list item ([#785](https://github.com/yzhang-gh/vscode-markdown/issues/785)).
+
+<!--  -->
+
+- **Other**: Activate extension on command `printToHtmlBatch` ([#769](https://github.com/yzhang-gh/vscode-markdown/issues/769)).
+
+---
+
 ### 3.2.0 (2020.07.25)
 
 - **New**: [Batch export] command "print document**s** to HTML" ([#594](https://github.com/yzhang-gh/vscode-markdown/issues/594), [#747](https://github.com/yzhang-gh/vscode-markdown/issues/747)).

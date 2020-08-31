@@ -3,7 +3,7 @@
     "displayName": "%ext.displayName%",
     "description": "%ext.description%",
     "icon": "images/Markdown-mark.png",
-    "version": "3.2.0",
+    "version": "3.3.0",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.38.0"
@@ -213,16 +213,16 @@
             "type": "object",
             "title": "%config.title%",
             "properties": {
-                "markdown.extension.completion.root": {
-                    "type": "string",
-                    "default": "",
-                    "description": "%config.completion.root%",
-                    "scope": "resource"
-                },
                 "markdown.extension.completion.respectVscodeSearchExclude": {
                     "type": "boolean",
                     "default": true,
                     "markdownDescription": "%config.completion.respectVscodeSearchExclude%",
+                    "scope": "resource"
+                },
+                "markdown.extension.completion.root": {
+                    "type": "string",
+                    "default": "",
+                    "description": "%config.completion.root%",
                     "scope": "resource"
                 },
                 "markdown.extension.italic.indicator": {
