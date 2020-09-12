@@ -1,6 +1,6 @@
 'use strict';
 
-import { commands, env, ExtensionContext, Position, Range, Selection, SnippetString, TextDocument, TextEditor, window, workspace, WorkspaceEdit,EndOfLine } from 'vscode';
+import { commands, env, EndOfLine, ExtensionContext, Position, Range, Selection, SnippetString, TextDocument, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
 import { fixMarker } from './listEditing';
 
 export function activate(context: ExtensionContext) {
@@ -54,7 +54,7 @@ enum QuoteState {
 }
 
 function getQuoteState(lineArray: Array<string>): QuoteState {
-    return lineArray.every((line)=>{ return line.startsWith(">"); }) ? QuoteState.FULLQUOTED : QuoteState.PARTIALQUOTED;
+    return lineArray.every(line => line.startsWith('>')) ? QuoteState.FULLQUOTED : QuoteState.PARTIALQUOTED;
 }
 
 function quoteLine(line: string): string {
