@@ -100,8 +100,8 @@
             },
             {
                 "command": "markdown.extension.editing.toggleQuote",
-                "key": "ctrl+.",
-                "mac": "cmd+.",
+                "key": "",
+                "mac": "",
                 "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
             },
             {
