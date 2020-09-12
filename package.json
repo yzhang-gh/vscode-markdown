@@ -66,6 +66,11 @@
                 "category": "Markdown All in One"
             },
             {
+                "command": "markdown.extension.editing.toggleQuote",
+                "title": "%command.editing.toggleQuote.title%",
+                "category": "Markdown All in One"
+            },
+            {
                 "command": "markdown.extension.editing.toggleMath",
                 "title": "%command.editing.toggleMath.title%",
                 "category": "Markdown All in One"
@@ -91,6 +96,12 @@
                 "command": "markdown.extension.editing.toggleBold",
                 "key": "ctrl+b",
                 "mac": "cmd+b",
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+            },
+            {
+                "command": "markdown.extension.editing.toggleQuote",
+                "key": "ctrl+.",
+                "mac": "cmd+.",
                 "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
             },
             {

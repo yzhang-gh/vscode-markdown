@@ -15,6 +15,7 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.editing.toggleHeadingDown', toggleHeadingDown),
         commands.registerCommand('markdown.extension.editing.toggleList', toggleList),
         commands.registerCommand('markdown.extension.editing.toggleCodeBlock', toggleCodeBlock),
+        commands.registerCommand('markdown.extension.editing.toggleQuote', toggleQuote),
         commands.registerCommand('markdown.extension.editing.paste', paste),
         commands.registerCommand('markdown.extension.editing._wrapBy', args => styleByWrapping(args['before'], args['after']))
     );
@@ -43,6 +44,74 @@ function toggleCodeSpan() {
 function toggleCodeBlock() {
     let editor = window.activeTextEditor;
     return editor.insertSnippet(new SnippetString('```$0\n$TM_SELECTED_TEXT\n```'));
+}
+
+enum QuoteState {
+    // State 1: part of lines has been quoted, need to be quoted
+    PARTIALQUOTED,
+    // State 2: all of lines has been quoted, need to be unquoted
+    FULLQUOTED,
+}
+
+function getQuoteState(lineArray: Array<string>): QuoteState {
+    let cntQuoted = 0;
+    console.log("array:", lineArray)
+    lineArray.forEach(function(line) {
+        if (line.startsWith(">")) {
+            cntQuoted += 1;
+        }
+    })
+
+    return cntQuoted != lineArray.length ? QuoteState.PARTIALQUOTED : QuoteState.FULLQUOTED;
+}
+
+function quoteLine(line: string): string {
+    if(!line.startsWith("> ") && line.startsWith(">")) {
+        return line.replace(/>/g, "> ");
+    } else if(!line.startsWith("> ")){
+        return "> " + line;
+    } else {
+        return line;
+    }
+}
+
+function unquoteLine(line: string): string {
+    if (line.startsWith("> ")) {
+        return line.slice(2);
+    } else {
+        return line;
+    }
+}
+
+function setQuote(lineArray: Array<string>, state: QuoteState): string {
+    let resultArray;
+    switch(state) {
+        case QuoteState.PARTIALQUOTED:
+            resultArray = lineArray.map(quoteLine);
+            break;
+        case QuoteState.FULLQUOTED:
+            resultArray = lineArray.map(unquoteLine); 
+            break;
+        default:
+            resultArray = lineArray;
+    }
+    return resultArray.join('\n');
+}
+
+async function toggleQuote() {
+    let editor = window.activeTextEditor;
+    let start = editor.selection.start;
+    let end = editor.selection.end;
+    start = editor.document.lineAt(start.line).range.start;
+    let linesText = editor.document.getText(new Range(start, end));;
+
+    let line_array = linesText.split('\n');
+    let state = getQuoteState(line_array);
+    let resultText = setQuote(line_array, state);
+
+    return await editor.edit(editBuilder => {
+        editBuilder.replace(new Range(start, end), resultText);
+    });
 }
 
 function toggleStrikethrough() {
