@@ -101,7 +101,7 @@ export function showChangelog() {
 
 /**
  * Remove Markdown syntax (bold, italic, links etc.) in a heading.
- * This function is only used before the `slugify` function.
+ * This function is only used before the `slugify` function of `github` mode.
  * 
  * A Markdown heading may contain Markdown styles, e.g. `_italic_`.
  * It can also have HTML tags, e.g. `<code>`.
@@ -121,6 +121,8 @@ function mdHeadingToPlaintext(text: string) {
     //// Escape leading `1.` and `1)` (#567, #585)
     text = text.replace(/^([\d]+)(\.)/, (_, g1) => g1 + '%dot%');
     text = text.replace(/^([\d]+)(\))/, (_, g1) => g1 + '%par%');
+    //// TMP escape emoji code (which is a side effect of using `mdEngine.cacheMd` to convert MD to HTML)
+    text = text.replace(/:/g, '%colon%');
     //// Escape math environment
     text = text.replace(/\$/g, '%dollar%');
 
@@ -134,6 +136,7 @@ function mdHeadingToPlaintext(text: string) {
     //// Unescape
     text = text.replace('%dot%', '.');
     text = text.replace('%par%', ')');
+    text = text.replace(/%colon%/g, ':');
     text = text.replace(/%dollar%/g, '$');
     return text;
 }
