@@ -59,14 +59,17 @@ function getQuoteState(lineArray: Array<string>): QuoteState {
 
 function quoteLine(line: string): string {
     if(!line.startsWith(">")){
-        return ">" + line;
+        return "> " + line;
     } else {
         return line;
     }
 }
 
 function unquoteLine(line: string): string {
-    if (line.startsWith(">")) {
+    if (!line.startsWith("> ") && line.startsWith(">")) {
+        return line.slice(2);
+    }
+    else if (line.startsWith(">")) {
         return line.slice(1);
     } else {
         return line;
