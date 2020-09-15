@@ -1,10 +1,18 @@
-.vscode/**
-.vscode-test/**
-out/test/**
-src/**
+# Important: The patterns are relative to the location of the vscodeignore file.
+
+# Development tools, intermediate build results, and temporary files
+.vscode-test/
 out/
+tools/
 **/*.map
-.github/**
+
+# Source files
+src/
+**/*.ts
+
+# Configuration files
+.github/
+.vscode/
 VERSION
 .gitignore
 tsconfig.json
