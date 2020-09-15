@@ -1,48 +1,46 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
+  workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Use Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: '12.x'
+      - name: "Setup Node.js environment"
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12"
 
-    # Runs a set of commands using the runners shell
-    - name: Install
-      run: |
-        npm install
-        npm install -g vsce
+      - name: "Install dependencies"
+        run: |
+          npm ci
+          npm install -g vsce
 
-    - name: Build
-      run: vsce package
-    
-    - name: Test
-      uses: GabrielBB/xvfb-action@v1.0
-      with:
-        run: npm test
-    
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2-preview
-      with:
-        name: Markdown-all-in-one-GitHub-Build
-        path: ./*.vsix
+      - name: Build
+        run: vsce package
+
+      - name: Test
+        uses: GabrielBB/xvfb-action@v1.0
+        with:
+          run: npm test
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Markdown-All-in-One-${{ github.sha }}
+          path: ./*.vsix
+
+      - name: "(debug) Upload npm log"
+        if: ${{ !success() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: "npm-debug-log"
+          path: "~/.npm/_logs"
