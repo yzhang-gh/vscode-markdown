@@ -447,6 +447,7 @@ suite("TOC.", () => {
     test("Option `toc.downcaseLink`", done => {
         testCommand('markdown.extension.toc.create',
             {
+                "markdown.extension.toc.slugifyMode": "vscode", // VS Code tolerates uppercase characters.
                 "markdown.extension.toc.downcaseLink": false
             },
             [
