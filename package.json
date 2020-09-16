@@ -450,7 +450,7 @@
     },
     "devDependencies": {
         "@types/highlight.js": "^9.12.4",
-        "@types/image-size": "^0.8.0",
+        "@types/image-size": "^0.7.0",
         "@types/markdown-it": "^10.0.2",
         "@types/mocha": "^5.2.6",
         "@types/node": "^12.12.58",
