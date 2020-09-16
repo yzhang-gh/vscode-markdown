@@ -453,7 +453,7 @@
         "@types/image-size": "^0.8.0",
         "@types/markdown-it": "^10.0.2",
         "@types/mocha": "^5.2.6",
-        "@types/node": "^14.10.1",
+        "@types/node": "^12.12.58",
         "@types/vscode": "1.38.0",
         "glob": "^7.1.6",
         "mocha": "^7.1.1",
