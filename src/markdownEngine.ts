@@ -65,7 +65,7 @@ class MarkdownEngine {
             katexOptions['macros'] = userMacros;
         }
 
-        md = (await import('markdown-it'))({
+        md = new MarkdownIt({
             html: true,
             highlight: (str: string, lang?: string) => {
                 lang = normalizeHighlightLang(lang);
