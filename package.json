@@ -9,6 +9,8 @@
         "vscode": "^1.38.0"
     },
     "categories": [
+        "Programming Languages",
+        "Formatters",
         "Other"
     ],
     "keywords": [
@@ -228,7 +230,7 @@
                 "markdown.extension.italic.indicator": {
                     "type": "string",
                     "default": "*",
-                    "description": "%config.italic.indicator.description%",
+                    "markdownDescription": "%config.italic.indicator.description%",
                     "enum": [
                         "*",
                         "_"
@@ -271,7 +273,7 @@
                         "one",
                         "ordered"
                     ],
-                    "enumDescriptions": [
+                    "markdownEnumDescriptions": [
                         "%config.orderedList.marker.enumDescriptions.one%",
                         "%config.orderedList.marker.enumDescriptions.ordered%"
                     ]
@@ -293,16 +295,16 @@
                     "description": "%config.print.imgToBase64.description%",
                     "scope": "resource"
                 },
+                "markdown.extension.print.includeVscodeStylesheets": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%config.print.includeVscodeStylesheets%"
+                },
                 "markdown.extension.print.onFileSave": {
                     "type": "boolean",
                     "default": false,
                     "description": "%config.print.onFileSave.description%",
                     "scope": "resource"
-                },
-                "markdown.extension.print.validateUrls": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "%config.print.validateUrls.description%"
                 },
                 "markdown.extension.print.theme": {
                     "type": "string",
@@ -314,10 +316,10 @@
                     "description": "%config.print.theme%",
                     "scope": "resource"
                 },
-                "markdown.extension.print.includeVscodeStylesheets": {
+                "markdown.extension.print.validateUrls": {
                     "type": "boolean",
                     "default": true,
-                    "description": "%config.print.includeVscodeStylesheets%"
+                    "description": "%config.print.validateUrls.description%"
                 },
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
@@ -332,7 +334,7 @@
                 "markdown.extension.syntax.plainTheme": {
                     "type": "boolean",
                     "default": false,
-                    "description": "%config.syntax.plainTheme.description%"
+                    "markdownDescription": "%config.syntax.plainTheme.description%"
                 },
                 "markdown.extension.tableFormatter.enabled": {
                     "type": "boolean",
@@ -342,28 +344,22 @@
                 "markdown.extension.tableFormatter.normalizeIndentation": {
                     "type": "boolean",
                     "default": false,
-                    "description": "%config.tableFormatter.normalizeIndentation.description%"
+                    "markdownDescription": "%config.tableFormatter.normalizeIndentation.description%"
                 },
                 "markdown.extension.toc.downcaseLink": {
                     "type": "boolean",
                     "default": true,
-                    "description": "%config.toc.downcaseLink.description%"
-                },
-                "markdown.extension.toc.slugifyMode": {
-                    "type": "string",
-                    "default": "github",
-                    "enum": [
-                        "github",
-                        "gitlab",
-                        "gitea",
-                        "vscode"
-                    ],
-                    "description": "%config.toc.slugifyMode.description%"
+                    "markdownDescription": "%config.toc.downcaseLink.description%"
                 },
                 "markdown.extension.toc.levels": {
                     "type": "string",
                     "default": "1..6",
-                    "description": "%config.toc.levels.description%"
+                    "markdownDescription": "%config.toc.levels.description%"
+                },
+                "markdown.extension.toc.omittedFromToc": {
+                    "type": "object",
+                    "default": {},
+                    "description": "%config.toc.omittedFromToc.description%"
                 },
                 "markdown.extension.toc.orderedList": {
                     "type": "boolean",
@@ -375,10 +371,27 @@
                     "default": false,
                     "description": "%config.toc.plaintext.description%"
                 },
+                "markdown.extension.toc.slugifyMode": {
+                    "type": "string",
+                    "default": "github",
+                    "markdownDescription": "%config.toc.slugifyMode.description%",
+                    "enum": [
+                        "github",
+                        "gitea",
+                        "gitlab",
+                        "vscode"
+                    ],
+                    "enumDescriptions": [
+                        "GitHub",
+                        "Gitea",
+                        "GitLab",
+                        "Visual Studio Code"
+                    ]
+                },
                 "markdown.extension.toc.unorderedList.marker": {
                     "type": "string",
                     "default": "-",
-                    "description": "%config.toc.unorderedList.marker.description%",
+                    "markdownDescription": "%config.toc.unorderedList.marker.description%",
                     "enum": [
                         "-",
                         "*",
@@ -389,11 +402,6 @@
                     "type": "boolean",
                     "default": true,
                     "description": "%config.toc.updateOnSave.description%"
-                },
-                "markdown.extension.toc.omittedFromToc": {
-                    "type": "object",
-                    "default": {},
-                    "description": "%config.toc.omittedFromToc.description%"
                 }
             }
         },
@@ -442,10 +450,10 @@
     },
     "devDependencies": {
         "@types/highlight.js": "^9.12.4",
-        "@types/image-size": "^0.8.0",
+        "@types/image-size": "^0.7.0",
         "@types/markdown-it": "^10.0.2",
         "@types/mocha": "^5.2.6",
-        "@types/node": "^14.10.1",
+        "@types/node": "^12.12.58",
         "@types/vscode": "1.38.0",
         "glob": "^7.1.6",
         "mocha": "^7.1.1",
