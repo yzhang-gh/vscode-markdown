@@ -14,7 +14,7 @@
     "config.italic.indicator.description": "使用 `*` 或 `_` 包围斜体文本。",
     "config.katex.macros.description": "自定义 KaTeX 宏。",
     "config.list.indentationSize.description": "Markdown 列表的缩进方案。（包括目录列表）",
-    "config.list.indentationSize.enumDescriptions.adaptive": "无序列表中使用 2 空格，有序列表中使用 3 空格",
+    "config.list.indentationSize.enumDescriptions.adaptive": "根据**项目符号**判断缩进大小。\n\n通常，无序列表中使用 2 空格，有序列表中使用 3 ~ 11 空格。",
     "config.list.indentationSize.enumDescriptions.inherit": "使用当前文档设置的缩进量。（请查看 VS Code 状态栏）",
     "config.math.enabled": "启用基本的数学支持（由 KaTeX 提供）",
     "config.orderedList.autoRenumber.description": "自动更正有序列表的标号。",
