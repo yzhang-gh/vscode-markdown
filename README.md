@@ -48,9 +48,9 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
 - The TOC is **automatically updated** on file save. To disable please change the `toc.updateOnSave` option.
 
-- The **indentation type (tab or spaces)** of TOC can be configured per file (find it in the right bottom corner)
+- The **indentation type (tab or spaces)** of TOC can be configured per file. Find the setting in the right bottom corner of VS Code's status bar.
 
-  *Note*: be sure to also check the `list.indentationSize` option
+  ***Note***: Be sure to also check the `list.indentationSize` option.
 
 - To make TOC **compatible with GitHub or GitLab**, set option `slugifyMode` accordingly
 
@@ -76,7 +76,8 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
        ]
      }
      ```
-     *Note*: headings underlined with `===` or `---` can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
+
+     ***Note***: Setext headings (underlined with `===` or `---`) can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
 
 - Easily add/update/remove **section numbering**
 
@@ -91,6 +92,8 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/tab-backspace.gif" alt="on tab/backspace key" width="214px"></p>
 
 <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/fix-marker.gif" alt="fix ordered list markers" width="214px"></p>
+
+***Note***: By default, this extension tries to determine indentation size for different lists according to [CommonMark Spec](https://spec.commonmark.org/0.29/#list-items). If you prefer to use a fixed tab size, please change the `list.indentationSize` setting.
 
 ### Print Markdown to HTML
 
@@ -112,7 +115,7 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
   <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/table-formatter.gif" alt="table formatter" width="246px"></p>
 
-  (Note that the keybinding is <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd> on Linux)
+  ***Note***: The key binding is <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd> on Linux. See [Visual Studio Code Key Bindings](https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-reference).
 
 - Task lists
 
@@ -217,7 +220,7 @@ Tip: also support the option `completion.root`
 ## FAQ
 
 #### Q: Error "command 'markdown.extension.onXXXKey' not found"
-  
+
 In most cases, it is because VSCode needs a few seconds to load this extension when you open a Markdown file *for the first time*. (You will see a message "Activating Extensions..." on the status bar.)
 
 If you still see this "command not found" error after waiting for a long time, please try to restart VSCode (or reinstall this extension<sup>1</sup> if needed). Otherwise feel free to open a new issue on GitHub.

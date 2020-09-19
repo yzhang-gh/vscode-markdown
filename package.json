@@ -247,12 +247,12 @@
                         "adaptive",
                         "inherit"
                     ],
-                    "enumDescriptions": [
+                    "markdownEnumDescriptions": [
                         "%config.list.indentationSize.enumDescriptions.adaptive%",
                         "%config.list.indentationSize.enumDescriptions.inherit%"
                     ],
                     "default": "adaptive",
-                    "description": "%config.list.indentationSize.description%",
+                    "markdownDescription": "%config.list.indentationSize.description%",
                     "scope": "resource"
                 },
                 "markdown.extension.math.enabled": {
