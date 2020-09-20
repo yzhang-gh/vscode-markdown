@@ -10,7 +10,7 @@
 		"math-display": {
 			"name": "markup.inserted.math.display.markdown",
 			"begin": "(^|\\G)([ ]{0,3})((?<![^\\\\]\\\\)\\$\\$(?!\\$))",
-			"end": "(?<![^\\\\]\\\\)(?<![^\\\\]\\$)(\\$\\$)([\\s]*)$",
+			"end": "(?<![^\\\\]\\\\)(?<![^\\\\]\\$)(\\$\\$)([\\s]*)",
 			"beginCaptures": {
 				"0": {
 					"name": "punctuation.definition.math.display.markdown"
