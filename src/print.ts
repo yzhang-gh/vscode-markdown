@@ -3,6 +3,7 @@
 import * as fs from "fs";
 import * as path from 'path';
 import { commands, ExtensionContext, TextDocument, Uri, window, workspace } from 'vscode';
+import { encodeHTML } from 'entities';
 import localize from './localize';
 import { mdEngine, extensionBlacklist } from "./markdownEngine";
 import { isMdEditor } from './util';
@@ -61,19 +62,28 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
         outPath += `.${type}`;
     }
 
-    //// HTML title (GitHub #506)
-    let title: string;
+    //// Determine document title.
+    // 1. If the document begins with a comment like `<!-- title: Document Title -->`, use it. Empty title is not allow here. (GitHub #506)
+    // 2. Else, find the first ATX heading, and use it.
+
     const firstLineText = doc.lineAt(0).text;
-    let m: RegExpExecArray | null;
-    if (!!(m = /^<!-- title:\s*(\S.+)-->/.exec(firstLineText))) {
-        title = m[1].trim();
-    } else {
-        title = doc.getText().split(/\r?\n/g).find(lineText => lineText.startsWith('#'));
+    // The lazy quantifier and `trim()` can avoid mistakenly capturing cases like:
+    // <!-- title:-->-->
+    // <!-- title: --> -->
+    let m = /^<!-- title:(.*?)-->/.exec(firstLineText);
+    let title: string | undefined = m === null ? undefined : m[1].trim();
+
+    // Empty string is also falsy.
+    if (!title) {
+        // Editors treat `\r\n`, `\n`, and `\r` as EOL.
+        // Since we don't care about line numbers, a simple alternation is enough and slightly faster.
+        title = doc.getText().split(/\n|\r/g).find(lineText => lineText.startsWith('#') && /^#{1,6} /.test(lineText));
         if (title) {
-            title = title.replace(/^#+/, '').replace(/#+$/, '').trim();
+            title = title.trim().replace(/^#+/, '').replace(/#+$/, '').trim();
         }
     }
 
+    //// Render body HTML.
     let body: string = await mdEngine.render(doc.getText(), workspace.getConfiguration('markdown.preview', doc.uri));
 
     //// Image paths
@@ -138,7 +148,7 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
     <html>
     <head>
         <meta charset="UTF-8">
-        <title>${title ? title : ''}</title>
+        <title>${title ? encodeHTML(title) : ''}</title>
         ${extensionStyles}
         ${getStyles(doc.uri, hasMath, includeVscodeStyles)}
         ${hasMath ? '<script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>' : ''}
