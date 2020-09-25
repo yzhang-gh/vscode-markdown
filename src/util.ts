@@ -219,6 +219,10 @@ export function slugify(heading: string, mode?: string, downcase?: boolean) {
             slug = slugifyMethods.vscode(slug);
             break;
 
+        case 'azureDevops':
+            slug = slugifyMethods.azureDevops(slug);
+            break;
+
         default:
             slug = slugifyMethods.github(slug);
             break;
@@ -234,6 +238,20 @@ export function slugify(heading: string, mode?: string, downcase?: boolean) {
  * The values are corresponding slugify functions, whose signature must be `(slug: string) => string`.
  */
 const slugifyMethods: { readonly [mode: string]: (text: string) => string; } = {
+    /**
+     * Azure DevOps
+     */
+    "azureDevops": (slug: string): string => {
+        // https://lemmingh.github.io/vscode-markdown-docs/specs/slugify/azure-devops.html
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent#Description
+        slug = encodeURIComponent(
+            slug.toLowerCase()
+                .replace(/\p{Zs}/gu, '-')
+        ).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16));
+
+        return slug;
+    },
+
     /**
      * GitHub slugify function
      */

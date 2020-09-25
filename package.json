@@ -377,12 +377,14 @@
                     "markdownDescription": "%config.toc.slugifyMode.description%",
                     "enum": [
                         "github",
+                        "azureDevops",
                         "gitea",
                         "gitlab",
                         "vscode"
                     ],
                     "enumDescriptions": [
                         "GitHub",
+                        "Azure DevOps",
                         "Gitea",
                         "GitLab",
                         "Visual Studio Code"
