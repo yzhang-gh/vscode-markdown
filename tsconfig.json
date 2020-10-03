@@ -6,8 +6,12 @@
         "lib": [
             "es2018"
         ],
+        "newLine": "lf",
         "sourceMap": true,
-        "rootDir": "src"
+        "rootDir": "src",
+        "strict": true,
+        "noImplicitAny": false,
+        "strictNullChecks": false
     },
     "exclude": [
         "node_modules",

@@ -21,6 +21,9 @@ export function activate(context: ExtensionContext) {
     );
 }
 
+// The commands here are only bound to keys with `when` clause containing `editorTextFocus && !editorReadonly`. (package.json)
+// So we don't need to check whether `activeTextEditor` returns `undefined` in most cases.
+
 function onEnterKey(modifiers?: string) {
     let editor = window.activeTextEditor;
     let cursorPos: Position = editor.selection.active;
@@ -197,10 +200,10 @@ function asNormal(key: string, modifiers?: string) {
 
 /**
  * If
- * 
+ *
  * 1. it is not the first line
  * 2. there is a Markdown list item before this line
- * 
+ *
  * then indent the current line to align with the previous list item.
  */
 function indent(editor?: TextEditor) {
@@ -306,7 +309,7 @@ function findNextMarkerLineNumber(line?: number): number {
 /**
  * Looks for the previous ordered list marker at the same indentation level
  * and returns the marker number that should follow it.
- * 
+ *
  * @returns the fixed marker number
  */
 function lookUpwardForMarker(editor: TextEditor, line: number, currentIndentation: number): number {

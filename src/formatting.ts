@@ -113,10 +113,10 @@ function getMathState(editor: TextEditor, cursor: Position): MathBlockState {
 
 /**
  * Modify the document, change from `oldMathBlockState` to `newMathBlockState`.
- * @param editor 
- * @param cursor 
- * @param oldMathBlockState 
- * @param newMathBlockState 
+ * @param editor
+ * @param cursor
+ * @param oldMathBlockState
+ * @param newMathBlockState
  */
 function setMathState(editor: TextEditor, cursor: Position, oldMathBlockState: MathBlockState, newMathBlockState: MathBlockState) {
     // Step 1: Delete old math block.
@@ -186,9 +186,9 @@ const transTable = [
     MathBlockState.MULTI_DISPLAYED,
     MathBlockState.SINGLE_DISPLAYED
 ];
-const reverseTransTable = new Array(...transTable).reverse();
+const reverseTransTable = new Array<MathBlockState>(...transTable).reverse();
 
-function toggleMath(transTable) {
+function toggleMath(transTable: MathBlockState[]) {
     let editor = window.activeTextEditor;
     if (!editor.selection.isEmpty) return;
     let cursor = editor.selection.active;
@@ -303,7 +303,7 @@ export function isSingleLink(text: string): boolean {
     return singleLinkRegex.test(text);
 }
 
-function styleByWrapping(startPattern, endPattern?) {
+function styleByWrapping(startPattern: string, endPattern?: string) {
     if (endPattern == undefined) {
         endPattern = startPattern;
     }
@@ -431,14 +431,14 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
     newSelections[i] = newSelection;
 }
 
-function isWrapped(text, startPattern, endPattern?): boolean {
+function isWrapped(text: string, startPattern: string, endPattern?: string): boolean {
     if (endPattern == undefined) {
         endPattern = startPattern;
     }
     return text.startsWith(startPattern) && text.endsWith(endPattern);
 }
 
-function getContext(editor, cursorPos, startPattern, endPattern?): string {
+function getContext(editor: TextEditor, cursorPos: Position, startPattern: string, endPattern?: string): string {
     if (endPattern == undefined) {
         endPattern = startPattern;
     }
