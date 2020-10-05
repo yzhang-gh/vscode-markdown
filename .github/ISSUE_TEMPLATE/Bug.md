@@ -1,7 +1,6 @@
 ---
 name: '🐛 Bug report'
 about: 'Report errors or unexpected behavior.'
-labels: 'Bug'
 ---
 
 <!--
