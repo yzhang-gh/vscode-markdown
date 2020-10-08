@@ -454,7 +454,7 @@
         "@types/highlight.js": "^9.12.4",
         "@types/image-size": "^0.7.0",
         "@types/markdown-it": "^10.0.2",
-        "@types/mocha": "^5.2.6",
+        "@types/mocha": "^8.0.3",
         "@types/node": "^12.12.58",
         "@types/vscode": "1.38.0",
         "glob": "^7.1.6",
