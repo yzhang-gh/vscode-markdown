@@ -41,8 +41,8 @@ export async function testCommand(command: string, configs, lines: string[], sel
                 return commands.executeCommand(command).then(() => {
                     let actual = window.activeTextEditor.document.getText();
                     actual = actual.replace(/\r\n/g, '\n').replace(/\t/g, '    '); /* !!! */
-                    assert.deepEqual(actual, expLines.join('\n').replace(/\t/g, '    '));
-                    assert.deepEqual(window.activeTextEditor.selection, expSelection);
+                    assert.deepStrictEqual(actual, expLines.join('\n').replace(/\t/g, '    '));
+                    assert.deepStrictEqual(window.activeTextEditor.selection, expSelection);
                 });
             });
         });

@@ -5,9 +5,9 @@ import * as glob from 'glob';
 export function run(): Promise<void> {
 	// Create the mocha test
 	const mocha = new Mocha({
+		color: true,
 		ui: 'tdd',
 	});
-	mocha.useColors(true);
 
 	const testsRoot = path.resolve(__dirname, '..');
 
@@ -30,6 +30,7 @@ export function run(): Promise<void> {
 					}
 				});
 			} catch (err) {
+				console.error(err); // https://github.com/microsoft/vscode/issues/80757
 				e(err);
 			}
 		});
