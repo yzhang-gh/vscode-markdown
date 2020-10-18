@@ -92,7 +92,14 @@ class MarkdownEngine {
             if (extensionBlacklist.has(contribute.extensionId)) {
                 continue;
             }
-            md = await contribute.extendMarkdownIt(md);
+
+            // Skip the third-party Markdown extension, if it is broken or crashes.
+            try {
+                md = await contribute.extendMarkdownIt(md);
+            } catch (err) {
+                // Use the multiple object overload, so that the console can output the error object in its own way, which usually keeps more details than `toString`.
+                console.warn(`[yzhang.markdown-all-in-one]:\nSkipped Markdown extension: ${contribute.extensionId}\nReason:`, err);
+            }
         }
         return md;
     }
