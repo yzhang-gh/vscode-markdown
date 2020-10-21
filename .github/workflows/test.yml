@@ -1,24 +1,19 @@
-name: CI
+name: Test
 
-# Build VSIX packages in production and debug mode.
-# Run tests against debug build.
+# Run tests only.
 #
-# This workflow is designed to be run on pushing to master branch.
+# This workflow is designed to be run on PR to validate commits.
+# It can be seen as a short version of `main.yml`.
 
 on:
-  push:
-    branches: [master]
-    paths-ignore:
-      - ".github/**/*.md"
-      - ".vscode/**"
-      - "images/**"
-      - "README.md"
+  pull_request:
+    branches: ["master"]
   workflow_dispatch:
   repository_dispatch:
-    types: ["package"]
+    types: ["test"]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -44,10 +39,6 @@ jobs:
           npm ci
           npm install -g vsce
 
-      # Our prepublish script runs in production mode by default.
-      - name: Build production
-        run: vsce package
-
       - name: "Set prepublish script for debug build"
         shell: pwsh
         run: |
@@ -55,8 +46,6 @@ jobs:
           $packageManifest.scripts.'vscode:prepublish' = 'webpack --mode development'
           $packageManifest | ConvertTo-Json -Depth 100 | Out-File -FilePath './package.json' -Encoding 'utf8NoBOM'
 
-      # We should run tests against debug build to make error messages as useful as possible.
-      # Thus, build a debug package first, and use it in test script later.
       - name: Build debug
         run: |
           vsce package --out debug.vsix
@@ -66,21 +55,6 @@ jobs:
         with:
           run: npm test
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: Markdown-All-in-One-${{ github.sha }}
-          path: ./*.vsix
-
-      # Keep the cache of the default branch clean.
-      # This is regarded as a post-run step that we don't really pay attention to.
-      # Run it last to save waiting time.
-      - name: "Verify npm cache"
-        if: ${{ steps.cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/master' }}
-        run: |
-          npm cache verify
-
-      # If the run failed, npm log may help to diagnose.
       - name: "(debug) Upload npm log"
         if: ${{ !success() }}
         uses: actions/upload-artifact@v2
