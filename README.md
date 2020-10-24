@@ -46,7 +46,7 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
 <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/toc.png" alt="toc" width="305px"></p>
 
-- Run command **Create Table of Contents** to insert a new table of contents.
+- Run command "**Create Table of Contents**" to insert a new table of contents.
 
 - The TOC is **automatically updated** on file save by default. To disable, please change the `toc.updateOnSave` option.
 
@@ -57,6 +57,9 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 - To make TOC **compatible with GitHub or GitLab**, set option `slugifyMode` accordingly
 
 - Three ways to **control which headings are present** in the TOC:
+
+  <details>
+  <summary>Click to expand</summary>
 
   1. Add `<!-- omit in toc -->` at the end of a heading to ignore it in TOC\
     (It can also be placed above a heading)
@@ -84,6 +87,8 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
      - Setext headings (underlined with `===` or `---`) can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
      - When omitting heading, **make sure headings within a document are unique**. Duplicate headings may lead to unpredictable behavior.
+
+  </details>
 
 - Easily add/update/remove **section numbering**
 
