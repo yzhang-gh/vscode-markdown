@@ -8,7 +8,7 @@
 
 All you need for Markdown (keyboard shortcuts, table of contents, auto preview and more).
 
-#### Table of contents  <!-- omit in toc -->
+**Table of Contents**
 
 - [Features](#features)
   - [Keyboard shortcuts](#keyboard-shortcuts)
@@ -46,7 +46,9 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
 <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/toc.png" alt="toc" width="305px"></p>
 
-- The TOC is **automatically updated** on file save. To disable please change the `toc.updateOnSave` option.
+- Run command **Create Table of Contents** to insert a new table of contents.
+
+- The TOC is **automatically updated** on file save by default. To disable, please change the `toc.updateOnSave` option.
 
 - The **indentation type (tab or spaces)** of TOC can be configured per file. Find the setting in the right bottom corner of VS Code's status bar.
 
@@ -56,12 +58,13 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
 - Three ways to **control which headings are present** in the TOC:
 
-  1. Use `<!-- omit in toc -->` to ignore a specific heading in TOC  
+  1. Add `<!-- omit in toc -->` at the end of a heading to ignore it in TOC\
     (It can also be placed above a heading)
 
   2. Use `toc.levels` setting.
 
   3. You can also use the `toc.omittedFromToc` setting to omit some headings (and their subheadings) from TOC:
+
      ```js
      // In your settings.json
      "markdown.extension.toc.omittedFromToc": {
@@ -77,7 +80,10 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
      }
      ```
 
-     ***Note***: Setext headings (underlined with `===` or `---`) can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
+     ***Note***:
+
+     - Setext headings (underlined with `===` or `---`) can also be omitted, just put their `# ` and `## ` versions in the setting, respectively.
+     - When omitting heading, **make sure headings within a document are unique**. Duplicate headings may lead to unpredictable behavior.
 
 - Easily add/update/remove **section numbering**
 
