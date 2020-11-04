@@ -339,7 +339,7 @@
                 "markdown.extension.tableFormatter.enabled": {
                     "type": "boolean",
                     "default": true,
-                    "description": "%config.tableFormatter.enabled.description%"
+                    "markdownDescription": "%config.tableFormatter.enabled.description%"
                 },
                 "markdown.extension.tableFormatter.normalizeIndentation": {
                     "type": "boolean",
@@ -354,7 +354,8 @@
                 "markdown.extension.toc.levels": {
                     "type": "string",
                     "default": "1..6",
-                    "markdownDescription": "%config.toc.levels.description%"
+                    "markdownDescription": "%config.toc.levels.description%",
+                    "pattern": "^[1-6]\\.\\.[1-6]$"
                 },
                 "markdown.extension.toc.omittedFromToc": {
                     "type": "object",
