@@ -144,7 +144,7 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
         ${hasMath ? '<script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>' : ''}
         ${extensionScripts}
     </head>
-    <body${config.get<string>('print.theme') === 'light' ? ' class="vscode-light"' : ''}>
+    <body class="vscode-body${config.get<string>('print.theme') === 'light' ? ' vscode-light' : ''}">
         ${body}
     </body>
     </html>`;
