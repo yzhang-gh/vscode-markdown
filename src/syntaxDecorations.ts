@@ -1,6 +1,6 @@
 'use strict'
 
-import { ExtensionContext, Position, Range, TextEditor, window, workspace } from "vscode";
+import { DecorationRangeBehavior, ExtensionContext, Position, Range, TextEditor, ThemeColor, window, workspace } from "vscode";
 import { isFileTooLarge, isInFencedCodeBlock, isMdEditor, mathEnvCheck } from "./util";
 
 let decorTypes = {
@@ -24,8 +24,9 @@ let decorTypes = {
         "textDecoration": "line-through"
     }),
     "codeSpan": window.createTextEditorDecorationType({
-        "rangeBehavior": 1,
-        "border": "1px solid #454D51",
+        "rangeBehavior": DecorationRangeBehavior.ClosedClosed,
+        "border": "1px solid",
+        "borderColor": new ThemeColor("editor.selectionBackground"),
         "borderRadius": "3px"
     })
 };
