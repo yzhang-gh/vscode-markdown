@@ -26,6 +26,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
     - [Q: Error "command 'markdown.extension.onXXXKey' not found"](#q-error-command-markdownextensiononxxxkey-not-found)
     - [Q: Which Markdown syntax is supported?](#q-which-markdown-syntax-is-supported)
     - [Q: This extension has overridden some of my key bindings (e.g. <kbd>Ctrl</kbd> + <kbd>B</kbd>, <kbd>Alt</kbd> + <kbd>C</kbd>)](#q-this-extension-has-overridden-some-of-my-key-bindings-eg-ctrl--b-alt--c)
+    - [Q: The extension is unresponsive, causing lag etc. (performance issues)](#q-the-extension-is-unresponsive-causing-lag-etc-performance-issues)
 - [Changelog](#changelog)
 - [Latest Development Build](#latest-development-build)
 - [Contributing](#contributing)
@@ -251,15 +252,21 @@ For other Markdown syntax, you need to install the corresponding extensions from
 
 You can easily manage key bindings with [VSCode's "Keyboard Shortcuts" page](https://code.visualstudio.com/docs/getstarted/keybindings). (Commands provided by this extension have prefix `markdown.extension`.)
 
+#### Q: The extension is unresponsive, causing lag etc. (performance issues)
+
+From experience, there is a good chance that the performance issues are caused by other extensions (e.g., some spell checker extensions).
+
+To find out the root cause, you can install our [development build](#latest-development-build) (`debug.vsix`) and create a CPU profile following this official [instruction](https://github.com/microsoft/vscode/wiki/Performance-Issues#profile-the-running-extensions) from the VS Code. And then please open a GitHub issue with that profile (`.cpuprofile.txt`) attached.
+
 ## Changelog
 
 See [CHANGELOG](CHANGELOG.md) for more information.
 
 ## Latest Development Build
 
-Download it [here](https://github.com/yzhang-gh/vscode-markdown/actions/), please click the latest passing event to download artifacts.
+Download it [here](https://github.com/yzhang-gh/vscode-markdown/actions/), please click the latest passing event to download artifacts. There are two versions: `markdown-all-in-one-*.vsix` is the regular build, while `debug.vsix` is used to create a verbose CPU profile.
 
-To install, execute `Extensions: Install from VSIX...` in the Command Palette (`ctrl + shift + p`)
+To install, execute `Extensions: Install from VSIX...` in the VS Code Command Palette (`ctrl + shift + p`)
 
 ## Contributing
 
