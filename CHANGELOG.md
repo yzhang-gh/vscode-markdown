@@ -1,3 +1,22 @@
+### 3.4.0 (2020.11.14)
+
+- **New**: New TOC slugify mode `azureDevops` ([#802](https://github.com/yzhang-gh/vscode-markdown/issues/802)).
+
+<!--  -->
+
+- **Fix**: Math syntax highlight ([#346](https://github.com/yzhang-gh/vscode-markdown/issues/346)).
+- **Fix**: Color of the inline code span outline (now using `editor.selectionBackground`) ([#734](https://github.com/yzhang-gh/vscode-markdown/issues/734)).
+- **Fix**: Broken TOC links if headings have emoji ([#792](https://github.com/yzhang-gh/vscode-markdown/issues/792)).
+- **Fix**: Catch exception of other Markdown extensions ([#834](https://github.com/yzhang-gh/vscode-markdown/issues/834)).
+- **Fix**: Compatibility with [Markdown Preview Github Styling](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-preview-github-styles).
+
+<!--  -->
+
+- **Other**: Many documentation improvements.
+- **Other**: Automatically build `debug.vsix` using GitHub Actions ([#837](https://github.com/yzhang-gh/vscode-markdown/pull/837)).
+
+---
+
 ### 3.3.0 (2020.08.31)
 
 - **New**: You can now use `<!-- title: Your Title Here -->` comment to specify a title of the exported HTML ([#506](https://github.com/yzhang-gh/vscode-markdown/issues/506)).
