@@ -44,7 +44,7 @@
     "printing": "出力中",
     "to": "へ",
     "unableToReadFile": "ファイルを読み取れません",
-    "revertingToImagePaths": "。base64エンコードを画像Pathに戻す",
+    "revertingToImagePaths": "base64エンコードを画像Pathに戻す",
     "customStyle": "カスタムスタイル",
     "notFound": "が見つかりません。",
     "cannotUseBuiltinSlugifyFunc": "VSCode組み込みのslugify関数が使用できません。GitHubのslugify関数にフォールバックします。VSCodeを最新バージョンに更新するか、 `githubCompatibility`を`true`に設定してください",

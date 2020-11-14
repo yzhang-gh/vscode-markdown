@@ -51,7 +51,7 @@
     "printing": "Printing",
     "to": "to",
     "unableToReadFile": "Unable to read file",
-    "revertingToImagePaths": ". Reverting to image paths instead of base64 encoding",
+    "revertingToImagePaths": "Reverting to image paths instead of base64 encoding",
     "customStyle": "Custom style",
     "notFound": " not found.",
     "cannotUseBuiltinSlugifyFunc": "Cannot use VSCode built-in slugify function, fall back to GitHub slugify funtion. Try to update VSCode to the latest version or set setting `githubCompatibility` to `true`",

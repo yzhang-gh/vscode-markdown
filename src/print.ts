@@ -109,7 +109,7 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
                 const file = fs.readFileSync(imgSrc.replace(/%20/g, '\ ')).toString('base64');
                 return `${p1}data:image/${imgExt};base64,${file}${p3}`;
             } catch (e) {
-                window.showWarningMessage(`${localize("unableToReadFile")} ${imgSrc}, ${localize("revertingToImagePaths")}. (${doc.fileName})`);
+                window.showWarningMessage(`${localize("unableToReadFile")} '${imgSrc}'. ${localize("revertingToImagePaths")}. (${doc.fileName})`);
             }
 
             if (configAbsPath) {
