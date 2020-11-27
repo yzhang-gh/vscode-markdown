@@ -257,7 +257,9 @@ You can easily manage key bindings with [VSCode's "Keyboard Shortcuts" page](htt
 
 #### Q: The extension is unresponsive, causing lag etc. (performance issues)
 
-From experience, there is a good chance that the performance issues are caused by other extensions (e.g., some spell checker extensions).
+From experience, there is *a good chance* that the performance issues are caused by *other extensions* (e.g., some spell checker extensions).
+
+This can be verified if you try again with all other extensions disabled (execute `Developer: Reload with Extensions Disabled` or `Extensions: Disable All Installed Extensions for this Workspace` in the VS Code command Palette) and then enable this extension.
 
 To find out the root cause, you can install our [development build](#latest-development-build) (`debug.vsix`) and create a CPU profile following this official [instruction](https://github.com/microsoft/vscode/wiki/Performance-Issues#profile-the-running-extensions) from the VS Code. And then please open a GitHub issue with that profile (`.cpuprofile.txt`) attached.
 
