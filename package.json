@@ -193,13 +193,13 @@
                 "when": "editorTextFocus && editorLangId == markdown"
             },
             {
-                "command": "markdown.extension.togglePreview",
+                "command": "markdown.extension.closePreview",
                 "key": "ctrl+shift+v",
                 "mac": "cmd+shift+v",
-                "when": "!terminalFocus"
+                "when": "markdownPreviewFocus"
             },
             {
-                "command": "markdown.extension.closePreviewToSide",
+                "command": "markdown.extension.closePreview",
                 "key": "ctrl+k v",
                 "mac": "cmd+k v",
                 "when": "markdownPreviewFocus"

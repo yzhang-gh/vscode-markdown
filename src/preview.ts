@@ -15,17 +15,12 @@ export function activate(context: ExtensionContext) {
     // Try preview when this extension is activated the first time
     autoPreviewToSide(window.activeTextEditor);
 
-    // Override default preview keybindings (from 'open preview' to 'toggle preview' i.e. 'open/close preview')
+    // `markdown.extension.closePreview` is just a wrapper for the `workbench.action.closeActiveEditor` command.
+    // We introduce it to avoid confusing users in UI.
+    // "Toggle preview" is achieved by contributing key bindings that very carefully match VS Code's default values.
+    // https://github.com/yzhang-gh/vscode-markdown/pull/780
     context.subscriptions.push(
-        commands.registerCommand('markdown.extension.togglePreview', () => {
-            let editor = window.activeTextEditor;
-            if (!editor) {
-                commands.executeCommand('workbench.action.closeActiveEditor');
-            } else if (editor.document.languageId === 'markdown') {
-                commands.executeCommand('markdown.showPreview');
-            }
-        }),
-        commands.registerCommand('markdown.extension.closePreviewToSide', () => {
+        commands.registerCommand('markdown.extension.closePreview', () => {
             commands.executeCommand('workbench.action.closeActiveEditor');
         })
     );
