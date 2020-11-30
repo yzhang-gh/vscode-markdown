@@ -167,12 +167,14 @@
             },
             {
                 "command": "markdown.extension.onCopyLineUp",
-                "key": "shift+alt+up",
+                "win": "shift+alt+up",
+                "mac": "shift+alt+up",
                 "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.onCopyLineDown",
-                "key": "shift+alt+down",
+                "win": "shift+alt+down",
+                "mac": "shift+alt+down",
                 "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
             },
             {
