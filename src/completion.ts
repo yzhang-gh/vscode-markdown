@@ -437,7 +437,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             const basePath = getBasepath(document, typedDir);
             const isRootedPath = typedDir.startsWith('/');
 
-            return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif}', this.EXCLUDE_GLOB).then(uris => {
+            return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif,webp}', this.EXCLUDE_GLOB).then(uris => {
                 let items = uris.map(imgUri => {
                     const label = path.relative(basePath, imgUri.fsPath).replace(/\\/g, '/');
                     let item = new CompletionItem(label.replace(/ /g, '%20'), CompletionItemKind.File);
