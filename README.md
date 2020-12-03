@@ -47,7 +47,7 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
 <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/toc.png" alt="toc" width="305px"></p>
 
-- Run command "**Create Table of Contents**" to insert a new table of contents.
+- Run command "**Create Table of Contents**" (in the [VS Code Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette)) to insert a new table of contents.
 
 - The TOC is **automatically updated** on file save by default. To disable, please change the `toc.updateOnSave` option.
 
