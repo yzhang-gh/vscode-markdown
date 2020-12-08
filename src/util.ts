@@ -223,6 +223,10 @@ export function slugify(heading: string, mode?: string, downcase?: boolean) {
             slug = slugifyMethods.azureDevops(slug);
             break;
 
+        case 'bitbucketCloud':
+            slug = slugifyMethods.bitbucketCloud(slug);
+            break;
+
         default:
             slug = slugifyMethods.github(slug);
             break;
@@ -248,6 +252,18 @@ const slugifyMethods: { readonly [mode: string]: (text: string) => string; } = {
             slug.toLowerCase()
                 .replace(/\p{Zs}/gu, '-')
         ).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16));
+
+        return slug;
+    },
+
+    /**
+     * Bitbucket Cloud
+     */
+    "bitbucketCloud": (slug: string): string => {
+        // https://support.atlassian.com/bitbucket-cloud/docs/readme-content/
+        // https://bitbucket.org/tutorials/markdowndemo/
+        slug = 'markdown-header-'
+            + slugifyMethods.github(slug).replace(/-+/g, '-');
 
         return slug;
     },
