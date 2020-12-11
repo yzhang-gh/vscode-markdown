@@ -35,12 +35,13 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     ];
     delimiters0 = [
         'lparen', 'rparen', 'lceil', 'rceil', 'uparrow',
-        'lbrack', 'rbrack', 'lfloor', 'rfloor', 'downarrow', 'updownarrow',
+        'lbrack', 'rbrack', 'lfloor', 'rfloor', 'downarrow',
+        'lbrace', 'rbrace', 'lmoustache', 'rmoustache', 'updownarrow',
         'langle', 'rangle', 'lgroup', 'rgroup', 'Uparrow',
         'vert', 'ulcorner', 'urcorner', 'Downarrow',
         'Vert', 'llcorner', 'lrcorner', 'Updownarrow',
         'lvert', 'rvert', 'lVert', 'rVert', 'backslash',
-        'lang', 'rang', 'lt', 'gt'
+        'lang', 'rang', 'lt', 'gt', 'llbracket', 'rrbracket', 'lBrace', 'rBrace'
     ];
     delimeterSizing0 = [
         'left', 'big', 'bigl', 'bigm', 'bigr',
@@ -53,8 +54,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'Epsilon', 'Zeta', 'Eta', 'Theta',
         'Iota', 'Kappa', 'Lambda', 'Mu',
         'Nu', 'Xi', 'Omicron', 'Pi',
-        'Sigma', 'Tau', 'Upsilon', 'Phi',
-        'Chi', 'Psi', 'Omega',
+        'Rho', 'Sigma', 'Tau', 'Upsilon',
+        'Phi', 'Chi', 'Psi', 'Omega',
         'varGamma', 'varDelta', 'varTheta', 'varLambda',
         'varXi', 'varPi', 'varSigma', 'varUpsilon',
         'varPhi', 'varPsi', 'varOmega',
@@ -87,6 +88,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'tag', 'tag*'
     ];
     verticalLayout0 = ['atop']
+    verticalLayout1 = ['substack']
     verticalLayout2 = ['stackrel', 'overset', 'underset', 'raisebox'];
     overlap1 = ['mathllap', 'mathrlap', 'mathclap', 'llap', 'rlap', 'clap', 'smash'];
     spacing0 = [
@@ -107,6 +109,13 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'isin', 'lor', 'leftrightarrow', 'iff',
         'notin', 'ni', 'notni', 'neg', 'lnot'
     ];
+    macros0 = [
+        'def', 'gdef', 'edef', 'xdef', 'let', 'futurelet', 'global',
+        'newcommand', 'renewcommand', 'providecommand',
+        'long', 'char', 'mathchoice', 'TextOrMath',
+        '@ifstar', '@ifnextchar', '@firstoftwo', '@secondoftwo',
+        'relax', 'expandafter', 'noexpand'
+    ]
     bigOperators0 = [
         'sum', 'prod', 'bigotimes', 'bigvee',
         'int', 'coprod', 'bigoplus', 'bigwedge',
@@ -247,6 +256,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'xtofrom', 'xmapsto',
         'xlongequal'
     ];
+    braketNotation1 = ['bra', 'Bra', 'ket', 'Ket', 'braket']
     classAssignment1 = [
         'mathbin', 'mathclose', 'mathinner', 'mathop',
         'mathopen', 'mathord', 'mathpunct', 'mathrel'
@@ -306,8 +316,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'circledR', 'diamondsuit', 'heartsuit',
         'diamonds', 'hearts',
         'circledS', 'spadesuit', 'spades',
-        'maltese'
+        'maltese', 'minuso'
     ];
+    debugging0 = ['message', 'errmessage', 'show']
 
     mathCompletions: CompletionItem[];
 
@@ -320,12 +331,13 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 ...this.delimiters0, ...this.delimeterSizing0,
                 ...this.greekLetters0, ...this.otherLetters0,
                 ...this.spacing0, ...this.verticalLayout0,
-                ...this.logicAndSetTheory0, ...this.bigOperators0,
+                ...this.logicAndSetTheory0, ...this.macros0, ...this.bigOperators0,
                 ...this.binaryOperators0, ...this.binomialCoefficients0,
                 ...this.fractions0, ...this.mathOperators0,
                 ...this.relations0, ...this.negatedRelations0,
                 ...this.arrows0, ...this.font0, ...this.size0,
-                ...this.style0, ...this.symbolsAndPunctuation0
+                ...this.style0, ...this.symbolsAndPunctuation0,
+                ...this.debugging0
             ]
         )).map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
@@ -336,10 +348,10 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         let c2 = Array.from(new Set(
             [
                 ...this.accents1, ...this.annotation1,
-                ...this.overlap1, ...this.spacing1,
+                ...this.verticalLayout1, ...this.overlap1, ...this.spacing1,
                 ...this.mathOperators1, ...this.sqrt1,
                 ...this.extensibleArrows1, ...this.font1,
-                ...this.classAssignment1
+                ...this.braketNotation1, ...this.classAssignment1
             ]
         )).map(cmd => {
             let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
@@ -358,7 +370,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             return item;
         });
         let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
-        envSnippet.insertText = new SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
+        envSnippet.insertText = new SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,rcases,smallmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
 
         // Pretend to support multi-workspacefolders
         let resource = null;
