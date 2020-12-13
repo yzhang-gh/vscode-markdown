@@ -106,8 +106,8 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         // Alignment of each column        
         let colAlign = []
         // Regex to extract cell content.
-        // Known issue: `\\|` is not correctly parsed as a valid delimiter
-        let fieldRegExp = new RegExp(/(?:((?:\\\||`.*?`|[^\|])*)\|)/gu);
+        // GitHub #24
+        let fieldRegExp = new RegExp(/((\\\||[^\|])*)\|/gu);
         // https://www.ling.upenn.edu/courses/Spring_2003/ling538/UnicodeRanges.html
         let cjkRegex = /[\u3000-\u9fff\uac00-\ud7af\uff01-\uff60]/g;
 
