@@ -451,7 +451,7 @@
         "grapheme-splitter": "^1.0.4",
         "highlight.js": "^10.4.1",
         "image-size": "^0.7.4",
-        "markdown-it": "^11.0.1",
+        "markdown-it": "^12.0.3",
         "markdown-it-task-lists": "^2.1.1",
         "string-similarity": "^4.0.2"
     },
