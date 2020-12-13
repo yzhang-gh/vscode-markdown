@@ -52,18 +52,18 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     }
 
     private detectTables(text: string) {
-        const lineBreak = '\\r?\\n';
-        const contentLine = '\\|?.*\\|.*\\|?';
+        const lineBreak = String.raw`\r?\n`;
+        const contentLine = String.raw`\|?.*\|.*\|?`;
 
-        const leftSideHyphenComponent = '(?:\\|? *:?-+:? *\\|)';
-        const middleHyphenComponent = '(?: *:?-+:? *\\|)*';
-        const rightSideHyphenComponent = '(?: *:?-+:? *\\|?)'
+        const leftSideHyphenComponent = String.raw`(?:\|? *:?-+:? *\|)`;
+        const middleHyphenComponent = String.raw`(?: *:?-+:? *\|)*`;
+        const rightSideHyphenComponent = String.raw`(?: *:?-+:? *\|?)`;
         const multiColumnHyphenLine = leftSideHyphenComponent + middleHyphenComponent + rightSideHyphenComponent;
 
         //// GitHub issue #431
-        const singleColumnHyphenLine = '(?:\\| *:?-+:? *\\|)'
+        const singleColumnHyphenLine = String.raw`(?:\| *:?-+:? *\|)`;
 
-        const hyphenLine =  '[ \\t]*(?:' + multiColumnHyphenLine + '|' + singleColumnHyphenLine + ')[ \\t]*';
+        const hyphenLine =  String.raw`[ \t]*(?:${multiColumnHyphenLine}|${singleColumnHyphenLine})[ \t]*`;
 
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
         return text.match(tableRegex);
