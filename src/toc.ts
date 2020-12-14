@@ -3,7 +3,7 @@
 import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
 import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, window, workspace, WorkspaceEdit } from 'vscode';
-import { isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
+import { isInFencedCodeBlock, isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
 
 /**
  * Workspace config
@@ -243,7 +243,10 @@ async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string
     while ((match = listRegex.exec(fullText)) !== null) {
         //// #525 <!-- no toc --> comment
         const listStartPos = doc.positionAt(match.index + match[1].length);
-        if (listStartPos.line > 0 && doc.lineAt(listStartPos.line - 1).text.includes("no toc")) {
+        if (
+            (listStartPos.line > 0 && doc.lineAt(listStartPos.line - 1).text.includes("no toc"))
+            || isInFencedCodeBlock(doc, listStartPos.line)
+        ) {
             continue;
         }
 

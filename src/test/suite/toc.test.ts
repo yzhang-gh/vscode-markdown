@@ -592,7 +592,7 @@ suite("TOC.", () => {
             new Selection(9, 25, 9, 25)).then(done, done);
     });
 
-    test("Ignore code blocks 2 (GitHub #603)", done => {
+    test("Ignore code blocks indented with TAB (GitHub #603)", done => {
         testCommand('markdown.extension.toc.create', {},
             [
                 '# Section 1',
@@ -619,6 +619,34 @@ suite("TOC.", () => {
                 '- [Section 2](#section-2)'
             ],
             new Selection(9, 25, 9, 25)).then(done, done);
+    });
+
+    test("Ignore code blocks. TOC update", done => {
+        testCommand('markdown.extension.toc.update', {},
+            [
+                '# H1',
+                '# H2',
+                '# H3',
+                '',
+                '```',
+                '- [H1](#h1)',
+                '- [H2](#h2)',
+                '',
+                '```'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '# H1',
+                '# H2',
+                '# H3',
+                '',
+                '```',
+                '- [H1](#h1)',
+                '- [H2](#h2)',
+                '',
+                '```'
+            ],
+            new Selection(0, 0, 0, 0)).then(done, done);
     });
 
     test("Markdown syntax in headings", done => {
