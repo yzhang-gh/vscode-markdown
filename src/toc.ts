@@ -376,7 +376,7 @@ export function buildToc(doc: TextDocument) {
             const matches = /^(#+) (.*)/.exec(lineText);
             const entry = {
                 level: matches[1].length,
-                text: matches[2].replace(/#+$/, '').trim(),
+                text: matches[2].replace(/ #+ *$/, '').trim(),
                 lineNum: index,
             };
             return entry;
