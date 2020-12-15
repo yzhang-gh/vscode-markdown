@@ -196,7 +196,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
     const startDepth = Math.max(tocConfig.startDepth, Math.min(...tocEntries.map(h => h.level)));
     let order = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
 
-    const anchorOccurances: { [slug: string]: number; } = {};
+    const anchorOccurrences: { [slug: string]: number; } = {};
     let ignoredDepthBound: number | undefined = undefined;
     const excludedHeadings = getExcludedHeadings(doc);
 
@@ -212,11 +212,11 @@ async function generateTocText(doc: TextDocument): Promise<string> {
 
             let slug = slugify(entry.text);
 
-            if (anchorOccurances.hasOwnProperty(slug)) {
-                anchorOccurances[slug] += 1;
-                slug += '-' + String(anchorOccurances[slug]);
+            if (anchorOccurrences.hasOwnProperty(slug)) {
+                anchorOccurrences[slug] += 1;
+                slug += '-' + String(anchorOccurrences[slug]);
             } else {
-                anchorOccurances[slug] = 0;
+                anchorOccurrences[slug] = 0;
             }
 
             // Filter out used excluded headings.
