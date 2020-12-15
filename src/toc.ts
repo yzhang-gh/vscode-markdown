@@ -2,8 +2,18 @@
 
 import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
+import * as vscode from 'vscode';
 import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, window, workspace, WorkspaceEdit } from 'vscode';
 import { isInFencedCodeBlock, isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
+
+/**
+ * Represents a heading.
+ */
+interface IHeading {
+    level: number;
+    text: string;
+    lineNum: number;
+}
 
 /**
  * Workspace config
@@ -23,11 +33,13 @@ export function activate(context: ExtensionContext) {
 }
 
 async function createToc() {
-    let editor = window.activeTextEditor;
+    const editor = vscode.window.activeTextEditor;
 
-    if (!isMdEditor(editor)) {
+    if (!(editor && isMdEditor(editor))) {
         return;
     }
+
+    loadTocConfig(editor);
 
     let toc = await generateTocText(editor.document);
     await editor.edit(function (editBuilder) {
@@ -39,9 +51,11 @@ async function createToc() {
 async function updateToc() {
     const editor = window.activeTextEditor;
 
-    if (!isMdEditor(editor)) {
+    if (!(editor && isMdEditor(editor))) {
         return;
     }
+
+    loadTocConfig(editor);
 
     const doc = editor.document;
     const tocRangesAndText = await detectTocRanges(doc);
@@ -51,7 +65,7 @@ async function updateToc() {
     await editor.edit(editBuilder => {
         for (const tocRange of tocRanges) {
             if (tocRange !== null) {
-                const oldToc = getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol);
+                const oldToc = doc.getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol);
                 if (oldToc !== newToc) {
                     const unchangedLength = commonPrefixLength(oldToc, newToc);
                     const newStart = doc.positionAt(doc.offsetAt(tocRange.start) + unchangedLength);
@@ -69,13 +83,15 @@ async function updateToc() {
 
 function addSectionNumbers() {
     const editor = window.activeTextEditor;
-    if (!isMdEditor(editor)) {
+
+    if (!(editor && isMdEditor(editor))) {
         return;
     }
-    const doc = editor.document;
 
-    loadTocConfig();
-    const toc = buildToc(editor.document);
+    loadTocConfig(editor);
+
+    const doc = editor.document;
+    const toc = buildToc(doc);
     if (toc === null || toc === undefined || toc.length < 1) return;
     const startDepth = Math.max(tocConfig.startDepth, Math.min(...toc.map(h => h.level)));
 
@@ -103,7 +119,7 @@ function addSectionNumbers() {
 
 function removeSectionNumbers() {
     const editor = window.activeTextEditor;
-    if (!isMdEditor(editor)) {
+    if (!(editor && isMdEditor(editor))) {
         return;
     }
     const doc = editor.document;
@@ -126,8 +142,8 @@ function normalizePath(path: string): string {
 }
 
 //// Returns a list of user defined excluded headings for the given document.
-function getExcludedHeadings(doc: TextDocument): { level: number, text: string }[] {
-    const configObj = workspace.getConfiguration('markdown.extension.toc').get<object>('omittedFromToc');
+function getExcludedHeadings(doc: vscode.TextDocument): { level: number, text: string; }[] {
+    const configObj = vscode.workspace.getConfiguration('markdown.extension.toc').get<{ [path: string]: string[]; }>('omittedFromToc');
 
     if (typeof configObj !== 'object' || configObj === null) {
         window.showErrorMessage(`\`omittedFromToc\` must be an object (e.g. \`{"README.md": ["# Introduction"]}\`)`);
@@ -136,7 +152,7 @@ function getExcludedHeadings(doc: TextDocument): { level: number, text: string }
 
     const docWorkspace = workspace.getWorkspaceFolder(doc.uri);
 
-    let omittedTocPerFile = {};
+    let omittedTocPerFile: { [path: string]: string[]; } = {};
     for (const filePath of Object.keys(configObj)) {
         let normedPath: string;
         //// Converts paths to absolute paths if a workspace is opened
@@ -171,18 +187,17 @@ function getExcludedHeadings(doc: TextDocument): { level: number, text: string }
 }
 
 async function generateTocText(doc: TextDocument): Promise<string> {
-    loadTocConfig();
     const orderedListMarkerIsOne: boolean = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
 
-    let toc = [];
+    let toc: string[] = [];
     let tocEntries = buildToc(doc);
     if (tocEntries === null || tocEntries === undefined || tocEntries.length < 1) return '';
 
     const startDepth = Math.max(tocConfig.startDepth, Math.min(...tocEntries.map(h => h.level)));
     let order = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
 
-    let anchorOccurances = {};
-    let ignoredDepthBound = null;
+    const anchorOccurances: { [slug: string]: number; } = {};
+    let ignoredDepthBound: number | undefined = undefined;
     const excludedHeadings = getExcludedHeadings(doc);
 
     tocEntries.forEach(entry => {
@@ -206,13 +221,13 @@ async function generateTocText(doc: TextDocument): Promise<string> {
 
             // Filter out used excluded headings.
             const isExcluded = excludedHeadings.some(({ level, text }) => level === entry.level && text === entry.text);
-            const isOmittedSubHeading = ignoredDepthBound !== null && entry.level > ignoredDepthBound;
+            const isOmittedSubHeading = ignoredDepthBound !== undefined && entry.level > ignoredDepthBound;
             if (isExcluded) {
                 // Keep track of the latest omitted heading's depth to also omit its subheadings.
                 ignoredDepthBound = entry.level;
             } else if (!isOmittedSubHeading) {
                 // Reset ignore bound (not ignored sub heading anymore).
-                ignoredDepthBound = null;
+                ignoredDepthBound = undefined;
                 let row = [
                     docConfig.tab.repeat(relativeLvl),
                     (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLvl]) + '.' : tocConfig.listMarker) + ' ',
@@ -276,7 +291,7 @@ async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string
     return [tocRanges, newTocText];
 }
 
-function commonPrefixLength(s1, s2) {
+function commonPrefixLength(s1: string, s2: string): number {
     let minLength = Math.min(s1.length, s2.length);
     for (let i = 0; i < minLength; i++) {
         if (s1[i] !== s2[i]) {
@@ -286,7 +301,7 @@ function commonPrefixLength(s1, s2) {
     return minLength;
 }
 
-function radioOfCommonPrefix(s1, s2) {
+function radioOfCommonPrefix(s1: string, s2: string): number {
     let minLength = Math.min(s1.length, s2.length);
     let maxLength = Math.max(s1.length, s2.length);
 
@@ -305,21 +320,25 @@ function onWillSave(e: TextDocumentWillSaveEvent) {
     }
 }
 
-function loadTocConfig() {
-    let tocSectionCfg = workspace.getConfiguration('markdown.extension.toc');
-    let tocLevels = tocSectionCfg.get<string>('levels');
+/**
+ * Updates `tocConfig` and `docConfig`.
+ * @param editor The editor, from which we detect `docConfig`.
+ */
+function loadTocConfig(editor: vscode.TextEditor): void {
+    const tocSectionCfg = vscode.workspace.getConfiguration('markdown.extension.toc');
+    const tocLevels = tocSectionCfg.get<string>('levels')!;
     let matches;
     if (matches = tocLevels.match(/^([1-6])\.\.([1-6])$/)) {
         tocConfig.startDepth = Number(matches[1]);
         tocConfig.endDepth = Number(matches[2]);
     }
-    tocConfig.orderedList = tocSectionCfg.get<boolean>('orderedList');
-    tocConfig.listMarker = tocSectionCfg.get<string>('unorderedList.marker');
-    tocConfig.plaintext = tocSectionCfg.get<boolean>('plaintext');
-    tocConfig.updateOnSave = tocSectionCfg.get<boolean>('updateOnSave');
+    tocConfig.orderedList = tocSectionCfg.get<boolean>('orderedList')!;
+    tocConfig.listMarker = tocSectionCfg.get<string>('unorderedList.marker')!;
+    tocConfig.plaintext = tocSectionCfg.get<boolean>('plaintext')!;
+    tocConfig.updateOnSave = tocSectionCfg.get<boolean>('updateOnSave')!;
 
     // Load workspace config
-    let activeEditor = window.activeTextEditor;
+    const activeEditor = editor;
     docConfig.eol = activeEditor.document.eol === EndOfLine.CRLF ? '\r\n' : '\n';
 
     let tabSize = Number(activeEditor.options.tabSize);
@@ -335,11 +354,10 @@ function loadTocConfig() {
     }
 }
 
-function getText(range: Range): string {
-    return window.activeTextEditor.document.getText(range);
-}
-
-export function buildToc(doc: TextDocument) {
+/**
+ * Gets root-level headings in a text document.
+ */
+export function buildToc(doc: vscode.TextDocument): IHeading[] {
     const replacer = (foundStr: string) => foundStr.replace(/[^\r\n]/g, '');
     let lines = doc.getText()
         .replace(REGEX_FENCED_CODE_BLOCK, replacer)                 //// Remove fenced code blocks (and #603, #675)
@@ -376,7 +394,7 @@ export function buildToc(doc: TextDocument) {
             && !lineText.includes('&lt; omit in toc &gt;')
         ) {
             lineText = lineText.replace(/^ +/, '');
-            const matches = /^(#+) (.*)/.exec(lineText);
+            const matches = /^(#+) (.*)/.exec(lineText)!;
             const entry = {
                 level: matches[1].length,
                 text: matches[2].replace(/ #+ *$/, '').trim(),
@@ -388,18 +406,22 @@ export function buildToc(doc: TextDocument) {
         }
     }).filter(entry => entry !== null);
 
-    return toc;
+    return toc as IHeading[]; // TODO: Rewrite later.
 }
 
 class TocCodeLensProvider implements CodeLensProvider {
     public provideCodeLenses(document: TextDocument, _: CancellationToken):
         CodeLens[] | Thenable<CodeLens[]> {
-        let lenses: CodeLens[] = [];
+        const editor = vscode.window.activeTextEditor!;
+
+        loadTocConfig(editor);
+
+        const lenses: vscode.CodeLens[] = [];
         return detectTocRanges(document).then(tocRangesAndText => {
             const tocRanges = tocRangesAndText[0];
             const newToc = tocRangesAndText[1];
             for (let tocRange of tocRanges) {
-                let status = getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol) === newToc ? 'up to date' : 'out of date';
+                let status = document.getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol) === newToc ? 'up to date' : 'out of date';
                 lenses.push(new CodeLens(tocRange, {
                     arguments: [],
                     title: `Table of Contents (${status})`,
