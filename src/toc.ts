@@ -412,7 +412,9 @@ export function buildToc(doc: vscode.TextDocument): IHeading[] {
 class TocCodeLensProvider implements CodeLensProvider {
     public provideCodeLenses(document: TextDocument, _: CancellationToken):
         CodeLens[] | Thenable<CodeLens[]> {
-        const editor = vscode.window.activeTextEditor!;
+        // VS Code asks for code lens as soon as a text editor is visible (atop the group that holds it), no matter whether it has focus.
+        // Duplicate editor views refer to the same TextEditor, and the same TextDocument.
+        const editor = vscode.window.visibleTextEditors.find(e => e.document === document)!;
 
         loadTocConfig(editor);
 
