@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as sizeOf from 'image-size';
 import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
-import { buildToc } from './toc';
+import { getAllRootHeading } from './toc';
 import { mathEnvCheck, mdDocSelector, slugify } from './util';
 
 export function activate(context: ExtensionContext) {
@@ -17,7 +17,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     // \cmd         -> 0
     // \cmd{$1}     -> 1
     // \cmd{$1}{$2} -> 2
-    // 
+    //
     // Use linebreak to mimic the structure of the KaTeX [Support Table](https://katex.org/docs/supported.html)
     accents1 = [
         'tilde', 'mathring',
@@ -559,16 +559,16 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
 
             return new Promise((res, _) => {
-                const toc = buildToc(document);
+                const toc = getAllRootHeading(document);
 
                 const headingCompletions = toc.reduce((prev, curr) => {
-                    let item = new CompletionItem('#' + slugify(curr.text), CompletionItemKind.Reference);
+                    let item = new CompletionItem('#' + slugify(curr.rawContent), CompletionItemKind.Reference);
 
                     if (addClosingParen) {
                         item.insertText = item.label + ')';
                     }
 
-                    item.documentation = curr.text;
+                    item.documentation = curr.rawContent;
                     item.range = range;
                     prev.push(item);
                     return prev;
@@ -608,7 +608,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 }
 
 /**
- * @param doc 
+ * @param doc
  * @param dir The dir already typed in the src field, e.g. `[alt text](dir_here|)`
  */
 function getBasepath(doc: TextDocument, dir: string): string {

@@ -6,12 +6,49 @@ import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, Ext
 import { isInFencedCodeBlock, isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
 
 /**
+ * The heading level allowed by the CommonMark Spec.
+ */
+type MarkdownHeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+
+/**
  * Represents a heading.
  */
 interface IHeading {
-    level: number;
-    text: string;
-    lineNum: number;
+    /**
+     * The heading level.
+     */
+    level: MarkdownHeadingLevel;
+
+    /**
+     * The raw content of the heading according to the CommonMark Spec.
+     */
+    rawContent: string;
+
+    /**
+     * The **zero-based** index of the beginning line of the heading in original document.
+     */
+    lineIndex: number;
+
+    /**
+     * `true` to show in TOC. `false` to omit in TOC.
+     */
+    isInToc: boolean;
+}
+
+/**
+ * Represents a basic unit of a TOC.
+ */
+export interface ITocItem extends IHeading {
+    /**
+     * The **rich text** representation of the rendering result (in strict CommonMark mode) of the heading.
+     * This must be able to be safely put into a `[]` bracket pair without breaking Markdown syntax.
+     */
+    visibleText: string;
+
+    /**
+     * The anchor ID of the heading.
+     */
+    slug: string;
 }
 
 /**
@@ -90,7 +127,7 @@ function addSectionNumbers() {
     loadTocConfig(editor);
 
     const doc = editor.document;
-    const toc = buildToc(doc);
+    const toc = getAllRootHeading(doc);
     if (toc === null || toc === undefined || toc.length < 1) return;
     const startDepth = Math.max(tocConfig.startDepth, Math.min(...toc.map(h => h.level)));
 
@@ -98,7 +135,7 @@ function addSectionNumbers() {
     let edit = new WorkspaceEdit();
     toc.forEach(entry => {
         const level = entry.level;
-        const lineNum = entry.lineNum;
+        const lineNum = entry.lineIndex;
 
         if (level < startDepth) return;
 
@@ -122,10 +159,10 @@ function removeSectionNumbers() {
         return;
     }
     const doc = editor.document;
-    const toc = buildToc(editor.document);
+    const toc = getAllRootHeading(editor.document);
     let edit = new WorkspaceEdit();
     toc.forEach(entry => {
-        const lineNum = entry.lineNum;
+        const lineNum = entry.lineIndex;
         const lineText = doc.lineAt(lineNum).text;
         const newText = lineText.includes('#')
             ? lineText.replace(/^(\s{0,3}#+ +)((?:\d{1,9}\.)* )?(.*)/, (_, g1, _g2, g3) => `${g1}${g3}`)
@@ -189,7 +226,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
     const orderedListMarkerIsOne: boolean = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
 
     let toc: string[] = [];
-    let tocEntries = buildToc(doc);
+    let tocEntries = getAllRootHeading(doc);
     if (tocEntries === null || tocEntries === undefined || tocEntries.length < 1) return '';
 
     const startDepth = Math.max(tocConfig.startDepth, Math.min(...tocEntries.map(h => h.level)));
@@ -205,11 +242,11 @@ async function generateTocText(doc: TextDocument): Promise<string> {
 
             //// Remove certain Markdown syntaxes
             //// `[text](link)` → `text`
-            let headingText = entry.text.replace(/\[([^\]]*)\]\([^\)]*\)/, (_, g1) => g1);
+            let headingText = entry.rawContent.replace(/\[([^\]]*)\]\([^\)]*\)/, (_, g1) => g1);
             //// `[text][label]` → `text`
             headingText = headingText.replace(/\[([^\]]*)\]\[[^\)]*\]/, (_, g1) => g1);
 
-            let slug = slugify(entry.text);
+            let slug = slugify(entry.rawContent);
 
             if (anchorOccurrences.hasOwnProperty(slug)) {
                 anchorOccurrences[slug] += 1;
@@ -219,7 +256,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
             }
 
             // Filter out used excluded headings.
-            const isExcluded = excludedHeadings.some(({ level, text }) => level === entry.level && text === entry.text);
+            const isExcluded = excludedHeadings.some(({ level, text }) => level === entry.level && text === entry.rawContent);
             const isOmittedSubHeading = ignoredDepthBound !== undefined && entry.level > ignoredDepthBound;
             if (isExcluded) {
                 // Keep track of the latest omitted heading's depth to also omit its subheadings.
@@ -354,58 +391,102 @@ function loadTocConfig(editor: TextEditor): void {
 }
 
 /**
- * Gets root-level headings in a text document.
+ * Gets all headings in the root of the text document.
+ * @returns In ascending order of `lineIndex`.
  */
-export function buildToc(doc: TextDocument): IHeading[] {
+export function getAllRootHeading(doc: TextDocument): IHeading[] {
+    /**
+     * Replaces line content with empty.
+     * @param foundStr The multiline string.
+     */
     const replacer = (foundStr: string) => foundStr.replace(/[^\r\n]/g, '');
-    let lines = doc.getText()
+
+    /* Get lines. And easy transformations. */
+
+    const lines: string[] = doc.getText()
+        .replace(/^---[\W\w]+?(?:\r?\n)---/, replacer)              //// Remove YAML front matter
         .replace(REGEX_FENCED_CODE_BLOCK, replacer)                 //// Remove fenced code blocks (and #603, #675)
-        .replace(/<!-- omit in (toc|TOC) -->/g, '&lt; omit in toc &gt;')    //// Escape magic comment
-        .replace(/<!--[\W\w]+?-->/g, replacer)                      //// Remove comments
-        .replace(/^---[\W\w]+?(\r?\n)---/, replacer)                //// Remove YAML front matter
+        .replace(/^\t+/gm, (match: string) => '    '.repeat(match.length)) // CommonMark Spec - 2.2 Tabs
         .split(/\r?\n/g);
 
-    //// Some special cases that we need to look at multiple lines to decide
+    // .replace(/<!--[\W\w]+?-->/g, replacer)                      //// Remove comments
+
+    /* Complex transformations. */
+
+    // When trimming, comply with the CommonMark Spec. Do not use `trim()`. <https://tc39.es/ecma262/#sec-trimstring>
+    // Be careful about special cases that we need to look at multiple lines to decide.
+    // Still cannot perfectly handle some weird cases, for example:
+    // * Multiline heading.
+    // * A setext heading next to a list.
+
+    // Do transformations as many as possible in one loop, to save time.
     lines.forEach((lineText, i, arr) => {
         //// Transform setext headings to ATX headings
         if (
-            i < arr.length - 1
-            && lineText.match(/^ {0,3}\S.*$/)
-            && lineText.replace(/[ -]/g, '').length > 0  //// #629
-            && arr[i + 1].match(/^ {0,3}(=+|-{2,}) *$/)
+            i < arr.length - 1 // The current line is not the last.
+            && /^ {0,3}[^ \t\f\v]/.test(lineText) // The indentation of the line is 0~3.
+            && !/^ {0,3}#{1,6}(?: |\t|$)/.test(lineText) // The line is not an ATX heading.
+            && !/^ {0,3}(?:[*+-]|\d{1,9}(?:\.|\)))(?: |\t|$)/.test(lineText) // The line is not a list item.
+            && !/^ {0,3}>/.test(lineText) // The line is not a block quote.
+            && !/^ {0,3}(?:(?:-[ \t]*){3,}|(?:\*[ \t]*){3,}|(?:_[ \t]*){3,})[ \t]*$/.test(lineText) // #629: Consecutive thematic breaks false positive. <https://github.com/commonmark/commonmark.js/blob/75474b071da06535c23adc17ac4132213ab31934/lib/blocks.js#L36>
+            && /^ {0,3}(?:=+|-+)[ \t]*$/.test(arr[i + 1]) // The next line is a setext heading underline.
         ) {
             arr[i] = (arr[i + 1].includes('=') ? '# ' : '## ') + lineText;
+            arr[i + 1] = '';
         }
-        //// Ignore headings following `<!-- omit in toc -->`
-        if (
-            i > 0
-            && arr[i - 1] === '&lt; omit in toc &gt;'
-        ) {
-            arr[i] = '';
-        }
+
+        // Remove trailing space or tab characters.
+        // <https://github.com/commonmark/commonmark.js/blob/75474b071da06535c23adc17ac4132213ab31934/lib/blocks.js#L503-L507>
+        arr[i] = arr[i].replace(/[ \t]+$/, '');
     });
 
-    const toc = lines.map((lineText, index) => {
-        if (
-            lineText.trim().startsWith('#')
-            && !lineText.startsWith('    ')  //// The opening `#` character may be indented 0-3 spaces
-            && lineText.includes('# ')
-            && !lineText.includes('&lt; omit in toc &gt;')
-        ) {
-            lineText = lineText.replace(/^ +/, '');
-            const matches = /^(#+) (.*)/.exec(lineText)!;
-            const entry = {
-                level: matches[1].length,
-                text: matches[2].replace(/ #+ *$/, '').trim(),
-                lineNum: index,
-            };
-            return entry;
-        } else {
-            return null;
-        }
-    }).filter(entry => entry !== null);
+    /* Generate the final list. */
 
-    return toc as IHeading[]; // TODO: Rewrite later.
+    const toc: IHeading[] = [];
+
+    for (let i: number = 0; i < lines.length; i++) {
+        const crtLineText = lines[i];
+
+        // Skip non-ATX heading lines.
+        if (
+            // <https://spec.commonmark.org/0.29/#atx-headings>
+            // Leading tab-space conversion has been done above.
+            !/^ {0,3}#{1,6}(?: |\t|$)/.test(crtLineText)
+        ) {
+            continue;
+        }
+
+        let isInToc: boolean = true;
+
+        // Identify ignored headings.
+        // We have trimmed trailing space or tab characters above.
+        if (
+            // The magic comment is above the heading.
+            (
+                i > 0
+                && /^<!-- omit in (toc|TOC) -->$/.test(lines[i - 1])
+            )
+
+            // The magic comment is at the end of the heading.
+            || crtLineText.endsWith('<!-- omit in toc -->')
+            || crtLineText.endsWith('<!-- omit in TOC -->')
+        ) {
+            isInToc = false;
+        }
+
+        // Extract heading info.
+        const matches = /^ {0,3}(#{1,6})(.*)$/.exec(crtLineText)!;
+        const entry = {
+            level: matches[1].length as MarkdownHeadingLevel,
+            rawContent: matches[2].replace(/^[ \t]+/, '').replace(/[ \t]+#+[ \t]*$/, ''),
+            lineIndex: i,
+            isInToc,
+        };
+
+        toc.push(entry);
+    }
+
+    return toc;
 }
 
 class TocCodeLensProvider implements CodeLensProvider {
