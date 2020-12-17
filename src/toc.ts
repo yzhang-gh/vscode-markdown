@@ -2,8 +2,7 @@
 
 import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
-import * as vscode from 'vscode';
-import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, window, workspace, WorkspaceEdit } from 'vscode';
+import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
 import { isInFencedCodeBlock, isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
 
 /**
@@ -33,7 +32,7 @@ export function activate(context: ExtensionContext) {
 }
 
 async function createToc() {
-    const editor = vscode.window.activeTextEditor;
+    const editor = window.activeTextEditor;
 
     if (!(editor && isMdEditor(editor))) {
         return;
@@ -142,8 +141,8 @@ function normalizePath(path: string): string {
 }
 
 //// Returns a list of user defined excluded headings for the given document.
-function getExcludedHeadings(doc: vscode.TextDocument): { level: number, text: string; }[] {
-    const configObj = vscode.workspace.getConfiguration('markdown.extension.toc').get<{ [path: string]: string[]; }>('omittedFromToc');
+function getExcludedHeadings(doc: TextDocument): { level: number, text: string; }[] {
+    const configObj = workspace.getConfiguration('markdown.extension.toc').get<{ [path: string]: string[]; }>('omittedFromToc');
 
     if (typeof configObj !== 'object' || configObj === null) {
         window.showErrorMessage(`\`omittedFromToc\` must be an object (e.g. \`{"README.md": ["# Introduction"]}\`)`);
@@ -324,8 +323,8 @@ function onWillSave(e: TextDocumentWillSaveEvent) {
  * Updates `tocConfig` and `docConfig`.
  * @param editor The editor, from which we detect `docConfig`.
  */
-function loadTocConfig(editor: vscode.TextEditor): void {
-    const tocSectionCfg = vscode.workspace.getConfiguration('markdown.extension.toc');
+function loadTocConfig(editor: TextEditor): void {
+    const tocSectionCfg = workspace.getConfiguration('markdown.extension.toc');
     const tocLevels = tocSectionCfg.get<string>('levels')!;
     let matches;
     if (matches = tocLevels.match(/^([1-6])\.\.([1-6])$/)) {
@@ -338,11 +337,11 @@ function loadTocConfig(editor: vscode.TextEditor): void {
     tocConfig.updateOnSave = tocSectionCfg.get<boolean>('updateOnSave')!;
 
     // Load workspace config
-    docConfig.eol = editor.document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
+    docConfig.eol = editor.document.eol === EndOfLine.CRLF ? '\r\n' : '\n';
 
     let tabSize = Number(editor.options.tabSize);
     // Seems not robust.
-    if (vscode.workspace.getConfiguration('markdown.extension.list', editor.document.uri).get<string>('indentationSize') === 'adaptive') {
+    if (workspace.getConfiguration('markdown.extension.list', editor.document.uri).get<string>('indentationSize') === 'adaptive') {
         tabSize = tocConfig.orderedList ? 3 : 2;
     }
 
@@ -357,7 +356,7 @@ function loadTocConfig(editor: vscode.TextEditor): void {
 /**
  * Gets root-level headings in a text document.
  */
-export function buildToc(doc: vscode.TextDocument): IHeading[] {
+export function buildToc(doc: TextDocument): IHeading[] {
     const replacer = (foundStr: string) => foundStr.replace(/[^\r\n]/g, '');
     let lines = doc.getText()
         .replace(REGEX_FENCED_CODE_BLOCK, replacer)                 //// Remove fenced code blocks (and #603, #675)
@@ -414,11 +413,11 @@ class TocCodeLensProvider implements CodeLensProvider {
         CodeLens[] | Thenable<CodeLens[]> {
         // VS Code asks for code lens as soon as a text editor is visible (atop the group that holds it), no matter whether it has focus.
         // Duplicate editor views refer to the same TextEditor, and the same TextDocument.
-        const editor = vscode.window.visibleTextEditors.find(e => e.document === document)!;
+        const editor = window.visibleTextEditors.find(e => e.document === document)!;
 
         loadTocConfig(editor);
 
-        const lenses: vscode.CodeLens[] = [];
+        const lenses: CodeLens[] = [];
         return detectTocRanges(document).then(tocRangesAndText => {
             const tocRanges = tocRangesAndText[0];
             const newToc = tocRangesAndText[1];
