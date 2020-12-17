@@ -338,15 +338,15 @@ function loadTocConfig(editor: vscode.TextEditor): void {
     tocConfig.updateOnSave = tocSectionCfg.get<boolean>('updateOnSave')!;
 
     // Load workspace config
-    const activeEditor = editor;
-    docConfig.eol = activeEditor.document.eol === EndOfLine.CRLF ? '\r\n' : '\n';
+    docConfig.eol = editor.document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
 
-    let tabSize = Number(activeEditor.options.tabSize);
-    if (workspace.getConfiguration('markdown.extension.list', activeEditor.document.uri).get<string>('indentationSize') === 'adaptive') {
+    let tabSize = Number(editor.options.tabSize);
+    // Seems not robust.
+    if (vscode.workspace.getConfiguration('markdown.extension.list', editor.document.uri).get<string>('indentationSize') === 'adaptive') {
         tabSize = tocConfig.orderedList ? 3 : 2;
     }
 
-    let insertSpaces = activeEditor.options.insertSpaces;
+    const insertSpaces = editor.options.insertSpaces;
     if (insertSpaces) {
         docConfig.tab = ' '.repeat(tabSize);
     } else {
