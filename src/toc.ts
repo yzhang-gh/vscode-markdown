@@ -4,11 +4,8 @@ import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
 import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
 import { isInFencedCodeBlock, isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
-
-/**
- * The heading level allowed by the CommonMark Spec.
- */
-type MarkdownHeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+import type * as markdownSpec from "./typing/markdownSpec";
+import type SlugifyMode from "./typing/SlugifyMode";
 
 /**
  * Represents a heading.
@@ -17,7 +14,7 @@ interface IHeading {
     /**
      * The heading level.
      */
-    level: MarkdownHeadingLevel;
+    level: markdownSpec.MarkdownHeadingLevel;
 
     /**
      * The raw content of the heading according to the CommonMark Spec.
@@ -67,6 +64,8 @@ export function activate(context: ExtensionContext) {
         languages.registerCodeLensProvider(mdDocSelector, new TocCodeLensProvider())
     );
 }
+
+//#region TOC operation entrance
 
 async function createToc() {
     const editor = window.activeTextEditor;
@@ -172,6 +171,17 @@ function removeSectionNumbers() {
 
     return workspace.applyEdit(edit);
 }
+
+function onWillSave(e: TextDocumentWillSaveEvent): void {
+    if (!tocConfig.updateOnSave) {
+        return;
+    }
+    if (e.document.languageId === 'markdown') {
+        e.waitUntil(updateToc());
+    }
+}
+
+//#endregion TOC operation entrance
 
 function normalizePath(path: string): string {
     return path.replace(/\\/g, '/').toLowerCase();
@@ -349,13 +359,6 @@ function radioOfCommonPrefix(s1: string, s2: string): number {
     }
 }
 
-function onWillSave(e: TextDocumentWillSaveEvent) {
-    if (!tocConfig.updateOnSave) return;
-    if (e.document.languageId == 'markdown') {
-        e.waitUntil(updateToc());
-    }
-}
-
 /**
  * Updates `tocConfig` and `docConfig`.
  * @param editor The editor, from which we detect `docConfig`.
@@ -390,11 +393,13 @@ function loadTocConfig(editor: TextEditor): void {
     }
 }
 
+//#region Public utility
+
 /**
  * Gets all headings in the root of the text document.
  * @returns In ascending order of `lineIndex`.
  */
-export function getAllRootHeading(doc: TextDocument): IHeading[] {
+export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: boolean = false, respectProjectLevelOmit: boolean = false): IHeading[] {
     /**
      * Replaces line content with empty.
      * @param foundStr The multiline string.
@@ -406,10 +411,9 @@ export function getAllRootHeading(doc: TextDocument): IHeading[] {
     const lines: string[] = doc.getText()
         .replace(/^---[\W\w]+?(?:\r?\n)---/, replacer)              //// Remove YAML front matter
         .replace(REGEX_FENCED_CODE_BLOCK, replacer)                 //// Remove fenced code blocks (and #603, #675)
-        .replace(/^\t+/gm, (match: string) => '    '.repeat(match.length)) // CommonMark Spec - 2.2 Tabs
+        .replace(/^\t+/gm, (match: string) => '    '.repeat(match.length)) // <https://spec.commonmark.org/0.29/#tabs>
+        .replace(/^ {0,3}<!--[^]*?-->.*$/gm, replacer) // Remove multiline HTML block comment, together with all the text in the lines it occupies. <https://spec.commonmark.org/0.29/#html-blocks>
         .split(/\r?\n/g);
-
-    // .replace(/<!--[\W\w]+?-->/g, replacer)                      //// Remove comments
 
     /* Complex transformations. */
 
@@ -442,6 +446,8 @@ export function getAllRootHeading(doc: TextDocument): IHeading[] {
 
     /* Generate the final list. */
 
+    const projectLevelOmittedHeadings = respectProjectLevelOmit ? getExcludedHeadings(doc) : [];
+
     const toc: IHeading[] = [];
 
     for (let i: number = 0; i < lines.length; i++) {
@@ -456,11 +462,19 @@ export function getAllRootHeading(doc: TextDocument): IHeading[] {
             continue;
         }
 
-        let isInToc: boolean = true;
+        // Extract heading info.
+        const matches = /^ {0,3}(#{1,6})(.*)$/.exec(crtLineText)!;
+        const entry: IHeading = {
+            level: matches[1].length as markdownSpec.MarkdownHeadingLevel,
+            rawContent: matches[2].replace(/^[ \t]+/, '').replace(/[ \t]+#+[ \t]*$/, ''),
+            lineIndex: i,
+            isInToc: true,
+        };
 
         // Identify ignored headings.
-        // We have trimmed trailing space or tab characters above.
-        if (
+        // We have trimmed trailing space or tab characters in "transformations".
+
+        if (respectMagicCommentOmit && (
             // The magic comment is above the heading.
             (
                 i > 0
@@ -470,24 +484,82 @@ export function getAllRootHeading(doc: TextDocument): IHeading[] {
             // The magic comment is at the end of the heading.
             || crtLineText.endsWith('<!-- omit in toc -->')
             || crtLineText.endsWith('<!-- omit in TOC -->')
-        ) {
-            isInToc = false;
+        )) {
+            entry.isInToc = false;
         }
 
-        // Extract heading info.
-        const matches = /^ {0,3}(#{1,6})(.*)$/.exec(crtLineText)!;
-        const entry = {
-            level: matches[1].length as MarkdownHeadingLevel,
-            rawContent: matches[2].replace(/^[ \t]+/, '').replace(/[ \t]+#+[ \t]*$/, ''),
-            lineIndex: i,
-            isInToc,
-        };
+        if (respectProjectLevelOmit
+            && entry.isInToc
+            && projectLevelOmittedHeadings.some(({ level, text }) => level === entry.level && text === entry.rawContent)
+        ) {
+            entry.isInToc = false;
+        }
 
         toc.push(entry);
     }
 
     return toc;
 }
+
+/**
+ * Gets all headings in the root of the text document, with additional TOC specific properties.
+ * @returns In ascending order of `lineIndex`.
+ */
+export function getAllTocEntry({
+    doc,
+    respectMagicCommentOmit = false,
+    respectProjectLevelOmit = false,
+    slugifyMode = workspace.getConfiguration('markdown.extension.toc').get<SlugifyMode>('slugifyMode')!,
+}: {
+    doc: TextDocument;
+    respectMagicCommentOmit?: boolean;
+    respectProjectLevelOmit?: boolean;
+    slugifyMode?: SlugifyMode;
+}): ITocItem[] {
+    const rootHeadings = getAllRootHeading(doc, respectMagicCommentOmit, respectProjectLevelOmit);
+
+    const anchorOccurrences = new Map<string, number>();
+    function getSlug(rawContent: string): string {
+        let slug = slugify(rawContent, slugifyMode);
+
+        let count = anchorOccurrences.get(slug);
+        if (count === undefined) {
+            anchorOccurrences.set(slug, 0);
+        } else {
+            count++;
+            anchorOccurrences.set(slug, count);
+            slug += '-' + count.toString();
+        }
+
+        return slug;
+    }
+
+    function getVisibleText(rawContent: string): string {
+        // May produce wrong result when facing code span, extremely complex link, etc.
+        let text = rawContent
+            .replace(/<!--[^>]*?-->/g, '') // Remove HTML comments.
+            .replace(/\[([^\]]*?)\]\([^\)]*?\)/g, '$1') // Extract the link text from inline link. `[text](link)` → `text`
+            .replace(/\[([^\]]*?)\]\[[^\]]*?\]/g, '$1') // Extract the link text from reference link. `[text][label]` → `text`
+            .replace(/(?<!\\)[\[\]]/g, '\\$&') // Escape brackets.
+            ;
+
+        return text;
+    }
+
+    const toc: ITocItem[] = rootHeadings.map<ITocItem>((heading): ITocItem => ({
+        level: heading.level,
+        rawContent: heading.rawContent,
+        lineIndex: heading.lineIndex,
+        isInToc: heading.isInToc,
+
+        visibleText: getVisibleText(heading.rawContent),
+        slug: getSlug(heading.rawContent),
+    }));
+
+    return toc;
+}
+
+//#endregion Public utility
 
 class TocCodeLensProvider implements CodeLensProvider {
     public provideCodeLenses(document: TextDocument, _: CancellationToken):
