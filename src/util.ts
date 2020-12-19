@@ -20,13 +20,20 @@ export function isMdEditor(editor: TextEditor) {
     return editor && editor.document && editor.document.languageId === 'markdown';
 }
 
-export const REGEX_FENCED_CODE_BLOCK = /^( {0,3}|\t)```[^`\r\n]*$[\w\W]+?^( {0,3}|\t)``` *$/gm;
+/**
+ * Match some kinds of fenced code blocks.
+ */
+export const REGEX_FENCED_CODE_BLOCK = /^(?: {0,3}|\t)(?<fence>(?<char>[`~])\k<char>{2,})[^`\r\n]*$[^]*?^(?: {0,3}|\t)\k<fence>\k<char>* *$/gm;
 
+/**
+ * Checks whether the line is in some kinds of fenced code blocks.
+ * @param lineNum The zero-based line index.
+ */
 export function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
     let textBefore = doc.getText(new Range(new Position(0, 0), new Position(lineNum, 0)));
-    textBefore = textBefore.replace(REGEX_FENCED_CODE_BLOCK, '').replace(/<!--[\W\w]+?-->/g, '');
+    textBefore = textBefore.replace(REGEX_FENCED_CODE_BLOCK, '').replace(/<!--[^]+?-->/g, '');
     //// So far `textBefore` should contain no valid fenced code block or comment
-    return /^( {0,3}|\t)```[^`\r\n]*$[\w\W]*$/gm.test(textBefore);
+    return /^( {0,3}|\t)```[^`\r\n]*$[^]*$/gm.test(textBefore);
 }
 
 export function mathEnvCheck(doc: TextDocument, pos: Position): string {
@@ -122,7 +129,7 @@ export function showChangelog() {
  */
 function mdHeadingToPlaintext(text: string): string {
     //// Issue #515
-    text = text.replace(/\[([^\]]*)\]\[[^\]]*\]/, (_, g1) => g1);
+    text = text.replace(/\[([^\]]*?)\]\[[^\]]*?\]/g, '$1');
 
     // ! Use a clean CommonMark only engine to avoid interfering with plugins from other extensions.
     // ! Use `renderInline` to avoid parsing the string as blocks accidentally.
@@ -151,16 +158,16 @@ function mdHeadingToPlaintext(text: string): string {
 function getTextInHtml(html: string) {
     let text = html;
     //// remove <!-- HTML comments -->
-    text = text.replace(/(<!--[^>]*?-->)/g, '');
+    text = text.replace(/<!--[^>]*?-->/g, '');
     //// remove HTML tags
-    while (/<(span|em|strong|a|p|code|kbd)[^>]*>(.*?)<\/\1>/.test(text)) {
-        text = text.replace(/<(span|em|strong|a|p|code|kbd)[^>]*>(.*?)<\/\1>/g, (_, _g1, g2) => g2);
+    while (/<(em|strong|code|a|kbd|span|p)[^>]*?>(.*?)<\/\1>/s.test(text)) {
+        text = text.replace(/<(em|strong|code|a|kbd|span|p)[^>]*?>(.*?)<\/\1>/sg, '$2');
     }
 
     //// Remove common empty elements (aka. single tag).
     //// https://developer.mozilla.org/en-US/docs/Glossary/Empty_element
-    while (/<(br|img)[^>]*\/?>/.test(text)) {
-        text = text.replace(/<(br|img)[^>]*\/?>/g, '');
+    while (/<(?:br|img)[^>]*?\/?>/.test(text)) {
+        text = text.replace(/<(?:br|img)[^>]*?\/?>/g, '');
     }
 
     //// Decode HTML entities.
