@@ -1,17 +1,20 @@
-'use strict'
+'use strict';
 
-import * as fs from 'fs';
-import { commands, Position, Range, TextDocument, TextEditor, Uri, workspace } from 'vscode';
+import { commands, DocumentSelector, Position, Range, TextDocument, TextEditor, Uri, workspace } from 'vscode';
 import localize from './localize';
 import { commonmarkEngine, mdEngine } from './markdownEngine';
 import { decodeHTML } from 'entities';
+import type SlugifyMode from "./typing/SlugifyMode";
 
 /* ┌────────┐
    │ Others │
    └────────┘ */
 
 /** Scheme `File` or `Untitled` */
-export const mdDocSelector = [{ language: 'markdown', scheme: 'file' }, { language: 'markdown', scheme: 'untitled' }];
+export const mdDocSelector: DocumentSelector = [
+    { language: 'markdown', scheme: 'file' },
+    { language: 'markdown', scheme: 'untitled' },
+];
 
 export function isMdEditor(editor: TextEditor) {
     return editor && editor.document && editor.document.languageId === 'markdown';
@@ -53,19 +56,20 @@ export function mathEnvCheck(doc: TextDocument, pos: Position): string {
     }
 }
 
-let fileSizesCache = {}
+const fileSizesCache = new Map<string, [number, boolean]>();
 export function isFileTooLarge(document: TextDocument): boolean {
-    const sizeLimit = workspace.getConfiguration('markdown.extension.syntax').get<number>('decorationFileSizeLimit');
-    const filePath = document.uri.fsPath;
-    if (!filePath || !fs.existsSync(filePath)) {
-        return false;
-    }
-    const version = document.version;
-    if (fileSizesCache.hasOwnProperty(filePath) && fileSizesCache[filePath][0] === version) {
-        return fileSizesCache[filePath][1];
+    const sizeLimit = workspace.getConfiguration('markdown.extension.syntax').get<number>('decorationFileSizeLimit')!;
+
+    const docUri = document.uri.toString(true);
+    const docVersion = document.version;
+
+    const cache = fileSizesCache.get(docUri);
+    if (cache !== undefined && cache[0] === docVersion) {
+        return cache[1];
     } else {
-        const isTooLarge = fs.statSync(filePath)['size'] > sizeLimit;
-        fileSizesCache[filePath] = [version, isTooLarge];
+        // Very close but not equal to the binary size, however, enough.
+        const isTooLarge = document.getText().length * 2 > sizeLimit;
+        fileSizesCache.set(docUri, [docVersion, isTooLarge]);
         return isTooLarge;
     }
 }
@@ -150,13 +154,13 @@ function getTextInHtml(html: string) {
     text = text.replace(/(<!--[^>]*?-->)/g, '');
     //// remove HTML tags
     while (/<(span|em|strong|a|p|code|kbd)[^>]*>(.*?)<\/\1>/.test(text)) {
-        text = text.replace(/<(span|em|strong|a|p|code|kbd)[^>]*>(.*?)<\/\1>/g, (_, _g1, g2) => g2)
+        text = text.replace(/<(span|em|strong|a|p|code|kbd)[^>]*>(.*?)<\/\1>/g, (_, _g1, g2) => g2);
     }
 
     //// Remove common empty elements (aka. single tag).
     //// https://developer.mozilla.org/en-US/docs/Glossary/Empty_element
     while (/<(br|img)[^>]*\/?>/.test(text)) {
-        text = text.replace(/<(br|img)[^>]*\/?>/g, '')
+        text = text.replace(/<(br|img)[^>]*\/?>/g, '');
     }
 
     //// Decode HTML entities.
@@ -177,28 +181,30 @@ function getTextInHtml(html: string) {
 /**
  * The definition of punctuation from GitHub and GitLab.
  */
-const PUNCTUATION_REGEXP = /[^\p{L}\p{M}\p{Nd}\p{Nl}\p{Pc}\- ]/gu;
+const RegexpPunctuationGithub = /[^\p{L}\p{M}\p{Nd}\p{Nl}\p{Pc}\- ]/gu;
 
 /**
  * Slugify a string.
- * @param heading - The string.
+ * @param heading - The raw content of the heading according to the CommonMark Spec.
  * @param mode - The slugify mode.
  * @param downcase - `true` to force to convert all the characters to lowercase. Otherwise, `false`.
  */
-export function slugify(heading: string, mode?: string, downcase?: boolean) {
+export function slugify(heading: string, mode?: SlugifyMode, downcase?: boolean) {
     if (mode === undefined) {
-        mode = workspace.getConfiguration('markdown.extension.toc').get<string>('slugifyMode');
+        mode = workspace.getConfiguration('markdown.extension.toc').get<SlugifyMode>('slugifyMode');
     }
     if (downcase === undefined) {
         downcase = workspace.getConfiguration('markdown.extension.toc').get<boolean>('downcaseLink');
     }
 
-    let slug = heading.trim();
+    // Do never twist the input here!
+    // Pass the raw heading content as is to slugify function.
+    let slug = heading;
 
-    // Case conversion must be performed before calling slugify function.
+    // Additional case conversion must be performed before calling slugify function.
     // Because some slugify functions encode strings in their own way.
     if (downcase) {
-        slug = slug.toLowerCase()
+        slug = slug.toLowerCase();
     }
 
     // Sort by popularity.
@@ -239,9 +245,11 @@ export function slugify(heading: string, mode?: string, downcase?: boolean) {
  * Slugify methods.
  *
  * The keys are slugify modes.
- * The values are corresponding slugify functions, whose signature must be `(slug: string) => string`.
+ * The values are corresponding slugify functions, whose signature must be `(rawContent: string) => string`.
  */
-const slugifyMethods: { readonly [mode: string]: (text: string) => string; } = {
+const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => string; } = {
+    // Sort in alphabetical order.
+
     /**
      * Azure DevOps
      */
@@ -249,7 +257,8 @@ const slugifyMethods: { readonly [mode: string]: (text: string) => string; } = {
         // https://lemmingh.github.io/vscode-markdown-docs/specs/slugify/azure-devops.html
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent#Description
         slug = encodeURIComponent(
-            slug.toLowerCase()
+            slug.trim()
+                .toLowerCase()
                 .replace(/\p{Zs}/gu, '-')
         ).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16));
 
@@ -273,8 +282,9 @@ const slugifyMethods: { readonly [mode: string]: (text: string) => string; } = {
      */
     "github": (slug: string): string => {
         // <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
-        slug = mdHeadingToPlaintext(slug);
-        slug = slug.replace(PUNCTUATION_REGEXP, '')
+        slug = slug.trimStart();
+        slug = mdHeadingToPlaintext(slug)
+            .replace(RegexpPunctuationGithub, '')
             .toLowerCase() // According to an inspection in 2020-09, GitHub performs full Unicode case conversion now.
             .replace(/ /g, '-');
 
@@ -287,12 +297,11 @@ const slugifyMethods: { readonly [mode: string]: (text: string) => string; } = {
     "gitea": (slug: string): string => {
         // Gitea uses the blackfriday parser
         // https://godoc.org/github.com/russross/blackfriday#hdr-Sanitized_Anchor_Names
-        slug = slug.replace(PUNCTUATION_REGEXP, '-')
-            .replace(/ /g, '-')
-            .replace(/_/g, '-')
-            .split('-')
-            .filter(Boolean)
-            .join('-');
+        slug = slug
+            .replace(/^[^\p{L}\p{N}]+/u, '')
+            .replace(/[^\p{L}\p{N}]+$/u, '')
+            .replace(/[^\p{L}\p{N}]+/gu, '-')
+            .toLowerCase();
 
         return slug;
     },
@@ -305,8 +314,9 @@ const slugifyMethods: { readonly [mode: string]: (text: string) => string; } = {
         // https://gitlab.com/gitlab-org/gitlab/blob/b434ca4f27a0c4e3eed2c087a8d1902a09418790/lib/gitlab/utils/markdown.rb#L8-16
         // Some bits from their other slugify function
         // <https://gitlab.com/gitlab-org/gitlab/blob/master/app/assets/javascripts/lib/utils/text_utility.js#L49>
-        slug = mdHeadingToPlaintext(slug);
-        slug = slug.replace(PUNCTUATION_REGEXP, '')
+        slug = slug.trimStart();
+        slug = mdHeadingToPlaintext(slug)
+            .replace(RegexpPunctuationGithub, '')
             .toLowerCase()
             .replace(/ /g, '-') // Replace space with dash.
             .replace(/-+/g, '-') // Replace multiple/consecutive dashes with only one.
@@ -322,7 +332,8 @@ const slugifyMethods: { readonly [mode: string]: (text: string) => string; } = {
     "vscode": (slug: string): string => {
         // <https://github.com/Microsoft/vscode/blob/f5738efe91cb1d0089d3605a318d693e26e5d15c/extensions/markdown-language-features/src/slugify.ts#L22-L29>
         slug = encodeURI(
-            slug.replace(/\s+/g, '-') // Replace whitespace with -
+            slug.trim()
+                .replace(/\s+/g, '-') // Replace whitespace with -
                 .replace(/[\]\[\!\'\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\_\{\|\}\~\`。，、；：？！…—·ˉ¨‘’“”々～‖∶＂＇｀｜〃〔〕〈〉《》「」『』．〖〗【】（）［］｛｝]/g, '') // Remove known punctuators
                 .replace(/^\-+/, '') // Remove leading -
                 .replace(/\-+$/, '') // Remove trailing -
