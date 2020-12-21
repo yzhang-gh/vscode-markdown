@@ -8,9 +8,9 @@ import type * as markdownSpec from "./typing/markdownSpec";
 import type SlugifyMode from "./typing/SlugifyMode";
 
 /**
- * Represents a heading.
+ * Represents the essential properties of a heading.
  */
-interface IHeading {
+interface IHeadingBase {
     /**
      * The heading level.
      */
@@ -33,9 +33,9 @@ interface IHeading {
 }
 
 /**
- * Represents a basic unit of a TOC.
+ * Represents a heading.
  */
-export interface ITocItem extends IHeading {
+export interface IHeading extends IHeadingBase {
     /**
      * The **rich text** (single line Markdown inline without raw HTML) representation of the rendering result (in strict CommonMark mode) of the heading.
      * This must be able to be safely put into a `[]` bracket pair without breaking Markdown syntax.
@@ -190,7 +190,7 @@ function normalizePath(path: string): string {
 }
 
 //// Returns a list of user defined excluded headings for the given document.
-function getExcludedHeadings(doc: TextDocument): { level: number, text: string; }[] {
+function getProjectExcludedHeadings(doc: TextDocument): readonly Readonly<{ level: number, text: string; }>[] {
     const configObj = workspace.getConfiguration('markdown.extension.toc').get<{ [path: string]: string[]; }>('omittedFromToc');
 
     if (typeof configObj !== 'object' || configObj === null) {
@@ -242,7 +242,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
     const orderedListMarkerIsOne: boolean = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
 
     const toc: string[] = [];
-    const tocEntries: readonly Readonly<ITocItem>[] = getAllTocEntry({ doc, respectMagicCommentOmit: true, respectProjectLevelOmit: true })
+    const tocEntries: readonly Readonly<IHeading>[] = getAllTocEntry({ doc, respectMagicCommentOmit: true, respectProjectLevelOmit: true })
         .filter(i => i.isInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth); // Filter out excluded headings.
 
     if (tocEntries.length === 0) {
@@ -381,7 +381,7 @@ function loadTocConfig(editor: TextEditor): void {
  * Gets all headings in the root of the text document.
  * @returns In ascending order of `lineIndex`.
  */
-export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: boolean = false, respectProjectLevelOmit: boolean = false): Readonly<IHeading>[] {
+export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: boolean = false, respectProjectLevelOmit: boolean = false): Readonly<IHeadingBase>[] {
     /**
      * Replaces line content with empty.
      * @param foundStr The multiline string.
@@ -428,13 +428,13 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
 
     /* Generate the final stream. */
 
-    const projectLevelOmittedHeadings = respectProjectLevelOmit ? getExcludedHeadings(doc) : [];
+    const projectLevelOmittedHeadings = respectProjectLevelOmit ? getProjectExcludedHeadings(doc) : [];
     /**
      * Keep track of the omitted heading's depth to also omit its subheadings.
      */
     let ignoredDepthBound: markdownSpec.MarkdownHeadingLevel | undefined = undefined;
 
-    const toc: IHeading[] = [];
+    const toc: IHeadingBase[] = [];
 
     for (let i: number = 0; i < lines.length; i++) {
         const crtLineText = lines[i];
@@ -450,7 +450,7 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
 
         // Extract heading info.
         const matches = /^ {0,3}(#{1,6})(.*)$/.exec(crtLineText)!;
-        const entry: IHeading = {
+        const entry: IHeadingBase = {
             level: matches[1].length as markdownSpec.MarkdownHeadingLevel,
             rawContent: matches[2].replace(/^[ \t]+/, '').replace(/[ \t]+#+[ \t]*$/, ''),
             lineIndex: i,
@@ -518,8 +518,8 @@ export function getAllTocEntry({
     respectMagicCommentOmit?: boolean;
     respectProjectLevelOmit?: boolean;
     slugifyMode?: SlugifyMode;
-}): Readonly<ITocItem>[] {
-    const rootHeadings: readonly Readonly<IHeading>[] = getAllRootHeading(doc, respectMagicCommentOmit, respectProjectLevelOmit);
+}): Readonly<IHeading>[] {
+    const rootHeadings: readonly Readonly<IHeadingBase>[] = getAllRootHeading(doc, respectMagicCommentOmit, respectProjectLevelOmit);
 
     const anchorOccurrences = new Map<string, number>();
     function getSlug(rawContent: string): string {
@@ -549,7 +549,7 @@ export function getAllTocEntry({
         return text;
     }
 
-    const toc: ITocItem[] = rootHeadings.map<ITocItem>((heading): ITocItem => ({
+    const toc: IHeading[] = rootHeadings.map<IHeading>((heading): IHeading => ({
         level: heading.level,
         rawContent: heading.rawContent,
         lineIndex: heading.lineIndex,
