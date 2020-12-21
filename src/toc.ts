@@ -163,7 +163,7 @@ function removeSectionNumbers() {
         return;
     }
     const doc = editor.document;
-    const toc = getAllRootHeading(editor.document);
+    const toc: readonly Readonly<IHeadingBase>[] = getAllRootHeading(doc, false, false);
     let edit = new WorkspaceEdit();
     toc.forEach(entry => {
         const lineNum = entry.lineIndex;
