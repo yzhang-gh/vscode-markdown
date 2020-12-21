@@ -387,7 +387,7 @@ function loadTocConfig(editor: TextEditor): void {
  * Gets all headings in the root of the text document.
  * @returns In ascending order of `lineIndex`.
  */
-export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: boolean = false, respectProjectLevelOmit: boolean = false): Readonly<IHeadingBase>[] {
+export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: boolean, respectProjectLevelOmit: boolean): Readonly<IHeadingBase>[] {
     /**
      * Replaces line content with empty.
      * @param foundStr The multiline string.
