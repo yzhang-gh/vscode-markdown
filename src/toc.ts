@@ -128,8 +128,13 @@ function addSectionNumbers() {
     loadTocConfig(editor);
 
     const doc = editor.document;
-    const toc = getAllRootHeading(doc);
-    if (toc === null || toc === undefined || toc.length < 1) return;
+    const toc: readonly Readonly<IHeadingBase>[] = getAllRootHeading(doc, true, true)
+        .filter(i => i.isInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth);
+
+    if (toc.length === 0) {
+        return;
+    }
+
     const startDepth = Math.max(tocConfig.startDepth, Math.min(...toc.map(h => h.level)));
 
     let secNumbers = [0, 0, 0, 0, 0, 0];
@@ -137,8 +142,6 @@ function addSectionNumbers() {
     toc.forEach(entry => {
         const level = entry.level;
         const lineNum = entry.lineIndex;
-
-        if (level < startDepth) return;
 
         secNumbers[level - 1] += 1;
         secNumbers.fill(0, level);
