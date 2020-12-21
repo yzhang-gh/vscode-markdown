@@ -37,13 +37,15 @@ interface IHeading {
  */
 export interface ITocItem extends IHeading {
     /**
-     * The **rich text** representation of the rendering result (in strict CommonMark mode) of the heading.
+     * The **rich text** (single line Markdown inline without raw HTML) representation of the rendering result (in strict CommonMark mode) of the heading.
      * This must be able to be safely put into a `[]` bracket pair without breaking Markdown syntax.
      */
     visibleText: string;
 
     /**
      * The anchor ID of the heading.
+     * This must be a valid IRI fragment, which does not contain `#`.
+     * See RFC 3986 section 3, and RFC 3987 section 2.2.
      */
     slug: string;
 }
@@ -232,60 +234,40 @@ function getExcludedHeadings(doc: TextDocument): { level: number, text: string; 
     });
 }
 
+/**
+ * Generates the Markdown text representation of the TOC.
+ */
+// TODO: Redesign data structure to solve another bunch of bugs.
 async function generateTocText(doc: TextDocument): Promise<string> {
     const orderedListMarkerIsOne: boolean = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
 
-    let toc: string[] = [];
-    let tocEntries = getAllRootHeading(doc);
-    if (tocEntries === null || tocEntries === undefined || tocEntries.length < 1) return '';
+    const toc: string[] = [];
+    const tocEntries: readonly Readonly<ITocItem>[] = getAllTocEntry({ doc, respectMagicCommentOmit: true, respectProjectLevelOmit: true })
+        .filter(i => i.isInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth); // Filter out excluded headings.
 
+    if (tocEntries.length === 0) {
+        return '';
+    }
+
+    // The actual level range of a document can be smaller than settings. So we need to calculate the real start level.
     const startDepth = Math.max(tocConfig.startDepth, Math.min(...tocEntries.map(h => h.level)));
-    let order = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
-
-    const anchorOccurrences: { [slug: string]: number; } = {};
-    let ignoredDepthBound: number | undefined = undefined;
-    const excludedHeadings = getExcludedHeadings(doc);
+    const order: number[] = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
 
     tocEntries.forEach(entry => {
-        if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
-            let relativeLvl = entry.level - startDepth;
+        const relativeLevel = entry.level - startDepth;
 
-            //// Remove certain Markdown syntaxes
-            //// `[text](link)` → `text`
-            let headingText = entry.rawContent.replace(/\[([^\]]*)\]\([^\)]*\)/, (_, g1) => g1);
-            //// `[text][label]` → `text`
-            headingText = headingText.replace(/\[([^\]]*)\]\[[^\)]*\]/, (_, g1) => g1);
-
-            let slug = slugify(entry.rawContent);
-
-            if (anchorOccurrences.hasOwnProperty(slug)) {
-                anchorOccurrences[slug] += 1;
-                slug += '-' + String(anchorOccurrences[slug]);
-            } else {
-                anchorOccurrences[slug] = 0;
-            }
-
-            // Filter out used excluded headings.
-            const isExcluded = excludedHeadings.some(({ level, text }) => level === entry.level && text === entry.rawContent);
-            const isOmittedSubHeading = ignoredDepthBound !== undefined && entry.level > ignoredDepthBound;
-            if (isExcluded) {
-                // Keep track of the latest omitted heading's depth to also omit its subheadings.
-                ignoredDepthBound = entry.level;
-            } else if (!isOmittedSubHeading) {
-                // Reset ignore bound (not ignored sub heading anymore).
-                ignoredDepthBound = undefined;
-                let row = [
-                    docConfig.tab.repeat(relativeLvl),
-                    (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLvl]) + '.' : tocConfig.listMarker) + ' ',
-                    tocConfig.plaintext ? headingText : `[${headingText}](#${slug})`
-                ];
-                toc.push(row.join(''));
-                if (tocConfig.orderedList) order.fill(0, relativeLvl + 1);
-            }
+        const row = [
+            docConfig.tab.repeat(relativeLevel),
+            (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLevel]) + '.' : tocConfig.listMarker) + ' ',
+            tocConfig.plaintext ? entry.visibleText : `[${entry.visibleText}](<#${entry.slug}>)`
+        ];
+        toc.push(row.join(''));
+        if (tocConfig.orderedList) {
+            order.fill(0, relativeLevel + 1);
         }
     });
     while (/^[ \t]/.test(toc[0])) {
-        toc = toc.slice(1);
+        toc.shift();
     }
     return toc.join(docConfig.eol);
 }
@@ -399,7 +381,7 @@ function loadTocConfig(editor: TextEditor): void {
  * Gets all headings in the root of the text document.
  * @returns In ascending order of `lineIndex`.
  */
-export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: boolean = false, respectProjectLevelOmit: boolean = false): IHeading[] {
+export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: boolean = false, respectProjectLevelOmit: boolean = false): Readonly<IHeading>[] {
     /**
      * Replaces line content with empty.
      * @param foundStr The multiline string.
@@ -444,9 +426,13 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         arr[i] = arr[i].replace(/[ \t]+$/, '');
     });
 
-    /* Generate the final list. */
+    /* Generate the final stream. */
 
     const projectLevelOmittedHeadings = respectProjectLevelOmit ? getExcludedHeadings(doc) : [];
+    /**
+     * Keep track of the omitted heading's depth to also omit its subheadings.
+     */
+    let ignoredDepthBound: markdownSpec.MarkdownHeadingLevel | undefined = undefined;
 
     const toc: IHeading[] = [];
 
@@ -474,18 +460,29 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         // Identify ignored headings.
         // We have trimmed trailing space or tab characters in "transformations".
 
-        if (respectMagicCommentOmit && (
-            // The magic comment is above the heading.
-            (
-                i > 0
-                && /^<!-- omit in (toc|TOC) -->$/.test(lines[i - 1])
-            )
-
-            // The magic comment is at the end of the heading.
-            || crtLineText.endsWith('<!-- omit in toc -->')
-            || crtLineText.endsWith('<!-- omit in TOC -->')
-        )) {
+        // If a parent heading has been omitted, also omit its children (subheadings).
+        if (ignoredDepthBound !== undefined
+            && entry.level > ignoredDepthBound
+        ) {
             entry.isInToc = false;
+        }
+
+        if (respectMagicCommentOmit
+            && entry.isInToc
+            && (
+                // The magic comment is above the heading.
+                (
+                    i > 0
+                    && /^<!-- omit in (toc|TOC) -->$/.test(lines[i - 1])
+                )
+
+                // The magic comment is at the end of the heading.
+                || crtLineText.endsWith('<!-- omit in toc -->')
+                || crtLineText.endsWith('<!-- omit in TOC -->')
+            )
+        ) {
+            entry.isInToc = false;
+            ignoredDepthBound = entry.level;
         }
 
         if (respectProjectLevelOmit
@@ -493,6 +490,12 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
             && projectLevelOmittedHeadings.some(({ level, text }) => level === entry.level && text === entry.rawContent)
         ) {
             entry.isInToc = false;
+            ignoredDepthBound = entry.level;
+        }
+
+        // If the heading is in TOC, reset ignore bound.
+        if (entry.isInToc) {
+            ignoredDepthBound = undefined;
         }
 
         toc.push(entry);
@@ -515,8 +518,8 @@ export function getAllTocEntry({
     respectMagicCommentOmit?: boolean;
     respectProjectLevelOmit?: boolean;
     slugifyMode?: SlugifyMode;
-}): ITocItem[] {
-    const rootHeadings = getAllRootHeading(doc, respectMagicCommentOmit, respectProjectLevelOmit);
+}): Readonly<ITocItem>[] {
+    const rootHeadings: readonly Readonly<IHeading>[] = getAllRootHeading(doc, respectMagicCommentOmit, respectProjectLevelOmit);
 
     const anchorOccurrences = new Map<string, number>();
     function getSlug(rawContent: string): string {
