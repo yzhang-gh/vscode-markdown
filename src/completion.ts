@@ -4,8 +4,8 @@ import * as fs from 'fs';
 import * as sizeOf from 'image-size';
 import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
-import { getAllRootHeading } from './toc';
-import { mathEnvCheck, mdDocSelector, slugify } from './util';
+import { getAllTocEntry, IHeading } from './toc';
+import { mathEnvCheck, mdDocSelector } from './util';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerCompletionItemProvider(mdDocSelector, new MdCompletionItemProvider(), '(', '\\', '/', '[', '#'));
@@ -559,20 +559,19 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
 
             return new Promise((res, _) => {
-                const toc = getAllRootHeading(document);
+                const toc: readonly Readonly<IHeading>[] = getAllTocEntry({ doc: document, respectMagicCommentOmit: false, respectProjectLevelOmit: false });
 
-                const headingCompletions = toc.reduce((prev, curr) => {
-                    let item = new CompletionItem('#' + slugify(curr.rawContent), CompletionItemKind.Reference);
+                const headingCompletions = toc.map<CompletionItem>((heading) => {
+                    const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
 
                     if (addClosingParen) {
                         item.insertText = item.label + ')';
                     }
 
-                    item.documentation = curr.rawContent;
+                    item.documentation = heading.rawContent;
                     item.range = range;
-                    prev.push(item);
-                    return prev;
-                }, []);
+                    return item;
+                });
 
                 res(headingCompletions);
             });
