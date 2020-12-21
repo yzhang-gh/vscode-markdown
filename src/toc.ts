@@ -434,6 +434,7 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
     const projectLevelOmittedHeadings = respectProjectLevelOmit ? getProjectExcludedHeadings(doc) : [];
     /**
      * Keep track of the omitted heading's depth to also omit its subheadings.
+     * This is only for project level omitting.
      */
     let ignoredDepthBound: markdownSpec.MarkdownHeadingLevel | undefined = undefined;
 
@@ -461,10 +462,11 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         };
 
         // Identify ignored headings.
-        // We have trimmed trailing space or tab characters in "transformations".
+        // We have trimmed trailing space or tab characters for every line in "transformations".
 
         // If a parent heading has been omitted, also omit its children (subheadings).
-        if (ignoredDepthBound !== undefined
+        if (respectProjectLevelOmit
+            && ignoredDepthBound !== undefined
             && entry.level > ignoredDepthBound
         ) {
             entry.isInToc = false;
@@ -485,7 +487,6 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
             )
         ) {
             entry.isInToc = false;
-            ignoredDepthBound = entry.level;
         }
 
         if (respectProjectLevelOmit
@@ -497,7 +498,7 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         }
 
         // If the heading is in TOC, reset ignore bound.
-        if (entry.isInToc) {
+        if (respectProjectLevelOmit && entry.isInToc) {
             ignoredDepthBound = undefined;
         }
 
