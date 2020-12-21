@@ -2,7 +2,7 @@
 
 import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
-import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
+import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, TextEditor, Uri, window, workspace, WorkspaceEdit } from 'vscode';
 import { isInFencedCodeBlock, isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
 import type * as markdownSpec from "./typing/markdownSpec";
 import type SlugifyMode from "./typing/SlugifyMode";
@@ -185,10 +185,6 @@ function onWillSave(e: TextDocumentWillSaveEvent): void {
 
 //#endregion TOC operation entrance
 
-function normalizePath(path: string): string {
-    return path.replace(/\\/g, '/').toLowerCase();
-}
-
 //// Returns a list of user defined excluded headings for the given document.
 function getProjectExcludedHeadings(doc: TextDocument): readonly Readonly<{ level: number, text: string; }>[] {
     const configObj = workspace.getConfiguration('markdown.extension.toc').get<{ [path: string]: string[]; }>('omittedFromToc');
@@ -198,30 +194,37 @@ function getProjectExcludedHeadings(doc: TextDocument): readonly Readonly<{ leve
         return [];
     }
 
+    const docUriString = doc.uri.toString();
     const docWorkspace = workspace.getWorkspaceFolder(doc.uri);
+    const workspaceUri = docWorkspace ? docWorkspace.uri : undefined;
 
-    let omittedTocPerFile: { [path: string]: string[]; } = {};
+    // A few possible duplicate entries are bearable, thus, an array is enough.
+    const omittedHeadings: string[] = [];
+
     for (const filePath of Object.keys(configObj)) {
-        let normedPath: string;
-        //// Converts paths to absolute paths if a workspace is opened
-        if (docWorkspace !== undefined && !path.isAbsolute(filePath)) {
-            normedPath = normalizePath(path.join(docWorkspace.uri.fsPath, filePath));
+        let entryUri: Uri;
+
+        // Convert file system path to VS Code Uri.
+        if (path.isAbsolute(filePath)) {
+            entryUri = Uri.file(filePath);
+        } else if (workspaceUri !== undefined) {
+            entryUri = Uri.joinPath(workspaceUri, filePath);
         } else {
-            normedPath = normalizePath(filePath);
+            continue; // Discard this entry.
         }
-        omittedTocPerFile[normedPath] = [...(omittedTocPerFile[normedPath] || []), ...configObj[filePath]];
+
+        // If the entry matches the document, read it.
+        if (entryUri.toString() === docUriString) {
+            if (Array.isArray(configObj[filePath])) {
+                omittedHeadings.push(...configObj[filePath]);
+            } else {
+                window.showErrorMessage('Each property value of `omittedFromToc` setting must be a string array.');
+            }
+        }
     }
 
-    const currentFile = normalizePath(doc.fileName);
-    const omittedList = omittedTocPerFile[currentFile] || [];
-
-    if (!Array.isArray(omittedList)) {
-        window.showErrorMessage(`\`omittedFromToc\` attributes must be arrays (e.g. \`{"README.md": ["# Introduction"]}\`)`);
-        return [];
-    }
-
-    return omittedList.map(heading => {
-        const matches = heading.match(/^ *(#+) +(.*)$/);
+    return omittedHeadings.map(heading => {
+        const matches = heading.match(/^ {0,3}(#{1,6})[ \t]+(.*)$/);
         if (matches === null) {
             window.showErrorMessage(`Invalid entry "${heading}" in \`omittedFromToc\``);
             return { level: -1, text: '' };
