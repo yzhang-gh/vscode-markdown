@@ -275,6 +275,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
     while (/^[ \t]/.test(toc[0])) {
         toc.shift();
     }
+    toc.push(''); // Ensure the TOC text always ends with an EOL.
     return toc.join(docConfig.eol);
 }
 
@@ -398,9 +399,9 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
 
     const lines: string[] = doc.getText()
         .replace(/^---.+?(?:\r?\n)---(?=[ \t]*\r?\n)/s, replacer) //// Remove YAML front matter
-        .replace(REGEX_FENCED_CODE_BLOCK, replacer)                 //// Remove fenced code blocks (and #603, #675)
         .replace(/^\t+/gm, (match: string) => '    '.repeat(match.length)) // <https://spec.commonmark.org/0.29/#tabs>
         .replace(/^ {0,3}<!--[^]*?-->.*$/gm, replacer) // Remove multiline HTML block comment, together with all the text in the lines it occupies. <https://spec.commonmark.org/0.29/#html-blocks>
+        .replace(REGEX_FENCED_CODE_BLOCK, replacer)                 //// Remove fenced code blocks (and #603, #675)
         .split(/\r?\n/g);
 
     /* Complex transformations. */
