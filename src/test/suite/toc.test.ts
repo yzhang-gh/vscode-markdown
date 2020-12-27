@@ -38,11 +38,12 @@ suite("TOC.", () => {
                 '',
                 '# Section 2',
                 '',
-                '- [Section 1](#section-1)',
-                '  - [Section 1.1](#section-11)',
-                '- [Section 2](#section-2)'
+                '- [Section 1](<#section-1>)',
+                '  - [Section 1.1](<#section-11>)',
+                '- [Section 2](<#section-2>)',
+                '',
             ],
-            new Selection(8, 25, 8, 25)).then(done, done);
+            new Selection(9, 0, 9, 0)).then(done, done);
     });
 
     test("Update", done => {
@@ -56,9 +57,9 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
-                '- [Section 1](#section-1)',
-                '  - [Section 1.1](#section-11)',
-                '- [Section 2](#section-2)'
+                '- [Section 1](<#section-1>)',
+                '  - [Section 1.1](<#section-11>)',
+                '- [Section 2](<#section-2>)'
             ],
             new Selection(0, 0, 0, 0),
             [
@@ -70,10 +71,11 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
-                '- [Section 1](#section-1)',
-                '  - [Section 1.1](#section-11)',
-                '- [Section 2](#section-2)',
-                '  - [Section 2.1](#section-21)'
+                '- [Section 1](<#section-1>)',
+                '  - [Section 1.1](<#section-11>)',
+                '- [Section 2](<#section-2>)',
+                '  - [Section 2.1](<#section-21>)',
+                '',
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
@@ -92,9 +94,9 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
-                '1. [Section 1](#section-1)',
-                '   1. [Section 1.1](#section-11)',
-                '2. [Section 2](#section-2)'
+                '1. [Section 1](<#section-1>)',
+                '   1. [Section 1.1](<#section-11>)',
+                '2. [Section 2](<#section-2>)'
             ],
             new Selection(0, 0, 0, 0),
             [
@@ -106,10 +108,11 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
-                '1. [Section 1](#section-1)',
-                '   1. [Section 1.1](#section-11)',
-                '2. [Section 2](#section-2)',
-                '   1. [Section 2.1](#section-21)'
+                '1. [Section 1](<#section-1>)',
+                '   1. [Section 1.1](<#section-11>)',
+                '2. [Section 2](<#section-2>)',
+                '   1. [Section 2.1](<#section-21>)',
+                '',
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
@@ -156,12 +159,13 @@ suite("TOC.", () => {
                 '',
                 '#### Section 2.1.1.1',
                 '',
-                '- [Section 1.1](#section-11)',
-                '  - [Section 1.1.1](#section-111)',
-                '- [Section 2.1](#section-21)',
-                '  - [Section 2.1.1](#section-211)',
+                '- [Section 1.1](<#section-11>)',
+                '  - [Section 1.1.1](<#section-111>)',
+                '- [Section 2.1](<#section-21>)',
+                '  - [Section 2.1.1](<#section-211>)',
+                '',
             ],
-            new Selection(19, 33, 19, 33)).then(done, done);
+            new Selection(20, 0, 20, 0)).then(done, done);
     });
 
     test("Update (levels 2..3)", done => {
@@ -182,10 +186,10 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
-                '- [Section 1.1](#section-11)',
-                '  - [Section 1.1.1](#section-111)',
-                '- [Section 2.1](#section-21)',
-                '  - [Section 2.1.1](#section-211)',
+                '- [Section 1.1](<#section-11>)',
+                '  - [Section 1.1.1](<#section-111>)',
+                '- [Section 2.1](<#section-21>)',
+                '  - [Section 2.1.1](<#section-211>)',
             ],
             new Selection(0, 0, 0, 0),
             [
@@ -201,9 +205,10 @@ suite("TOC.", () => {
                 '',
                 '## Section 2.1',
                 '',
-                '- [Section 1.1](#section-11)',
-                '  - [Section 1.1.1](#section-111)',
-                '- [Section 2.1](#section-21)'
+                '- [Section 1.1](<#section-11>)',
+                '  - [Section 1.1.1](<#section-111>)',
+                '- [Section 2.1](<#section-21>)',
+                '',
             ],
             new Selection(0, 0, 0, 0)).then(done, done);
     });
@@ -227,11 +232,12 @@ suite("TOC.", () => {
                 '',
                 '# Section 2',
                 '',
-                '- [Section 中文](#section-中文)',
-                '  - [Section 1.1](#section-11)',
-                '- [Section 2](#section-2)'
+                '- [Section 中文](<#section-中文>)',
+                '  - [Section 1.1](<#section-11>)',
+                '- [Section 2](<#section-2>)',
+                '',
             ],
-            new Selection(8, 25, 8, 25)).then(done, done);
+            new Selection(9, 0, 9, 0)).then(done, done);
     });
 
     test("Setext headings", done => {
@@ -253,10 +259,11 @@ suite("TOC.", () => {
                 'Section 1.1',
                 '---',
                 '',
-                '- [Section 1](#section-1)',
-                '  - [Section 1.1](#section-11)'
+                '- [Section 1](<#section-1>)',
+                '  - [Section 1.1](<#section-11>)',
+                '',
             ],
-            new Selection(7, 30, 7, 30)).then(done, done);
+            new Selection(8, 0, 8, 0)).then(done, done);
     });
 
     test("ATX Heading closing sequence", done => {
@@ -284,16 +291,17 @@ suite("TOC.", () => {
                 '# H5 #\\##',
                 '# H6 \\#',
                 '',
-                '- [H1](#h1)',
-                '  - [H1.1](#h11)',
-                '  - [H1.2](#h12)',
-                '- [H2 ## foo](#h2--foo)',
-                '- [H3#](#h3)',
-                '- [H4 \\###](#h4-)',
-                '- [H5 #\\##](#h5-)',
-                '- [H6 \\#](#h6-)',
+                '- [H1](<#h1>)',
+                '  - [H1.1](<#h11>)',
+                '  - [H1.2](<#h12>)',
+                '- [H2 ## foo](<#h2--foo>)',
+                '- [H3#](<#h3>)',
+                '- [H4 \\###](<#h4->)',
+                '- [H5 #\\##](<#h5->)',
+                '- [H6 \\#](<#h6->)',
+                '',
             ],
-            new Selection(16, 15, 16, 15)).then(done, done);
+            new Selection(17, 0, 17, 0)).then(done, done);
     });
 
     test("Non-Latin symbols (Option `toc.slugifyMode: github`)", done => {
@@ -314,10 +322,11 @@ suite("TOC.", () => {
                 '',
                 '## Секция 1.1',
                 '',
-                '- [Секция 1](#секция-1)',
-                '  - [Секция 1.1](#секция-11)'
+                '- [Секция 1](<#секция-1>)',
+                '  - [Секция 1.1](<#секция-11>)',
+                '',
             ],
-            new Selection(5, 28, 5, 28)).then(done, done);
+            new Selection(6, 0, 6, 0)).then(done, done);
     });
 
     // https://github.com/yzhang-gh/vscode-markdown/issues/469
@@ -339,10 +348,11 @@ suite("TOC.", () => {
                 '',
                 '## Секция 1.1',
                 '',
-                '- [Секция 1](#секция-1)',
-                '  - [Секция 1.1](#секция-11)'
+                '- [Секция 1](<#секция-1>)',
+                '  - [Секция 1.1](<#секция-11>)',
+                '',
             ],
-            new Selection(5, 28, 5, 28)).then(done, done);
+            new Selection(6, 0, 6, 0)).then(done, done);
     });
 
     test("Non-Latin symbols (Option `toc.slugifyMode = gitea`)", done => {
@@ -363,10 +373,11 @@ suite("TOC.", () => {
                 '',
                 '## Секция 1.1',
                 '',
-                '- [Секция 1](#секция-1)',
-                '  - [Секция 1.1](#секция-1-1)'
+                '- [Секция 1](<#секция-1>)',
+                '  - [Секция 1.1](<#секция-1-1>)',
+                '',
             ],
-            new Selection(5, 29, 5, 29)).then(done, done);
+            new Selection(6, 0, 6, 0)).then(done, done);
     });
 
     test("Update multiple TOCs", done => {
@@ -378,13 +389,13 @@ suite("TOC.", () => {
                 '# Head 1',
                 '# Head 2',
                 '',
-                '- [Head 1](#head-1)',
-                '- [Head 2](#head-2)',
-                '- [Head 3](#head-3)',
-                '',
-                '- [Head 1](#head-1)',
-                '- [Head 2](#head-2)',
-                '- [Head 3](#head-3)',
+                '- [Head 1](<#head-1>)',
+                '- [Head 2](<#head-2>)',
+                '- [Head 3](<#head-3>)',
+                '<!-- -->',
+                '- [Head 1](<#head-1>)',
+                '- [Head 2](<#head-2>)',
+                '- [Head 3](<#head-3>)',
                 '',
                 '# Head 3',
                 '# Head 4'
@@ -394,15 +405,15 @@ suite("TOC.", () => {
                 '# Head 1',
                 '# Head 2',
                 '',
-                '- [Head 1](#head-1)',
-                '- [Head 2](#head-2)',
-                '- [Head 3](#head-3)',
-                '- [Head 4](#head-4)',
-                '',
-                '- [Head 1](#head-1)',
-                '- [Head 2](#head-2)',
-                '- [Head 3](#head-3)',
-                '- [Head 4](#head-4)',
+                '- [Head 1](<#head-1>)',
+                '- [Head 2](<#head-2>)',
+                '- [Head 3](<#head-3>)',
+                '- [Head 4](<#head-4>)',
+                '<!-- -->',
+                '- [Head 1](<#head-1>)',
+                '- [Head 2](<#head-2>)',
+                '- [Head 3](<#head-3>)',
+                '- [Head 4](<#head-4>)',
                 '',
                 '# Head 3',
                 '# Head 4'
@@ -452,10 +463,11 @@ suite("TOC.", () => {
             ],
             new Selection(0, 0, 0, 0),
             [
-                '- [Head 1](#head-1)',
-                '- [Head 3](#head-3)',
-                '  - [Introduction](#introduction-1)',
-                '- [Head 4](#head-4)',
+                '- [Head 1](<#head-1>)',
+                '- [Head 3](<#head-3>)',
+                '  - [Introduction](<#introduction-1>)',
+                '- [Head 4](<#head-4>)',
+                '',
                 '',
                 '# Introduction',
                 '## Sub heading (should be ignored, too)',
@@ -477,9 +489,9 @@ suite("TOC.", () => {
                 '## Introduction',
                 '# Head 4'
             ],
-            new Selection(3, 19, 3, 19)
+            new Selection(4, 0, 4, 0)
         ).then(done, done);
-    })
+    });
 
     test("Option `toc.downcaseLink`", done => {
         testCommand('markdown.extension.toc.create',
@@ -504,11 +516,12 @@ suite("TOC.", () => {
                 '',
                 '# Section 2',
                 '',
-                '- [Section 1](#Section-1)',
-                '  - [Section 1.1](#Section-11)',
-                '- [Section 2](#Section-2)'
+                '- [Section 1](<#Section-1>)',
+                '  - [Section 1.1](<#Section-11>)',
+                '- [Section 2](<#Section-2>)',
+                '',
             ],
-            new Selection(8, 25, 8, 25)).then(done, done);
+            new Selection(9, 0, 9, 0)).then(done, done);
     });
 
     test("Inline <!-- omit in toc -->", done => {
@@ -530,10 +543,11 @@ suite("TOC.", () => {
                 '',
                 '# Section 2',
                 '',
-                '- [Section 1](#section-1)',
-                '- [Section 2](#section-2)'
+                '- [Section 1](<#section-1>)',
+                '- [Section 2](<#section-2>)',
+                '',
             ],
-            new Selection(7, 25, 7, 25)).then(done, done);
+            new Selection(8, 0, 8, 0)).then(done, done);
     });
 
     test("<!-- omit in toc --> in previous line", done => {
@@ -557,13 +571,14 @@ suite("TOC.", () => {
                 '',
                 '# Section 2',
                 '',
-                '- [Section 1](#section-1)',
-                '- [Section 2](#section-2)'
+                '- [Section 1](<#section-1>)',
+                '- [Section 2](<#section-2>)',
+                '',
             ],
-            new Selection(8, 25, 8, 25)).then(done, done);
+            new Selection(9, 0, 9, 0)).then(done, done);
     });
 
-    test("Ignore code blocks", done => {
+    test("Ignore fenced code blocks", done => {
         testCommand('markdown.extension.toc.create', {},
             [
                 '# Section 1',
@@ -586,13 +601,14 @@ suite("TOC.", () => {
                 '',
                 '# Section 2',
                 '',
-                '- [Section 1](#section-1)',
-                '- [Section 2](#section-2)'
+                '- [Section 1](<#section-1>)',
+                '- [Section 2](<#section-2>)',
+                '',
             ],
-            new Selection(9, 25, 9, 25)).then(done, done);
+            new Selection(10, 0, 10, 0)).then(done, done);
     });
 
-    test("Ignore code blocks indented with TAB (GitHub #603)", done => {
+    test("Ignore indented code blocks created by TAB (U+0009)", done => {
         testCommand('markdown.extension.toc.create', {},
             [
                 '# Section 1',
@@ -615,10 +631,11 @@ suite("TOC.", () => {
                 '',
                 '# Section 2',
                 '',
-                '- [Section 1](#section-1)',
-                '- [Section 2](#section-2)'
+                '- [Section 1](<#section-1>)',
+                '- [Section 2](<#section-2>)',
+                '',
             ],
-            new Selection(9, 25, 9, 25)).then(done, done);
+            new Selection(10, 0, 10, 0)).then(done, done);
     });
 
     test("Ignore code blocks. TOC update", done => {
@@ -672,15 +689,16 @@ suite("TOC.", () => {
                 '# 1. Heading',
                 '# 1) Heading',
                 '',
-                '- [text](#text)',
-                '- [text2](#text2)',
-                '- [**bold**](#bold)',
-                '- [*it1* _it2_](#it1-it2)',
-                '- [`code`](#code)',
-                '- [1. Heading](#1-heading)',
-                '- [1) Heading](#1-heading-1)'
+                '- [text](<#text>)',
+                '- [text2](<#text2>)',
+                '- [**bold**](<#bold>)',
+                '- [*it1* _it2_](<#it1-it2>)',
+                '- [`code`](<#code>)',
+                '- [1. Heading](<#1-heading>)',
+                '- [1) Heading](<#1-heading-1>)',
+                '',
             ],
-            new Selection(14, 28, 14, 28)).then(done, done);
+            new Selection(15, 0, 15, 0)).then(done, done);
     });
 
     // https://github.com/yzhang-gh/vscode-markdown/issues/469
@@ -698,9 +716,10 @@ suite("TOC.", () => {
             [
                 '# Test + Heading',
                 '',
-                '- [Test + Heading](#test-heading)'
+                '- [Test + Heading](<#test-heading>)',
+                '',
             ],
-            new Selection(2, 33, 2, 33)).then(done, done);
+            new Selection(3, 0, 3, 0)).then(done, done);
     });
 
     test("Add section numbers", done => {
