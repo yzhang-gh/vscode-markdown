@@ -2,8 +2,9 @@
 
 import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
-import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, TextEditor, Uri, window, workspace, WorkspaceEdit } from 'vscode';
-import { isInFencedCodeBlock, isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
+import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Position, Range, TextDocument, TextDocumentWillSaveEvent, TextEditor, Uri, window, workspace, WorkspaceEdit } from 'vscode';
+import { mdEngine } from './markdownEngine';
+import { isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
 import type * as markdownSpec from "./typing/markdownSpec";
 import type SlugifyMode from "./typing/SlugifyMode";
 
@@ -285,41 +286,88 @@ async function generateTocText(doc: TextDocument): Promise<string> {
  * @param doc a TextDocument
  */
 async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string]> {
-    let tocRanges = [];
-    const newTocText = await generateTocText(doc);
-    const fullText = doc.getText();
-    let listRegex = /(^|\r?\n)((?:[-+*]|[0-9]+[.)]) .*(?:\r?\n[ \t]*(?:[-+*]|[0-9]+[.)]) .*)*)/g;
-    let match;
-    while ((match = listRegex.exec(fullText)) !== null) {
-        //// #525 <!-- no toc --> comment
-        const listStartPos = doc.positionAt(match.index + match[1].length);
+    const docTokens = (await mdEngine.getEngine()).parse(doc.getText(), {});
+    /**
+     * `[beginLineIndex, endLineIndex, openingTokenIndex]`
+     */
+    const candidateLists: readonly [number, number, number][] = docTokens.reduce<[number, number, number][]>((result, token, index) => {
         if (
-            (listStartPos.line > 0 && doc.lineAt(listStartPos.line - 1).text.includes("no toc"))
-            || isInFencedCodeBlock(doc, listStartPos.line)
+            token.level === 0
+            && (
+                token.type === 'bullet_list_open'
+                || (token.type === 'ordered_list_open' && token.attrGet('start') === null)
+            )
+        ) {
+            result.push([...token.map!, index]);
+        }
+        return result;
+    }, []);
+
+    const tocRanges: Range[] = [];
+    const newTocText = await generateTocText(doc);
+
+    for (const item of candidateLists) {
+        const beginLineIndex = item[0];
+        let endLineIndex = item[1];
+        const opTokenIndex = item[2];
+
+        //// #525 <!-- no toc --> comment
+        if (
+            beginLineIndex > 0
+            && doc.lineAt(beginLineIndex - 1).text === '<!-- no toc -->'
         ) {
             continue;
         }
 
-        const listText = match[2];
+        // Check the first list item to see if it could be a TOC.
+        //
+        // ## Token stream
+        //
+        // +3 alway exists, even if it's an empty list.
+        // In a target, +3 is `inline`:
+        //
+        // opTokenIndex: *_list_open
+        // +1: list_item_open
+        // +2: paragraph_open
+        // +3: inline
+        // +4: paragraph_close
+        // ...
+        // ...: list_item_close
+        //
+        // ## `inline.children`
+        //
+        // Ordinary TOC: `link_open`, ..., `link_close`.
+        // Plain text TOC: No `link_*` tokens.
 
-        //// Sanity checks
-        const firstLine: string = listText.split(/\r?\n/)[0];
+        const firstItemContent = docTokens[opTokenIndex + 3];
+        if (firstItemContent.type !== 'inline') {
+            continue;
+        }
+
+        const _c = firstItemContent.children!;
         if (workspace.getConfiguration('markdown.extension.toc').get<boolean>('plaintext')) {
-            //// A lazy way to check whether it is a link
-            if (firstLine.includes('](')) {
+            if (_c.some(t => t.type.startsWith('link_'))) {
                 continue;
             }
         } else {
-            //// GitHub issue #304 (must contain `#`), #549 and #683 (shouldn't contain text other than links)
-            if (!/^([-\*+]|[0-9]+[.)]) +\[[^\]]+\]\(\#[^\)]+\)$/.test(firstLine)) {
+            if (!(
+                _c[0].type === 'link_open'
+                && _c[0].attrGet('href')!.startsWith('#') // Destination begins with `#`. (#304)
+                && _c.findIndex(t => t.type === 'link_close') === (_c.length - 1) // Only one link. (#549, #683)
+            )) {
                 continue;
             }
         }
 
+        // The original range may have trailing white lines.
+        while (doc.lineAt(endLineIndex - 1).isEmptyOrWhitespace) {
+            endLineIndex--;
+        }
+
+        const finalRange = new Range(new Position(beginLineIndex, 0), new Position(endLineIndex, 0));
+        const listText = doc.getText(finalRange);
         if (radioOfCommonPrefix(newTocText, listText) + stringSimilarity.compareTwoStrings(newTocText, listText) > 0.5) {
-            tocRanges.push(
-                new Range(listStartPos, doc.positionAt(listRegex.lastIndex))
-            );
+            tocRanges.push(finalRange);
         }
     }
 
