@@ -21,19 +21,34 @@ export function isMdEditor(editor: TextEditor) {
 }
 
 /**
- * Match some kinds of fenced code blocks.
+ * **Do not call `exec()` method, to avoid accidentally changing its state!**
+ *
+ * Match most kinds of fenced code blocks:
+ *
+ * * Only misses <https://spec.commonmark.org/0.29/#example-116>.
+ * * Due to the limitations of regular expression, the "end of the document" cases are not handled.
  */
-export const REGEX_FENCED_CODE_BLOCK = /^(?: {0,3}|\t)(?<fence>(?<char>[`~])\k<char>{2,})[^`\r\n]*$[^]*?^(?: {0,3}|\t)\k<fence>\k<char>* *$/gm;
+export const REGEX_FENCED_CODE_BLOCK = /^ {0,3}(?<fence>(?<char>[`~])\k<char>{2,})[^`\r\n]*$[^]*?^ {0,3}\k<fence>\k<char>* *$/gm;
 
 /**
- * Checks whether the line is in some kinds of fenced code blocks.
- * @param lineNum The zero-based line index.
+ * Checks whether the line is in a fenced code block.
+ * @param lineIndex The zero-based line index.
  */
-export function isInFencedCodeBlock(doc: TextDocument, lineNum: number): boolean {
-    let textBefore = doc.getText(new Range(new Position(0, 0), new Position(lineNum, 0)));
-    textBefore = textBefore.replace(REGEX_FENCED_CODE_BLOCK, '').replace(/<!--[^]+?-->/g, '');
-    //// So far `textBefore` should contain no valid fenced code block or comment
-    return /^( {0,3}|\t)```[^`\r\n]*$[^]*$/gm.test(textBefore);
+export function isInFencedCodeBlock(doc: TextDocument, lineIndex: number): boolean {
+    const docTokens = commonmarkEngine.engine.parse(doc.getText(), {});
+
+    for (const token of docTokens) {
+        if (
+            token.type === 'fence'
+            && token.tag === 'code'
+            && token.map![0] <= lineIndex
+            && lineIndex < token.map![1]
+        ) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 export function mathEnvCheck(doc: TextDocument, pos: Position): string {
