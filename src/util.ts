@@ -332,14 +332,20 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
      * GitLab
      */
     "gitlab": (slug: string): string => {
+        // https://gitlab.com/help/user/markdown
+        // https://docs.gitlab.com/ee/api/markdown.html
+        // https://docs.gitlab.com/ee/development/wikis.html
         // <https://gitlab.com/gitlab-org/gitlab/blob/master/lib/banzai/filter/table_of_contents_filter.rb#L32>
-        // https://gitlab.com/gitlab-org/gitlab/blob/b434ca4f27a0c4e3eed2c087a8d1902a09418790/lib/gitlab/utils/markdown.rb#L8-16
-        // Some bits from their other slugify function
-        // <https://gitlab.com/gitlab-org/gitlab/blob/master/app/assets/javascripts/lib/utils/text_utility.js#L49>
-        slug = slug.trimStart();
+        // https://gitlab.com/gitlab-org/gitlab/blob/a8c5858ce940decf1d263b59b39df58f89910faf/lib/gitlab/utils/markdown.rb
+
+        const RegexpGitlabProductSuffix = /[ \t\r\n\f\v]*\**\((?:core|starter|premium|ultimate)(?:[ \t\r\n\f\v]+only)?\)\**/g;
+
         slug = mdHeadingToPlaintext(slug)
-            .replace(RegexpPunctuationGithub, '')
+            .replace(/^[ \t\r\n\f\v]+/, '')
+            .replace(/[ \t\r\n\f\v]+$/, '') // https://ruby-doc.org/core/String.html#method-i-strip
             .toLowerCase()
+            .replace(RegexpGitlabProductSuffix, '')
+            .replace(RegexpPunctuationGithub, '')
             .replace(/ /g, '-') // Replace space with dash.
             .replace(/-+/g, '-') // Replace multiple/consecutive dashes with only one.
             // digits-only hrefs conflict with issue refs
