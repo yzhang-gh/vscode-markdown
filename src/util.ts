@@ -276,7 +276,7 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
      * Azure DevOps
      */
     "azureDevops": (slug: string): string => {
-        // https://lemmingh.github.io/vscode-markdown-docs/specs/slugify/azure-devops.html
+        // https://markdown-all-in-one.github.io/docs/specs/slugify/azure-devops.html
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent#Description
         slug = encodeURIComponent(
             slug.trim()
@@ -300,11 +300,12 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
     },
 
     /**
-     * GitHub slugify function
+     * GitHub
      */
     "github": (slug: string): string => {
+        // According to an inspection in 2020-12, GitHub passes the raw content as is,
+        // and does not trim leading or trailing C0, Zs characters in any step.
         // <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
-        slug = slug.trimStart();
         slug = mdHeadingToPlaintext(slug)
             .replace(RegexpPunctuationGithub, '')
             .toLowerCase() // According to an inspection in 2020-09, GitHub performs full Unicode case conversion now.
