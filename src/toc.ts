@@ -473,12 +473,12 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         //// Transform setext headings to ATX headings
         if (
             i < arr.length - 1 // The current line is not the last.
+            && /^ {0,3}(?:=+|-+)[ \t]*$/.test(arr[i + 1]) // The next line is a setext heading underline.
             && /^ {0,3}[^ \t\f\v]/.test(lineText) // The indentation of the line is 0~3.
             && !/^ {0,3}#{1,6}(?: |\t|$)/.test(lineText) // The line is not an ATX heading.
             && !/^ {0,3}(?:[*+-]|\d{1,9}(?:\.|\)))(?: |\t|$)/.test(lineText) // The line is not a list item.
             && !/^ {0,3}>/.test(lineText) // The line is not a block quote.
             && !/^ {0,3}(?:(?:-[ \t]*){3,}|(?:\*[ \t]*){3,}|(?:_[ \t]*){3,})[ \t]*$/.test(lineText) // #629: Consecutive thematic breaks false positive. <https://github.com/commonmark/commonmark.js/blob/75474b071da06535c23adc17ac4132213ab31934/lib/blocks.js#L36>
-            && /^ {0,3}(?:=+|-+)[ \t]*$/.test(arr[i + 1]) // The next line is a setext heading underline.
         ) {
             arr[i] = (arr[i + 1].includes('=') ? '# ' : '## ') + lineText;
             arr[i + 1] = '';
