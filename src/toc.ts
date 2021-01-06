@@ -525,14 +525,16 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         // We have trimmed trailing space or tab characters for every line in "transformations".
 
         // If a parent heading has been omitted, also omit its children (subheadings).
-        if (respectProjectLevelOmit
+        if (
+            respectProjectLevelOmit
             && ignoredDepthBound !== undefined
             && entry.level > ignoredDepthBound
         ) {
             entry.isInToc = false;
         }
 
-        if (respectMagicCommentOmit
+        if (
+            respectMagicCommentOmit
             && entry.isInToc
             && (
                 // The magic comment is above the heading.
@@ -549,7 +551,8 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
             entry.isInToc = false;
         }
 
-        if (respectProjectLevelOmit
+        if (
+            respectProjectLevelOmit
             && entry.isInToc
             && projectLevelOmittedHeadings.some(({ level, text }) => level === entry.level && text === entry.rawContent)
         ) {
@@ -558,7 +561,8 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         }
 
         // If the heading is in TOC, reset ignore bound.
-        if (respectProjectLevelOmit && entry.isInToc) {
+        if (
+            respectProjectLevelOmit && entry.isInToc) {
             ignoredDepthBound = undefined;
         }
 

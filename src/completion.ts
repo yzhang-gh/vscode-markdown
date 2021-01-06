@@ -561,7 +561,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             return new Promise((res, _) => {
                 const toc: readonly Readonly<IHeading>[] = getAllTocEntry({ doc: document, respectMagicCommentOmit: false, respectProjectLevelOmit: false });
 
-                const headingCompletions = toc.map<CompletionItem>((heading) => {
+                const headingCompletions = toc.map<CompletionItem>(heading => {
                     const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
 
                     if (addClosingParen) {
