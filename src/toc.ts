@@ -448,7 +448,15 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
     const lines: string[] = doc.getText()
         .replace(/^---.+?(?:\r?\n)---(?=[ \t]*\r?\n)/s, replacer) //// Remove YAML front matter
         .replace(/^\t+/gm, (match: string) => '    '.repeat(match.length)) // <https://spec.commonmark.org/0.29/#tabs>
-        .replace(/^ {0,3}<!--.*?[\r\n][^]*?-->.*$/gm, replacer) // Remove multiline HTML block comment, together with all the text in the lines it occupies. <https://spec.commonmark.org/0.29/#html-blocks>
+        .replace(/^( {0,3})<!--([^]*?)-->.*$/gm, (match: string, leading: string, content: string) => {
+            // Remove HTML block comment, together with all the text in the lines it occupies. <https://spec.commonmark.org/0.29/#html-blocks>
+            // Exclude our magic comment.
+            if (leading.length === 0 && (content === ' omit in toc ' || content === ' omit in TOC ')) {
+                return match;
+            } else {
+                return replacer(match);
+            }
+        })
         .replace(REGEX_FENCED_CODE_BLOCK, replacer)                 //// Remove fenced code blocks (and #603, #675)
         .split(/\r?\n/g);
 

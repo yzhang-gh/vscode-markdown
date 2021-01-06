@@ -558,16 +558,22 @@ suite("TOC.", () => {
                 '<!-- omit in toc -->',
                 '## Section 1.1',
                 '',
+                '<!-- omit in toc -->',
+                '## Section 1.2',
+                '',
                 '# Section 2',
                 '',
                 ''
             ],
-            new Selection(7, 0, 7, 0),
+            new Selection(10, 0, 10, 0),
             [
                 '# Section 1',
                 '',
                 '<!-- omit in toc -->',
                 '## Section 1.1',
+                '',
+                '<!-- omit in toc -->',
+                '## Section 1.2',
                 '',
                 '# Section 2',
                 '',
@@ -575,7 +581,7 @@ suite("TOC.", () => {
                 '- [Section 2](<#section-2>)',
                 '',
             ],
-            new Selection(9, 0, 9, 0)).then(done, done);
+            new Selection(12, 0, 12, 0)).then(done, done);
     });
 
     test("Ignore fenced code blocks", done => {
