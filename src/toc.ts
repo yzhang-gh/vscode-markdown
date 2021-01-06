@@ -443,8 +443,16 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
      */
     const replacer = (foundStr: string) => foundStr.replace(/[^\r\n]/g, '');
 
-    /* Get lines. And easy transformations. */
+    /**
+     * Text normalization
+     * ==================
+     * including:
+     * 
+     * 1. (easy) YAML front matter, tab to spaces, HTML comment, Markdown fenced code blocks
+     * 2. (complex) Setext headings to ATX headings
+     */
 
+    // (easy)
     const lines: string[] = doc.getText()
         .replace(/^---.+?(?:\r?\n)---(?=[ \t]*\r?\n)/s, replacer) //// Remove YAML front matter
         .replace(/^\t+/gm, (match: string) => '    '.repeat(match.length)) // <https://spec.commonmark.org/0.29/#tabs>
@@ -460,36 +468,41 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         .replace(REGEX_FENCED_CODE_BLOCK, replacer)                 //// Remove fenced code blocks (and #603, #675)
         .split(/\r?\n/g);
 
-    /* Complex transformations. */
-
-    // When trimming, comply with the CommonMark Spec. Do not use `trim()`. <https://tc39.es/ecma262/#sec-trimstring>
-    // Be careful about special cases that we need to look at multiple lines to decide.
     // Still cannot perfectly handle some weird cases, for example:
     // * Multiline heading.
     // * A setext heading next to a list.
 
-    // Do transformations as many as possible in one loop, to save time.
+    // (complex) Setext headings to ATX headings
     lines.forEach((lineText, i, arr) => {
-        //// Transform setext headings to ATX headings
         if (
             i < arr.length - 1 // The current line is not the last.
             && /^ {0,3}(?:=+|-+)[ \t]*$/.test(arr[i + 1]) // The next line is a setext heading underline.
-            && /^ {0,3}[^ \t\f\v]/.test(lineText) // The indentation of the line is 0~3.
-            && !/^ {0,3}#{1,6}(?: |\t|$)/.test(lineText) // The line is not an ATX heading.
+            && /^ {0,3}[^ \t\f\v]/.test(lineText)         // The indentation of the line is 0~3.
+            && !/^ {0,3}#{1,6}(?: |\t|$)/.test(lineText)  // The line is not an ATX heading.
             && !/^ {0,3}(?:[*+-]|\d{1,9}(?:\.|\)))(?: |\t|$)/.test(lineText) // The line is not a list item.
-            && !/^ {0,3}>/.test(lineText) // The line is not a block quote.
-            && !/^ {0,3}(?:(?:-[ \t]*){3,}|(?:\*[ \t]*){3,}|(?:_[ \t]*){3,})[ \t]*$/.test(lineText) // #629: Consecutive thematic breaks false positive. <https://github.com/commonmark/commonmark.js/blob/75474b071da06535c23adc17ac4132213ab31934/lib/blocks.js#L36>
+            && !/^ {0,3}>/.test(lineText)                 // The line is not a block quote.
+            // #629: Consecutive thematic breaks false positive. <https://github.com/commonmark/commonmark.js/blob/75474b071da06535c23adc17ac4132213ab31934/lib/blocks.js#L36>
+            && !/^ {0,3}(?:(?:-[ \t]*){3,}|(?:\*[ \t]*){3,}|(?:_[ \t]*){3,})[ \t]*$/.test(lineText)
         ) {
             arr[i] = (arr[i + 1].includes('=') ? '# ' : '## ') + lineText;
             arr[i + 1] = '';
         }
 
         // Remove trailing space or tab characters.
+        // When trimming, comply with the CommonMark Spec. Do not use `trim()`. <https://tc39.es/ecma262/#sec-trimstring>
         // <https://github.com/commonmark/commonmark.js/blob/75474b071da06535c23adc17ac4132213ab31934/lib/blocks.js#L503-L507>
         arr[i] = arr[i].replace(/[ \t]+$/, '');
     });
 
-    /* Generate the final stream. */
+    /**
+     * Mark omitted headings
+     * =====================
+     * 
+     * - headings with magic comment `<!-- omit in toc|TOC -->` (on their own)
+     * - headings in `toc.omittedFromToc` (and their subheadings)
+     * 
+     * Note: We have trimmed trailing space or tab characters for every line above.
+     */
 
     const projectLevelOmittedHeadings = respectProjectLevelOmit ? getProjectExcludedHeadings(doc) : [];
     /**
@@ -521,18 +534,7 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
             isInToc: true,
         };
 
-        // Identify ignored headings.
-        // We have trimmed trailing space or tab characters for every line in "transformations".
-
-        // If a parent heading has been omitted, also omit its children (subheadings).
-        if (
-            respectProjectLevelOmit
-            && ignoredDepthBound !== undefined
-            && entry.level > ignoredDepthBound
-        ) {
-            entry.isInToc = false;
-        }
-
+        // Omit because of magic comment
         if (
             respectMagicCommentOmit
             && entry.isInToc
@@ -545,25 +547,31 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
 
                 // The magic comment is at the end of the heading.
                 || crtLineText.endsWith('<!-- omit in toc -->')
-                || crtLineText.endsWith('<!-- omit in TOC -->')
             )
         ) {
             entry.isInToc = false;
         }
 
-        if (
-            respectProjectLevelOmit
-            && entry.isInToc
-            && projectLevelOmittedHeadings.some(({ level, text }) => level === entry.level && text === entry.rawContent)
-        ) {
-            entry.isInToc = false;
-            ignoredDepthBound = entry.level;
-        }
+        // Omit because of `toc.omittedFromToc`
+        if (respectProjectLevelOmit) {
+            // Whether omitted as a subheading
+            if (
+                ignoredDepthBound !== undefined
+                && entry.level > ignoredDepthBound
+            ) {
+                entry.isInToc = false;
+            }
 
-        // If the heading is in TOC, reset ignore bound.
-        if (
-            respectProjectLevelOmit && entry.isInToc) {
-            ignoredDepthBound = undefined;
+            // Whether omitted because it is in `toc.omittedFromToc`
+            if (entry.isInToc) {
+                if (projectLevelOmittedHeadings.some(({ level, text }) => level === entry.level && text === entry.rawContent)) {
+                    entry.isInToc = false;
+                    ignoredDepthBound = entry.level;
+                } else {
+                    // Otherwise reset ignore bound.
+                    ignoredDepthBound = undefined;
+                }
+            }
         }
 
         toc.push(entry);
