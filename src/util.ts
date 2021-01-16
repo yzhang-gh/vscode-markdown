@@ -82,7 +82,7 @@ const fileSizesCache = new Map<string, [number, boolean]>();
 export function isFileTooLarge(document: TextDocument): boolean {
     const sizeLimit = workspace.getConfiguration('markdown.extension.syntax').get<number>('decorationFileSizeLimit')!;
 
-    const docUri = document.uri.toString(true);
+    const docUri = document.uri.toString();
     const docVersion = document.version;
 
     const cache = fileSizesCache.get(docUri);
