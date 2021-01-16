@@ -271,7 +271,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
         const row = [
             docConfig.tab.repeat(relativeLevel),
             (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLevel]) + '.' : tocConfig.listMarker) + ' ',
-            tocConfig.plaintext ? entry.visibleText : `[${entry.visibleText}](<#${entry.slug}>)`
+            tocConfig.plaintext ? entry.visibleText : `[${entry.visibleText}](#${entry.slug})`
         ];
         toc.push(row.join(''));
         if (tocConfig.orderedList) {
@@ -349,16 +349,16 @@ async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string
             continue;
         }
 
-        const _c = firstItemContent.children!;
+        const tokens = firstItemContent.children!;
         if (workspace.getConfiguration('markdown.extension.toc').get<boolean>('plaintext')) {
-            if (_c.some(t => t.type.startsWith('link_'))) {
+            if (tokens.some(t => t.type.startsWith('link_'))) {
                 continue;
             }
         } else {
             if (!(
-                _c[0].type === 'link_open'
-                && _c[0].attrGet('href')!.startsWith('#') // Destination begins with `#`. (#304)
-                && _c.findIndex(t => t.type === 'link_close') === (_c.length - 1) // Only one link. (#549, #683)
+                tokens[0].type === 'link_open'
+                && tokens[0].attrGet('href')!.startsWith('#') // Destination begins with `#`. (#304)
+                && tokens.findIndex(t => t.type === 'link_close') === (tokens.length - 1) // Only one link. (#549, #683)
             )) {
                 continue;
             }
