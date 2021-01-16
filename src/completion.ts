@@ -559,7 +559,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
 
             return new Promise((res, _) => {
-                const toc: readonly Readonly<IHeading>[] = getAllTocEntry({ doc: document, respectMagicCommentOmit: false, respectProjectLevelOmit: false });
+                const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
 
                 const headingCompletions = toc.map<CompletionItem>(heading => {
                     const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);

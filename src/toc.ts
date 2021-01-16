@@ -254,7 +254,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
     const orderedListMarkerIsOne: boolean = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
 
     const toc: string[] = [];
-    const tocEntries: readonly Readonly<IHeading>[] = getAllTocEntry({ doc, respectMagicCommentOmit: true, respectProjectLevelOmit: true })
+    const tocEntries: readonly Readonly<IHeading>[] = getAllTocEntry(doc, { respectMagicCommentOmit: true, respectProjectLevelOmit: true })
         .filter(i => i.canInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth); // Filter out excluded headings.
 
     if (tocEntries.length === 0) {
@@ -598,13 +598,11 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
  * Gets all headings in the root of the text document, with additional TOC specific properties.
  * @returns In ascending order of `lineIndex`.
  */
-export function getAllTocEntry({
-    doc,
+export function getAllTocEntry(doc: TextDocument, {
     respectMagicCommentOmit = false,
     respectProjectLevelOmit = false,
     slugifyMode = workspace.getConfiguration('markdown.extension.toc').get<SlugifyMode>('slugifyMode')!,
 }: {
-    doc: TextDocument;
     respectMagicCommentOmit?: boolean;
     respectProjectLevelOmit?: boolean;
     slugifyMode?: SlugifyMode;
