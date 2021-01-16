@@ -19,6 +19,7 @@ interface IHeadingBase {
 
     /**
      * The raw content of the heading according to the CommonMark Spec.
+     * Can be **multiline**.
      */
     rawContent: string;
 
@@ -189,7 +190,11 @@ function onWillSave(e: TextDocumentWillSaveEvent): void {
 
 //#endregion TOC operation entrance
 
-//// Returns a list of user defined excluded headings for the given document.
+/**
+ * Returns a list of user defined excluded headings for the given document.
+ * They are defined in the `toc.omittedFromToc` setting.
+ * @param doc The document.
+ */
 function getProjectExcludedHeadings(doc: TextDocument): readonly Readonly<{ level: number, text: string; }>[] {
     const configObj = workspace.getConfiguration('markdown.extension.toc').get<{ [path: string]: string[]; }>('omittedFromToc');
 
@@ -443,13 +448,18 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
      */
     const replacer = (foundStr: string) => foundStr.replace(/[^\r\n]/g, '');
 
-    /**
+    /*
      * Text normalization
      * ==================
      * including:
-     * 
+     *
      * 1. (easy) YAML front matter, tab to spaces, HTML comment, Markdown fenced code blocks
      * 2. (complex) Setext headings to ATX headings
+     * 3. Remove trailing space or tab characters.
+     *
+     * Note:
+     * When recognizing or trimming whitespace characters, comply with the CommonMark Spec.
+     * Do not use anything that defines whitespace as per ECMAScript, like `trim()`. <https://tc39.es/ecma262/#sec-trimstring>
      */
 
     // (easy)
@@ -459,7 +469,7 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         .replace(/^( {0,3})<!--([^]*?)-->.*$/gm, (match: string, leading: string, content: string) => {
             // Remove HTML block comment, together with all the text in the lines it occupies. <https://spec.commonmark.org/0.29/#html-blocks>
             // Exclude our magic comment.
-            if (leading.length === 0 && (content === ' omit in toc ' || content === ' omit in TOC ')) {
+            if (leading.length === 0 && content === ' omit in toc ') {
                 return match;
             } else {
                 return replacer(match);
@@ -468,12 +478,12 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         .replace(REGEX_FENCED_CODE_BLOCK, replacer)                 //// Remove fenced code blocks (and #603, #675)
         .split(/\r?\n/g);
 
-    // Still cannot perfectly handle some weird cases, for example:
-    // * Multiline heading.
-    // * A setext heading next to a list.
-
-    // (complex) Setext headings to ATX headings
+    // Do transformations as many as possible in one loop, to save time.
     lines.forEach((lineText, i, arr) => {
+        // (complex) Setext headings to ATX headings.
+        // Still cannot perfectly handle some weird cases, for example:
+        // * Multiline heading.
+        // * A setext heading next to a list.
         if (
             i < arr.length - 1 // The current line is not the last.
             && /^ {0,3}(?:=+|-+)[ \t]*$/.test(arr[i + 1]) // The next line is a setext heading underline.
@@ -489,22 +499,25 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         }
 
         // Remove trailing space or tab characters.
-        // When trimming, comply with the CommonMark Spec. Do not use `trim()`. <https://tc39.es/ecma262/#sec-trimstring>
+        // Since they have no effect on subsequent operations, and removing them can simplify those operations.
         // <https://github.com/commonmark/commonmark.js/blob/75474b071da06535c23adc17ac4132213ab31934/lib/blocks.js#L503-L507>
         arr[i] = arr[i].replace(/[ \t]+$/, '');
     });
 
-    /**
+    /*
      * Mark omitted headings
      * =====================
-     * 
-     * - headings with magic comment `<!-- omit in toc|TOC -->` (on their own)
-     * - headings in `toc.omittedFromToc` (and their subheadings)
-     * 
-     * Note: We have trimmed trailing space or tab characters for every line above.
+     *
+     * - headings with magic comment `<!-- omit in toc -->` (on their own)
+     * - headings from `getProjectExcludedHeadings()` (and their subheadings)
+     *
+     * Note:
+     * * We have trimmed trailing space or tab characters for every line above.
+     * * We have performed leading tab-space conversion above.
      */
 
     const projectLevelOmittedHeadings = respectProjectLevelOmit ? getProjectExcludedHeadings(doc) : [];
+
     /**
      * Keep track of the omitted heading's depth to also omit its subheadings.
      * This is only for project level omitting.
@@ -519,7 +532,6 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         // Skip non-ATX heading lines.
         if (
             // <https://spec.commonmark.org/0.29/#atx-headings>
-            // Leading tab-space conversion has been done above.
             !/^ {0,3}#{1,6}(?: |\t|$)/.test(crtLineText)
         ) {
             continue;
@@ -542,7 +554,7 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
                 // The magic comment is above the heading.
                 (
                     i > 0
-                    && /^<!-- omit in (toc|TOC) -->$/.test(lines[i - 1])
+                    && '<!-- omit in toc -->' === lines[i - 1]
                 )
 
                 // The magic comment is at the end of the heading.
@@ -552,8 +564,8 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
             entry.isInToc = false;
         }
 
-        // Omit because of `toc.omittedFromToc`
-        if (respectProjectLevelOmit) {
+        // Omit because of `projectLevelOmittedHeadings`.
+        if (respectProjectLevelOmit && entry.isInToc) {
             // Whether omitted as a subheading
             if (
                 ignoredDepthBound !== undefined
@@ -562,7 +574,7 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
                 entry.isInToc = false;
             }
 
-            // Whether omitted because it is in `toc.omittedFromToc`
+            // Whether omitted because it is in `projectLevelOmittedHeadings`.
             if (entry.isInToc) {
                 if (projectLevelOmittedHeadings.some(({ level, text }) => level === entry.level && text === entry.rawContent)) {
                     entry.isInToc = false;
