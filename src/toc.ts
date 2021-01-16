@@ -31,7 +31,7 @@ interface IHeadingBase {
     /**
      * `true` to show in TOC. `false` to omit in TOC.
      */
-    isInToc: boolean;
+    canInToc: boolean;
 }
 
 /**
@@ -131,7 +131,7 @@ function addSectionNumbers() {
 
     const doc = editor.document;
     const toc: readonly Readonly<IHeadingBase>[] = getAllRootHeading(doc, true, true)
-        .filter(i => i.isInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth);
+        .filter(i => i.canInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth);
 
     if (toc.length === 0) {
         return;
@@ -255,7 +255,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
 
     const toc: string[] = [];
     const tocEntries: readonly Readonly<IHeading>[] = getAllTocEntry({ doc, respectMagicCommentOmit: true, respectProjectLevelOmit: true })
-        .filter(i => i.isInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth); // Filter out excluded headings.
+        .filter(i => i.canInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth); // Filter out excluded headings.
 
     if (tocEntries.length === 0) {
         return '';
@@ -545,13 +545,13 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
             level: matches[1].length as markdownSpec.MarkdownHeadingLevel,
             rawContent: matches[2].replace(/^[ \t]+/, '').replace(/[ \t]+#+[ \t]*$/, ''),
             lineIndex: i,
-            isInToc: true,
+            canInToc: true,
         };
 
         // Omit because of magic comment
         if (
             respectMagicCommentOmit
-            && entry.isInToc
+            && entry.canInToc
             && (
                 // The magic comment is above the heading.
                 (
@@ -563,23 +563,23 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
                 || crtLineText.endsWith('<!-- omit in toc -->')
             )
         ) {
-            entry.isInToc = false;
+            entry.canInToc = false;
         }
 
         // Omit because of `projectLevelOmittedHeadings`.
-        if (respectProjectLevelOmit && entry.isInToc) {
+        if (respectProjectLevelOmit && entry.canInToc) {
             // Whether omitted as a subheading
             if (
                 ignoredDepthBound !== undefined
                 && entry.level > ignoredDepthBound
             ) {
-                entry.isInToc = false;
+                entry.canInToc = false;
             }
 
             // Whether omitted because it is in `projectLevelOmittedHeadings`.
-            if (entry.isInToc) {
+            if (entry.canInToc) {
                 if (projectLevelOmittedHeadings.some(({ level, text }) => level === entry.level && text === entry.rawContent)) {
-                    entry.isInToc = false;
+                    entry.canInToc = false;
                     ignoredDepthBound = entry.level;
                 } else {
                     // Otherwise reset ignore bound.
@@ -643,7 +643,7 @@ export function getAllTocEntry({
         level: heading.level,
         rawContent: heading.rawContent,
         lineIndex: heading.lineIndex,
-        isInToc: heading.isInToc,
+        canInToc: heading.canInToc,
 
         visibleText: getVisibleText(heading.rawContent),
         slug: getSlug(heading.rawContent),
