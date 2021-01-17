@@ -4,8 +4,8 @@ import * as fs from 'fs';
 import * as sizeOf from 'image-size';
 import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
-import { buildToc } from './toc';
-import { mathEnvCheck, mdDocSelector, slugify } from './util';
+import { getAllTocEntry, IHeading } from './toc';
+import { mathEnvCheck, mdDocSelector } from './util';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerCompletionItemProvider(mdDocSelector, new MdCompletionItemProvider(), '(', '\\', '/', '[', '#'));
@@ -17,7 +17,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     // \cmd         -> 0
     // \cmd{$1}     -> 1
     // \cmd{$1}{$2} -> 2
-    // 
+    //
     // Use linebreak to mimic the structure of the KaTeX [Support Table](https://katex.org/docs/supported.html)
     accents1 = [
         'tilde', 'mathring',
@@ -559,20 +559,19 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
 
             return new Promise((res, _) => {
-                const toc = buildToc(document);
+                const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
 
-                const headingCompletions = toc.reduce((prev, curr) => {
-                    let item = new CompletionItem('#' + slugify(curr.text), CompletionItemKind.Reference);
+                const headingCompletions = toc.map<CompletionItem>(heading => {
+                    const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
 
                     if (addClosingParen) {
                         item.insertText = item.label + ')';
                     }
 
-                    item.documentation = curr.text;
+                    item.documentation = heading.rawContent;
                     item.range = range;
-                    prev.push(item);
-                    return prev;
-                }, []);
+                    return item;
+                });
 
                 res(headingCompletions);
             });
@@ -608,7 +607,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 }
 
 /**
- * @param doc 
+ * @param doc
  * @param dir The dir already typed in the src field, e.g. `[alt text](dir_here|)`
  */
 function getBasepath(doc: TextDocument, dir: string): string {

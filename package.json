@@ -6,7 +6,7 @@
     "version": "3.4.0",
     "publisher": "yzhang",
     "engines": {
-        "vscode": "^1.38.0"
+        "vscode": "^1.49.0"
     },
     "categories": [
         "Programming Languages",
@@ -461,7 +461,7 @@
         "@types/markdown-it": "^10.0.2",
         "@types/mocha": "^8.0.3",
         "@types/node": "^12.12.58",
-        "@types/vscode": "1.38.0",
+        "@types/vscode": "^1.49.0",
         "glob": "^7.1.6",
         "mocha": "^8.1.3",
         "ts-loader": "^8.0.3",

@@ -2,16 +2,54 @@
 
 import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
-import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Range, TextDocument, TextDocumentWillSaveEvent, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
-import { isInFencedCodeBlock, isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
+import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Position, Range, TextDocument, TextDocumentWillSaveEvent, TextEditor, Uri, window, workspace, WorkspaceEdit } from 'vscode';
+import { mdEngine } from './markdownEngine';
+import { isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
+import type * as MarkdownSpec from "./contract/MarkdownSpec";
+import SlugifyMode from "./contract/SlugifyMode";
+
+/**
+ * Represents the essential properties of a heading.
+ */
+interface IHeadingBase {
+    /**
+     * The heading level.
+     */
+    level: MarkdownSpec.MarkdownHeadingLevel;
+
+    /**
+     * The raw content of the heading according to the CommonMark Spec.
+     * Can be **multiline**.
+     */
+    rawContent: string;
+
+    /**
+     * The **zero-based** index of the beginning line of the heading in original document.
+     */
+    lineIndex: number;
+
+    /**
+     * `true` to show in TOC. `false` to omit in TOC.
+     */
+    canInToc: boolean;
+}
 
 /**
  * Represents a heading.
  */
-interface IHeading {
-    level: number;
-    text: string;
-    lineNum: number;
+export interface IHeading extends IHeadingBase {
+    /**
+     * The **rich text** (single line Markdown inline without raw HTML) representation of the rendering result (in strict CommonMark mode) of the heading.
+     * This must be able to be safely put into a `[]` bracket pair without breaking Markdown syntax.
+     */
+    visibleText: string;
+
+    /**
+     * The anchor ID of the heading.
+     * This must be a valid IRI fragment, which does not contain `#`.
+     * See RFC 3986 section 3, and RFC 3987 section 2.2.
+     */
+    slug: string;
 }
 
 /**
@@ -30,6 +68,8 @@ export function activate(context: ExtensionContext) {
         languages.registerCodeLensProvider(mdDocSelector, new TocCodeLensProvider())
     );
 }
+
+//#region TOC operation entrance
 
 async function createToc() {
     const editor = window.activeTextEditor;
@@ -90,17 +130,20 @@ function addSectionNumbers() {
     loadTocConfig(editor);
 
     const doc = editor.document;
-    const toc = buildToc(doc);
-    if (toc === null || toc === undefined || toc.length < 1) return;
+    const toc: readonly Readonly<IHeadingBase>[] = getAllRootHeading(doc, true, true)
+        .filter(i => i.canInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth);
+
+    if (toc.length === 0) {
+        return;
+    }
+
     const startDepth = Math.max(tocConfig.startDepth, Math.min(...toc.map(h => h.level)));
 
     let secNumbers = [0, 0, 0, 0, 0, 0];
     let edit = new WorkspaceEdit();
     toc.forEach(entry => {
         const level = entry.level;
-        const lineNum = entry.lineNum;
-
-        if (level < startDepth) return;
+        const lineNum = entry.lineIndex;
 
         secNumbers[level - 1] += 1;
         secNumbers.fill(0, level);
@@ -122,10 +165,10 @@ function removeSectionNumbers() {
         return;
     }
     const doc = editor.document;
-    const toc = buildToc(editor.document);
+    const toc: readonly Readonly<IHeadingBase>[] = getAllRootHeading(doc, false, false);
     let edit = new WorkspaceEdit();
     toc.forEach(entry => {
-        const lineNum = entry.lineNum;
+        const lineNum = entry.lineIndex;
         const lineText = doc.lineAt(lineNum).text;
         const newText = lineText.includes('#')
             ? lineText.replace(/^(\s{0,3}#+ +)((?:\d{1,9}\.)* )?(.*)/, (_, g1, _g2, g3) => `${g1}${g3}`)
@@ -136,12 +179,23 @@ function removeSectionNumbers() {
     return workspace.applyEdit(edit);
 }
 
-function normalizePath(path: string): string {
-    return path.replace(/\\/g, '/').toLowerCase();
+function onWillSave(e: TextDocumentWillSaveEvent): void {
+    if (!tocConfig.updateOnSave) {
+        return;
+    }
+    if (e.document.languageId === 'markdown') {
+        e.waitUntil(updateToc());
+    }
 }
 
-//// Returns a list of user defined excluded headings for the given document.
-function getExcludedHeadings(doc: TextDocument): { level: number, text: string; }[] {
+//#endregion TOC operation entrance
+
+/**
+ * Returns a list of user defined excluded headings for the given document.
+ * They are defined in the `toc.omittedFromToc` setting.
+ * @param doc The document.
+ */
+function getProjectExcludedHeadings(doc: TextDocument): readonly Readonly<{ level: number, text: string; }>[] {
     const configObj = workspace.getConfiguration('markdown.extension.toc').get<{ [path: string]: string[]; }>('omittedFromToc');
 
     if (typeof configObj !== 'object' || configObj === null) {
@@ -149,30 +203,37 @@ function getExcludedHeadings(doc: TextDocument): { level: number, text: string; 
         return [];
     }
 
+    const docUriString = doc.uri.toString();
     const docWorkspace = workspace.getWorkspaceFolder(doc.uri);
+    const workspaceUri = docWorkspace ? docWorkspace.uri : undefined;
 
-    let omittedTocPerFile: { [path: string]: string[]; } = {};
+    // A few possible duplicate entries are bearable, thus, an array is enough.
+    const omittedHeadings: string[] = [];
+
     for (const filePath of Object.keys(configObj)) {
-        let normedPath: string;
-        //// Converts paths to absolute paths if a workspace is opened
-        if (docWorkspace !== undefined && !path.isAbsolute(filePath)) {
-            normedPath = normalizePath(path.join(docWorkspace.uri.fsPath, filePath));
+        let entryUri: Uri;
+
+        // Convert file system path to VS Code Uri.
+        if (path.isAbsolute(filePath)) {
+            entryUri = Uri.file(filePath);
+        } else if (workspaceUri !== undefined) {
+            entryUri = Uri.joinPath(workspaceUri, filePath);
         } else {
-            normedPath = normalizePath(filePath);
+            continue; // Discard this entry.
         }
-        omittedTocPerFile[normedPath] = [...(omittedTocPerFile[normedPath] || []), ...configObj[filePath]];
+
+        // If the entry matches the document, read it.
+        if (entryUri.toString() === docUriString) {
+            if (Array.isArray(configObj[filePath])) {
+                omittedHeadings.push(...configObj[filePath]);
+            } else {
+                window.showErrorMessage('Each property value of `omittedFromToc` setting must be a string array.');
+            }
+        }
     }
 
-    const currentFile = normalizePath(doc.fileName);
-    const omittedList = omittedTocPerFile[currentFile] || [];
-
-    if (!Array.isArray(omittedList)) {
-        window.showErrorMessage(`\`omittedFromToc\` attributes must be arrays (e.g. \`{"README.md": ["# Introduction"]}\`)`);
-        return [];
-    }
-
-    return omittedList.map(heading => {
-        const matches = heading.match(/^ *(#+) +(.*)$/);
+    return omittedHeadings.map(heading => {
+        const matches = heading.match(/^ {0,3}(#{1,6})[ \t]+(.*)$/);
         if (matches === null) {
             window.showErrorMessage(`Invalid entry "${heading}" in \`omittedFromToc\``);
             return { level: -1, text: '' };
@@ -185,61 +246,42 @@ function getExcludedHeadings(doc: TextDocument): { level: number, text: string; 
     });
 }
 
+/**
+ * Generates the Markdown text representation of the TOC.
+ */
+// TODO: Redesign data structure to solve another bunch of bugs.
 async function generateTocText(doc: TextDocument): Promise<string> {
     const orderedListMarkerIsOne: boolean = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
 
-    let toc: string[] = [];
-    let tocEntries = buildToc(doc);
-    if (tocEntries === null || tocEntries === undefined || tocEntries.length < 1) return '';
+    const toc: string[] = [];
+    const tocEntries: readonly Readonly<IHeading>[] = getAllTocEntry(doc, { respectMagicCommentOmit: true, respectProjectLevelOmit: true })
+        .filter(i => i.canInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth); // Filter out excluded headings.
 
+    if (tocEntries.length === 0) {
+        return '';
+    }
+
+    // The actual level range of a document can be smaller than settings. So we need to calculate the real start level.
     const startDepth = Math.max(tocConfig.startDepth, Math.min(...tocEntries.map(h => h.level)));
-    let order = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
-
-    const anchorOccurrences: { [slug: string]: number; } = {};
-    let ignoredDepthBound: number | undefined = undefined;
-    const excludedHeadings = getExcludedHeadings(doc);
+    const order: number[] = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
 
     tocEntries.forEach(entry => {
-        if (entry.level <= tocConfig.endDepth && entry.level >= startDepth) {
-            let relativeLvl = entry.level - startDepth;
+        const relativeLevel = entry.level - startDepth;
 
-            //// Remove certain Markdown syntaxes
-            //// `[text](link)` → `text`
-            let headingText = entry.text.replace(/\[([^\]]*)\]\([^\)]*\)/, (_, g1) => g1);
-            //// `[text][label]` → `text`
-            headingText = headingText.replace(/\[([^\]]*)\]\[[^\)]*\]/, (_, g1) => g1);
-
-            let slug = slugify(entry.text);
-
-            if (anchorOccurrences.hasOwnProperty(slug)) {
-                anchorOccurrences[slug] += 1;
-                slug += '-' + String(anchorOccurrences[slug]);
-            } else {
-                anchorOccurrences[slug] = 0;
-            }
-
-            // Filter out used excluded headings.
-            const isExcluded = excludedHeadings.some(({ level, text }) => level === entry.level && text === entry.text);
-            const isOmittedSubHeading = ignoredDepthBound !== undefined && entry.level > ignoredDepthBound;
-            if (isExcluded) {
-                // Keep track of the latest omitted heading's depth to also omit its subheadings.
-                ignoredDepthBound = entry.level;
-            } else if (!isOmittedSubHeading) {
-                // Reset ignore bound (not ignored sub heading anymore).
-                ignoredDepthBound = undefined;
-                let row = [
-                    docConfig.tab.repeat(relativeLvl),
-                    (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLvl]) + '.' : tocConfig.listMarker) + ' ',
-                    tocConfig.plaintext ? headingText : `[${headingText}](#${slug})`
-                ];
-                toc.push(row.join(''));
-                if (tocConfig.orderedList) order.fill(0, relativeLvl + 1);
-            }
+        const row = [
+            docConfig.tab.repeat(relativeLevel),
+            (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLevel]) + '.' : tocConfig.listMarker) + ' ',
+            tocConfig.plaintext ? entry.visibleText : `[${entry.visibleText}](#${entry.slug})`
+        ];
+        toc.push(row.join(''));
+        if (tocConfig.orderedList) {
+            order.fill(0, relativeLevel + 1);
         }
     });
     while (/^[ \t]/.test(toc[0])) {
-        toc = toc.slice(1);
+        toc.shift();
     }
+    toc.push(''); // Ensure the TOC text always ends with an EOL.
     return toc.join(docConfig.eol);
 }
 
@@ -249,41 +291,88 @@ async function generateTocText(doc: TextDocument): Promise<string> {
  * @param doc a TextDocument
  */
 async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string]> {
-    let tocRanges = [];
-    const newTocText = await generateTocText(doc);
-    const fullText = doc.getText();
-    let listRegex = /(^|\r?\n)((?:[-+*]|[0-9]+[.)]) .*(?:\r?\n[ \t]*(?:[-+*]|[0-9]+[.)]) .*)*)/g;
-    let match;
-    while ((match = listRegex.exec(fullText)) !== null) {
-        //// #525 <!-- no toc --> comment
-        const listStartPos = doc.positionAt(match.index + match[1].length);
+    const docTokens = (await mdEngine.getEngine()).parse(doc.getText(), {});
+    /**
+     * `[beginLineIndex, endLineIndex, openingTokenIndex]`
+     */
+    const candidateLists: readonly [number, number, number][] = docTokens.reduce<[number, number, number][]>((result, token, index) => {
         if (
-            (listStartPos.line > 0 && doc.lineAt(listStartPos.line - 1).text.includes("no toc"))
-            || isInFencedCodeBlock(doc, listStartPos.line)
+            token.level === 0
+            && (
+                token.type === 'bullet_list_open'
+                || (token.type === 'ordered_list_open' && token.attrGet('start') === null)
+            )
+        ) {
+            result.push([...token.map!, index]);
+        }
+        return result;
+    }, []);
+
+    const tocRanges: Range[] = [];
+    const newTocText = await generateTocText(doc);
+
+    for (const item of candidateLists) {
+        const beginLineIndex = item[0];
+        let endLineIndex = item[1];
+        const opTokenIndex = item[2];
+
+        //// #525 <!-- no toc --> comment
+        if (
+            beginLineIndex > 0
+            && doc.lineAt(beginLineIndex - 1).text === '<!-- no toc -->'
         ) {
             continue;
         }
 
-        const listText = match[2];
+        // Check the first list item to see if it could be a TOC.
+        //
+        // ## Token stream
+        //
+        // +3 alway exists, even if it's an empty list.
+        // In a target, +3 is `inline`:
+        //
+        // opTokenIndex: *_list_open
+        // +1: list_item_open
+        // +2: paragraph_open
+        // +3: inline
+        // +4: paragraph_close
+        // ...
+        // ...: list_item_close
+        //
+        // ## `inline.children`
+        //
+        // Ordinary TOC: `link_open`, ..., `link_close`.
+        // Plain text TOC: No `link_*` tokens.
 
-        //// Sanity checks
-        const firstLine: string = listText.split(/\r?\n/)[0];
+        const firstItemContent = docTokens[opTokenIndex + 3];
+        if (firstItemContent.type !== 'inline') {
+            continue;
+        }
+
+        const tokens = firstItemContent.children!;
         if (workspace.getConfiguration('markdown.extension.toc').get<boolean>('plaintext')) {
-            //// A lazy way to check whether it is a link
-            if (firstLine.includes('](')) {
+            if (tokens.some(t => t.type.startsWith('link_'))) {
                 continue;
             }
         } else {
-            //// GitHub issue #304 (must contain `#`), #549 and #683 (shouldn't contain text other than links)
-            if (!/^([-\*+]|[0-9]+[.)]) +\[[^\]]+\]\(\#[^\)]+\)$/.test(firstLine)) {
+            if (!(
+                tokens[0].type === 'link_open'
+                && tokens[0].attrGet('href')!.startsWith('#') // Destination begins with `#`. (#304)
+                && tokens.findIndex(t => t.type === 'link_close') === (tokens.length - 1) // Only one link. (#549, #683)
+            )) {
                 continue;
             }
         }
 
+        // The original range may have trailing white lines.
+        while (doc.lineAt(endLineIndex - 1).isEmptyOrWhitespace) {
+            endLineIndex--;
+        }
+
+        const finalRange = new Range(new Position(beginLineIndex, 0), new Position(endLineIndex, 0));
+        const listText = doc.getText(finalRange);
         if (radioOfCommonPrefix(newTocText, listText) + stringSimilarity.compareTwoStrings(newTocText, listText) > 0.5) {
-            tocRanges.push(
-                new Range(listStartPos, doc.positionAt(listRegex.lastIndex))
-            );
+            tocRanges.push(finalRange);
         }
     }
 
@@ -309,13 +398,6 @@ function radioOfCommonPrefix(s1: string, s2: string): number {
         return prefixLength / minLength;
     } else {
         return minLength / maxLength;
-    }
-}
-
-function onWillSave(e: TextDocumentWillSaveEvent) {
-    if (!tocConfig.updateOnSave) return;
-    if (e.document.languageId == 'markdown') {
-        e.waitUntil(updateToc());
     }
 }
 
@@ -353,60 +435,222 @@ function loadTocConfig(editor: TextEditor): void {
     }
 }
 
+//#region Public utility
+
 /**
- * Gets root-level headings in a text document.
+ * Gets all headings in the root of the text document.
+ *
+ * The optional parameters default to `false`.
+ * @returns In ascending order of `lineIndex`.
  */
-export function buildToc(doc: TextDocument): IHeading[] {
+export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: boolean = false, respectProjectLevelOmit: boolean = false): Readonly<IHeadingBase>[] {
+    /**
+     * Replaces line content with empty.
+     * @param foundStr The multiline string.
+     */
     const replacer = (foundStr: string) => foundStr.replace(/[^\r\n]/g, '');
-    let lines = doc.getText()
+
+    /*
+     * Text normalization
+     * ==================
+     * including:
+     *
+     * 1. (easy) YAML front matter, tab to spaces, HTML comment, Markdown fenced code blocks
+     * 2. (complex) Setext headings to ATX headings
+     * 3. Remove trailing space or tab characters.
+     *
+     * Note:
+     * When recognizing or trimming whitespace characters, comply with the CommonMark Spec.
+     * Do not use anything that defines whitespace as per ECMAScript, like `trim()`. <https://tc39.es/ecma262/#sec-trimstring>
+     */
+
+    // (easy)
+    const lines: string[] = doc.getText()
+        .replace(/^---.+?(?:\r?\n)---(?=[ \t]*\r?\n)/s, replacer) //// Remove YAML front matter
+        .replace(/^\t+/gm, (match: string) => '    '.repeat(match.length)) // <https://spec.commonmark.org/0.29/#tabs>
+        .replace(/^( {0,3})<!--([^]*?)-->.*$/gm, (match: string, leading: string, content: string) => {
+            // Remove HTML block comment, together with all the text in the lines it occupies. <https://spec.commonmark.org/0.29/#html-blocks>
+            // Exclude our magic comment.
+            if (leading.length === 0 && content === ' omit in toc ') {
+                return match;
+            } else {
+                return replacer(match);
+            }
+        })
         .replace(REGEX_FENCED_CODE_BLOCK, replacer)                 //// Remove fenced code blocks (and #603, #675)
-        .replace(/<!-- omit in (toc|TOC) -->/g, '&lt; omit in toc &gt;')    //// Escape magic comment
-        .replace(/<!--[\W\w]+?-->/g, replacer)                      //// Remove comments
-        .replace(/^---[\W\w]+?(\r?\n)---/, replacer)                //// Remove YAML front matter
         .split(/\r?\n/g);
 
-    //// Some special cases that we need to look at multiple lines to decide
+    // Do transformations as many as possible in one loop, to save time.
     lines.forEach((lineText, i, arr) => {
-        //// Transform setext headings to ATX headings
+        // (complex) Setext headings to ATX headings.
+        // Still cannot perfectly handle some weird cases, for example:
+        // * Multiline heading.
+        // * A setext heading next to a list.
         if (
-            i < arr.length - 1
-            && lineText.match(/^ {0,3}\S.*$/)
-            && lineText.replace(/[ -]/g, '').length > 0  //// #629
-            && arr[i + 1].match(/^ {0,3}(=+|-{2,}) *$/)
+            i < arr.length - 1 // The current line is not the last.
+            && /^ {0,3}(?:=+|-+)[ \t]*$/.test(arr[i + 1]) // The next line is a setext heading underline.
+            && /^ {0,3}[^ \t\f\v]/.test(lineText)         // The indentation of the line is 0~3.
+            && !/^ {0,3}#{1,6}(?: |\t|$)/.test(lineText)  // The line is not an ATX heading.
+            && !/^ {0,3}(?:[*+-]|\d{1,9}(?:\.|\)))(?: |\t|$)/.test(lineText) // The line is not a list item.
+            && !/^ {0,3}>/.test(lineText)                 // The line is not a block quote.
+            // #629: Consecutive thematic breaks false positive. <https://github.com/commonmark/commonmark.js/blob/75474b071da06535c23adc17ac4132213ab31934/lib/blocks.js#L36>
+            && !/^ {0,3}(?:(?:-[ \t]*){3,}|(?:\*[ \t]*){3,}|(?:_[ \t]*){3,})[ \t]*$/.test(lineText)
         ) {
             arr[i] = (arr[i + 1].includes('=') ? '# ' : '## ') + lineText;
+            arr[i + 1] = '';
         }
-        //// Ignore headings following `<!-- omit in toc -->`
-        if (
-            i > 0
-            && arr[i - 1] === '&lt; omit in toc &gt;'
-        ) {
-            arr[i] = '';
-        }
+
+        // Remove trailing space or tab characters.
+        // Since they have no effect on subsequent operations, and removing them can simplify those operations.
+        // <https://github.com/commonmark/commonmark.js/blob/75474b071da06535c23adc17ac4132213ab31934/lib/blocks.js#L503-L507>
+        arr[i] = arr[i].replace(/[ \t]+$/, '');
     });
 
-    const toc = lines.map((lineText, index) => {
-        if (
-            lineText.trim().startsWith('#')
-            && !lineText.startsWith('    ')  //// The opening `#` character may be indented 0-3 spaces
-            && lineText.includes('# ')
-            && !lineText.includes('&lt; omit in toc &gt;')
-        ) {
-            lineText = lineText.replace(/^ +/, '');
-            const matches = /^(#+) (.*)/.exec(lineText)!;
-            const entry = {
-                level: matches[1].length,
-                text: matches[2].replace(/ #+ *$/, '').trim(),
-                lineNum: index,
-            };
-            return entry;
-        } else {
-            return null;
-        }
-    }).filter(entry => entry !== null);
+    /*
+     * Mark omitted headings
+     * =====================
+     *
+     * - headings with magic comment `<!-- omit in toc -->` (on their own)
+     * - headings from `getProjectExcludedHeadings()` (and their subheadings)
+     *
+     * Note:
+     * * We have trimmed trailing space or tab characters for every line above.
+     * * We have performed leading tab-space conversion above.
+     */
 
-    return toc as IHeading[]; // TODO: Rewrite later.
+    const projectLevelOmittedHeadings = respectProjectLevelOmit ? getProjectExcludedHeadings(doc) : [];
+
+    /**
+     * Keep track of the omitted heading's depth to also omit its subheadings.
+     * This is only for project level omitting.
+     */
+    let ignoredDepthBound: MarkdownSpec.MarkdownHeadingLevel | undefined = undefined;
+
+    const toc: IHeadingBase[] = [];
+
+    for (let i: number = 0; i < lines.length; i++) {
+        const crtLineText = lines[i];
+
+        // Skip non-ATX heading lines.
+        if (
+            // <https://spec.commonmark.org/0.29/#atx-headings>
+            !/^ {0,3}#{1,6}(?: |\t|$)/.test(crtLineText)
+        ) {
+            continue;
+        }
+
+        // Extract heading info.
+        const matches = /^ {0,3}(#{1,6})(.*)$/.exec(crtLineText)!;
+        const entry: IHeadingBase = {
+            level: matches[1].length as MarkdownSpec.MarkdownHeadingLevel,
+            rawContent: matches[2].replace(/^[ \t]+/, '').replace(/[ \t]+#+[ \t]*$/, ''),
+            lineIndex: i,
+            canInToc: true,
+        };
+
+        // Omit because of magic comment
+        if (
+            respectMagicCommentOmit
+            && entry.canInToc
+            && (
+                // The magic comment is above the heading.
+                (
+                    i > 0
+                    && '<!-- omit in toc -->' === lines[i - 1]
+                )
+
+                // The magic comment is at the end of the heading.
+                || crtLineText.endsWith('<!-- omit in toc -->')
+            )
+        ) {
+            entry.canInToc = false;
+        }
+
+        // Omit because of `projectLevelOmittedHeadings`.
+        if (respectProjectLevelOmit && entry.canInToc) {
+            // Whether omitted as a subheading
+            if (
+                ignoredDepthBound !== undefined
+                && entry.level > ignoredDepthBound
+            ) {
+                entry.canInToc = false;
+            }
+
+            // Whether omitted because it is in `projectLevelOmittedHeadings`.
+            if (entry.canInToc) {
+                if (projectLevelOmittedHeadings.some(({ level, text }) => level === entry.level && text === entry.rawContent)) {
+                    entry.canInToc = false;
+                    ignoredDepthBound = entry.level;
+                } else {
+                    // Otherwise reset ignore bound.
+                    ignoredDepthBound = undefined;
+                }
+            }
+        }
+
+        toc.push(entry);
+    }
+
+    return toc;
 }
+
+/**
+ * Gets all headings in the root of the text document, with additional TOC specific properties.
+ * @returns In ascending order of `lineIndex`.
+ */
+export function getAllTocEntry(doc: TextDocument, {
+    respectMagicCommentOmit = false,
+    respectProjectLevelOmit = false,
+    slugifyMode = workspace.getConfiguration('markdown.extension.toc').get<SlugifyMode>('slugifyMode')!,
+}: {
+    respectMagicCommentOmit?: boolean;
+    respectProjectLevelOmit?: boolean;
+    slugifyMode?: SlugifyMode;
+}): Readonly<IHeading>[] {
+    const rootHeadings: readonly Readonly<IHeadingBase>[] = getAllRootHeading(doc, respectMagicCommentOmit, respectProjectLevelOmit);
+
+    const anchorOccurrences = new Map<string, number>();
+    function getSlug(rawContent: string): string {
+        let slug = slugify(rawContent, slugifyMode);
+
+        let count = anchorOccurrences.get(slug);
+        if (count === undefined) {
+            anchorOccurrences.set(slug, 0);
+        } else {
+            count++;
+            anchorOccurrences.set(slug, count);
+            slug += '-' + count.toString();
+        }
+
+        return slug;
+    }
+
+    function getVisibleText(rawContent: string): string {
+        // May produce wrong result when facing code span, extremely complex link, etc.
+        let text = rawContent
+            .replace(/<!--[^>]*?-->/g, '') // Remove HTML comments.
+            .replace(/\[([^\]]*?)\]\([^\)]*?\)/g, '$1') // Extract the link text from inline link. `[text](link)` → `text`
+            .replace(/\[([^\]]*?)\]\[[^\]]*?\]/g, '$1') // Extract the link text from reference link. `[text][label]` → `text`
+            .replace(/(?<!\\)[\[\]]/g, '\\$&') // Escape brackets.
+            ;
+
+        return text;
+    }
+
+    const toc: IHeading[] = rootHeadings.map<IHeading>((heading): IHeading => ({
+        level: heading.level,
+        rawContent: heading.rawContent,
+        lineIndex: heading.lineIndex,
+        canInToc: heading.canInToc,
+
+        visibleText: getVisibleText(heading.rawContent),
+        slug: getSlug(heading.rawContent),
+    }));
+
+    return toc;
+}
+
+//#endregion Public utility
 
 class TocCodeLensProvider implements CodeLensProvider {
     public provideCodeLenses(document: TextDocument, _: CancellationToken):
