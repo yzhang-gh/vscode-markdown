@@ -234,32 +234,32 @@ export function slugify(heading: string, mode?: SlugifyMode, downcase?: boolean)
 
     // Sort by popularity.
     switch (mode) {
-        case 'github':
-            slug = slugifyMethods.github(slug);
+        case SlugifyMode.GitHub:
+            slug = slugifyMethods[SlugifyMode.GitHub](slug);
             break;
 
-        case 'gitlab':
-            slug = slugifyMethods.gitlab(slug);
+        case SlugifyMode.GitLab:
+            slug = slugifyMethods[SlugifyMode.GitLab](slug);
             break;
 
-        case 'gitea':
-            slug = slugifyMethods.gitea(slug);
+        case SlugifyMode.Gitea:
+            slug = slugifyMethods[SlugifyMode.Gitea](slug);
             break;
 
-        case 'vscode':
-            slug = slugifyMethods.vscode(slug);
+        case SlugifyMode.VisualStudioCode:
+            slug = slugifyMethods[SlugifyMode.VisualStudioCode](slug);
             break;
 
-        case 'azureDevops':
-            slug = slugifyMethods.azureDevops(slug);
+        case SlugifyMode.AzureDevOps:
+            slug = slugifyMethods[SlugifyMode.AzureDevOps](slug);
             break;
 
-        case 'bitbucketCloud':
-            slug = slugifyMethods.bitbucketCloud(slug);
+        case SlugifyMode.BitbucketCloud:
+            slug = slugifyMethods[SlugifyMode.BitbucketCloud](slug);
             break;
 
         default:
-            slug = slugifyMethods.github(slug);
+            slug = slugifyMethods[SlugifyMode.GitHub](slug);
             break;
     }
 
@@ -278,7 +278,7 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
     /**
      * Azure DevOps
      */
-    "azureDevops": (slug: string): string => {
+    [SlugifyMode.AzureDevOps]: (slug: string): string => {
         // https://markdown-all-in-one.github.io/docs/specs/slugify/azure-devops.html
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent#Description
         slug = encodeURIComponent(
@@ -293,7 +293,7 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
     /**
      * Bitbucket Cloud
      */
-    "bitbucketCloud": (slug: string): string => {
+    [SlugifyMode.BitbucketCloud]: (slug: string): string => {
         // https://support.atlassian.com/bitbucket-cloud/docs/readme-content/
         // https://bitbucket.org/tutorials/markdowndemo/
         slug = 'markdown-header-'
@@ -305,7 +305,7 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
     /**
      * GitHub
      */
-    "github": (slug: string): string => {
+    [SlugifyMode.GitHub]: (slug: string): string => {
         // According to an inspection in 2020-12, GitHub passes the raw content as is,
         // and does not trim leading or trailing C0, Zs characters in any step.
         // <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
@@ -320,7 +320,7 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
     /**
      * Gitea
      */
-    "gitea": (slug: string): string => {
+    [SlugifyMode.Gitea]: (slug: string): string => {
         // Gitea uses the blackfriday parser
         // https://godoc.org/github.com/russross/blackfriday#hdr-Sanitized_Anchor_Names
         slug = slug
@@ -359,7 +359,7 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
     /**
      * Visual Studio Code
      */
-    "vscode": (slug: string): string => {
+    [SlugifyMode.VisualStudioCode]: (slug: string): string => {
         // <https://github.com/Microsoft/vscode/blob/f5738efe91cb1d0089d3605a318d693e26e5d15c/extensions/markdown-language-features/src/slugify.ts#L22-L29>
         slug = encodeURI(
             slug.trim()
