@@ -5,8 +5,8 @@ import * as stringSimilarity from 'string-similarity';
 import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Position, Range, TextDocument, TextDocumentWillSaveEvent, TextEditor, Uri, window, workspace, WorkspaceEdit } from 'vscode';
 import { mdEngine } from './markdownEngine';
 import { isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
-import type * as markdownSpec from "./typing/markdownSpec";
-import type SlugifyMode from "./typing/SlugifyMode";
+import type * as MarkdownSpec from "./contract/MarkdownSpec";
+import SlugifyMode from "./contract/SlugifyMode";
 
 /**
  * Represents the essential properties of a heading.
@@ -15,7 +15,7 @@ interface IHeadingBase {
     /**
      * The heading level.
      */
-    level: markdownSpec.MarkdownHeadingLevel;
+    level: MarkdownSpec.MarkdownHeadingLevel;
 
     /**
      * The raw content of the heading according to the CommonMark Spec.
@@ -524,7 +524,7 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
      * Keep track of the omitted heading's depth to also omit its subheadings.
      * This is only for project level omitting.
      */
-    let ignoredDepthBound: markdownSpec.MarkdownHeadingLevel | undefined = undefined;
+    let ignoredDepthBound: MarkdownSpec.MarkdownHeadingLevel | undefined = undefined;
 
     const toc: IHeadingBase[] = [];
 
@@ -542,7 +542,7 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         // Extract heading info.
         const matches = /^ {0,3}(#{1,6})(.*)$/.exec(crtLineText)!;
         const entry: IHeadingBase = {
-            level: matches[1].length as markdownSpec.MarkdownHeadingLevel,
+            level: matches[1].length as MarkdownSpec.MarkdownHeadingLevel,
             rawContent: matches[2].replace(/^[ \t]+/, '').replace(/[ \t]+#+[ \t]*$/, ''),
             lineIndex: i,
             canInToc: true,

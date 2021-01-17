@@ -4,7 +4,8 @@ import { commands, DocumentSelector, Position, Range, TextDocument, TextEditor, 
 import localize from './localize';
 import { commonmarkEngine, mdEngine } from './markdownEngine';
 import { decodeHTML } from 'entities';
-import type SlugifyMode from "./typing/SlugifyMode";
+import LanguageIdentifier from "./contract/LanguageIdentifier";
+import SlugifyMode from "./contract/SlugifyMode";
 
 /* ┌────────┐
    │ Others │
@@ -12,8 +13,8 @@ import type SlugifyMode from "./typing/SlugifyMode";
 
 /** Scheme `File` or `Untitled` */
 export const mdDocSelector: DocumentSelector = [
-    { language: 'markdown', scheme: 'file' },
-    { language: 'markdown', scheme: 'untitled' },
+    { language: LanguageIdentifier.Markdown, scheme: 'file' },
+    { language: LanguageIdentifier.Markdown, scheme: 'untitled' },
 ];
 
 export function isMdEditor(editor: TextEditor) {
@@ -203,7 +204,9 @@ function getTextInHtml(html: string) {
 /**
  * The definition of punctuation from GitHub and GitLab.
  */
-const RegexpPunctuationGithub = /[^\p{L}\p{M}\p{Nd}\p{Nl}\p{Pc}\- ]/gu;
+const Regexp_Punctuation_Github = /[^\p{L}\p{M}\p{Nd}\p{Nl}\p{Pc}\- ]/gu;
+
+const Regexp_Gitlab_Product_Suffix = /[ \t\r\n\f\v]*\**\((?:core|starter|premium|ultimate)(?:[ \t\r\n\f\v]+only)?\)\**/g;
 
 /**
  * Slugify a string.
@@ -307,7 +310,7 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
         // and does not trim leading or trailing C0, Zs characters in any step.
         // <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
         slug = mdHeadingToPlaintext(slug)
-            .replace(RegexpPunctuationGithub, '')
+            .replace(Regexp_Punctuation_Github, '')
             .toLowerCase() // According to an inspection in 2020-09, GitHub performs full Unicode case conversion now.
             .replace(/ /g, '-');
 
@@ -332,21 +335,19 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
     /**
      * GitLab
      */
-    "gitlab": (slug: string): string => {
+    [SlugifyMode.GitLab]: (slug: string): string => {
         // https://gitlab.com/help/user/markdown
         // https://docs.gitlab.com/ee/api/markdown.html
         // https://docs.gitlab.com/ee/development/wikis.html
         // <https://gitlab.com/gitlab-org/gitlab/blob/master/lib/banzai/filter/table_of_contents_filter.rb#L32>
         // https://gitlab.com/gitlab-org/gitlab/blob/a8c5858ce940decf1d263b59b39df58f89910faf/lib/gitlab/utils/markdown.rb
 
-        const RegexpGitlabProductSuffix = /[ \t\r\n\f\v]*\**\((?:core|starter|premium|ultimate)(?:[ \t\r\n\f\v]+only)?\)\**/g;
-
         slug = mdHeadingToPlaintext(slug)
             .replace(/^[ \t\r\n\f\v]+/, '')
             .replace(/[ \t\r\n\f\v]+$/, '') // https://ruby-doc.org/core/String.html#method-i-strip
             .toLowerCase()
-            .replace(RegexpGitlabProductSuffix, '')
-            .replace(RegexpPunctuationGithub, '')
+            .replace(Regexp_Gitlab_Product_Suffix, '')
+            .replace(Regexp_Punctuation_Github, '')
             .replace(/ /g, '-') // Replace space with dash.
             .replace(/-+/g, '-') // Replace multiple/consecutive dashes with only one.
             // digits-only hrefs conflict with issue refs

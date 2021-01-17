@@ -9,6 +9,7 @@
             "es2020.promise",
             "es2020.string"
         ],
+        "forceConsistentCasingInFileNames": true,
         "newLine": "lf",
         "sourceMap": true,
         "rootDir": "src",

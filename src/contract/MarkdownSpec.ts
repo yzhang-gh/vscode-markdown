@@ -1,24 +1,25 @@
-// Sort in alphabetical order.
+"use strict";
+
 // The name of types here begins with `Markdown`.
 
 /**
  * CommonMark bullet list marker.
  * https://spec.commonmark.org/0.29/#list-items
  */
-export type MarkdownBulletListMarker =
-    | "-"
-    | "+"
-    | "*"
-    ;
+export const enum MarkdownBulletListMarker {
+    Asterisk = "*",
+    Hyphen = "-",
+    Plus = "+",
+}
 
 /**
  * CommonMark emphasis indicator.
  * https://spec.commonmark.org/0.29/#emphasis-and-strong-emphasis
  */
-export type MarkdownEmphasisIndicator =
-    | "*"
-    | "_"
-    ;
+export const enum MarkdownEmphasisIndicator {
+    Asterisk = "*",
+    Underscore = "_",
+}
 
 /**
  * The heading level allowed by the CommonMark Spec.
