@@ -97,32 +97,6 @@ export function isFileTooLarge(document: TextDocument): boolean {
     }
 }
 
-/* ┌───────────┐
-   │ Changelog │
-   └───────────┘ */
-
-export function getNewFeatureMsg(version: string) {
-    switch (version) {
-        case '1.3.0':
-            return localize("1.3.0 msg");
-        case '1.4.0':
-            return localize("1.4.0 msg");
-        case '1.5.0':
-            return localize("1.5.0 msg");
-        case '2.1.0':
-            return localize("2.1.0 msg");
-        case '2.4.0':
-            return localize("2.4.0 msg");
-        case '3.0.0':
-            return localize("3.0.0 msg");
-    }
-    return undefined;
-}
-
-export function showChangelog() {
-    commands.executeCommand('vscode.open', Uri.parse('https://github.com/yzhang-gh/vscode-markdown/blob/master/CHANGELOG.md'));
-}
-
 /* ┌─────────────────┐
    │ Text Extraction │
    └─────────────────┘ */

@@ -1,8 +1,6 @@
 'use strict';
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { ExtensionContext, languages, window, workspace } from 'vscode';
+import { commands, ExtensionContext, extensions, languages, Uri, window, workspace } from 'vscode';
 import * as completion from './completion';
 import * as formatting from './formatting';
 import * as listEditing from './listEditing';
@@ -12,7 +10,6 @@ import * as print from './print';
 import * as decorations from './syntaxDecorations';
 import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
-import { getNewFeatureMsg, showChangelog } from './util';
 
 export function activate(context: ExtensionContext) {
     activateMdExt(context);
@@ -64,34 +61,40 @@ function activateMdExt(context: ExtensionContext) {
         wordPattern: /(-?\d*\.\d\w*)|([^\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s\，\。\《\》\？\；\：\‘\“\’\”\（\）\【\】\、]+)/g
     });
 
-    newVersionMessage(context.extensionPath);
+    showWelcome(context);
 }
 
-function newVersionMessage(extensionPath: string) {
-    let data: string, currentVersion: string;
+/**
+ * Shows a welcome message on first time startup.
+ */
+async function showWelcome(context: ExtensionContext): Promise<void> {
+    // The directory for an extension is recreated every time VS Code installs it.
+    // Thus, we only need to read and write an empty file there.
+    // If the file exists, then it's not the first time, and we don't need to do anything.
+    const checkFileUri = Uri.joinPath(context.extensionUri, "VERSION");
     try {
-        data = fs.readFileSync(`${extensionPath}${path.sep}package.json`).toString();
-        currentVersion = JSON.parse(data).version;
-        if (
-            fs.existsSync(`${extensionPath}${path.sep}VERSION`)
-            && fs.readFileSync(`${extensionPath}${path.sep}VERSION`).toString() === currentVersion
-        ) {
-            return;
-        }
-        fs.writeFileSync(`${extensionPath}${path.sep}VERSION`, currentVersion);
-    } catch (error) {
-        console.log(error);
+        await workspace.fs.stat(checkFileUri);
         return;
+    } catch (e) {
+        workspace.fs.writeFile(checkFileUri, new Uint8Array()).then(() => { }, () => { });
     }
-    const featureMsg = getNewFeatureMsg(currentVersion);
-    if (featureMsg === undefined) return;
-    const message1 = localize("showMe");
-    const message2 = localize("dismiss");
-    window.showInformationMessage(featureMsg, message1, message2).then(option => {
-        switch (option) {
-            case message1:
-                showChangelog();
-            case message2:
+
+    const ourProduct = extensions.getExtension("yzhang.markdown-all-in-one");
+    const productVersion: string = ourProduct.packageJSON["version"];
+    const changelogFileUri = Uri.joinPath(context.extensionUri, "CHANGELOG.md");
+    const changelogRemoteUri = Uri.parse("https://github.com/yzhang-gh/vscode-markdown/blob/master/CHANGELOG.md");
+    const msgWelcome = localize("ui.welcome.message", productVersion);
+    const btnOpenLocal = localize("ui.welcome.buttonOpenLocal");
+    const btnReadOnline = localize("ui.welcome.buttonReadOnline");
+
+    window.showInformationMessage(msgWelcome, btnOpenLocal, btnReadOnline).then(selection => {
+        switch (selection) {
+            case btnOpenLocal:
+                workspace.openTextDocument(changelogFileUri).then(window.showTextDocument);
+                break;
+
+            case btnReadOnline:
+                commands.executeCommand("vscode.open", changelogRemoteUri);
                 break;
         }
     });
