@@ -8,6 +8,15 @@ name: Test
 on:
   pull_request:
     branches: ["master"]
+
+  # Sometimes we want to test a few minor changes.
+  push:
+    branches: ["dev/**"]
+    paths:
+      - "src/**"
+      - "package-lock.json"
+      - "!**.md"
+
   workflow_dispatch:
   repository_dispatch:
     types: ["test"]

@@ -8,11 +8,15 @@ name: CI
 on:
   push:
     branches: [master]
-    paths-ignore:
-      - ".github/**/*.md"
-      - ".vscode/**"
-      - "images/**"
-      - "README.md"
+    paths:
+      - ".github/workflows/*.yml"
+      - "src/**"
+      - "syntaxes/**"
+      - ".*"
+      - "package*.json"
+      - "tsconfig.json"
+      - "webpack.*"
+      - "!**.md"
   workflow_dispatch:
   repository_dispatch:
     types: ["package"]
