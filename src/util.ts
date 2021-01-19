@@ -253,12 +253,36 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
      */
     [SlugifyMode.AzureDevOps]: (slug: string): string => {
         // https://markdown-all-in-one.github.io/docs/specs/slugify/azure-devops.html
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent#Description
-        slug = encodeURIComponent(
-            slug.trim()
-                .toLowerCase()
-                .replace(/\p{Zs}/gu, '-')
-        ).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16));
+        slug = slug.trim()
+            .toLowerCase()
+            .replace(/\p{Zs}/gu, '-')
+
+            // Encode every character. Although opposed by RFC 3986, it's the only way to solve #802.
+            .replace(/./gus, char => {
+                const code = char.codePointAt(0);
+                const bytes: number[] =
+                    (code <= 0x007F) // U+0000 to U+007F
+                        ? [code]
+                        : (code <= 0x07FF) // U+0080 to U+07FF
+                            ? [
+                                (code >>> 6) + 0b11000000,
+                                (code & 0x3F) + 0x80,
+                            ]
+                            : (code <= 0xFFFF) // U+0800 to U+FFFF
+                                ? [
+                                    (code >>> 12) + 0b11100000,
+                                    ((code >>> 6) & 0x3F) + 0x80,
+                                    (code & 0x3F) + 0x80,
+                                ]
+                                : [ // U+10000 to U+10FFFF
+                                    (code >>> 18) + 0b11110000,
+                                    ((code >>> 12) & 0x3F) + 0x80,
+                                    ((code >>> 6) & 0x3F) + 0x80,
+                                    (code & 0x3F) + 0x80,
+                                ]
+                    ;
+                return bytes.map<string>(b => "%" + b.toString(16)).join("");
+            }).toUpperCase();
 
         return slug;
     },
