@@ -44,7 +44,5 @@
     "revertingToImagePaths": "已使用图像路径而不是 base64 编码",
     "customStyle": "自定义样式",
     "notFound": "未找到",
-    "ui.welcome.message": "欢迎使用 Markdown All in One {0}！看看有什么变化。",
-    "ui.welcome.buttonOpenLocal": "本地阅读",
-    "ui.welcome.buttonReadOnline": "在线查看"
+    "ui.welcome.buttonOpenLocal": "阅读"
 }

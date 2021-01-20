@@ -1,6 +1,6 @@
 'use strict';
 
-import { commands, ExtensionContext, extensions, languages, Uri, window, workspace } from 'vscode';
+import { ExtensionContext, languages, Uri, window, workspace } from 'vscode';
 import * as completion from './completion';
 import * as formatting from './formatting';
 import * as listEditing from './listEditing';
@@ -69,35 +69,38 @@ function activateMdExt(context: ExtensionContext) {
  */
 async function showWelcome(context: ExtensionContext): Promise<void> {
     // The directory for an extension is recreated every time VS Code installs it.
-    // Thus, we only need to read and write an empty file there.
+    // Thus, we only need to read and write an empty flag file there.
     // If the file exists, then it's not the first time, and we don't need to do anything.
-    const checkFileUri = Uri.joinPath(context.extensionUri, "VERSION");
+    const flagFileUri = Uri.joinPath(context.extensionUri, "WELCOMED");
     try {
-        await workspace.fs.stat(checkFileUri);
+        await workspace.fs.stat(flagFileUri);
         return;
-    } catch (e) {
-        workspace.fs.writeFile(checkFileUri, new Uint8Array()).then(() => { }, () => { });
+    } catch {
+        workspace.fs.writeFile(flagFileUri, new Uint8Array()).then(() => { }, () => { });
     }
 
-    const ourProduct = extensions.getExtension("yzhang.markdown-all-in-one");
-    const productVersion: string = ourProduct.packageJSON["version"];
-    const changelogFileUri = Uri.joinPath(context.extensionUri, "CHANGELOG.md");
-    const changelogRemoteUri = Uri.parse("https://github.com/yzhang-gh/vscode-markdown/blob/master/CHANGELOG.md");
-    const msgWelcome = localize("ui.welcome.message", productVersion);
-    const btnOpenLocal = localize("ui.welcome.buttonOpenLocal");
-    const btnReadOnline = localize("ui.welcome.buttonReadOnline");
-
-    window.showInformationMessage(msgWelcome, btnOpenLocal, btnReadOnline).then(selection => {
-        switch (selection) {
-            case btnOpenLocal:
-                workspace.openTextDocument(changelogFileUri).then(window.showTextDocument);
-                break;
-
-            case btnReadOnline:
-                commands.executeCommand("vscode.open", changelogRemoteUri);
-                break;
+    // The existence of welcome materials depends on build options we set during pre-publish.
+    // If any condition is not met, then we don't need to do anything.
+    try {
+        const welcomeMessageFileUri = Uri.joinPath(context.extensionUri, "welcome.txt");
+        const msgWelcome = Buffer.from(await workspace.fs.readFile(welcomeMessageFileUri)).toString("utf8");
+        if (/^\s*$/.test(msgWelcome) || /\p{C}/u.test(msgWelcome)) {
+            return;
         }
-    });
+
+        const changelogFileUri = Uri.joinPath(context.extensionUri, "changes.md");
+        await workspace.fs.stat(changelogFileUri);
+
+        const btnOpenLocal = localize("ui.welcome.buttonOpenLocal");
+
+        window.showInformationMessage(msgWelcome, btnOpenLocal).then(selection => {
+            switch (selection) {
+                case btnOpenLocal:
+                    workspace.openTextDocument(changelogFileUri).then(window.showTextDocument);
+                    return;
+            }
+        });
+    } catch { }
 }
 
 export function deactivate() { }

@@ -52,7 +52,5 @@
     "revertingToImagePaths": "Reverting to image paths instead of base64 encoding",
     "customStyle": "Custom style",
     "notFound": " not found.",
-    "ui.welcome.message": "Welcome to Markdown All in One {0}! Check recent changes here.",
-    "ui.welcome.buttonOpenLocal": "Open locally",
-    "ui.welcome.buttonReadOnline": "Read online"
+    "ui.welcome.buttonOpenLocal": "Read"
 }

@@ -439,7 +439,7 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "webpack --mode production",
+        "vscode:prepublish": "node ./tools/prepublish.js",
         "compile": "webpack --mode none",
         "watch": "webpack --mode none --watch",
         "test": "tsc -p ./ && node ./out/test/runTest.js",
