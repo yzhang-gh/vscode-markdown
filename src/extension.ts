@@ -92,9 +92,10 @@ async function showWelcome(context: ExtensionContext): Promise<void> {
         const changelogFileUri = Uri.joinPath(context.extensionUri, "changes.md");
         await workspace.fs.stat(changelogFileUri);
 
+        const btnDismiss = localize("ui.welcome.buttonDismiss");
         const btnOpenLocal = localize("ui.welcome.buttonOpenLocal");
 
-        window.showInformationMessage(msgWelcome, btnOpenLocal).then(selection => {
+        window.showInformationMessage(msgWelcome, btnOpenLocal, btnDismiss).then(selection => {
             switch (selection) {
                 case btnOpenLocal:
                     workspace.openTextDocument(changelogFileUri).then(window.showTextDocument);
