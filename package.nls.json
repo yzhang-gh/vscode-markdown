@@ -45,12 +45,11 @@
     "config.toc.slugifyMode.description": "The method to generate heading ID. This affects **links to headings** in **TOC**, **code completion**, and **printing**.",
     "config.toc.unorderedList.marker.description": "Use `-`, `*`, or `+` in the table of contents (for **unordered** list).",
     "config.toc.updateOnSave.description": "Auto update TOC on save.",
-    "noValidMarkdownFile": "No valid Markdown file",
-    "printing": "Printing",
-    "to": "to",
-    "unableToReadFile": "Unable to read file",
-    "revertingToImagePaths": "Reverting to image paths instead of base64 encoding",
-    "customStyle": "Custom style",
-    "notFound": " not found.",
+    "ui.exporting.messageCustomCssNotFound": "Custom CSS '{0}' not found.",
+    "ui.exporting.messageExportingInProgress": "Printing '{0}' to {1} ...",
+    "ui.exporting.messageRevertingToImagePaths": "Reverting to image paths instead of base64 encoding.",
+    "ui.general.messageNoValidMarkdownFile": "No valid Markdown file.",
+    "ui.general.messageUnableToReadFile": "Unable to read file '{0}'.",
+    "ui.welcome.buttonDismiss": "Dismiss",
     "ui.welcome.buttonOpenLocal": "Read"
 }

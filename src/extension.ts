@@ -4,7 +4,7 @@ import { ExtensionContext, languages, Uri, window, workspace } from 'vscode';
 import * as completion from './completion';
 import * as formatting from './formatting';
 import * as listEditing from './listEditing';
-import localize from './localize';
+import { config as configNls, localize } from './nls';
 import * as preview from './preview';
 import * as print from './print';
 import * as decorations from './syntaxDecorations';
@@ -12,6 +12,7 @@ import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
 
 export function activate(context: ExtensionContext) {
+    configNls({ extensionContext: context });
     activateMdExt(context);
 
     if (workspace.getConfiguration('markdown.extension.math').get<boolean>('enabled')) {

@@ -1,7 +1,6 @@
 'use strict';
 
 import { commands, DocumentSelector, Position, Range, TextDocument, TextEditor, Uri, workspace } from 'vscode';
-import localize from './localize';
 import { commonmarkEngine, mdEngine } from './markdownEngine';
 import { decodeHTML } from 'entities';
 import LanguageIdentifier from "./contract/LanguageIdentifier";

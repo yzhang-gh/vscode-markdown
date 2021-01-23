@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as path from 'path';
 import { commands, ExtensionContext, TextDocument, Uri, window, workspace } from 'vscode';
 import { encodeHTML } from 'entities';
-import localize from './localize';
+import { localize } from './nls';
 import { mdEngine, extensionBlacklist } from "./markdownEngine";
 import { isMdEditor } from './util';
 
@@ -34,7 +34,7 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
     const editor = window.activeTextEditor;
 
     if (!isMdEditor(editor)) {
-        window.showErrorMessage(localize("noValidMarkdownFile"));
+        window.showErrorMessage(localize("ui.general.messageNoValidMarkdownFile"));
         return;
     }
 
@@ -43,7 +43,7 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
         doc.save();
     }
 
-    window.setStatusBarMessage(localize("printing") + ` '${path.basename(doc.fileName)}' ` + localize("to") + ` '${type.toUpperCase()}' ...`, 1000);
+    const statusBarMessage = window.setStatusBarMessage("$(sync~spin)" + localize("ui.exporting.messageExportingInProgress", path.basename(doc.fileName), type.toUpperCase()));
 
     if (outFolder && !fs.existsSync(outFolder)) {
         fs.mkdirSync(outFolder, { recursive: true });
@@ -109,7 +109,7 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
                 const file = fs.readFileSync(imgSrc.replace(/%20/g, '\ ')).toString('base64');
                 return `${p1}data:image/${imgExt};base64,${file}${p3}`;
             } catch (e) {
-                window.showWarningMessage(`${localize("unableToReadFile")} '${imgSrc}'. ${localize("revertingToImagePaths")}. (${doc.fileName})`);
+                window.showWarningMessage(localize("ui.general.messageUnableToReadFile", imgSrc) + ` ${localize("ui.exporting.messageRevertingToImagePaths")} (${doc.fileName})`);
             }
 
             if (configAbsPath) {
@@ -168,6 +168,9 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
         case 'pdf':
             break;
     }
+
+    // Hold the message for extra 500ms, in case the operation finished very fast.
+    setTimeout(() => statusBarMessage.dispose(), 500);
 }
 
 function batchPrint() {
@@ -217,13 +220,10 @@ function wrapWithStyleTag(src: string) {
 
 function readCss(fileName: string) {
     try {
-        return fs.readFileSync(fileName).toString().replace(/\s+/g, ' ');
+        return fs.readFileSync(fileName).toString();
     } catch (error) {
-        let msg = error.message.replace('ENOENT: no such file or directory, open', localize("customStyle")) + localize("notFound");
-        msg = msg.replace(/'([c-z]):/, function (_, g1) {
-            return `'${g1.toUpperCase()}:`;
-        });
-        window.showWarningMessage(msg);
+        // https://nodejs.org/docs/latest-v12.x/api/errors.html#errors_class_systemerror
+        window.showWarningMessage(localize("ui.exporting.messageCustomCssNotFound", (error as NodeJS.ErrnoException).path));
         return '';
     }
 }
