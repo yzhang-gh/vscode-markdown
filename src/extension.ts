@@ -5,6 +5,7 @@ import * as completion from './completion';
 import * as formatting from './formatting';
 import * as listEditing from './listEditing';
 import { config as configNls, localize } from './nls';
+import resolveResource from "./nls/resolveResource";
 import * as preview from './preview';
 import * as print from './print';
 import * as decorations from './syntaxDecorations';
@@ -69,10 +70,12 @@ function activateMdExt(context: ExtensionContext) {
  * Shows a welcome message on first time startup.
  */
 async function showWelcome(context: ExtensionContext): Promise<void> {
+    const welcomeDirUri = Uri.joinPath(context.extensionUri, "welcome");
+
     // The directory for an extension is recreated every time VS Code installs it.
     // Thus, we only need to read and write an empty flag file there.
     // If the file exists, then it's not the first time, and we don't need to do anything.
-    const flagFileUri = Uri.joinPath(context.extensionUri, "WELCOMED");
+    const flagFileUri = Uri.joinPath(welcomeDirUri, "WELCOMED");
     try {
         await workspace.fs.stat(flagFileUri);
         return;
@@ -83,12 +86,16 @@ async function showWelcome(context: ExtensionContext): Promise<void> {
     // The existence of welcome materials depends on build options we set during pre-publish.
     // If any condition is not met, then we don't need to do anything.
     try {
-        const welcomeMessageFileUri = Uri.joinPath(context.extensionUri, "welcome.txt");
+        // Confirm the message is valid.
+        // `locale` should be a string. But here we keep it `any` to suppress type checking.
+        const locale: any = JSON.parse(process.env.VSCODE_NLS_CONFIG as string).locale;
+        const welcomeMessageFileUri = Uri.file(resolveResource(welcomeDirUri.fsPath, "", ".txt", [locale, "en"], "")![0]);
         const msgWelcome = Buffer.from(await workspace.fs.readFile(welcomeMessageFileUri)).toString("utf8");
         if (/^\s*$/.test(msgWelcome) || /\p{C}/u.test(msgWelcome)) {
             return;
         }
 
+        // Confirm the file exists.
         const changelogFileUri = Uri.joinPath(context.extensionUri, "changes.md");
         await workspace.fs.stat(changelogFileUri);
 

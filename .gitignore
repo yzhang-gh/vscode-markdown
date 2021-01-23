@@ -8,6 +8,5 @@ dist
 tmp
 
 # The welcome materials
+/welcome/**
 /changes.md
-/welcome.txt
-/WELCOMED

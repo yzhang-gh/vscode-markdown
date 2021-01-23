@@ -26,14 +26,23 @@ if (process.cwd() !== projectRootPath) {
 
 console.log("\nPrepare welcome materials...\n");
 
+const welcomeDirPath = path.resolve(projectRootPath, "welcome");
+
 // Delete `WELCOMED` flag file.
 try {
-    fs.unlinkSync(path.resolve(projectRootPath, "WELCOMED"));
+    fs.unlinkSync(path.resolve(welcomeDirPath, "WELCOMED"));
 } catch { }
 
 // vsce will modify `README.md` and `CHANGELOG.md` during packaging.
 // Thus, we create the `changes.md` for our extension to consume.
-if (fs.existsSync(path.resolve(projectRootPath, "welcome.txt"))) {
+// Due to relative paths in the file, it has to be under the project root.
+let isWelcomeMessagesExist = false;
+try {
+    isWelcomeMessagesExist = fs.readdirSync(welcomeDirPath, { withFileTypes: true })
+        .some(i => i.isFile() && i.name.endsWith(".txt"));
+} catch { }
+
+if (isWelcomeMessagesExist) {
     const srcPath = path.resolve(projectRootPath, "CHANGELOG.md");
     const destPath = path.resolve(projectRootPath, "changes.md");
 

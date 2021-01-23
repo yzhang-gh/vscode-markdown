@@ -19,4 +19,4 @@ package-json.lock
 webpack.config.js
 
 # The welcome flag file
-WELCOMED
+welcome/WELCOMED
