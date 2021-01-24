@@ -1,9 +1,12 @@
 out
 node_modules
-VERSION
 *.vsix
 ROADMAP.md
 *.log
 /.vscode-test
 dist
 tmp
+
+# The welcome materials
+/welcome/**
+/changes.md

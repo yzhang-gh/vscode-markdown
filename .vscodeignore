@@ -13,8 +13,10 @@ src/
 # Configuration files
 .github/
 .vscode/
-VERSION
 .gitignore
 tsconfig.json
 package-json.lock
 webpack.config.js
+
+# The welcome flag file
+welcome/WELCOMED

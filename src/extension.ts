@@ -1,20 +1,19 @@
 'use strict';
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { ExtensionContext, languages, window, workspace } from 'vscode';
+import { ExtensionContext, languages, Uri, window, workspace } from 'vscode';
 import * as completion from './completion';
 import * as formatting from './formatting';
 import * as listEditing from './listEditing';
-import localize from './localize';
+import { config as configNls, localize } from './nls';
+import resolveResource from "./nls/resolveResource";
 import * as preview from './preview';
 import * as print from './print';
 import * as decorations from './syntaxDecorations';
 import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
-import { getNewFeatureMsg, showChangelog } from './util';
 
 export function activate(context: ExtensionContext) {
+    configNls({ extensionContext: context });
     activateMdExt(context);
 
     if (workspace.getConfiguration('markdown.extension.math').get<boolean>('enabled')) {
@@ -64,37 +63,53 @@ function activateMdExt(context: ExtensionContext) {
         wordPattern: /(-?\d*\.\d\w*)|([^\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s\，\。\《\》\？\；\：\‘\“\’\”\（\）\【\】\、]+)/g
     });
 
-    newVersionMessage(context.extensionPath);
+    showWelcome(context);
 }
 
-function newVersionMessage(extensionPath: string) {
-    let data: string, currentVersion: string;
+/**
+ * Shows a welcome message on first time startup.
+ */
+async function showWelcome(context: ExtensionContext): Promise<void> {
+    const welcomeDirUri = Uri.joinPath(context.extensionUri, "welcome");
+
+    // The directory for an extension is recreated every time VS Code installs it.
+    // Thus, we only need to read and write an empty flag file there.
+    // If the file exists, then it's not the first time, and we don't need to do anything.
+    const flagFileUri = Uri.joinPath(welcomeDirUri, "WELCOMED");
     try {
-        data = fs.readFileSync(`${extensionPath}${path.sep}package.json`).toString();
-        currentVersion = JSON.parse(data).version;
-        if (
-            fs.existsSync(`${extensionPath}${path.sep}VERSION`)
-            && fs.readFileSync(`${extensionPath}${path.sep}VERSION`).toString() === currentVersion
-        ) {
+        await workspace.fs.stat(flagFileUri);
+        return;
+    } catch {
+        workspace.fs.writeFile(flagFileUri, new Uint8Array()).then(() => { }, () => { });
+    }
+
+    // The existence of welcome materials depends on build options we set during pre-publish.
+    // If any condition is not met, then we don't need to do anything.
+    try {
+        // Confirm the message is valid.
+        // `locale` should be a string. But here we keep it `any` to suppress type checking.
+        const locale: any = JSON.parse(process.env.VSCODE_NLS_CONFIG as string).locale;
+        const welcomeMessageFileUri = Uri.file(resolveResource(welcomeDirUri.fsPath, "", ".txt", [locale, "en"], "")![0]);
+        const msgWelcome = Buffer.from(await workspace.fs.readFile(welcomeMessageFileUri)).toString("utf8");
+        if (/^\s*$/.test(msgWelcome) || /\p{C}/u.test(msgWelcome)) {
             return;
         }
-        fs.writeFileSync(`${extensionPath}${path.sep}VERSION`, currentVersion);
-    } catch (error) {
-        console.log(error);
-        return;
-    }
-    const featureMsg = getNewFeatureMsg(currentVersion);
-    if (featureMsg === undefined) return;
-    const message1 = localize("showMe");
-    const message2 = localize("dismiss");
-    window.showInformationMessage(featureMsg, message1, message2).then(option => {
-        switch (option) {
-            case message1:
-                showChangelog();
-            case message2:
-                break;
-        }
-    });
+
+        // Confirm the file exists.
+        const changelogFileUri = Uri.joinPath(context.extensionUri, "changes.md");
+        await workspace.fs.stat(changelogFileUri);
+
+        const btnDismiss = localize("ui.welcome.buttonDismiss");
+        const btnOpenLocal = localize("ui.welcome.buttonOpenLocal");
+
+        window.showInformationMessage(msgWelcome, btnOpenLocal, btnDismiss).then(selection => {
+            switch (selection) {
+                case btnOpenLocal:
+                    workspace.openTextDocument(changelogFileUri).then(window.showTextDocument);
+                    return;
+            }
+        });
+    } catch { }
 }
 
 export function deactivate() { }
