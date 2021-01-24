@@ -35,11 +35,11 @@
     "config.print.theme": "出力されたHTMLのテーマ",
     "config.katex.macros.description": "ユーザ定義のKaTeXマクロ",
     "config.completion.root": "Pathの自動補完におけるルートフォルダ",
-    "ui.exporting.messageCustomCssNotFound": "が見つかりません。 '{0}'",
-    "ui.exporting.messageExportingInProgress": "{1}出力中。 '{0}'",
+    "ui.exporting.messageCustomCssNotFound": "'{0}' が見つかりません。",
+    "ui.exporting.messageExportingInProgress": "{1} 出力中: '{0}'",
     "ui.exporting.messageRevertingToImagePaths": "base64エンコードを画像Pathに戻す。",
-    "ui.general.messageNoValidMarkdownFile": "有効なMarkdownファイルがありません。",
-    "ui.general.messageUnableToReadFile": "ファイルを読み取れません。 '{0}'",
+    "ui.general.messageNoValidMarkdownFile": "有効な Markdown ファイルがありません。",
+    "ui.general.messageUnableToReadFile": "ファイルを読み取れません: '{0}'",
     "ui.welcome.buttonDismiss": "却下",
     "ui.welcome.buttonOpenLocal": "表示する"
 }
