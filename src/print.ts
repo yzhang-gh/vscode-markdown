@@ -43,7 +43,7 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
         doc.save();
     }
 
-    const statusBarMessage = window.setStatusBarMessage("$(sync~spin)" + localize("ui.exporting.messageExportingInProgress", path.basename(doc.fileName), type.toUpperCase()));
+    const statusBarMessage = window.setStatusBarMessage("$(sync~spin) " + localize("ui.exporting.messageExportingInProgress", path.basename(doc.fileName), type.toUpperCase()));
 
     if (outFolder && !fs.existsSync(outFolder)) {
         fs.mkdirSync(outFolder, { recursive: true });

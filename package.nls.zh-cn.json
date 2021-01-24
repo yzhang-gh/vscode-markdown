@@ -38,7 +38,7 @@
     "config.toc.unorderedList.marker.description": "在目录中使用 `-`，`*` 或 `+` （仅对于**无序**列表）。",
     "config.toc.updateOnSave.description": "保存时自动更新目录。",
     "ui.exporting.messageCustomCssNotFound": "自定义样式 '{0}' 未找到。",
-    "ui.exporting.messageExportingInProgress": "将 '{0}' 打印到 {1} ...",
+    "ui.exporting.messageExportingInProgress": "将 '{0}' 打印到 {1} …",
     "ui.exporting.messageRevertingToImagePaths": "已使用图像路径而不是 base64 编码。",
     "ui.general.messageNoValidMarkdownFile": "未选中有效的 Markdown 文件。",
     "ui.general.messageUnableToReadFile": "无法读取文件 '{0}'。",
