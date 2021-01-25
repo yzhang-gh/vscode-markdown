@@ -1,14 +1,19 @@
 # Important: The patterns are relative to the location of the vscodeignore file.
+# To help understand and edit, patterns should match the whole path whenever possible.
 
 # Development tools, intermediate build results, and temporary files
 .vscode-test/
 out/
+test/**
 tools/
 **/*.map
 
 # Source files
+node_modules/**
 src/
 **/*.ts
+!node_modules/katex/dist/fonts/*.woff2
+!node_modules/katex/dist/katex.min.css
 
 # Configuration files
 .github/
