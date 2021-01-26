@@ -10,8 +10,10 @@ on:
     branches: ["master"]
 
   # Sometimes we want to test a few minor changes.
+  # To avoid triggering the workflow twice,
+  # this is only enabled for branch names that are very unlikely to be a PR head.
   push:
-    branches: ["dev/**"]
+    branches: ["dev/-/**"]
     paths:
       - "src/**"
       - "package-lock.json"
