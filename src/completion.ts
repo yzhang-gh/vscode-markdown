@@ -1,7 +1,7 @@
 'use strict'
 
 import * as fs from 'fs';
-import * as sizeOf from 'image-size';
+import sizeOf from 'image-size';
 import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
 import { getAllTocEntry, IHeading } from './toc';
