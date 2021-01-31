@@ -3,7 +3,7 @@
 import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
 import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Position, Range, TextDocument, TextDocumentWillSaveEvent, TextEditor, Uri, window, workspace, WorkspaceEdit } from 'vscode';
-import { mdEngine } from './markdownEngine';
+import { commonMarkEngine, mdEngine } from './markdownEngine';
 import { isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
 import type * as MarkdownSpec from "./contract/MarkdownSpec";
 import SlugifyMode from "./contract/SlugifyMode";
@@ -291,7 +291,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
  * @param doc a TextDocument
  */
 async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string]> {
-    const docTokens = (await mdEngine.getEngine()).parse(doc.getText(), {});
+    const docTokens = (await mdEngine.getDocumentToken(doc)).tokens;
     /**
      * `[beginLineIndex, endLineIndex, openingTokenIndex]`
      */
@@ -609,9 +609,13 @@ export function getAllTocEntry(doc: TextDocument, {
 }): Readonly<IHeading>[] {
     const rootHeadings: readonly Readonly<IHeadingBase>[] = getAllRootHeading(doc, respectMagicCommentOmit, respectProjectLevelOmit);
 
+    const docEnv = (slugifyMode === SlugifyMode.GitHub || slugifyMode === SlugifyMode.GitLab)
+        ? commonMarkEngine.getDocumentToken(doc).env
+        : {};
+
     const anchorOccurrences = new Map<string, number>();
     function getSlug(rawContent: string): string {
-        let slug = slugify(rawContent, slugifyMode);
+        let slug = slugify(rawContent, { env: docEnv, mode: slugifyMode });
 
         let count = anchorOccurrences.get(slug);
         if (count === undefined) {

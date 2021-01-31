@@ -1,66 +1,224 @@
 //// <https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/src/markdownEngine.ts>
 
-import { extensions, workspace, WorkspaceConfiguration } from 'vscode';
+import * as vscode from "vscode";
+import type { KatexOptions } from "katex";
+import MarkdownIt = require("markdown-it");
+import Token = require("markdown-it/lib/token");
+import LanguageIdentifier from "./contract/LanguageIdentifier";
+import type IDisposable from "./IDisposable";
 import { slugify } from './util';
 import { MarkdownContribution, MarkdownContributionProvider, getMarkdownContributionProvider } from './markdownExtensions';
-import MarkdownIt = require('markdown-it');
 
 // extensions that treat specially
 export const extensionBlacklist = new Set<string>(["vscode.markdown-language-features", "yzhang.markdown-all-in-one"]);
 
-interface IMarkdownEngine {
+// To help consumers.
+export type { MarkdownIt, Token };
+
+/**
+ * Represents the parsing result of a document.
+ * An instance of this kind should be **shallow immutable**.
+ */
+export interface DocumentToken {
+
+    readonly document: vscode.TextDocument;
+
+    /**
+     * The markdown-it environment sandbox.
+     */
+    readonly env: object;
+
+    /**
+     * The list of markdown-it block tokens.
+     */
+    readonly tokens: readonly Token[];
+
+    /**
+     * The document version number when parsing it.
+     */
+    readonly version: number;
+}
+
+interface IMarkdownEngine extends IDisposable {
+
+    /**
+     * Parses the document.
+     */
+    getDocumentToken(document: vscode.TextDocument): DocumentToken | Thenable<DocumentToken>;
+
+    /**
+     * Gets the markdown-it instance that this engine holds asynchronously.
+     */
+    getEngine(): Thenable<MarkdownIt>;
+}
+
+export interface IDynamicMarkdownEngine extends IMarkdownEngine {
+
+    getDocumentToken(document: vscode.TextDocument): Thenable<DocumentToken>;
+}
+
+export interface IStaticMarkdownEngine extends IMarkdownEngine {
+
+    /**
+     * The markdown-it instance that this engine holds.
+     */
+    readonly engine: MarkdownIt;
+
+    getDocumentToken(document: vscode.TextDocument): DocumentToken;
+
+    /**
+     * This is for interface consistency.
+     * As a static engine, it is recommended to read the `engine` property.
+     */
+    getEngine(): Thenable<MarkdownIt>;
 }
 
 /**
  * A strict CommonMark only engine powered by `markdown-it`.
  */
-class CommonmarkEngine implements IMarkdownEngine {
-    readonly #engine: MarkdownIt;
+class CommonMarkEngine implements IStaticMarkdownEngine {
+
+    private readonly _disposables: vscode.Disposable[];
+
+    private readonly _documentTokenCache = new Map<vscode.TextDocument, DocumentToken>();
+
+    private readonly _engine: MarkdownIt;
 
     public get engine(): MarkdownIt {
-        return this.#engine;
+        return this._engine;
     }
 
     constructor() {
-        this.#engine = new MarkdownIt('commonmark');
+        this._engine = new MarkdownIt('commonmark');
+
+        this._disposables = [
+            vscode.workspace.onDidCloseTextDocument(document => {
+                if (document.languageId === LanguageIdentifier.Markdown) {
+                    this._documentTokenCache.delete(document);
+                }
+            }),
+        ];
+    }
+
+    public dispose(): void {
+        // Unsubscribe event listeners.
+        for (const disposable of this._disposables) {
+            disposable.dispose();
+        }
+        this._disposables.length = 0;
+    }
+
+    public getDocumentToken(document: vscode.TextDocument): DocumentToken {
+        // It's safe to be sync.
+        // In the worst case, concurrent calls lead to run `parse()` multiple times.
+        // Only performance regression. No data corruption.
+
+        const cache = this._documentTokenCache.get(document);
+
+        if (cache && cache.version === document.version) {
+            return cache;
+        } else {
+            const env = Object.create(null);
+            const result: DocumentToken = {
+                document,
+                env,
+                // Read the version before parsing, in case the document changes,
+                // so that we won't declare an old result as a new one.
+                version: document.version,
+                tokens: this._engine.parse(document.getText(), env),
+            };
+            this._documentTokenCache.set(document, result);
+            return result;
+        }
+    }
+
+    public async getEngine() {
+        return this._engine;
     }
 }
 
-class MarkdownEngine {
-    public cacheMd: MarkdownIt;
+class MarkdownEngine implements IDynamicMarkdownEngine {
 
-    public async getEngine() {
-        if (!this.cacheMd) {
-            this.cacheMd = await this.newEngine();
-        }
-        return this.cacheMd;
-    }
+    private readonly _disposables: vscode.Disposable[];
 
-    public contributionsProvider = getMarkdownContributionProvider();
+    private readonly _documentTokenCache = new Map<vscode.TextDocument, DocumentToken>();
+
+    private _engine: MarkdownIt | undefined;
+
+    /**
+     * This is used by `addNamedHeaders()`, and reset on each call to `render()`.
+     */
     private _slugCount = new Map<string, number>();
 
+    public readonly contributionsProvider = getMarkdownContributionProvider();
+
     constructor() {
-        this.cacheMd = null;
-        this.contributionsProvider.onContributionsChanged(() => {
-            this.newEngine().then((engine) => {
-                this.cacheMd = engine;
-            })
-        });
+        this._disposables = [
+            vscode.workspace.onDidCloseTextDocument(document => {
+                if (document.languageId === LanguageIdentifier.Markdown) {
+                    this._documentTokenCache.delete(document);
+                }
+            }),
+
+            this.contributionsProvider.onContributionsChanged(() => {
+                this.newEngine().then((engine) => {
+                    this._engine = engine;
+                });
+            }),
+        ];
+
+        // Initialize an engine.
         this.newEngine().then((engine) => {
-            this.cacheMd = engine;
-        })
+            this._engine = engine;
+        });
+    }
+
+    public dispose(): void {
+        // Unsubscribe event listeners.
+        for (const disposable of this._disposables) {
+            disposable.dispose();
+        }
+        this._disposables.length = 0;
+    }
+
+    public async getDocumentToken(document: vscode.TextDocument): Promise<DocumentToken> {
+        const cache = this._documentTokenCache.get(document);
+
+        if (cache && cache.version === document.version) {
+            return cache;
+        } else {
+            const env = Object.create(null);
+            const engine = await this.getEngine();
+            const result: DocumentToken = {
+                document,
+                env,
+                version: document.version,
+                tokens: engine.parse(document.getText(), env),
+            };
+            this._documentTokenCache.set(document, result);
+            return result;
+        }
+    }
+
+    public async getEngine() {
+        if (!this._engine) {
+            this._engine = await this.newEngine();
+        }
+        return this._engine;
     }
 
     private async newEngine() {
         let md: MarkdownIt;
 
         const hljs = await import('highlight.js');
+        // @ts-ignore
         const mdtl = await import('markdown-it-task-lists');
+        // @ts-ignore
         const mdkt = await import('@neilsustc/markdown-it-katex');
 
         //// Make a deep copy as `macros` will be modified by KaTeX during initialization
-        let userMacros = JSON.parse(JSON.stringify(workspace.getConfiguration('markdown.extension.katex').get<object>('macros')));
-        let katexOptions = { throwOnError: false };
+        let userMacros = JSON.parse(JSON.stringify(vscode.workspace.getConfiguration('markdown.extension.katex').get<object>('macros')));
+        const katexOptions: KatexOptions = { throwOnError: false };
         if (Object.keys(userMacros).length !== 0) {
             katexOptions['macros'] = userMacros;
         }
@@ -71,11 +229,10 @@ class MarkdownEngine {
                 lang = normalizeHighlightLang(lang);
                 if (lang && hljs.getLanguage(lang)) {
                     try {
-                        return `<div>${hljs.highlight(lang, str, true).value}</div>`;
-                    }
-                    catch (error) { }
+                        return hljs.highlight(lang, str, true).value;
+                    } catch { }
                 }
-                return `<code><div>${md.utils.escapeHtml(str)}</div></code>`;
+                return ""; // Signal to markdown-it itself to handle it.
             }
         });
 
@@ -83,7 +240,7 @@ class MarkdownEngine {
         // since this extension may not finish activing when a engine is needed to be created.
         md.use(mdtl).use(mdkt, katexOptions);
 
-        if (!workspace.getConfiguration('markdown.extension.print').get<boolean>('validateUrls', true)) {
+        if (!vscode.workspace.getConfiguration('markdown.extension.print').get<boolean>('validateUrls', true)) {
             md.validateLink = () => true;
         }
         this.addNamedHeaders(md);
@@ -104,7 +261,7 @@ class MarkdownEngine {
         return md;
     }
 
-    public async render(text: string, config: WorkspaceConfiguration): Promise<string> {
+    public async render(text: string, config: vscode.WorkspaceConfiguration): Promise<string> {
         const md: MarkdownIt = await this.getEngine();
 
         md.set({
@@ -112,27 +269,33 @@ class MarkdownEngine {
             linkify: config.get<boolean>('linkify', true)
         });
 
-        this._slugCount = new Map<string, number>();
+        this._slugCount.clear();
 
         return md.render(text);
     }
 
+    /**
+     * Tweak the render rule for headings, to set anchor ID.
+     */
     private addNamedHeaders(md: MarkdownIt): void {
         const originalHeadingOpen = md.renderer.rules.heading_open;
 
-        md.renderer.rules.heading_open = function (tokens, idx, options, env, self) {
-            const title = tokens[idx + 1].children.reduce((acc: string, t: any) => acc + t.content, '');
-            let slug = slugify(title);
+        // Arrow function ensures that `this` is inherited from `addNamedHeaders`,
+        // so that we won't need `bind`, and save memory a little.
+        md.renderer.rules.heading_open = (tokens, idx, options, env, self) => {
+            const raw = tokens[idx + 1].content;
+            let slug = slugify(raw, { env });
 
-            if (mdEngine._slugCount.has(slug)) {
-                mdEngine._slugCount.set(slug, mdEngine._slugCount.get(slug) + 1);
-                slug += '-' + mdEngine._slugCount.get(slug);
+            let lastCount = this._slugCount.get(slug);
+            if (lastCount) {
+                lastCount++;
+                this._slugCount.set(slug, lastCount);
+                slug += '-' + lastCount;
             } else {
-                mdEngine._slugCount.set(slug, 0);
+                this._slugCount.set(slug, 0);
             }
 
-            tokens[idx].attrs = tokens[idx].attrs || [];
-            tokens[idx].attrs.push(['id', slug]);
+            tokens[idx].attrs = [...(tokens[idx].attrs || []), ["id", slug]];
 
             if (originalHeadingOpen) {
                 return originalHeadingOpen(tokens, idx, options, env, self);
@@ -159,9 +322,12 @@ function normalizeHighlightLang(lang: string | undefined) {
     }
 }
 
+/**
+ * This engine dynamically refreshes in the same way as VS Code's built-in Markdown preview.
+ */
 export const mdEngine = new MarkdownEngine();
 
 /**
  * A strict CommonMark only engine instance.
  */
-export const commonmarkEngine = new CommonmarkEngine();
+export const commonMarkEngine = new CommonMarkEngine();

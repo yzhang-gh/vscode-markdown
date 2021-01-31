@@ -1,8 +1,7 @@
 'use strict';
 
 import { commands, DocumentSelector, Position, Range, TextDocument, TextEditor, Uri, workspace } from 'vscode';
-import { commonmarkEngine, mdEngine } from './markdownEngine';
-import { decodeHTML } from 'entities';
+import { commonMarkEngine, mdEngine } from './markdownEngine';
 import LanguageIdentifier from "./contract/LanguageIdentifier";
 import SlugifyMode from "./contract/SlugifyMode";
 
@@ -35,9 +34,9 @@ export const REGEX_FENCED_CODE_BLOCK = /^ {0,3}(?<fence>(?<char>[`~])\k<char>{2,
  * @param lineIndex The zero-based line index.
  */
 export function isInFencedCodeBlock(doc: TextDocument, lineIndex: number): boolean {
-    const docTokens = commonmarkEngine.engine.parse(doc.getText(), {});
+    const { tokens } = commonMarkEngine.getDocumentToken(doc);
 
-    for (const token of docTokens) {
+    for (const token of tokens) {
         if (
             token.type === 'fence'
             && token.tag === 'code'
@@ -101,68 +100,30 @@ export function isFileTooLarge(document: TextDocument): boolean {
    └─────────────────┘ */
 
 /**
- * Convert Markdown to plain text.
- * Remove Markdown syntax (bold, italic, links etc.) in a heading.
+ * Converts a string of CommonMark **inline** structures to plain text
+ * by removing Markdown syntax in it.
  * This function is only for the `github` and `gitlab` slugify functions.
+ * @see <https://spec.commonmark.org/0.29/#inlines>
  *
- * A Markdown heading may contain Markdown styles, e.g. `_italic_`.
- * It can also have HTML tags, e.g. `<code>`.
- * They should be converted to their plain text form first.
- *
- * What this function actually does:
- * 1. Handle a few special cases.
- * 2. `renderInline(text)`
- * 3. `getTextInHtml(html)`
- *
- * @param text - A Markdown heading content.
+ * @param text - The Markdown string.
+ * @param env - The markdown-it environment sandbox (**mutable**).
+ * If you don't provide one properly, we cannot process reference links, etc.
  */
-function mdHeadingToPlaintext(text: string): string {
-    //// Issue #515
-    text = text.replace(/\[([^\]]*?)\]\[[^\]]*?\]/g, '$1');
-
+function mdInlineToPlainText(text: string, env: object): string {
     // ! Use a clean CommonMark only engine to avoid interfering with plugins from other extensions.
-    // ! Use `renderInline` to avoid parsing the string as blocks accidentally.
-    // ! See #567, #585, #732, #792
-    const html = commonmarkEngine.engine.renderInline(text).replace(/\r?\n$/, '');
-    text = getTextInHtml(html);
+    // Use `parseInline` to avoid parsing the string as blocks accidentally.
+    // See #567, #585, #732, #792; #515; #179; #175, #575
+    const inlineTokens = commonMarkEngine.engine.parseInline(text, env)[0].children!;
 
-    return text;
-}
-
-/**
- * Get plain text from an HTML string.
- *
- * This function is similar to `HTMLElement.innerText` getter. The differences are:
- *
- * * It only considers most common cases.
- * * It preserves consecutive spaces.
- *
- * What this function actually does:
- * 1. Strip paired tags (#179)
- * 2. Strip empty elements
- * 3. Decode HTML entities (#175, #575)
- *
- * @param html
- */
-function getTextInHtml(html: string) {
-    let text = html;
-    //// remove <!-- HTML comments -->
-    text = text.replace(/<!--[^>]*?-->/g, '');
-    //// remove HTML tags
-    while (/<(em|strong|code|a|kbd|span|p)[^>]*?>(.*?)<\/\1>/s.test(text)) {
-        text = text.replace(/<(em|strong|code|a|kbd|span|p)[^>]*?>(.*?)<\/\1>/sg, '$2');
-    }
-
-    //// Remove common empty elements (aka. single tag).
-    //// https://developer.mozilla.org/en-US/docs/Glossary/Empty_element
-    while (/<(?:br|img)[^>]*?\/?>/.test(text)) {
-        text = text.replace(/<(?:br|img)[^>]*?\/?>/g, '');
-    }
-
-    //// Decode HTML entities.
-    text = decodeHTML(text);
-
-    return text;
+    return inlineTokens.reduce<string>((result, token) => {
+        switch (token.type) {
+            case "image":
+            case "html_inline":
+                return result;
+            default:
+                return result + token.content;
+        }
+    }, "");
 }
 
 /* ┌─────────┐
@@ -184,16 +145,15 @@ const Regexp_Gitlab_Product_Suffix = /[ \t\r\n\f\v]*\**\((?:core|starter|premium
 /**
  * Slugify a string.
  * @param heading - The raw content of the heading according to the CommonMark Spec.
+ * @param env - The markdown-it environment sandbox (**mutable**).
  * @param mode - The slugify mode.
  * @param downcase - `true` to force to convert all the characters to lowercase. Otherwise, `false`.
  */
-export function slugify(heading: string, mode?: SlugifyMode, downcase?: boolean) {
-    if (mode === undefined) {
-        mode = workspace.getConfiguration('markdown.extension.toc').get<SlugifyMode>('slugifyMode');
-    }
-    if (downcase === undefined) {
-        downcase = workspace.getConfiguration('markdown.extension.toc').get<boolean>('downcaseLink');
-    }
+export function slugify(heading: string, {
+    env = Object.create(null),
+    mode = workspace.getConfiguration('markdown.extension.toc').get<SlugifyMode>('slugifyMode'),
+    downcase = workspace.getConfiguration('markdown.extension.toc').get<boolean>('downcaseLink'),
+}: { env?: object; mode?: SlugifyMode; downcase?: boolean; }) {
 
     // Do never twist the input here!
     // Pass the raw heading content as is to slugify function.
@@ -208,31 +168,31 @@ export function slugify(heading: string, mode?: SlugifyMode, downcase?: boolean)
     // Sort by popularity.
     switch (mode) {
         case SlugifyMode.GitHub:
-            slug = slugifyMethods[SlugifyMode.GitHub](slug);
+            slug = slugifyMethods[SlugifyMode.GitHub](slug, env);
             break;
 
         case SlugifyMode.GitLab:
-            slug = slugifyMethods[SlugifyMode.GitLab](slug);
+            slug = slugifyMethods[SlugifyMode.GitLab](slug, env);
             break;
 
         case SlugifyMode.Gitea:
-            slug = slugifyMethods[SlugifyMode.Gitea](slug);
+            slug = slugifyMethods[SlugifyMode.Gitea](slug, env);
             break;
 
         case SlugifyMode.VisualStudioCode:
-            slug = slugifyMethods[SlugifyMode.VisualStudioCode](slug);
+            slug = slugifyMethods[SlugifyMode.VisualStudioCode](slug, env);
             break;
 
         case SlugifyMode.AzureDevOps:
-            slug = slugifyMethods[SlugifyMode.AzureDevOps](slug);
+            slug = slugifyMethods[SlugifyMode.AzureDevOps](slug, env);
             break;
 
         case SlugifyMode.BitbucketCloud:
-            slug = slugifyMethods[SlugifyMode.BitbucketCloud](slug);
+            slug = slugifyMethods[SlugifyMode.BitbucketCloud](slug, env);
             break;
 
         default:
-            slug = slugifyMethods[SlugifyMode.GitHub](slug);
+            slug = slugifyMethods[SlugifyMode.GitHub](slug, env);
             break;
     }
 
@@ -245,7 +205,7 @@ export function slugify(heading: string, mode?: SlugifyMode, downcase?: boolean)
  * The keys are slugify modes.
  * The values are corresponding slugify functions, whose signature must be `(rawContent: string) => string`.
  */
-const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => string; } = {
+const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string, env: object) => string; } = {
     // Sort in alphabetical order.
 
     /**
@@ -259,7 +219,7 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
 
             // Encode every character. Although opposed by RFC 3986, it's the only way to solve #802.
             .replace(/./gus, char => {
-                const code = char.codePointAt(0);
+                const code = char.codePointAt(0)!;
                 const bytes: number[] =
                     (code <= 0x007F) // U+0000 to U+007F
                         ? [code]
@@ -290,11 +250,11 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
     /**
      * Bitbucket Cloud
      */
-    [SlugifyMode.BitbucketCloud]: (slug: string): string => {
+    [SlugifyMode.BitbucketCloud]: (slug: string, env: object): string => {
         // https://support.atlassian.com/bitbucket-cloud/docs/readme-content/
         // https://bitbucket.org/tutorials/markdowndemo/
         slug = 'markdown-header-'
-            + slugifyMethods.github(slug).replace(/-+/g, '-');
+            + slugifyMethods.github(slug, env).replace(/-+/g, '-');
 
         return slug;
     },
@@ -302,11 +262,11 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
     /**
      * GitHub
      */
-    [SlugifyMode.GitHub]: (slug: string): string => {
+    [SlugifyMode.GitHub]: (slug: string, env: object): string => {
         // According to an inspection in 2020-12, GitHub passes the raw content as is,
         // and does not trim leading or trailing C0, Zs characters in any step.
         // <https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb>
-        slug = mdHeadingToPlaintext(slug)
+        slug = mdInlineToPlainText(slug, env)
             .replace(Regexp_Punctuation_Github, '')
             .toLowerCase() // According to an inspection in 2020-09, GitHub performs full Unicode case conversion now.
             .replace(/ /g, '-');
@@ -332,14 +292,14 @@ const slugifyMethods: { readonly [mode in SlugifyMode]: (rawContent: string) => 
     /**
      * GitLab
      */
-    [SlugifyMode.GitLab]: (slug: string): string => {
+    [SlugifyMode.GitLab]: (slug: string, env: object): string => {
         // https://gitlab.com/help/user/markdown
         // https://docs.gitlab.com/ee/api/markdown.html
         // https://docs.gitlab.com/ee/development/wikis.html
         // <https://gitlab.com/gitlab-org/gitlab/blob/master/lib/banzai/filter/table_of_contents_filter.rb#L32>
         // https://gitlab.com/gitlab-org/gitlab/blob/a8c5858ce940decf1d263b59b39df58f89910faf/lib/gitlab/utils/markdown.rb
 
-        slug = mdHeadingToPlaintext(slug)
+        slug = mdInlineToPlainText(slug, env)
             .replace(/^[ \t\r\n\f\v]+/, '')
             .replace(/[ \t\r\n\f\v]+$/, '') // https://ruby-doc.org/core/String.html#method-i-strip
             .toLowerCase()
