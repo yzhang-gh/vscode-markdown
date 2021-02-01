@@ -71,7 +71,7 @@ suite("Slugify function.", () => {
     for (const [group, testCase] of Object.entries(cases) as ReadonlyArray<[SlugifyMode, readonly ICase[]]>) {
         for (const [rawContent, slug] of testCase) {
             globalThis.test(`(${modeName[group]}) ${rawContent} → ${slug}`, () => {
-                assert.strictEqual(util.slugify(rawContent, group), slug);
+                assert.strictEqual(util.slugify(rawContent, { mode: group }), slug);
             });
         }
     }

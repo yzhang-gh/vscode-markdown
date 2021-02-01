@@ -3,7 +3,7 @@
 import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
 import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Position, Range, TextDocument, TextDocumentWillSaveEvent, TextEditor, Uri, window, workspace, WorkspaceEdit } from 'vscode';
-import { mdEngine } from './markdownEngine';
+import { commonMarkEngine, mdEngine, Token } from './markdownEngine';
 import { isMdEditor, mdDocSelector, REGEX_FENCED_CODE_BLOCK, slugify } from './util';
 import type * as MarkdownSpec from "./contract/MarkdownSpec";
 import SlugifyMode from "./contract/SlugifyMode";
@@ -291,7 +291,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
  * @param doc a TextDocument
  */
 async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string]> {
-    const docTokens = (await mdEngine.getEngine()).parse(doc.getText(), {});
+    const docTokens = (await mdEngine.getDocumentToken(doc)).tokens;
     /**
      * `[beginLineIndex, endLineIndex, openingTokenIndex]`
      */
@@ -433,6 +433,48 @@ function loadTocConfig(editor: TextEditor): void {
     } else {
         docConfig.tab = '\t';
     }
+}
+
+/**
+ * Extracts those that can be rendered to visible text from a string of CommonMark **inline** structures,
+ * to create a single line string which can be safely used as **link text**.
+ *
+ * The result cannot be directly used as the content of a paragraph,
+ * since this function does not escape all sequences that look like block structures.
+ *
+ * We roughly take GitLab's `[[_TOC_]]` as reference.
+ *
+ * @param raw - The Markdown string.
+ * @param env - The markdown-it environment sandbox (**mutable**).
+ * @returns A single line string, which only contains plain textual content,
+ * backslash escape, code span, and emphasis.
+ */
+function createLinkText(raw: string, env: object): string {
+    const inlineTokens: Token[] = commonMarkEngine.engine.parseInline(raw, env)[0].children!;
+
+    return inlineTokens.reduce<string>((result, token) => {
+        switch (token.type) {
+            case "text":
+                return result + token.content.replace(/[&*<>\[\\\]_`]/g, "\\$&"); // Escape.
+            case "code_inline":
+                return result + token.markup + token.content + token.markup; // Emit as is.
+            case "strong_open":
+            case "strong_close":
+            case "em_open":
+            case "em_close":
+                return result + token.markup; // Preserve emphasis indicators.
+            case "link_open":
+            case "link_close":
+            case "image":
+            case "html_inline":
+                return result; // Discard them.
+            case "softbreak":
+            case "hardbreak":
+                return result + " "; // Replace line breaks with spaces.
+            default:
+                return result + token.content;
+        }
+    }, "");
 }
 
 //#region Public utility
@@ -608,10 +650,11 @@ export function getAllTocEntry(doc: TextDocument, {
     slugifyMode?: SlugifyMode;
 }): Readonly<IHeading>[] {
     const rootHeadings: readonly Readonly<IHeadingBase>[] = getAllRootHeading(doc, respectMagicCommentOmit, respectProjectLevelOmit);
+    const { env } = commonMarkEngine.getDocumentToken(doc);
 
     const anchorOccurrences = new Map<string, number>();
     function getSlug(rawContent: string): string {
-        let slug = slugify(rawContent, slugifyMode);
+        let slug = slugify(rawContent, { env, mode: slugifyMode });
 
         let count = anchorOccurrences.get(slug);
         if (count === undefined) {
@@ -625,25 +668,13 @@ export function getAllTocEntry(doc: TextDocument, {
         return slug;
     }
 
-    function getVisibleText(rawContent: string): string {
-        // May produce wrong result when facing code span, extremely complex link, etc.
-        let text = rawContent
-            .replace(/<!--[^>]*?-->/g, '') // Remove HTML comments.
-            .replace(/\[([^\]]*?)\]\([^\)]*?\)/g, '$1') // Extract the link text from inline link. `[text](link)` → `text`
-            .replace(/\[([^\]]*?)\]\[[^\]]*?\]/g, '$1') // Extract the link text from reference link. `[text][label]` → `text`
-            .replace(/(?<!\\)[\[\]]/g, '\\$&') // Escape brackets.
-            ;
-
-        return text;
-    }
-
     const toc: IHeading[] = rootHeadings.map<IHeading>((heading): IHeading => ({
         level: heading.level,
         rawContent: heading.rawContent,
         lineIndex: heading.lineIndex,
         canInToc: heading.canInToc,
 
-        visibleText: getVisibleText(heading.rawContent),
+        visibleText: createLinkText(heading.rawContent, env),
         slug: getSlug(heading.rawContent),
     }));
 

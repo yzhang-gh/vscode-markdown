@@ -296,9 +296,9 @@ suite("TOC.", () => {
                 '  - [H1.2](#h12)',
                 '- [H2 ## foo](#h2--foo)',
                 '- [H3#](#h3)',
-                '- [H4 \\###](#h4-)',
-                '- [H5 #\\##](#h5-)',
-                '- [H6 \\#](#h6-)',
+                '- [H4 ###](#h4-)',
+                '- [H5 ###](#h5-)',
+                '- [H6 #](#h6-)',
                 '',
             ],
             new Selection(17, 0, 17, 0)).then(done, done);
@@ -677,26 +677,31 @@ suite("TOC.", () => {
             [
                 '# [text](link)',
                 '# [text2][label]',
+                '# [collapsed][ref]',
                 '# **bold**',
                 '# *it1* _it2_',
                 '# `code`',
                 '# 1. Heading',
                 '# 1) Heading',
+                '[ref]: uri',
                 '',
                 ''
             ],
-            new Selection(8, 0, 8, 0),
+            new Selection(10, 0, 10, 0),
             [
                 '# [text](link)',
                 '# [text2][label]',
+                '# [collapsed][ref]',
                 '# **bold**',
                 '# *it1* _it2_',
                 '# `code`',
                 '# 1. Heading',
                 '# 1) Heading',
+                '[ref]: uri',
                 '',
                 '- [text](#text)',
-                '- [text2](#text2)',
+                '- [\\[text2\\]\\[label\\]](#text2label)',
+                '- [collapsed](#collapsed)',
                 '- [**bold**](#bold)',
                 '- [*it1* _it2_](#it1-it2)',
                 '- [`code`](#code)',
@@ -704,7 +709,7 @@ suite("TOC.", () => {
                 '- [1) Heading](#1-heading-1)',
                 '',
             ],
-            new Selection(15, 0, 15, 0)).then(done, done);
+            new Selection(18, 0, 18, 0)).then(done, done);
     });
 
     // https://github.com/yzhang-gh/vscode-markdown/issues/469
