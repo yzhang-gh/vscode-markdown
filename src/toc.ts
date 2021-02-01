@@ -436,16 +436,20 @@ function loadTocConfig(editor: TextEditor): void {
 }
 
 /**
- * Extracts those that can be rendered to visible text from a string of CommonMark **inline** structures.
+ * Extracts those that can be rendered to visible text from a string of CommonMark **inline** structures,
+ * to create a single line string which can be safely used as **link text**.
+ *
+ * The result cannot be directly used as the content of a paragraph,
+ * since this function does not escape all sequences that look like block structures.
  *
  * We roughly take GitLab's `[[_TOC_]]` as reference.
  *
  * @param raw - The Markdown string.
  * @param env - The markdown-it environment sandbox (**mutable**).
  * @returns A single line string, which only contains plain textual content,
- * backslash escape, code span, and emphasis. It can be safely used as link text.
+ * backslash escape, code span, and emphasis.
  */
-function extractVisibleTextInline(raw: string, env: object): string {
+function createLinkText(raw: string, env: object): string {
     const inlineTokens: Token[] = commonMarkEngine.engine.parseInline(raw, env)[0].children!;
 
     return inlineTokens.reduce<string>((result, token) => {
@@ -670,7 +674,7 @@ export function getAllTocEntry(doc: TextDocument, {
         lineIndex: heading.lineIndex,
         canInToc: heading.canInToc,
 
-        visibleText: extractVisibleTextInline(heading.rawContent, env),
+        visibleText: createLinkText(heading.rawContent, env),
         slug: getSlug(heading.rawContent),
     }));
 
