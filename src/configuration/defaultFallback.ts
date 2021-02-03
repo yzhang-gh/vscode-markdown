@@ -3,7 +3,15 @@
 import * as vscode from "vscode";
 import { IConfigurationFallbackMap } from "./manager";
 
-const defaultFallback: IConfigurationFallbackMap = {
+/**
+ * Configuration keys that are no longer supported,
+ * and will be removed in the next major version.
+ */
+export const deprecated: readonly string[] = [
+    "syntax.decorations",
+];
+
+export const fallbackMap: IConfigurationFallbackMap = {
 
     "theming.decoration.renderCodeSpan": (scope): boolean => {
         const config = vscode.workspace.getConfiguration("markdown.extension", scope);
@@ -25,5 +33,3 @@ const defaultFallback: IConfigurationFallbackMap = {
         }
     },
 };
-
-export default defaultFallback;

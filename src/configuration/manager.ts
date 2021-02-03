@@ -3,7 +3,7 @@
 import * as vscode from "vscode";
 import type IDisposable from "../IDisposable";
 import type KnownKey from "./KnownKey";
-import defaultFallback from "./defaultFallback";
+import { deprecated, fallbackMap } from "./defaultFallback";
 
 export type IConfigurationFallbackMap = { readonly [key in KnownKey]?: (scope?: vscode.ConfigurationScope) => any; };
 
@@ -31,11 +31,29 @@ class ConfigurationManager implements IConfigurationManager {
 
     private readonly _fallback: IConfigurationFallbackMap;
 
-    constructor(fallback: IConfigurationFallbackMap) {
+    constructor(fallback: IConfigurationFallbackMap, deprecatedKeys: readonly string[]) {
         this._fallback = Object.assign<IConfigurationFallbackMap, IConfigurationFallbackMap>(Object.create(null), fallback);
+        this.showWarning(deprecatedKeys);
     }
 
     public dispose(): void { }
+
+    /**
+     * Shows an error message for each deprecated key, to help user migrate.
+     * This is async to avoid blocking instance creation.
+     */
+    private async showWarning(deprecatedKeys: readonly string[]): Promise<void> {
+        for (const key of deprecatedKeys) {
+            const value = vscode.workspace.getConfiguration("markdown.extension").get(key);
+            if (value !== undefined && value !== null) {
+                // We are not able to localize this string for now.
+                // Our NLS module needs to be configured before using, which is done in the extension entry point.
+                // This module may be directly or indirectly imported by the entry point.
+                // Thus, this module may be loaded before the NLS module is available.
+                vscode.window.showErrorMessage(`The setting 'markdown.extension.${key}' has been deprecated.`);
+            }
+        }
+    }
 
     public get<T>(key: KnownKey, scope?: vscode.ConfigurationScope): T {
         const fallback = this._fallback[key];
@@ -55,5 +73,5 @@ class ConfigurationManager implements IConfigurationManager {
     }
 }
 
-const configManager = new ConfigurationManager(defaultFallback);
+const configManager = new ConfigurationManager(fallbackMap, deprecated);
 export default configManager;
