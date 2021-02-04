@@ -493,7 +493,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             } else {
                 return this.mathCompletions;
             }
-        } else if (/\[[^\]]*?\]\[[^\]]*$/.test(lineTextBefore)) {
+        } else if (/\[[^\]]*$/.test(lineTextBefore)) {
             /* ┌───────────────────────┐
                │ Reference link labels │
                └───────────────────────┘ */
