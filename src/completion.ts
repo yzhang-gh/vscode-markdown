@@ -514,7 +514,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     return useCounts;
                 }, new Map<string, number>());
                 let refLabels = lines.reduce((prev, curr) => {
-                    let match;
+                    let match: RegExpExecArray;
                     if ((match = /^\s{0,3}\[([^\]]*?)\]:\s?(\S*)( .*)?/.exec(curr)) !== null) {
                         const ref = match[1];
                         let item = new CompletionItem(ref, CompletionItemKind.Reference);
