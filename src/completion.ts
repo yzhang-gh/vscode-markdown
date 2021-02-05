@@ -503,7 +503,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 const lines = document.getText().split(/\r?\n/);
                 const usageCounts = lines.reduce((useCounts, currentLine) => {
                     let match: RegExpExecArray;
-                    const pattern = /\[[^\]]+\]\[([^\]]*?)\]/g;
+                    const pattern = /\[([^\]]*?)\](?<!\:)$/g;
                     while ((match = pattern.exec(currentLine)) !== null) {
                         let usedRef = match[1];
                         if (!useCounts.has(usedRef)) {
