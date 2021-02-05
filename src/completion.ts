@@ -561,21 +561,25 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
 
             return new Promise((res, _) => {
-                const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
+                let urlString: String;
+                urlString = lineTextBefore.match(/(?<=[\(|\:\s])\S*(?=\#)/)[0];
+                if (!urlString){
+                    const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
 
-                const headingCompletions = toc.map<CompletionItem>(heading => {
-                    const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
+                    const headingCompletions = toc.map<CompletionItem>(heading => {
+                        const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
 
-                    if (addClosingParen) {
-                        item.insertText = item.label + ')';
-                    }
+                        if (addClosingParen) {
+                            item.insertText = item.label + ')';
+                        }
 
-                    item.documentation = heading.rawContent;
-                    item.range = range;
-                    return item;
-                });
+                        item.documentation = heading.rawContent;
+                        item.range = range;
+                        return item;
+                    });
 
-                res(headingCompletions);
+                    res(headingCompletions);
+                }
             });
         } else if (/\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
             /* ┌────────────┐
