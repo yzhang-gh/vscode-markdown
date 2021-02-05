@@ -531,11 +531,12 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
                 res(refLabels);
             });
-        } else if (/\[[^\]]*\]\(#[^\)]*$/.test(lineTextBefore)) {
+        } else if (/\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) || /\[[^\]]*\]\:\s?(\S*)#*$/.test(lineTextBefore)) {
             /* ┌───────────────────────────┐
                │ Anchor tags from headings │
                └───────────────────────────┘ */
-            let startIndex = lineTextBefore.lastIndexOf('(');
+            let startIndex = lineTextBefore.lastIndexOf('#')-1;
+            let linkRefDefinition = /\[[^\]]*\]\:\s?(\S*)#*$/.test(lineTextBefore);
             let endPosition = position;
 
             let addClosingParen = false;
@@ -552,8 +553,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 // distance to first non-whitespace or EOL
                 const toReplace = (lineTextAfter.search(/(?<=^\S+)(\s|$)/))
                 endPosition = position.with({ character: + endPosition.character + toReplace });
-
-                addClosingParen = true;
+                if (!linkRefDefinition) {
+                    addClosingParen = true;
+                }
             }
 
             const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
