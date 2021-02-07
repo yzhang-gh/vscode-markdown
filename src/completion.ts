@@ -531,7 +531,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
                 res(refLabels);
             });
-        } else if (/\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) || /\[[^\]]*\]\:\s?(\S*)#*$/.test(lineTextBefore)) {
+        } else if (/\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore)) {
             /* ┌───────────────────────────┐
                │ Anchor tags from headings │
                └───────────────────────────┘ */
