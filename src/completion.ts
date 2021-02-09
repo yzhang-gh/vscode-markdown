@@ -513,23 +513,38 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     }
                     return useCounts;
                 }, new Map<string, number>());
-                let refLabels = lines.reduce((prev, curr) => {
-                    let match: RegExpExecArray;
-                    if ((match = /^\s{0,3}\[([^\]]*?)\]:\s?(\S*)( .*)?/.exec(curr)) !== null) {
-                        const ref = match[1];
-                        let item = new CompletionItem(ref, CompletionItemKind.Reference);
-                        const usages = usageCounts.get(ref) || 0;
-                        item.documentation = new MarkdownString(match[2]);
-                        item.detail = usages === 1 ? `1 usage` : `${usages} usages`;
-                        // Prefer unused items
-                        item.sortText = usages === 0 ? `0-${ref}` : item.sortText = `1-${ref}`;
-                        item.range = range;
-                        prev.push(item);
-                    }
-                    return prev;
-                }, []);
-
-                res(refLabels);
+                
+                let match: RegExpExecArray;
+                const pattern = /(?<=(^[>]?\s{0,3}\[[\t\r\n\f\v\s]*))(?<linklabel>([^\]]|(\\\]))*)(?=(\]:[\t\r\n\f\v\s]*(?<link>((<[^>]*>)|([^<\t\r\n\f\v\s]+)))(?<title>[\t\r\n\f\v\s]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$))/mg;
+                let refLabels = [];
+                let tidyRefLabels = [];
+               
+                refLabels = document.getText().match(pattern);
+                tidyRefLabels.sort()
+                let prev = "";
+                tidyRefLabels = refLabels.map(item => {
+                    //remove whitespace
+                    let out = item.trim()
+                    //remove duplicates, case insensitive
+                    if (out.toUpperCase() == prev.toUpperCase())(
+                        out = ""
+                    )
+                    prev = out;
+                    return out;
+                })
+                
+                let intellisenseList = [];
+                tidyRefLabels.forEach(function (ref){
+                    let item = new CompletionItem(ref, CompletionItemKind.Reference);
+                    const usages = usageCounts.get(ref) || 0;
+                    item.documentation = new MarkdownString(ref);
+                    item.detail = usages === 1 ? `1 usage` : `${usages} usages`;
+                    // Prefer unused items
+                    item.sortText = usages === 0 ? `0-${ref}` : item.sortText = `1-${ref}`;
+                    item.range = range;
+                    intellisenseList.push(item);
+                })
+                res(intellisenseList);
             });
         } else if (/\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore)) {
             /* ┌───────────────────────────┐
