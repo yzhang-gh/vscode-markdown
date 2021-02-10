@@ -1,168 +1,205 @@
-'use strict'
+// This module is deprecated.
+// No update will land here.
+// It is superseded by `src/theming`, etc.
 
-import { DecorationRangeBehavior, ExtensionContext, Position, Range, TextEditor, ThemeColor, window, workspace } from "vscode";
-import { isFileTooLarge, isInFencedCodeBlock, isMdEditor, mathEnvCheck } from "./util";
+"use strict";
 
-let decorTypes = {
-    "baseColor": window.createTextEditorDecorationType({
+import * as vscode from "vscode";
+import { isInFencedCodeBlock, mathEnvCheck } from "./util";
+
+//#region Constant
+
+const enum DecorationType {
+    baseColor,
+    gray,
+    lightBlue,
+    orange,
+}
+
+const decorationStyles: Readonly<Record<DecorationType, Readonly<vscode.DecorationRenderOptions>>> = {
+    [DecorationType.baseColor]: {
         "dark": { "color": "#EEFFFF" },
-        "light": { "color": "000000" }
-    }),
-    "gray": window.createTextEditorDecorationType({
+        "light": { "color": "000000" },
+    },
+    [DecorationType.gray]: {
         "rangeBehavior": 1,
         "dark": { "color": "#636363" },
-        "light": { "color": "#CCC" }
-    }),
-    "lightBlue": window.createTextEditorDecorationType({
-        "color": "#4080D0"
-    }),
-    "orange": window.createTextEditorDecorationType({
-        "color": "#D2B640"
-    }),
-    "strikethrough": window.createTextEditorDecorationType({
-        "rangeBehavior": 1,
-        "textDecoration": "line-through"
-    }),
-    "codeSpan": window.createTextEditorDecorationType({
-        "rangeBehavior": DecorationRangeBehavior.ClosedClosed,
-        "border": "1px solid",
-        "borderColor": new ThemeColor("editor.selectionBackground"),
-        "borderRadius": "3px"
-    })
+        "light": { "color": "#CCC" },
+    },
+    [DecorationType.lightBlue]: {
+        "color": "#4080D0",
+    },
+    [DecorationType.orange]: {
+        "color": "#D2B640",
+    },
 };
 
-let decors = {}
-
-for (const decorTypeName of Object.keys(decorTypes)) {
-    decors[decorTypeName] = [];
-}
-
-let regexDecorTypeMapping = {
-    "(~~.+?~~)": ["strikethrough"],
-    "(?<!`)(`+)(?!`)(.*?)(?<!`)(\\1)(?!`)": ["codeSpan"]
-};
-
-let regexDecorTypeMappingPlainTheme = {
+const regexDecorTypeMappingPlainTheme: ReadonlyArray<[RegExp, ReadonlyArray<DecorationType | undefined>]> = [
     // [alt](link)
-    "(^|[^!])(\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": ["", "gray", "lightBlue", "gray"],
+    [
+        /(^|[^!])(\[)([^\]\r\n]*?(?!\].*?\[)[^\[\r\n]*?)(\]\(.+?\))/,
+        [undefined, DecorationType.gray, DecorationType.lightBlue, DecorationType.gray]
+    ],
     // ![alt](link)
-    "(\\!\\[)([^\\]\\n]*(?!\\].*\\[)[^\\[\\n]*)(\\]\\(.+?\\))": ["gray", "orange", "gray"],
+    [
+        /(\!\[)([^\]\r\n]*?(?!\].*?\[)[^\[\r\n]*?)(\]\(.+?\))/,
+        [DecorationType.gray, DecorationType.orange, DecorationType.gray]
+    ],
     // `code`
-    "(?<!`)(`+)(?!`)(.*?)(?<!`)(\\1)(?!`)": ["gray", "baseColor", "gray"],
+    [
+        /(?<!`)(`+?)([^`].*?)(?<!`)(\1)(?!`)/,
+        [DecorationType.gray, DecorationType.baseColor, DecorationType.gray]
+    ],
     // *italic*
-    "(\\*)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(\\*)": ["gray", "baseColor", "gray"],
+    [
+        /(\*)([^\*\`\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s].*?[^\*\`\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s])(\*)/,
+        [DecorationType.gray, DecorationType.baseColor, DecorationType.gray]
+    ],
     // _italic_
-    "(_)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(_)": ["gray", "baseColor", "gray"],
+    [
+        /(_)([^\*\`\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s].*?[^\*\`\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s])(_)/,
+        [DecorationType.gray, DecorationType.baseColor, DecorationType.gray]
+    ],
     // **bold**
-    "(\\*\\*)([^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s].*?[^\\*\\`\\!\\@\\#\\%\\^\\&\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s])(\\*\\*)": ["gray", "baseColor", "gray"]
+    [
+        /(\*\*)([^\*\`\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s].*?[^\*\`\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s])(\*\*)/,
+        [DecorationType.gray, DecorationType.baseColor, DecorationType.gray]
+    ],
+];
+
+//#endregion Constant
+
+/**
+ * Decoration type instances **currently in use**.
+ */
+const decorationHandles = new Map<DecorationType, vscode.TextEditorDecorationType>();
+
+const decors = new Map<DecorationType, vscode.Range[]>();
+
+export function activate(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeConfiguration(event => {
+            if (event.affectsConfiguration("markdown.extension.syntax.plainTheme")) {
+                triggerUpdateDecorations(vscode.window.activeTextEditor);
+            }
+        }),
+
+        vscode.window.onDidChangeActiveTextEditor(triggerUpdateDecorations),
+
+        vscode.workspace.onDidChangeTextDocument(event => {
+            const editor = vscode.window.activeTextEditor;
+            if (editor && event.document === editor.document) {
+                triggerUpdateDecorations(editor);
+            }
+        }),
+    );
+
+    triggerUpdateDecorations(vscode.window.activeTextEditor);
 }
 
-export function activate(_: ExtensionContext) {
-    workspace.onDidChangeConfiguration(event => {
-        if (event.affectsConfiguration('markdown.extension.syntax.decorations')) {
-            window.showInformationMessage("Please reload VSCode to make setting `syntax.decorations` take effect.")
-        }
-    });
-
-    if (!workspace.getConfiguration('markdown.extension.syntax').get<boolean>('decorations')) return;
-
-    window.onDidChangeActiveTextEditor(updateDecorations);
-
-    workspace.onDidChangeTextDocument(event => {
-        let editor = window.activeTextEditor;
-        if (editor !== undefined && event.document === editor.document) {
-            triggerUpdateDecorations(editor);
-        }
-    });
-
-    var timeout = null;
-    function triggerUpdateDecorations(editor) {
-        if (timeout) {
-            clearTimeout(timeout);
-        }
-        timeout = setTimeout(() => updateDecorations(editor), 200);
+var timeout: NodeJS.Timeout | undefined;
+// Debounce.
+function triggerUpdateDecorations(editor: vscode.TextEditor | undefined) {
+    if (!editor || editor.document.languageId !== "markdown") {
+        return;
     }
 
-    let editor = window.activeTextEditor;
-    if (editor) {
-        updateDecorations(editor);
+    if (timeout) {
+        clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => updateDecorations(editor), 200);
+}
+
+/**
+ * Clears decorations in the text editor.
+ */
+function clearDecorations(editor: vscode.TextEditor) {
+    for (const handle of decorationHandles.values()) {
+        editor.setDecorations(handle, []);
     }
 }
 
-function updateDecorations(editor?: TextEditor) {
-    if (editor === undefined) {
-        editor = window.activeTextEditor;
-    }
-
-    if (!isMdEditor(editor)) {
+function updateDecorations(editor: vscode.TextEditor) {
+    // Remove everything if it's disabled.
+    if (!vscode.workspace.getConfiguration().get<boolean>("markdown.extension.syntax.plainTheme", false)) {
+        for (const handle of decorationHandles.values()) {
+            handle.dispose();
+        }
+        decorationHandles.clear();
         return;
     }
 
     const doc = editor.document;
 
-    if (isFileTooLarge(doc)) {
+    if (doc.getText().length * 1.5 > vscode.workspace.getConfiguration().get<number>("markdown.extension.syntax.decorationFileSizeLimit")!) {
+        clearDecorations(editor); // In case the editor is still visible.
         return;
     }
 
-    // Clean decorations
-    for (const decorTypeName of Object.keys(decorTypes)) {
-        decors[decorTypeName] = [];
+    // Reset decoration collection.
+    decors.clear();
+    for (const typeName of Object.keys(decorationStyles)) {
+        decors.set(+typeName, []);
     }
 
-    // e.g. { "(~~.+?~~)": ["strikethrough"] }
-    let appliedMappings = workspace.getConfiguration('markdown.extension.syntax').get<boolean>('plainTheme') ?
-        { ...regexDecorTypeMappingPlainTheme, ...regexDecorTypeMapping } :
-        regexDecorTypeMapping;
-
+    // Analyze.
     doc.getText().split(/\r?\n/g).forEach((lineText, lineNum) => { // For each line
 
         if (isInFencedCodeBlock(doc, lineNum)) { return; }
 
         // Issue #412
         // Trick. Match `[alt](link)` and `![alt](link)` first and remember those greyed out ranges
-        let noDecorRanges: [number, number][] = [];
+        const noDecorRanges: [number, number][] = [];
 
-        for (const reText of Object.keys(appliedMappings)) {
-            const decorTypeNames: string[] = appliedMappings[reText];  // e.g. ["strikethrough"] or ["gray", "baseColor", "gray"]
-            const regex = new RegExp(reText, 'g');  // e.g. "(~~.+?~~)"
+        for (const [re, types] of regexDecorTypeMappingPlainTheme) {
+            const regex = new RegExp(re, "g");
 
-            let match;
-            while ((match = regex.exec(lineText)) !== null) {
-
-                let startIndex = match.index;
+            for (const match of lineText.matchAll(regex)) {
+                let startIndex = match.index!;
 
                 if (noDecorRanges.some(r =>
                     (startIndex > r[0] && startIndex < r[1])
                     || (startIndex + match[0].length > r[0] && startIndex + match[0].length < r[1])
                 )) { continue; }
 
-                for (let i = 0; i < decorTypeNames.length; i++) {
+                for (let i = 0; i < types.length; i++) {
                     //// Skip if in math environment (See `completion.ts`)
-                    if (mathEnvCheck(doc, new Position(lineNum, startIndex)) !== "") {
+                    if (mathEnvCheck(doc, new vscode.Position(lineNum, startIndex)) !== "") {
                         break;
                     }
 
-                    const decorTypeName = decorTypeNames[i];
-                    const caughtGroup = decorTypeName == "codeSpan" ? match[0] : match[i + 1];
+                    const typeName = types[i];
+                    const caughtGroup = match[i + 1];
 
-                    if (decorTypeName === "gray" && caughtGroup.length > 2) {
+                    if (typeName === DecorationType.gray && caughtGroup.length > 2) {
                         noDecorRanges.push([startIndex, startIndex + caughtGroup.length]);
                     }
 
-                    const range = new Range(lineNum, startIndex, lineNum, startIndex + caughtGroup.length);
+                    const range = new vscode.Range(lineNum, startIndex, lineNum, startIndex + caughtGroup.length);
                     startIndex += caughtGroup.length;
 
                     //// Needed for `[alt](link)` rule. And must appear after `startIndex += caughtGroup.length;`
-                    if (decorTypeName.length === 0) {
+                    if (!typeName) {
                         continue;
                     }
-                    decors[decorTypeName].push(range);
+
+                    // We've created these arrays at the beginning of the function.
+                    decors.get(typeName)!.push(range);
                 }
             }
         }
     });
 
-    for (const decorTypeName of Object.keys(decors)) {
-        editor.setDecorations(decorTypes[decorTypeName], decors[decorTypeName]);
+    // Apply decorations.
+    for (const [typeName, ranges] of decors) {
+        let handle = decorationHandles.get(typeName);
+
+        // Create a new decoration type instance if needed.
+        if (!handle) {
+            handle = vscode.window.createTextEditorDecorationType(decorationStyles[typeName]);
+            decorationHandles.set(typeName, handle);
+        }
+
+        editor.setDecorations(handle, ranges);
     }
 }

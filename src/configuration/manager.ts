@@ -73,5 +73,4 @@ class ConfigurationManager implements IConfigurationManager {
     }
 }
 
-const configManager = new ConfigurationManager(fallbackMap, deprecated);
-export default configManager;
+export const configManager = new ConfigurationManager(fallbackMap, deprecated);

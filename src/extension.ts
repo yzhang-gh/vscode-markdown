@@ -1,9 +1,13 @@
 'use strict';
 
 import { ExtensionContext, languages, Uri, window, workspace } from 'vscode';
+import type { KatexOptions } from "katex";
+import { configManager } from "./configuration/manager";
+import { decorationManager } from "./theming/decorationManager";
 import * as completion from './completion';
 import * as formatting from './formatting';
 import * as listEditing from './listEditing';
+import { commonMarkEngine, MarkdownIt, mdEngine } from "./markdownEngine";
 import { config as configNls, localize } from './nls';
 import resolveResource from "./nls/resolveResource";
 import * as preview from './preview';
@@ -14,29 +18,34 @@ import * as toc from './toc';
 
 export function activate(context: ExtensionContext) {
     configNls({ extensionContext: context });
+
+    context.subscriptions.push(
+        configManager, decorationManager, commonMarkEngine, mdEngine
+    );
+
     activateMdExt(context);
 
     if (workspace.getConfiguration('markdown.extension.math').get<boolean>('enabled')) {
         // Make a deep copy as `macros` will be modified by KaTeX during initialization
         let userMacros = JSON.parse(JSON.stringify(workspace.getConfiguration('markdown.extension.katex').get<object>('macros')));
-        let katexOptions = { throwOnError: false };
+        const katexOptions: KatexOptions = { throwOnError: false };
         if (Object.keys(userMacros).length !== 0) {
             katexOptions['macros'] = userMacros;
         }
 
         return {
-            extendMarkdownIt(md) {
+            extendMarkdownIt(md: MarkdownIt): MarkdownIt {
                 require('katex/contrib/mhchem/mhchem');
                 return md.use(require('markdown-it-task-lists'))
                     .use(require('@neilsustc/markdown-it-katex'), katexOptions);
             }
-        }
+        };
     } else {
         return {
-            extendMarkdownIt(md) {
+            extendMarkdownIt(md: MarkdownIt): MarkdownIt {
                 return md.use(require('markdown-it-task-lists'));
             }
-        }
+        };
     }
 }
 
