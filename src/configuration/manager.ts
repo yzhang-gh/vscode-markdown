@@ -17,8 +17,8 @@ export interface IConfigurationManager extends IDisposable {
     get<T>(key: KnownKey, scope?: vscode.ConfigurationScope): T;
 
     /**
-     * Gets the value that a configuration section denotes.
-     * @param section The absolute section identifier (setting ID).
+     * Gets the value that an absolute identifier denotes.
+     * @param section The dot-separated identifier (usually a setting ID).
      * @param scope The scope, for which the configuration is asked.
      */
     getByAbsolute<T>(section: string, scope?: vscode.ConfigurationScope): T | undefined;

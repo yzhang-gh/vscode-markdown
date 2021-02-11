@@ -174,7 +174,7 @@ const decorationWorkerRegistry: IWorkerRegistry = {
         const ranges: vscode.Range[] = [];
 
         for (const t of tokens) {
-            if (/* t.level === 0 && */ t.type === "paragraph_open") {
+            if (t.type === "paragraph_open") {
                 const pos = document.lineAt(t.map![1] - 1).range.end;
                 ranges.push(new vscode.Range(pos, pos));
             }
