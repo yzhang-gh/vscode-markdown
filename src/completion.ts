@@ -513,28 +513,26 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     }
                     return useCounts;
                 }, new Map<string, number>());
-                
-                let match: RegExpExecArray;
+
                 const pattern = /(?<=(^[>]?\s{0,3}\[[\t\r\n\f\v\s]*))(?<linklabel>([^\]]|(\\\]))*)(?=(\]:[\t\r\n\f\v\s]*(?<link>((<[^>]*>)|([^<\t\r\n\f\v\s]+)))(?<title>[\t\r\n\f\v\s]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$))/mg;
                 let refLabels = [];
                 let tidyRefLabels = [];
-               
+
                 refLabels = document.getText().match(pattern);
-                tidyRefLabels.sort()
                 let prev = "";
                 tidyRefLabels = refLabels.map(item => {
-                    //remove whitespace
-                    let out = item.trim()
-                    //remove duplicates, case insensitive
-                    if (out.toUpperCase() == prev.toUpperCase())(
+                    // remove whitespace
+                    let out = item.trim();
+                    // remove duplicates, case insensitive
+                    if (out.toUpperCase() == prev.toUpperCase()) {
                         out = ""
-                    )
+                    }
                     prev = out;
                     return out;
                 })
-                
+
                 let intellisenseList = [];
-                tidyRefLabels.forEach(function (ref){
+                tidyRefLabels.forEach(function (ref) {
                     let item = new CompletionItem(ref, CompletionItemKind.Reference);
                     const usages = usageCounts.get(ref) || 0;
                     item.documentation = new MarkdownString(ref);
@@ -550,7 +548,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             /* ┌───────────────────────────┐
                │ Anchor tags from headings │
                └───────────────────────────┘ */
-            let startIndex = lineTextBefore.lastIndexOf('#')-1;
+            let startIndex = lineTextBefore.lastIndexOf('#') - 1;
             let linkRefDefinition = /\[[^\]]*\]\:\s?(\S*)#*$/.test(lineTextBefore);
             let endPosition = position;
 
@@ -578,7 +576,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             return new Promise((res, _) => {
                 let urlString: String;
                 urlString = lineTextBefore.match(/(?<=[\(|\:\s])\S*(?=\#)/)[0];
-                if (!urlString){
+                if (!urlString) {
                     const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
 
                     const headingCompletions = toc.map<CompletionItem>(heading => {
