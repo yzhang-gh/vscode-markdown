@@ -528,17 +528,26 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 let tidyRefLabels = [];
 
                 refLabels = document.getText().match(pattern);
+
+                /* The following may be better as a seperate function and used for all completions in future
+                 -------------------------------------------------------------------------------------------*/
+                // remove whitespace
+                for (let n = 0; n<refLabels.length; n++){
+                    refLabels[n] = refLabels[n].trim();
+                }
+
+                //sort order
+                refLabels.sort()
+                
+                // remove duplicates, case insensitive
                 let prev = "";
                 tidyRefLabels = refLabels.map(item => {
-                    // remove whitespace
-                    let out = item.trim();
-                    // remove duplicates, case insensitive
-                    if (out.toUpperCase() == prev.toUpperCase()) {
-                        out = ""
+                    if (item.toUpperCase() != prev.toUpperCase()) {
+                        prev = item;
+                        return item;
                     }
-                    prev = out;
-                    return out;
                 })
+                /* ---------------------------------------------------------------------------------------- */
 
                 let intellisenseList = [];
                 tidyRefLabels.forEach(function (ref) {
