@@ -514,7 +514,16 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     return useCounts;
                 }, new Map<string, number>());
 
-                const pattern = /(?<=(^[>]?\s{0,3}\[[\t\r\n\f\v\s]*))(?<linklabel>([^\]]|(\\\]))*)(?=(\]:[\t\r\n\f\v\s]*(?<link>((<[^>]*>)|([^<\t\r\n\f\v\s]+)))(?<title>[\t\r\n\f\v\s]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$))/mg;
+                const RXlookbehind = String.raw`(?<=(^[>]?\s{0,3}\[[\t\r\n\f\v\s]*))`; //newline, not quoted, max 3 spaces, open [
+                const RXlinklabel = String.raw`(?<linklabel>([^\]]|(\\\]))*)`; // string for linklabel, allows for /] in linklabel
+                const RXlink = String.raw`(?<link>((<[^>]*>)|([^<\t\r\n\f\v\s]+)))`; //link either <mylink> or mylink
+                const RXlinktitle = String.raw`(?<title>[\t\r\n\f\v\s]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$)`; //optional linktitle in "" or ''
+                const RXlookahead = String.raw`(?=(\]:[\t\r\n\f\v\s]*` + // close linklabel with ]: 
+                                    RXlink + RXlinktitle +
+                                    String.raw`)`; //end regex
+                const RXflags = String.raw`mg`; //multiline & global
+                //This pattern matches linklabels in link references definitions:  [linklabel]: link "link title"
+                const pattern = new RegExp(RXlookbehind + RXlinklabel + RXlookahead, RXflags);
                 let refLabels = [];
                 let tidyRefLabels = [];
 
