@@ -31,6 +31,35 @@
     ],
     "main": "./dist/extension",
     "contributes": {
+        "colors": [
+            {
+                "id": "markdown.extension.editor.codeSpan.border",
+                "description": "Border color of code spans in the Markdown editor.",
+                "defaults": {
+                    "dark": "editor.selectionBackground",
+                    "light": "editor.selectionBackground",
+                    "highContrast": "editor.selectionBackground"
+                }
+            },
+            {
+                "id": "markdown.extension.editor.formattingMark.foreground",
+                "description": "Color of formatting marks (paragraphs, hard line breaks, links, etc.) in the Markdown editor.",
+                "defaults": {
+                    "dark": "editorWhitespace.foreground",
+                    "light": "editorWhitespace.foreground",
+                    "highContrast": "diffEditor.insertedTextBorder"
+                }
+            },
+            {
+                "id": "markdown.extension.editor.trailingSpace.background",
+                "description": "Background color of trailing space (U+0020) characters in the Markdown editor.",
+                "defaults": {
+                    "dark": "diffEditor.diagonalFill",
+                    "light": "diffEditor.diagonalFill",
+                    "highContrast": "editorWhitespace.foreground"
+                }
+            }
+        ],
         "commands": [
             {
                 "command": "markdown.extension.toc.create",
@@ -325,8 +354,8 @@
                 },
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
-                    "default": true,
-                    "description": "%config.syntax.decorations.description%"
+                    "default": null,
+                    "markdownDeprecationMessage": "%config.syntax.decorations.description%"
                 },
                 "markdown.extension.syntax.decorationFileSizeLimit": {
                     "type": "number",
@@ -347,6 +376,42 @@
                     "type": "boolean",
                     "default": false,
                     "markdownDescription": "%config.tableFormatter.normalizeIndentation.description%"
+                },
+                "markdown.extension.theming.decoration.renderCodeSpan": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "%config.theming.decoration.renderCodeSpan.description%",
+                    "scope": "application"
+                },
+                "markdown.extension.theming.decoration.renderHardLineBreak": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "%config.theming.decoration.renderHardLineBreak.description%",
+                    "scope": "application"
+                },
+                "markdown.extension.theming.decoration.renderLink": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "%config.theming.decoration.renderLink.description%",
+                    "scope": "application"
+                },
+                "markdown.extension.theming.decoration.renderParagraph": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "%config.theming.decoration.renderParagraph.description%",
+                    "scope": "application"
+                },
+                "markdown.extension.theming.decoration.renderStrikethrough": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "%config.theming.decoration.renderStrikethrough.description%",
+                    "scope": "application"
+                },
+                "markdown.extension.theming.decoration.renderTrailingSpace": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "%config.theming.decoration.renderTrailingSpace.description%",
+                    "scope": "application"
                 },
                 "markdown.extension.toc.downcaseLink": {
                     "type": "boolean",
