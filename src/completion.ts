@@ -549,7 +549,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 })
                 /* ---------------------------------------------------------------------------------------- */
 
-                let intellisenseList = [];
+                let completionItemList = [];
                 tidyRefLabels.forEach(function (ref) {
                     let item = new CompletionItem(ref, CompletionItemKind.Reference);
                     const usages = usageCounts.get(ref) || 0;
@@ -558,9 +558,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     // Prefer unused items
                     item.sortText = usages === 0 ? `0-${ref}` : item.sortText = `1-${ref}`;
                     item.range = range;
-                    intellisenseList.push(item);
+                    completionItemList.push(item);
                 })
-                res(intellisenseList);
+                res(completionItemList);
             });
         } else if (/\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore)) {
             /* ┌───────────────────────────┐
