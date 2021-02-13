@@ -562,7 +562,10 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 })
                 res(completionItemList);
             });
-        } else if (/\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore)) {
+        } else if (
+            /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // Link with anchor
+            || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // Or, Link reference definition with anchor
+            ) {
             /* ┌───────────────────────────┐
                │ Anchor tags from headings │
                └───────────────────────────┘ */
