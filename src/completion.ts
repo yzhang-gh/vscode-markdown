@@ -595,25 +595,48 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
 
             return new Promise((res, _) => {
+                let linkedDocument: TextDocument
                 let urlString: String;
                 urlString = lineTextBefore.match(/(?<=[\(|\:\s])\S*(?=\#)/)[0];
-                if (!urlString) {
-                    const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
+                if (urlString){
+                    /*if the anchor is in a seperate file then the link is of the form:
+                        "[linkLabel](urlString#MyAnchor)" or "[linkLabel]: urlString#MyAnchor"
 
-                    const headingCompletions = toc.map<CompletionItem>(heading => {
-                        const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
+                    If urlString is a ".md" or ".markdown" file and accessible then we should (pseudo code): 
 
-                        if (addClosingParen) {
-                            item.insertText = item.label + ')';
+                        if (isAccessible(urlString)) {
+                            linkedDocument = open(urlString)
+                        } else {
+                            return []
                         }
 
-                        item.documentation = heading.rawContent;
-                        item.range = range;
-                        return item;
-                    });
+                    This has not been implemented yet so instead return with no completion for now.
+                    */
 
-                    res(headingCompletions);
+                   return []; //remove when implementing anchor completion fron external file
+                } else {
+                    /*else the anchor is in the current file and the link is of the form
+                        "[linkLabel](#MyAnchor)"" or "[linkLabel]: #MyAnchor"
+                    Then we should set linkedDocument = document
+                    */
+                    linkedDocument = document
+                    
                 }
+                const toc: readonly Readonly<IHeading>[] = getAllTocEntry(linkedDocument, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
+
+                const headingCompletions = toc.map<CompletionItem>(heading => {
+                    const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
+
+                    if (addClosingParen) {
+                        item.insertText = item.label + ')';
+                    }
+
+                    item.documentation = heading.rawContent;
+                    item.range = range;
+                    return item;
+                });
+
+                res(headingCompletions);
             });
         } else if (/\[[^\]]*?\]((\([^\]*])|\:(\s?\S*))$/.test(lineTextBefore)) {
             /* ┌────────────┐
