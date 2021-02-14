@@ -514,40 +514,32 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     return useCounts;
                 }, new Map<string, number>());
 
-                const RXlookbehind = String.raw`(?<=(^[>]?\s{0,3}\[[\t\r\n\f\v\s]*))`; //newline, not quoted, max 3 spaces, open [
-                const RXlinklabel = String.raw`(?<linklabel>([^\]]|(\\\]))*)`; // string for linklabel, allows for /] in linklabel
-                const RXlink = String.raw`(?<link>((<[^>]*>)|([^<\t\r\n\f\v\s]+)))`; //link either <mylink> or mylink
-                const RXlinktitle = String.raw`(?<title>[\t\r\n\f\v\s]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$)`; //optional linktitle in "" or ''
+                const RXlookbehind = String.raw`(?<=(^[>]?\s{0,3}\[[\t\r\n\f\v\s]*))`;  // newline, not quoted, max 3 spaces, open [
+                const RXlinklabel = String.raw`(?<linklabel>([^\]]|(\\\]))*)`;          // string for linklabel, allows for /] in linklabel
+                const RXlink = String.raw`(?<link>((<[^>]*>)|([^<\t\r\n\f\v\s]+)))`;    // link either <mylink> or mylink
+                const RXlinktitle = String.raw`(?<title>[\t\r\n\f\v\s]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$)`; // optional linktitle in "" or ''
                 const RXlookahead = String.raw`(?=(\]:[\t\r\n\f\v\s]*` + // close linklabel with ]: 
                                     RXlink + RXlinktitle +
-                                    String.raw`)`; //end regex
-                const RXflags = String.raw`mg`; //multiline & global
-                //This pattern matches linklabels in link references definitions:  [linklabel]: link "link title"
+                                    String.raw`)`;  // end regex
+                const RXflags = String.raw`mg`;     // multiline & global
+                // This pattern matches linklabels in link references definitions:  [linklabel]: link "link title"
                 const pattern = new RegExp(RXlookbehind + RXlinklabel + RXlookahead, RXflags);
                 let refLabels = [];
                 let tidyRefLabels = [];
 
                 refLabels = document.getText().match(pattern);
 
-                /* The following may be better as a seperate function and used for all completions in future
-                 -------------------------------------------------------------------------------------------*/
-                // remove whitespace
-                for (let n = 0; n<refLabels.length; n++){
-                    refLabels[n] = refLabels[n].trim();
-                }
-
-                //sort order
-                refLabels.sort()
-                
-                // remove duplicates, case insensitive
-                let prev = "";
-                tidyRefLabels = refLabels.map(item => {
-                    if (item.toUpperCase() != prev.toUpperCase()) {
-                        prev = item;
-                        return item;
+                // Remove whitespace/duplicates, case insensitive
+                // TODO: may be extracted to a seperate function and used for all completions in future
+                refLabels.sort();
+                tidyRefLabels = refLabels.reduce((accum, curr) => {
+                    curr = curr.trim();
+                    if (accum.length > 0) {
+                        return [...accum, ...(curr !== accum[accum.length - 1] ? [curr] : [])];
+                    } else {
+                        return [curr];
                     }
-                })
-                /* ---------------------------------------------------------------------------------------- */
+                });
 
                 let completionItemList = [];
                 tidyRefLabels.forEach(function (ref) {
@@ -563,9 +555,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 res(completionItemList);
             });
         } else if (
-            /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // Link with anchor
-            || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // Or, Link reference definition with anchor
-            ) {
+            /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // `[](url#anchor|`
+            || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // `[]: url#anchor|`
+        ) {
             /* ┌───────────────────────────┐
                │ Anchor tags from headings │
                └───────────────────────────┘ */
@@ -595,32 +587,29 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
 
             return new Promise((res, _) => {
-                let linkedDocument: TextDocument
+                let linkedDocument: TextDocument;
                 let urlString: String;
                 urlString = lineTextBefore.match(/(?<=[\(|\:\s])\S*(?=\#)/)[0];
-                if (urlString){
-                    /*if the anchor is in a seperate file then the link is of the form:
-                        "[linkLabel](urlString#MyAnchor)" or "[linkLabel]: urlString#MyAnchor"
+                if (urlString) {
+                    /* If the anchor is in a seperate file then the link is of the form:
+                       "[linkLabel](urlString#MyAnchor)" or "[linkLabel]: urlString#MyAnchor"
 
-                    If urlString is a ".md" or ".markdown" file and accessible then we should (pseudo code): 
+                       If urlString is a ".md" or ".markdown" file and accessible then we should (pseudo code): 
 
-                        if (isAccessible(urlString)) {
-                            linkedDocument = open(urlString)
-                        } else {
-                            return []
-                        }
+                           if (isAccessible(urlString)) {
+                               linkedDocument = open(urlString)
+                           } else {
+                               return []
+                           }
 
-                    This has not been implemented yet so instead return with no completion for now.
-                    */
+                       This has not been implemented yet so instead return with no completion for now. */
 
-                   return []; //remove when implementing anchor completion fron external file
+                    return []; // remove when implementing anchor completion fron external file
                 } else {
-                    /*else the anchor is in the current file and the link is of the form
-                        "[linkLabel](#MyAnchor)"" or "[linkLabel]: #MyAnchor"
-                    Then we should set linkedDocument = document
-                    */
-                    linkedDocument = document
-                    
+                    /* else the anchor is in the current file and the link is of the form
+                       "[linkLabel](#MyAnchor)"" or "[linkLabel]: #MyAnchor"
+                       Then we should set linkedDocument = document */
+                    linkedDocument = document;
                 }
                 const toc: readonly Readonly<IHeading>[] = getAllTocEntry(linkedDocument, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
 
