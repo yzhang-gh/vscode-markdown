@@ -500,69 +500,68 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             let startIndex = lineTextBefore.lastIndexOf('[');
             const range = new Range(position.with({ character: startIndex + 1 }), position);
             return new Promise((res, _) => {
+                // A confusing feature from #414. Not sure how to get it work.
                 const lines = document.getText().split(/\r?\n/);
-                const usageCounts = lines.reduce((useCounts, currentLine) => {
-                    let match: RegExpExecArray;
-                    const pattern = /\[([^\]]*?)\](?<!\:)$/g;
-                    while ((match = pattern.exec(currentLine)) !== null) {
-                        let usedRef = match[1];
-                        if (!useCounts.has(usedRef)) {
-                            useCounts.set(usedRef, 0);
-                        }
-                        useCounts.set(usedRef, useCounts.get(usedRef) + 1);
+                const usageCounts = new Map<string, number>();
+                for (const currentLine of lines) {
+                    const pattern = /\[([^\]]+?)\](?![(:\[])/g;
+                    for (const match of currentLine.matchAll(pattern)) {
+                        const usedRef = match[1];
+                        const count = (usageCounts.get(usedRef) || 0) + 1;
+                        usageCounts.set(usedRef, count);
                     }
-                    return useCounts;
-                }, new Map<string, number>());
+                }
 
-                const RXlookbehind = String.raw`(?<=(^[>]?\s{0,3}\[[\t\r\n\f\v\s]*))`;  // newline, not quoted, max 3 spaces, open [
+                const RXlookbehind = String.raw`(?<=(^[>]? {0,3}\[[ \t\r\n\f\v]*))`;  // newline, not quoted, max 3 spaces, open [
                 const RXlinklabel = String.raw`(?<linklabel>([^\]]|(\\\]))*)`;          // string for linklabel, allows for /] in linklabel
-                const RXlink = String.raw`(?<link>((<[^>]*>)|([^<\t\r\n\f\v\s]+)))`;    // link either <mylink> or mylink
-                const RXlinktitle = String.raw`(?<title>[\t\r\n\f\v\s]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$)`; // optional linktitle in "" or ''
-                const RXlookahead = String.raw`(?=(\]:[\t\r\n\f\v\s]*` + // close linklabel with ]: 
+                const RXlink = String.raw`(?<link>((<[^>]*>)|([^< \t\r\n\f\v]+)))`;    // link either <mylink> or mylink
+                const RXlinktitle = String.raw`(?<title>[ \t\r\n\f\v]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$)`; // optional linktitle in "" or ''
+                const RXlookahead = String.raw`(?=(\]:[ \t\r\n\f\v]*` + // close linklabel with ]:
                                     RXlink + RXlinktitle +
                                     String.raw`)`;  // end regex
                 const RXflags = String.raw`mg`;     // multiline & global
                 // This pattern matches linklabels in link references definitions:  [linklabel]: link "link title"
                 const pattern = new RegExp(RXlookbehind + RXlinklabel + RXlookahead, RXflags);
-                let refLabels = [];
-                let tidyRefLabels = [];
+                const refLabels = document.getText().match(pattern)!
+                    // Remove leading and trailing whitespace characters in each label.
+                    .map(str => str.replace(/^[ \t\r\n\f\v]+/, '').replace(/[ \t\r\n\f\v]+$/, ''));
 
-                refLabels = document.getText().match(pattern);
-
-                // Remove whitespace/duplicates, case insensitive
+                // Remove duplicates. Perform case-insensitive comparison, but preserve original case in result.
                 // TODO: may be extracted to a seperate function and used for all completions in future
                 refLabels.sort();
-                tidyRefLabels = refLabels.reduce((accum, curr) => {
-                    curr = curr.trim();
-                    if (accum.length > 0) {
-                        return [...accum, ...(curr !== accum[accum.length - 1] ? [curr] : [])];
-                    } else {
-                        return [curr];
+                const tidyRefLabels = refLabels.reduce<string[]>((result, crt) => {
+                    crt = crt.trim();
+                    if (
+                        (result.length > 0 && crt.toUpperCase() !== result[result.length - 1].toUpperCase())
+                        || result.length === 0
+                    ) {
+                        result.push(crt);
                     }
-                });
+                    return result;
+                }, []);
 
-                let completionItemList = [];
-                tidyRefLabels.forEach(function (ref) {
-                    let item = new CompletionItem(ref, CompletionItemKind.Reference);
+                const completionItemList = tidyRefLabels.map<CompletionItem>(function (ref) {
+                    const item = new CompletionItem(ref, CompletionItemKind.Reference);
                     const usages = usageCounts.get(ref) || 0;
                     item.documentation = new MarkdownString(ref);
                     item.detail = usages === 1 ? `1 usage` : `${usages} usages`;
-                    // Prefer unused items
-                    item.sortText = usages === 0 ? `0-${ref}` : item.sortText = `1-${ref}`;
+                    // Prefer unused items. <https://github.com/yzhang-gh/vscode-markdown/pull/414#discussion_r272807189>
+                    item.sortText = usages === 0 ? `0-${ref}` : `1-${ref}`;
                     item.range = range;
-                    completionItemList.push(item);
-                })
+                    return item;
+                });
                 res(completionItemList);
             });
         } else if (
-            /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // `[](url#anchor|`
-            || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // `[]: url#anchor|`
+            /\[[^\]]*?\]\(#[^\)]*$/.test(lineTextBefore)
+            // /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // `[](url#anchor|` Link with anchor.
+            // || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // `[]: url#anchor|` Link reference definition with anchor.
         ) {
             /* ┌───────────────────────────┐
                │ Anchor tags from headings │
                └───────────────────────────┘ */
             let startIndex = lineTextBefore.lastIndexOf('#') - 1;
-            let linkRefDefinition = /\[[^\]]*\]\:\s?(\S*)#*$/.test(lineTextBefore);
+            let isLinkRefDefinition = /^[>]? {0,3}\[[^\]]+?\]\:[ \t\f\v]*#*$/.test(lineTextBefore);
             let endPosition = position;
 
             let addClosingParen = false;
@@ -577,9 +576,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             } else {
                 // If no closing paren is found, replace all trailing non-white-space chars and add a closing paren
                 // distance to first non-whitespace or EOL
-                const toReplace = (lineTextAfter.search(/(?<=^\S+)(\s|$)/))
+                const toReplace = (lineTextAfter.search(/(?<=^\S+)(\s|$)/));
                 endPosition = position.with({ character: + endPosition.character + toReplace });
-                if (!linkRefDefinition) {
+                if (!isLinkRefDefinition) {
                     addClosingParen = true;
                 }
             }
@@ -587,31 +586,30 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
 
             return new Promise((res, _) => {
-                let linkedDocument: TextDocument;
-                let urlString: String;
-                urlString = lineTextBefore.match(/(?<=[\(|\:\s])\S*(?=\#)/)[0];
-                if (urlString) {
-                    /* If the anchor is in a seperate file then the link is of the form:
-                       "[linkLabel](urlString#MyAnchor)" or "[linkLabel]: urlString#MyAnchor"
+                //// let linkedDocument: TextDocument;
+                //// let urlString = lineTextBefore.match(/(?<=[\(|\:\s])\S*(?=\#)/)![0];
+                //// if (urlString) {
+                ////     /* If the anchor is in a seperate file then the link is of the form:
+                ////        "[linkLabel](urlString#MyAnchor)" or "[linkLabel]: urlString#MyAnchor"
 
-                       If urlString is a ".md" or ".markdown" file and accessible then we should (pseudo code): 
+                ////        If urlString is a ".md" or ".markdown" file and accessible then we should (pseudo code):
 
-                           if (isAccessible(urlString)) {
-                               linkedDocument = open(urlString)
-                           } else {
-                               return []
-                           }
+                ////            if (isAccessible(urlString)) {
+                ////                linkedDocument = open(urlString)
+                ////            } else {
+                ////                return []
+                ////            }
 
-                       This has not been implemented yet so instead return with no completion for now. */
+                ////        This has not been implemented yet so instead return with no completion for now. */
 
-                    return []; // remove when implementing anchor completion fron external file
-                } else {
-                    /* else the anchor is in the current file and the link is of the form
-                       "[linkLabel](#MyAnchor)"" or "[linkLabel]: #MyAnchor"
-                       Then we should set linkedDocument = document */
-                    linkedDocument = document;
-                }
-                const toc: readonly Readonly<IHeading>[] = getAllTocEntry(linkedDocument, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
+                ////     res(undefined); // remove when implementing anchor completion fron external file
+                //// } else {
+                ////     /* else the anchor is in the current file and the link is of the form
+                ////        "[linkLabel](#MyAnchor)"" or "[linkLabel]: #MyAnchor"
+                ////        Then we should set linkedDocument = document */
+                ////     linkedDocument = document;
+                //// }
+                const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
 
                 const headingCompletions = toc.map<CompletionItem>(heading => {
                     const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
