@@ -1,6 +1,6 @@
 import * as assert from 'assert';
-import * as util from '../../util';
-import SlugifyMode from "../../contract/SlugifyMode";
+import SlugifyMode from "../../../contract/SlugifyMode";
+import * as util from "../../../util";
 
 type ICase = readonly [string, string];
 
@@ -25,6 +25,8 @@ const cases: Readonly<Record<SlugifyMode, readonly ICase[]>> = {
         ["1) not a list", "1-not-a-list"],
         ["foo & < >  \"foo\"", "foo---foo"],
         ["$\\LaTeX equations$", "latex-equations"],
+        ["Секция 1.1", "секция-11"], // Cyrillic.
+        ["Section 中文", "section-中文"], // CJK.
     ],
 
     [SlugifyMode.GitLab]: [
@@ -34,8 +36,10 @@ const cases: Readonly<Record<SlugifyMode, readonly ICase[]>> = {
         ["Via [remark-cli][]", "via-remark-cli"],
         ["1. not a list", "1-not-a-list"],
         ["1) not a list", "1-not-a-list"],
+        ["A  +  B", "a-b"], // One dash. (#469)
         ["foo & < >  \"foo\"", "foo-foo"],
         ["1", "anchor-1"], // GitLab adds "anchor-" before digit-only IDs
+        ["Секция 1.1", "секция-11"], // Cyrillic. (#469)
     ],
 
     [SlugifyMode.Gitea]: [
@@ -48,6 +52,7 @@ const cases: Readonly<Record<SlugifyMode, readonly ICase[]>> = {
         ["foo & < >  \"foo\"", "foo-foo"],
         ["$\\LaTeX equations$", "latex-equations"],
         [":checkered_flag: with emoji shortname", "checkered-flag-with-emoji-shortname"],
+        ["Секция 1.1", "секция-1-1"], // Cyrillic.
     ],
 
     [SlugifyMode.VisualStudioCode]: [

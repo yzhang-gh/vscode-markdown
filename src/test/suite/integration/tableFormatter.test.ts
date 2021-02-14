@@ -1,26 +1,18 @@
 import { workspace, Selection } from 'vscode';
-import { testMdFile, defaultConfigs, testCommand } from './testUtils';
-
-let previousConfigs = Object.assign({}, defaultConfigs);
+import { resetConfiguration, updateConfiguration } from "../util/configuration";
+import { testCommand } from "../util/generic";
 
 suite("Table formatter.", () => {
     suiteSetup(async () => {
-        // 💩 Preload file to prevent the first test to be treated timeout
-        await workspace.openTextDocument(testMdFile);
-
-        for (let key of Object.keys(previousConfigs)) {
-            previousConfigs[key] = workspace.getConfiguration('', null).get(key);
-        }
+        await resetConfiguration();
     });
 
     suiteTeardown(async () => {
-        for (let key of Object.keys(previousConfigs)) {
-            await workspace.getConfiguration('', null).update(key, previousConfigs[key], true);
-        }
+        await resetConfiguration();
     });
 
-    test("Normal", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Normal", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '| a | b |',
                 '| --- | --- |',
@@ -32,11 +24,11 @@ suite("Table formatter.", () => {
                 '| --- | --- |',
                 '| c   | d   |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0));
     });
 
-    test("Normal 2", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Normal, without leading and trailing pipes", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '',
                 'a |b',
@@ -50,11 +42,11 @@ suite("Table formatter.", () => {
                 '| --- | --- |',
                 '| c   | de  |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0));
     });
 
-    test("Contains '|'", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Plain pipes should always be cell separators", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '| a | b |',
                 '| --- | --- |',
@@ -66,12 +58,12 @@ suite("Table formatter.", () => {
                 '| ---- | --- |',
                 '| c `a | b`  | d |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0));
     });
 
     // https://github.github.com/gfm/#example-200
-    test(String.raw`Contains '\|'`, done => {
-        testCommand('editor.action.formatDocument', {},
+    test(String.raw`Contains escaped pipes '\|'`, () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '| a | b |',
                 '| --- | --- |',
@@ -85,11 +77,11 @@ suite("Table formatter.", () => {
                 '| c `a\\|b`   | d   |',
                 '| c **a\\|b** | d   |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0));
     });
 
-    test("中文", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("CJK characters", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '| a | b |',
                 '| --- | --- |',
@@ -101,11 +93,11 @@ suite("Table formatter.", () => {
                 '| ------ | --- |',
                 '| c 中文 | d   |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0));
     });
 
-    test("No table", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Not table", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 'a | b',
                 '---'
@@ -115,27 +107,29 @@ suite("Table formatter.", () => {
                 'a | b',
                 '---'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done)
+            new Selection(0, 0, 0, 0));
     });
 
-    test("Indented table", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Indented table, belongs to a list item", () => {
+        return testCommand('editor.action.formatDocument',
             [
+                '1. A list',
                 '    | a | b |',
                 '    | --- | --- |',
                 '    | c | d |'
             ],
             new Selection(0, 0, 0, 0),
             [
+                '1. A list',
                 '    | a   | b   |',
                 '    | --- | --- |',
                 '    | c   | d   |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done)
+            new Selection(0, 0, 0, 0));
     });
 
-    test("Mixed-indented table (no normalization)", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Mixed-indented table (no normalization)", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '   | a | b |',
                 '  | --- | --- |',
@@ -147,28 +141,31 @@ suite("Table formatter.", () => {
                 '   | --- | --- |',
                 '   | c   | d   |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done)
+            new Selection(0, 0, 0, 0));
     });
 
-    test("Mixed-indented table (normalization)", done => {
-        testCommand('editor.action.formatDocument',
-            { "markdown.extension.tableFormatter.normalizeIndentation": true },
-            [
-                '   | a | b |',
-                '  | --- | --- |',
-                '    | c | d |'
-            ],
-            new Selection(0, 0, 0, 0),
-            [
-                '    | a   | b   |',
-                '    | --- | --- |',
-                '    | c   | d   |'
-            ],
-            new Selection(0, 0, 0, 0)).then(done, done)
-    });
+    // This is definitely WRONG. It may produce an indented code block！
+    // test("Mixed-indented table (normalization)", async () => {
+    //     await updateConfiguration({ config: [["markdown.extension.tableFormatter.normalizeIndentation", true]] });
+    //     await testCommand('editor.action.formatDocument',
+    //         [
+    //             '   | a | b |',
+    //             '  | --- | --- |',
+    //             '    | c | d |'
+    //         ],
+    //         new Selection(0, 0, 0, 0),
+    //         [
+    //             '    | a   | b   |',
+    //             '    | --- | --- |',
+    //             '    | c   | d   |'
+    //         ],
+    //         new Selection(0, 0, 0, 0)
+    //     );
+    //     await resetConfiguration();
+    // });
 
-    test("Mixed ugly table", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Mixed ugly table", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '| a | b | c ',
                 ' --- | --- | :---:',
@@ -180,11 +177,11 @@ suite("Table formatter.", () => {
                 '| --- | --- | :---: |',
                 '| c   | d   |   e   |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done)
+            new Selection(0, 0, 0, 0));
     });
 
-    test("Indentation within cells", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Alignment and padding within cells", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '| Column L | Column C | Column R |',
                 '| ---- | :----: | ----: |',
@@ -198,11 +195,11 @@ suite("Table formatter.", () => {
                 '| c        |    d     |        e |',
                 '| fg       |    hi    |       jk |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done)
+            new Selection(0, 0, 0, 0));
     });
 
-    test("Contains '\\|' in last open cell", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Contains escaped pipes '\\|' in last data cell", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '', // Changing the first expected char somehow crashes the selection logic and the test fails
                 'a|b',
@@ -216,11 +213,11 @@ suite("Table formatter.", () => {
                 '| --- | ---- |',
                 '| c   | d\\|e |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0));
     });
 
-    test("Reduced width table", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Reduced width table", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '| a       | b    |',
                 '| ------- | ---- |',
@@ -232,11 +229,11 @@ suite("Table formatter.", () => {
                 '| --- | --- |',
                 '| c   | d   |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0));
     });
 
-    test("GitHub issue#381", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Empty cell with nothing between pipes (#381)", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '| a | b | c |',
                 '| --- | --- | --- |',
@@ -248,11 +245,11 @@ suite("Table formatter.", () => {
                 '| --- | --- | --- |',
                 '| a   |     | c   |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0));
     });
 
-    test("Special characters (inaccurate `string.length`)", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("CTL: Thai", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '| คุณครู | รั้วริม | ไอ้หนูน้อย |',
                 '| --- | --- | --- |',
@@ -264,11 +261,11 @@ suite("Table formatter.", () => {
                 '| ------- | ---------- | ------- |',
                 '| Teacher | The border | kids    |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0));
     });
 
-    test("GitHub issue #431 left-aligned single column table", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Left-aligned single column table (#431)", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '| h |',
                 '| --- |',
@@ -280,11 +277,11 @@ suite("Table formatter.", () => {
                 '| --- |',
                 '| a   |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0));
     });
 
-    test("GitHub issue #431 centre-aligned single column table", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Centre-aligned single column table (#431)", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '| h |',
                 '| :---: |',
@@ -296,11 +293,11 @@ suite("Table formatter.", () => {
                 '| :---: |',
                 '|   a   |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0));
     });
 
-    test("GitHub issue #431 right-aligned single column table", done => {
-        testCommand('editor.action.formatDocument', {},
+    test("Right-aligned single column table (#431)", () => {
+        return testCommand('editor.action.formatDocument',
             [
                 '| h |',
                 '| ---: |',
@@ -312,6 +309,6 @@ suite("Table formatter.", () => {
                 '| ---: |',
                 '|    a |'
             ],
-            new Selection(0, 0, 0, 0)).then(done, done);
+            new Selection(0, 0, 0, 0));
     });
 });
