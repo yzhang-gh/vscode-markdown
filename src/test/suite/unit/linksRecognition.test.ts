@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import * as formatting from '../../formatting';
+import * as formatting from '../../../formatting';
 
 
 suite("LinkRecognition.", () => {

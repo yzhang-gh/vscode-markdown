@@ -1,38 +1,44 @@
 import * as path from 'path';
 import * as Mocha from 'mocha';
 import * as glob from 'glob';
+import { resetConfiguration } from "./util/configuration";
+import { openDocument, sleep, Test_Md_File_Path } from "./util/generic";
 
-export function run(): Promise<void> {
+export async function run(): Promise<void> {
+	// Let VS Code load the test workspace.
+	await openDocument(Test_Md_File_Path);
+	await sleep(2000);
+	await resetConfiguration();
+
 	// Create the mocha test
 	const mocha = new Mocha({
 		color: true,
 		ui: 'tdd',
 	});
 
-	const testsRoot = path.resolve(__dirname, '..');
+	// Load the test suite.
+	const testSuiteRoot = path.resolve(__dirname);
+	const globOptions: glob.IOptions = { cwd: testSuiteRoot };
 
-	return new Promise((c, e) => {
-		glob('**/**.test.js', { cwd: testsRoot }, (err, files) => {
-			if (err) {
-				return e(err);
-			}
+	const unitTests = glob.sync("unit/**/*.test.js", globOptions);
+	const integrationTests = glob.sync("integration/**/*.test.js", globOptions);
 
-			// Add files to the test suite
-			files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
+	unitTests.forEach(f => mocha.addFile(path.resolve(testSuiteRoot, f))); // Run unit tests first.
+	integrationTests.forEach(f => mocha.addFile(path.resolve(testSuiteRoot, f)));
 
-			try {
-				// Run the mocha test
-				mocha.run(failures => {
-					if (failures > 0) {
-						e(new Error(`${failures} tests failed.`));
-					} else {
-						c();
-					}
-				});
-			} catch (err) {
-				console.error(err); // https://github.com/microsoft/vscode/issues/80757
-				e(err);
-			}
-		});
+	// Run tests.
+	return new Promise<void>((resolve, reject): void => {
+		try {
+			mocha.run(failures => {
+				// Ensure the control returns only after tests finished.
+				if (failures > 0) {
+					reject(new Error(`${failures} tests failed.`));
+				}
+				resolve();
+			});
+		} catch (err) {
+			console.error(err); // https://github.com/microsoft/vscode/issues/80757
+			throw err;
+		}
 	});
 }
