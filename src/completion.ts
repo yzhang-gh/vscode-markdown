@@ -425,7 +425,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         this.EXCLUDE_GLOB = '{' + excludePatterns.join(',') + '}';
     }
 
-    provideCompletionItems(document: TextDocument, position: Position, _token: CancellationToken, _context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList> {
+    async provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
         const lineTextAfter = document.lineAt(position.line).text.substring(position.character);
 
@@ -493,49 +493,98 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             } else {
                 return this.mathCompletions;
             }
-        } else if (/\[[^\]]*?\]\[[^\]]*$/.test(lineTextBefore)) {
+        } else if (/\[[^\[\]]*$/.test(lineTextBefore)) {
             /* ┌───────────────────────┐
                │ Reference link labels │
                └───────────────────────┘ */
+            const RXlookbehind = String.raw`(?<=(^[>]? {0,3}\[[ \t\r\n\f\v]*))`; // newline, not quoted, max 3 spaces, open [
+            const RXlinklabel = String.raw`(?<linklabel>([^\]]|(\\\]))*)`;       // string for linklabel, allows for /] in linklabel
+            const RXlink = String.raw`(?<link>((<[^>]*>)|([^< \t\r\n\f\v]+)))`;  // link either <mylink> or mylink
+            const RXlinktitle = String.raw`(?<title>[ \t\r\n\f\v]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$)`; // optional linktitle in "" or ''
+            const RXlookahead =
+                String.raw`(?=(\]:[ \t\r\n\f\v]*` + // close linklabel with ]:
+                RXlink + RXlinktitle +
+                String.raw`)`; // end regex
+            const RXflags = String.raw`mg`; // multiline & global
+            // This pattern matches linklabels in link references definitions:  [linklabel]: link "link title"
+            const pattern = new RegExp(RXlookbehind + RXlinklabel + RXlookahead, RXflags);
+
+            interface IReferenceDefinition {
+                label: string;
+                usageCount: number;
+            }
+
+            // TODO: may be extracted to a seperate function and used for all completions in the future.
+            const docText = document.getText();
+            /**
+             * NormalizedLabel (upper case) -> IReferenceDefinition
+             */
+            const refDefinitions = new Map<string, IReferenceDefinition>();
+
+            for (const match of docText.matchAll(pattern)) {
+                // Remove leading and trailing whitespace characters.
+                const label = match[0].replace(/^[ \t\r\n\f\v]+/, '').replace(/[ \t\r\n\f\v]+$/, '');
+                // For case-insensitive comparison.
+                const normalizedLabel = label.toUpperCase();
+
+                // The one that comes first in the document is used.
+                if (!refDefinitions.has(normalizedLabel)) {
+                    refDefinitions.set(normalizedLabel, {
+                        label, // Preserve original case in result.
+                        usageCount: 0,
+                    });
+                }
+            }
+
+            if (refDefinitions.size === 0 || token.isCancellationRequested) {
+                return;
+            }
+
+            // A confusing feature from #414. Not sure how to get it work.
+            const docLines = docText.split(/\r?\n/);
+            for (const crtLine of docLines) {
+                // Match something that may be a reference link.
+                const pattern = /\[([^\[\]]+?)\](?![(:\[])/g;
+                for (const match of crtLine.matchAll(pattern)) {
+                    const label = match[1];
+                    const record = refDefinitions.get(label.toUpperCase());
+                    if (record) {
+                        record.usageCount++;
+                    }
+                }
+            }
+
             let startIndex = lineTextBefore.lastIndexOf('[');
             const range = new Range(position.with({ character: startIndex + 1 }), position);
-            return new Promise((res, _) => {
-                const lines = document.getText().split(/\r?\n/);
-                const usageCounts = lines.reduce((useCounts, currentLine) => {
-                    let match: RegExpExecArray;
-                    const pattern = /\[[^\]]+\]\[([^\]]*?)\]/g;
-                    while ((match = pattern.exec(currentLine)) !== null) {
-                        let usedRef = match[1];
-                        if (!useCounts.has(usedRef)) {
-                            useCounts.set(usedRef, 0);
-                        }
-                        useCounts.set(usedRef, useCounts.get(usedRef) + 1);
-                    }
-                    return useCounts;
-                }, new Map<string, number>());
-                let refLabels = lines.reduce((prev, curr) => {
-                    let match;
-                    if ((match = /^\[([^\]]*?)\]: (\S*)( .*)?/.exec(curr)) !== null) {
-                        const ref = match[1];
-                        let item = new CompletionItem(ref, CompletionItemKind.Reference);
-                        const usages = usageCounts.get(ref) || 0;
-                        item.documentation = new MarkdownString(match[2]);
-                        item.detail = usages === 1 ? `1 usage` : `${usages} usages`;
-                        // Prefer unused items
-                        item.sortText = usages === 0 ? `0-${ref}` : item.sortText = `1-${ref}`;
-                        item.range = range;
-                        prev.push(item);
-                    }
-                    return prev;
-                }, []);
 
-                res(refLabels);
+            if (token.isCancellationRequested) {
+                return;
+            }
+
+            const completionItemList = Array.from<IReferenceDefinition, CompletionItem>(refDefinitions.values(), ref => {
+                const label = ref.label;
+                const item = new CompletionItem(label, CompletionItemKind.Reference);
+                const usages = ref.usageCount;
+                item.documentation = new MarkdownString(label);
+                item.detail = usages === 1 ? `1 usage` : `${usages} usages`;
+                // Prefer unused items. <https://github.com/yzhang-gh/vscode-markdown/pull/414#discussion_r272807189>
+                item.sortText = usages === 0 ? `0-${label}` : `1-${label}`;
+                item.range = range;
+                return item;
             });
-        } else if (/\[[^\]]*\]\(#[^\)]*$/.test(lineTextBefore)) {
+
+            return completionItemList;
+        } else if (
+            /\[[^\[\]]*?\]\(#[^#\)]*$/.test(lineTextBefore)
+            || /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore)
+            // /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // `[](url#anchor|` Link with anchor.
+            // || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // `[]: url#anchor|` Link reference definition with anchor.
+        ) {
             /* ┌───────────────────────────┐
                │ Anchor tags from headings │
                └───────────────────────────┘ */
-            let startIndex = lineTextBefore.lastIndexOf('(');
+            let startIndex = lineTextBefore.lastIndexOf('#') - 1;
+            let isLinkRefDefinition = /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore); // The same as the 2nd conditon above.
             let endPosition = position;
 
             let addClosingParen = false;
@@ -550,15 +599,39 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             } else {
                 // If no closing paren is found, replace all trailing non-white-space chars and add a closing paren
                 // distance to first non-whitespace or EOL
-                const toReplace = (lineTextAfter.search(/(?<=^\S+)(\s|$)/))
+                const toReplace = (lineTextAfter.search(/(?<=^\S+)(\s|$)/));
                 endPosition = position.with({ character: + endPosition.character + toReplace });
-
-                addClosingParen = true;
+                if (!isLinkRefDefinition) {
+                    addClosingParen = true;
+                }
             }
 
             const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
 
             return new Promise((res, _) => {
+                //// let linkedDocument: TextDocument;
+                //// let urlString = lineTextBefore.match(/(?<=[\(|\:\s])\S*(?=\#)/)![0];
+                //// if (urlString) {
+                ////     /* If the anchor is in a seperate file then the link is of the form:
+                ////        "[linkLabel](urlString#MyAnchor)" or "[linkLabel]: urlString#MyAnchor"
+
+                ////        If urlString is a ".md" or ".markdown" file and accessible then we should (pseudo code):
+
+                ////            if (isAccessible(urlString)) {
+                ////                linkedDocument = open(urlString)
+                ////            } else {
+                ////                return []
+                ////            }
+
+                ////        This has not been implemented yet so instead return with no completion for now. */
+
+                ////     res(undefined); // remove when implementing anchor completion fron external file
+                //// } else {
+                ////     /* else the anchor is in the current file and the link is of the form
+                ////        "[linkLabel](#MyAnchor)"" or "[linkLabel]: #MyAnchor"
+                ////        Then we should set linkedDocument = document */
+                ////     linkedDocument = document;
+                //// }
                 const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
 
                 const headingCompletions = toc.map<CompletionItem>(heading => {
@@ -575,14 +648,14 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
                 res(headingCompletions);
             });
-        } else if (/\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
+        } else if (/\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/.test(lineTextBefore)) {
             /* ┌────────────┐
                │ File paths │
                └────────────┘ */
             //// Should be after anchor completions
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
-            const typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2);
+            const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)[0];
             const basePath = getBasepath(document, typedDir);
             const isRootedPath = typedDir.startsWith('/');
 
