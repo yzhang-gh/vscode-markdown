@@ -508,56 +508,65 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             const RXflags = String.raw`mg`; // multiline & global
             // This pattern matches linklabels in link references definitions:  [linklabel]: link "link title"
             const pattern = new RegExp(RXlookbehind + RXlinklabel + RXlookahead, RXflags);
-            const refLabels: RegExpMatchArray | null = document.getText().match(pattern);
 
-            if (!refLabels) {
+            interface IReferenceDefinition {
+                label: string;
+                usageCount: number;
+            }
+
+            // TODO: may be extracted to a seperate function and used for all completions in the future.
+            const docText = document.getText();
+            const refDefinitions = new Map<string, IReferenceDefinition>();
+
+            for (const match of docText.matchAll(pattern)) {
+                // Remove leading and trailing whitespace characters.
+                const label = match[0].replace(/^[ \t\r\n\f\v]+/, '').replace(/[ \t\r\n\f\v]+$/, '');
+                // For case-insensitive comparison.
+                const normalizedLabel = label.toUpperCase();
+
+                // The one that comes first in the document is used.
+                if (!refDefinitions.has(normalizedLabel)) {
+                    refDefinitions.set(normalizedLabel, {
+                        label, // Preserve original case in result.
+                        usageCount: 0,
+                    });
+                }
+            }
+
+            if (refDefinitions.size === 0) {
                 return;
             }
 
-            // TODO: may be extracted to a seperate function and used for all completions in future
-            const tidyRefLabels = refLabels
-                // Remove leading and trailing whitespace characters in each label.
-                .map(str => str.replace(/^[ \t\r\n\f\v]+/, '').replace(/[ \t\r\n\f\v]+$/, ''))
-
-                // Remove duplicates. Perform case-insensitive comparison, but preserve original case in result.
-                .sort()
-                .reduce<string[]>((result, crt) => {
-                    if (
-                        (result.length > 0 && crt.toUpperCase() !== result[result.length - 1].toUpperCase())
-                        || result.length === 0
-                    ) {
-                        result.push(crt);
+            // A confusing feature from #414. Not sure how to get it work.
+            const docLines = docText.split(/\r?\n/);
+            for (const crtLine of docLines) {
+                // Match something that may be a reference link.
+                const pattern = /\[([^\[\]]+?)\](?![(:\[])/g;
+                for (const match of crtLine.matchAll(pattern)) {
+                    const label = match[1];
+                    const record = refDefinitions.get(label.toUpperCase());
+                    if (record) {
+                        record.usageCount++;
                     }
-                    return result;
-                }, []);
+                }
+            }
 
             let startIndex = lineTextBefore.lastIndexOf('[');
             const range = new Range(position.with({ character: startIndex + 1 }), position);
-            return new Promise((res, _) => {
-                // A confusing feature from #414. Not sure how to get it work.
-                const lines = document.getText().split(/\r?\n/);
-                const usageCounts = new Map<string, number>();
-                for (const currentLine of lines) {
-                    const pattern = /\[([^\]]+?)\](?![(:\[])/g;
-                    for (const match of currentLine.matchAll(pattern)) {
-                        const usedRef = match[1];
-                        const count = (usageCounts.get(usedRef) || 0) + 1;
-                        usageCounts.set(usedRef, count);
-                    }
-                }
 
-                const completionItemList = tidyRefLabels.map<CompletionItem>(function (ref) {
-                    const item = new CompletionItem(ref, CompletionItemKind.Reference);
-                    const usages = usageCounts.get(ref) || 0;
-                    item.documentation = new MarkdownString(ref);
-                    item.detail = usages === 1 ? `1 usage` : `${usages} usages`;
-                    // Prefer unused items. <https://github.com/yzhang-gh/vscode-markdown/pull/414#discussion_r272807189>
-                    item.sortText = usages === 0 ? `0-${ref}` : `1-${ref}`;
-                    item.range = range;
-                    return item;
-                });
-                res(completionItemList);
+            const completionItemList = Array.from<IReferenceDefinition, CompletionItem>(refDefinitions.values(), ref => {
+                const label = ref.label;
+                const item = new CompletionItem(label, CompletionItemKind.Reference);
+                const usages = ref.usageCount;
+                item.documentation = new MarkdownString(label);
+                item.detail = usages === 1 ? `1 usage` : `${usages} usages`;
+                // Prefer unused items. <https://github.com/yzhang-gh/vscode-markdown/pull/414#discussion_r272807189>
+                item.sortText = usages === 0 ? `0-${label}` : `1-${label}`;
+                item.range = range;
+                return item;
             });
+
+            return completionItemList;
         } else if (
             /\[[^\[\]]*?\]\(#[^#\)]*$/.test(lineTextBefore)
             || /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore)
