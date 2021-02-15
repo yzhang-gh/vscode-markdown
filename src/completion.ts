@@ -553,7 +553,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 res(completionItemList);
             });
         } else if (
-            /\[[^\]]*?\]\(#[^\)]*$/.test(lineTextBefore)
+            /\[[^\[\]]*?\]\(#[^#\)]*$/.test(lineTextBefore)
+            || /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore)
             // /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // `[](url#anchor|` Link with anchor.
             // || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // `[]: url#anchor|` Link reference definition with anchor.
         ) {
@@ -561,7 +562,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                │ Anchor tags from headings │
                └───────────────────────────┘ */
             let startIndex = lineTextBefore.lastIndexOf('#') - 1;
-            let isLinkRefDefinition = /^[>]? {0,3}\[[^\]]+?\]\:[ \t\f\v]*#*$/.test(lineTextBefore);
+            let isLinkRefDefinition = /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore); // The same as the 2nd conditon above.
             let endPosition = position;
 
             let addClosingParen = false;
