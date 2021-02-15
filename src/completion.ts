@@ -425,7 +425,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         this.EXCLUDE_GLOB = '{' + excludePatterns.join(',') + '}';
     }
 
-    provideCompletionItems(document: TextDocument, position: Position, _token: CancellationToken, _context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList> {
+    async provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
         const lineTextAfter = document.lineAt(position.line).text.substring(position.character);
 
@@ -516,6 +516,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
             // TODO: may be extracted to a seperate function and used for all completions in the future.
             const docText = document.getText();
+            /**
+             * NormalizedLabel (upper case) -> IReferenceDefinition
+             */
             const refDefinitions = new Map<string, IReferenceDefinition>();
 
             for (const match of docText.matchAll(pattern)) {
@@ -533,7 +536,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 }
             }
 
-            if (refDefinitions.size === 0) {
+            if (refDefinitions.size === 0 || token.isCancellationRequested) {
                 return;
             }
 
@@ -553,6 +556,10 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
             let startIndex = lineTextBefore.lastIndexOf('[');
             const range = new Range(position.with({ character: startIndex + 1 }), position);
+
+            if (token.isCancellationRequested) {
+                return;
+            }
 
             const completionItemList = Array.from<IReferenceDefinition, CompletionItem>(refDefinitions.values(), ref => {
                 const label = ref.label;
