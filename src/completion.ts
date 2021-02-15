@@ -493,10 +493,44 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             } else {
                 return this.mathCompletions;
             }
-        } else if (/\[[^\]]*$/.test(lineTextBefore)) {
+        } else if (/\[[^\[\]]*$/.test(lineTextBefore)) {
             /* ┌───────────────────────┐
                │ Reference link labels │
                └───────────────────────┘ */
+            const RXlookbehind = String.raw`(?<=(^[>]? {0,3}\[[ \t\r\n\f\v]*))`; // newline, not quoted, max 3 spaces, open [
+            const RXlinklabel = String.raw`(?<linklabel>([^\]]|(\\\]))*)`;       // string for linklabel, allows for /] in linklabel
+            const RXlink = String.raw`(?<link>((<[^>]*>)|([^< \t\r\n\f\v]+)))`;  // link either <mylink> or mylink
+            const RXlinktitle = String.raw`(?<title>[ \t\r\n\f\v]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$)`; // optional linktitle in "" or ''
+            const RXlookahead =
+                String.raw`(?=(\]:[ \t\r\n\f\v]*` + // close linklabel with ]:
+                RXlink + RXlinktitle +
+                String.raw`)`; // end regex
+            const RXflags = String.raw`mg`; // multiline & global
+            // This pattern matches linklabels in link references definitions:  [linklabel]: link "link title"
+            const pattern = new RegExp(RXlookbehind + RXlinklabel + RXlookahead, RXflags);
+            const refLabels: RegExpMatchArray | null = document.getText().match(pattern);
+
+            if (!refLabels) {
+                return;
+            }
+
+            // TODO: may be extracted to a seperate function and used for all completions in future
+            const tidyRefLabels = refLabels
+                // Remove leading and trailing whitespace characters in each label.
+                .map(str => str.replace(/^[ \t\r\n\f\v]+/, '').replace(/[ \t\r\n\f\v]+$/, ''))
+
+                // Remove duplicates. Perform case-insensitive comparison, but preserve original case in result.
+                .sort()
+                .reduce<string[]>((result, crt) => {
+                    if (
+                        (result.length > 0 && crt.toUpperCase() !== result[result.length - 1].toUpperCase())
+                        || result.length === 0
+                    ) {
+                        result.push(crt);
+                    }
+                    return result;
+                }, []);
+
             let startIndex = lineTextBefore.lastIndexOf('[');
             const range = new Range(position.with({ character: startIndex + 1 }), position);
             return new Promise((res, _) => {
@@ -511,34 +545,6 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                         usageCounts.set(usedRef, count);
                     }
                 }
-
-                const RXlookbehind = String.raw`(?<=(^[>]? {0,3}\[[ \t\r\n\f\v]*))`;  // newline, not quoted, max 3 spaces, open [
-                const RXlinklabel = String.raw`(?<linklabel>([^\]]|(\\\]))*)`;          // string for linklabel, allows for /] in linklabel
-                const RXlink = String.raw`(?<link>((<[^>]*>)|([^< \t\r\n\f\v]+)))`;    // link either <mylink> or mylink
-                const RXlinktitle = String.raw`(?<title>[ \t\r\n\f\v]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$)`; // optional linktitle in "" or ''
-                const RXlookahead = String.raw`(?=(\]:[ \t\r\n\f\v]*` + // close linklabel with ]:
-                                    RXlink + RXlinktitle +
-                                    String.raw`)`;  // end regex
-                const RXflags = String.raw`mg`;     // multiline & global
-                // This pattern matches linklabels in link references definitions:  [linklabel]: link "link title"
-                const pattern = new RegExp(RXlookbehind + RXlinklabel + RXlookahead, RXflags);
-                const refLabels = document.getText().match(pattern)!
-                    // Remove leading and trailing whitespace characters in each label.
-                    .map(str => str.replace(/^[ \t\r\n\f\v]+/, '').replace(/[ \t\r\n\f\v]+$/, ''));
-
-                // Remove duplicates. Perform case-insensitive comparison, but preserve original case in result.
-                // TODO: may be extracted to a seperate function and used for all completions in future
-                refLabels.sort();
-                const tidyRefLabels = refLabels.reduce<string[]>((result, crt) => {
-                    crt = crt.trim();
-                    if (
-                        (result.length > 0 && crt.toUpperCase() !== result[result.length - 1].toUpperCase())
-                        || result.length === 0
-                    ) {
-                        result.push(crt);
-                    }
-                    return result;
-                }, []);
 
                 const completionItemList = tidyRefLabels.map<CompletionItem>(function (ref) {
                     const item = new CompletionItem(ref, CompletionItemKind.Reference);
