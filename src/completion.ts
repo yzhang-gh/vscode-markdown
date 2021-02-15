@@ -648,14 +648,14 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
                 res(headingCompletions);
             });
-        } else if (/\[[^\]]*?\]((\([^\]*])|\:(\s?\S*))$/.test(lineTextBefore)) {
+        } else if (/\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/.test(lineTextBefore)) {
             /* ┌────────────┐
                │ File paths │
                └────────────┘ */
             //// Should be after anchor completions
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
-            const typedDir = lineTextBefore.match(/(?<=((\]\()|(\]\:\s?)))\S*$/)[0];
+            const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)[0];
             const basePath = getBasepath(document, typedDir);
             const isRootedPath = typedDir.startsWith('/');
 
