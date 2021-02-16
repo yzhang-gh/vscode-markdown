@@ -263,19 +263,28 @@ async function generateTocText(doc: TextDocument): Promise<string> {
 
     // The actual level range of a document can be smaller than settings. So we need to calculate the real start level.
     const startDepth = Math.max(tocConfig.startDepth, Math.min(...tocEntries.map(h => h.level)));
-    const order: number[] = new Array(tocConfig.endDepth - startDepth + 1).fill(0); // Used for ordered list
+    // Order counter for each heading level (from startDepth to endDepth), used only for ordered list
+    const orderCounter: number[] = new Array(tocConfig.endDepth - startDepth + 1).fill(0);
 
     tocEntries.forEach(entry => {
         const relativeLevel = entry.level - startDepth;
+        const currHeadingOrder = ++orderCounter[relativeLevel];
+        let indentationFix = '';
+        if (tocConfig.orderedList) {
+            const shift = orderCounter.slice(0, relativeLevel).map(c => String(c).length - 1).reduce((a, b) => a + b, 0);
+            indentationFix = ' '.repeat(shift);
+        }
 
         const row = [
-            docConfig.tab.repeat(relativeLevel),
-            (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : ++order[relativeLevel]) + '.' : tocConfig.listMarker) + ' ',
+            docConfig.tab.repeat(relativeLevel) + indentationFix,
+            (tocConfig.orderedList ? (orderedListMarkerIsOne ? '1' : currHeadingOrder) + '.' : tocConfig.listMarker) + ' ',
             tocConfig.plaintext ? entry.visibleText : `[${entry.visibleText}](#${entry.slug})`
         ];
         toc.push(row.join(''));
+
+        // Reset order counter for its sub-headings
         if (tocConfig.orderedList) {
-            order.fill(0, relativeLevel + 1);
+            orderCounter.fill(0, relativeLevel + 1);
         }
     });
     while (/^[ \t]/.test(toc[0])) {

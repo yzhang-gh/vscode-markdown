@@ -206,6 +206,59 @@ suite("TOC.", () => {
 
     });
 
+    test("Ordered list (list markers larger than 9)", async () => {
+        await updateConfiguration({ config: [["markdown.extension.toc.orderedList", true]] });
+        await testCommand('markdown.extension.toc.create',
+            [
+                '# H1',
+                '# H2',
+                '# H3',
+                '# H4',
+                '# H5',
+                '# H6',
+                '# H7',
+                '# H8',
+                '# H9',
+                '# H10',
+                '## H11',
+                '### H12',
+                '',
+                ''
+            ],
+            new Selection(13, 0, 13, 0),
+            [
+                '# H1',
+                '# H2',
+                '# H3',
+                '# H4',
+                '# H5',
+                '# H6',
+                '# H7',
+                '# H8',
+                '# H9',
+                '# H10',
+                '## H11',
+                '### H12',
+                '',
+                '1. [H1](#h1)',
+                '2. [H2](#h2)',
+                '3. [H3](#h3)',
+                '4. [H4](#h4)',
+                '5. [H5](#h5)',
+                '6. [H6](#h6)',
+                '7. [H7](#h7)',
+                '8. [H8](#h8)',
+                '9. [H9](#h9)',
+                '10. [H10](#h10)',
+                '    1. [H11](#h11)',
+                '       1. [H12](#h12)',
+                ''
+            ],
+            new Selection(25, 0, 25, 0)
+        );
+        await resetConfiguration();
+    });
+
     test("Setext headings", () => {
         return testCommand('markdown.extension.toc.create',
             [
