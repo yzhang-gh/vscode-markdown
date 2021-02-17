@@ -434,7 +434,6 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore) || /<img [^>]*src="[^"]*$/.test(lineTextBefore)) {
             let completionItemList = await this.imagePathCompletion(document, position, token, _context)
             return (completionItemList)
-
         } else if (
             //// ends with an odd number of backslashes
             (matches = lineTextBefore.match(/\\+$/)) !== null
@@ -459,7 +458,6 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         ) {
             let completionItemList = await this.anchorFromHeadingCompletion(document, position, token, _context)
             return (completionItemList)
-
         } else if (/\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/.test(lineTextBefore)) {
             let completionItemList = await this.filePathsCompletion(document, position, token, _context)
             return (completionItemList)
@@ -467,6 +465,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             return [];
         }
     }
+
     async imagePathCompletion(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character); //this line is duplicated on purpose for future extraction
         
@@ -707,7 +706,6 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             }
         });
     }
-
 }
 
 /**
