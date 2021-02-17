@@ -428,7 +428,6 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
     async provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
-        const lineTextAfter = document.lineAt(position.line).text.substring(position.character);
 
         let matches;
         matches = lineTextBefore.match(/\\+$/);
@@ -458,74 +457,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             // /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // `[](url#anchor|` Link with anchor.
             // || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // `[]: url#anchor|` Link reference definition with anchor.
         ) {
-            /* ┌───────────────────────────┐
-               │ Anchor tags from headings │
-               └───────────────────────────┘ */
-            let startIndex = lineTextBefore.lastIndexOf('#') - 1;
-            let isLinkRefDefinition = /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore); // The same as the 2nd conditon above.
-            let endPosition = position;
+            let completionItemList = await this.anchorFromHeadingCompletion(document, position, token, _context)
+            return (completionItemList)
 
-            let addClosingParen = false;
-            if (/^([^\) ]+\s*|^\s*)\)/.test(lineTextAfter)) {
-                // try to detect if user wants to replace a link (i.e. matching closing paren and )
-                // Either: ... <CURSOR> something <whitespace> )
-                //     or: ... <CURSOR> <whitespace> )
-                //     or: ... <CURSOR> )     (endPosition assignment is a no-op for this case)
-
-                // in every case, we want to remove all characters after the cursor and before that first closing paren
-                endPosition = position.with({ character: + endPosition.character + lineTextAfter.indexOf(')') });
-            } else {
-                // If no closing paren is found, replace all trailing non-white-space chars and add a closing paren
-                // distance to first non-whitespace or EOL
-                const toReplace = (lineTextAfter.search(/(?<=^\S+)(\s|$)/));
-                endPosition = position.with({ character: + endPosition.character + toReplace });
-                if (!isLinkRefDefinition) {
-                    addClosingParen = true;
-                }
-            }
-
-            const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
-
-            return new Promise((res, _) => {
-                //// let linkedDocument: TextDocument;
-                //// let urlString = lineTextBefore.match(/(?<=[\(|\:\s])\S*(?=\#)/)![0];
-                //// if (urlString) {
-                ////     /* If the anchor is in a seperate file then the link is of the form:
-                ////        "[linkLabel](urlString#MyAnchor)" or "[linkLabel]: urlString#MyAnchor"
-
-                ////        If urlString is a ".md" or ".markdown" file and accessible then we should (pseudo code):
-
-                ////            if (isAccessible(urlString)) {
-                ////                linkedDocument = open(urlString)
-                ////            } else {
-                ////                return []
-                ////            }
-
-                ////        This has not been implemented yet so instead return with no completion for now. */
-
-                ////     res(undefined); // remove when implementing anchor completion fron external file
-                //// } else {
-                ////     /* else the anchor is in the current file and the link is of the form
-                ////        "[linkLabel](#MyAnchor)"" or "[linkLabel]: #MyAnchor"
-                ////        Then we should set linkedDocument = document */
-                ////     linkedDocument = document;
-                //// }
-                const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
-
-                const headingCompletions = toc.map<CompletionItem>(heading => {
-                    const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
-
-                    if (addClosingParen) {
-                        item.insertText = item.label + ')';
-                    }
-
-                    item.documentation = heading.rawContent;
-                    item.range = range;
-                    return item;
-                });
-
-                res(headingCompletions);
-            });
         } else if (/\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/.test(lineTextBefore)) {
             /* ┌────────────┐
                │ File paths │
@@ -690,6 +624,82 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
         return completionItemList;
     }
+
+    async anchorFromHeadingCompletion(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
+        const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character); //this line is duplicated on purpose for future extraction
+        const lineTextAfter = document.lineAt(position.line).text.substring(position.character);
+
+        let startIndex = lineTextBefore.lastIndexOf('#') - 1;
+        let isLinkRefDefinition = /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore); // Check if this is a linkref definition
+        let endPosition = position;
+
+        let addClosingParen = false;
+        if (/^([^\) ]+\s*|^\s*)\)/.test(lineTextAfter)) {
+            // try to detect if user wants to replace a link (i.e. matching closing paren and )
+            // Either: ... <CURSOR> something <whitespace> )
+            //     or: ... <CURSOR> <whitespace> )
+            //     or: ... <CURSOR> )     (endPosition assignment is a no-op for this case)
+
+            // in every case, we want to remove all characters after the cursor and before that first closing paren
+            endPosition = position.with({ character: + endPosition.character + lineTextAfter.indexOf(')') });
+        } else {
+            // If no closing paren is found, replace all trailing non-white-space chars and add a closing paren
+            // distance to first non-whitespace or EOL
+            const toReplace = (lineTextAfter.search(/(?<=^\S+)(\s|$)/));
+            endPosition = position.with({ character: + endPosition.character + toReplace });
+            if (!isLinkRefDefinition) {
+                addClosingParen = true;
+            }
+        }
+
+        const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
+
+        if (token.isCancellationRequested) {  
+            return;
+        }
+
+        return new Promise((res, _) => {
+            //// let linkedDocument: TextDocument;
+            //// let urlString = lineTextBefore.match(/(?<=[\(|\:\s])\S*(?=\#)/)![0];
+            //// if (urlString) {
+            ////     /* If the anchor is in a seperate file then the link is of the form:
+            ////        "[linkLabel](urlString#MyAnchor)" or "[linkLabel]: urlString#MyAnchor"
+
+            ////        If urlString is a ".md" or ".markdown" file and accessible then we should (pseudo code):
+
+            ////            if (isAccessible(urlString)) {
+            ////                linkedDocument = open(urlString)
+            ////            } else {
+            ////                return []
+            ////            }
+
+            ////        This has not been implemented yet so instead return with no completion for now. */
+
+            ////     res(undefined); // remove when implementing anchor completion fron external file
+            //// } else {
+            ////     /* else the anchor is in the current file and the link is of the form
+            ////        "[linkLabel](#MyAnchor)"" or "[linkLabel]: #MyAnchor"
+            ////        Then we should set linkedDocument = document */
+            ////     linkedDocument = document;
+            //// }
+            const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
+
+            const headingCompletions = toc.map<CompletionItem>(heading => {
+                const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
+
+                if (addClosingParen) {
+                    item.insertText = item.label + ')';
+                }
+
+                item.documentation = heading.rawContent;
+                item.range = range;
+                return item;
+            });
+
+            res(headingCompletions);
+        });
+    }
+
 }
 
 /**
