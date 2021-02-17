@@ -461,30 +461,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             return (completionItemList)
 
         } else if (/\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/.test(lineTextBefore)) {
-            /* ┌────────────┐
-               │ File paths │
-               └────────────┘ */
-            //// Should be after anchor completions
-            if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
-
-            const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)[0];
-            const basePath = getBasepath(document, typedDir);
-            const isRootedPath = typedDir.startsWith('/');
-
-            return workspace.findFiles('**/*', this.EXCLUDE_GLOB).then(uris => {
-                let items = uris.map(uri => {
-                    const label = path.relative(basePath, uri.fsPath).replace(/\\/g, '/').replace(/ /g, '%20');
-                    let item = new CompletionItem(label, CompletionItemKind.File);
-                    item.sortText = label.replace(/\./g, '{');
-                    return item;
-                });
-
-                if (isRootedPath) {
-                    return items.filter(item => !item.label.startsWith('..'));
-                } else {
-                    return items;
-                }
-            });
+            let completionItemList = await this.filePathsCompletion(document, position, token, _context)
+            return (completionItemList)
         } else {
             return [];
         }
@@ -697,6 +675,36 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             });
 
             res(headingCompletions);
+        });
+    }
+
+    async filePathsCompletion(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
+        const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character); //this line is duplicated on purpose for future extraction
+        
+        //// Should be after anchor completions
+        if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
+
+        const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)[0];
+        const basePath = getBasepath(document, typedDir);
+        const isRootedPath = typedDir.startsWith('/');
+
+        if (token.isCancellationRequested) {  
+            return;
+        }
+
+        return workspace.findFiles('**/*', this.EXCLUDE_GLOB).then(uris => {
+            let items = uris.map(uri => {
+                const label = path.relative(basePath, uri.fsPath).replace(/\\/g, '/').replace(/ /g, '%20');
+                let item = new CompletionItem(label, CompletionItemKind.File);
+                item.sortText = label.replace(/\./g, '{');
+                return item;
+            });
+
+            if (isRootedPath) {
+                return items.filter(item => !item.label.startsWith('..'));
+            } else {
+                return items;
+            }
         });
     }
 
