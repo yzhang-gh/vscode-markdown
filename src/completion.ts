@@ -433,54 +433,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         let matches;
         matches = lineTextBefore.match(/\\+$/);
         if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore) || /<img [^>]*src="[^"]*$/.test(lineTextBefore)) {
-            /* ┌─────────────┐
-               │ Image paths │
-               └─────────────┘ */
-            if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
+            let completionItemList = await this.imagePathCompletion(document, position, token, _context)
+            return (completionItemList)
 
-            //// 🤔 better name?
-            let typedDir: string;
-            if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
-                //// `![](dir_here|)`
-                typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2);
-            } else {
-                //// `<img src="dir_here|">`
-                typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('="') + 2);
-            }
-            const basePath = getBasepath(document, typedDir);
-            const isRootedPath = typedDir.startsWith('/');
-
-            return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif,webp}', this.EXCLUDE_GLOB).then(uris => {
-                let items = uris.map(imgUri => {
-                    const label = path.relative(basePath, imgUri.fsPath).replace(/\\/g, '/');
-                    let item = new CompletionItem(label.replace(/ /g, '%20'), CompletionItemKind.File);
-
-                    //// Add image preview
-                    let dimensions: { width: number; height: number; };
-                    try {
-                        dimensions = sizeOf(imgUri.fsPath);
-                    } catch (error) {
-                        console.error(error);
-                        return item;
-                    }
-                    const maxWidth = 318;
-                    if (dimensions.width > maxWidth) {
-                        dimensions.height = Number(dimensions.height * maxWidth / dimensions.width);
-                        dimensions.width = maxWidth;
-                    }
-                    item.documentation = new MarkdownString(`![${label}](${imgUri.fsPath.replace(/ /g, '%20')}|width=${dimensions.width},height=${dimensions.height})`);
-
-                    item.sortText = label.replace(/\./g, '{');
-
-                    return item;
-                });
-
-                if (isRootedPath) {
-                    return items.filter(item => !item.label.startsWith('..'));
-                } else {
-                    return items;
-                }
-            });
         } else if (
             //// ends with an odd number of backslashes
             (matches = lineTextBefore.match(/\\+$/)) !== null
@@ -677,6 +632,59 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         } else {
             return [];
         }
+    }
+    async imagePathCompletion(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
+        const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character); //this line is duplicated on purpose for future extraction
+        
+        if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
+
+        //// 🤔 better name?
+        let typedDir: string;
+        if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
+            //// `![](dir_here|)`
+            typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2);
+        } else {
+            //// `<img src="dir_here|">`
+            typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('="') + 2);
+        }
+        const basePath = getBasepath(document, typedDir);
+        const isRootedPath = typedDir.startsWith('/');
+
+        if (token.isCancellationRequested) {  
+            return;
+        }
+
+        return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif,webp}', this.EXCLUDE_GLOB).then(uris => {
+            let items = uris.map(imgUri => {
+                const label = path.relative(basePath, imgUri.fsPath).replace(/\\/g, '/');
+                let item = new CompletionItem(label.replace(/ /g, '%20'), CompletionItemKind.File);
+
+                //// Add image preview
+                let dimensions: { width: number; height: number; };
+                try {
+                    dimensions = sizeOf(imgUri.fsPath);
+                } catch (error) {
+                    console.error(error);
+                    return item;
+                }
+                const maxWidth = 318;
+                if (dimensions.width > maxWidth) {
+                    dimensions.height = Number(dimensions.height * maxWidth / dimensions.width);
+                    dimensions.width = maxWidth;
+                }
+                item.documentation = new MarkdownString(`![${label}](${imgUri.fsPath.replace(/ /g, '%20')}|width=${dimensions.width},height=${dimensions.height})`);
+
+                item.sortText = label.replace(/\./g, '{');
+
+                return item;
+            });
+
+            if (isRootedPath) {
+                return items.filter(item => !item.label.startsWith('..'));
+            } else {
+                return items;
+            }
+        });    
     }
 }
 
