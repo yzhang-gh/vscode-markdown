@@ -321,7 +321,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     ];
     debugging0 = ['message', 'errmessage', 'show']
 
-    mathCompletions: CompletionItem[];
+    mathCompletionItems: CompletionItem[];
 
     EXCLUDE_GLOB: string;
 
@@ -399,10 +399,10 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             macroItems.push(item);
         }
 
-        this.mathCompletions = [...c1, ...c2, ...c3, envSnippet, ...macroItems];
+        this.mathCompletionItems = [...c1, ...c2, ...c3, envSnippet, ...macroItems];
 
         // Sort
-        this.mathCompletions.forEach(item => {
+        this.mathCompletionItems.forEach(item => {
             item.sortText = item.label.replace(/[a-zA-Z]/g, c => {
                 if (/[a-z]/.test(c)) {
                     return `0${c}`;
@@ -439,14 +439,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             (matches = lineTextBefore.match(/\\+$/)) !== null
             && matches[0].length % 2 !== 0
         ) {
-            /* ┌────────────────┐
-               │ Math functions │
-               └────────────────┘ */
-            if (mathEnvCheck(document, position) === "") {
-                return [];
-            } else {
-                return this.mathCompletions;
-            }
+            let completionItemList = await this.mathCompletion(document, position, token, _context)
+            return (completionItemList)
         } else if (/\[[^\[\]]*$/.test(lineTextBefore)) {
             let completionItemList = await this.referenceLinkLabelCompletion(document, position, token, _context)
             return (completionItemList)
@@ -705,6 +699,14 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 return items;
             }
         });
+    }
+
+    async mathCompletion(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
+        if (mathEnvCheck(document, position) === "") {
+            return [];
+        } else {
+            return this.mathCompletionItems;
+        }
     }
 }
 
