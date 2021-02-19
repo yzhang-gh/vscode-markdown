@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import SlugifyMode from "../../../contract/SlugifyMode";
-import * as util from "../../../util";
+import { slugify } from "../../../util/slugify";
 
 type ICase = readonly [string, string];
 
@@ -76,7 +76,7 @@ suite("Slugify function.", () => {
     for (const [group, testCase] of Object.entries(cases) as ReadonlyArray<[SlugifyMode, readonly ICase[]]>) {
         for (const [rawContent, slug] of testCase) {
             globalThis.test(`(${modeName[group]}) ${rawContent} → ${slug}`, () => {
-                assert.strictEqual(util.slugify(rawContent, { mode: group }), slug);
+                assert.strictEqual(slugify(rawContent, { mode: group }), slug);
             });
         }
     }

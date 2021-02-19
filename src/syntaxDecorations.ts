@@ -5,7 +5,7 @@
 "use strict";
 
 import * as vscode from "vscode";
-import { isInFencedCodeBlock, mathEnvCheck } from "./util";
+import { isInFencedCodeBlock, mathEnvCheck } from "./util/contextCheck";
 
 //#region Constant
 

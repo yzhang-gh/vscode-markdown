@@ -3,7 +3,7 @@
 // https://github.github.com/gfm/#tables-extension-
 
 import { CancellationToken, Disposable, DocumentFormattingEditProvider, EndOfLine, ExtensionContext, FormattingOptions, languages, Range, TextDocument, TextEdit, workspace } from 'vscode';
-import { mdDocSelector } from './util';
+import { Document_Selector_Markdown } from "./util/generic";
 //// This module can only be referenced with ECMAScript imports/exports by turning on the 'esModuleInterop' flag and referencing its default export.
 // import { GraphemeSplitter } from 'grapheme-splitter';
 import GraphemeSplitter = require('grapheme-splitter');
@@ -16,7 +16,7 @@ export function activate(_: ExtensionContext) {
     function registerFormatterIfEnabled() {
         const isEnabled = workspace.getConfiguration().get('markdown.extension.tableFormatter.enabled', true);
         if (isEnabled && !registration) {
-            registration = languages.registerDocumentFormattingEditProvider(mdDocSelector, new MarkdownDocumentFormatter());
+            registration = languages.registerDocumentFormattingEditProvider(Document_Selector_Markdown, new MarkdownDocumentFormatter());
         } else if (!isEnabled && registration) {
             registration.dispose();
             registration = undefined;
@@ -103,7 +103,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
 
         // Desired width of each column
         let colWidth = [];
-        // Alignment of each column        
+        // Alignment of each column
         let colAlign = []
         // Regex to extract cell content.
         // GitHub #24

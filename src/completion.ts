@@ -5,10 +5,11 @@ import sizeOf from 'image-size';
 import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
 import { getAllTocEntry, IHeading } from './toc';
-import { mathEnvCheck, mdDocSelector } from './util';
+import { mathEnvCheck } from "./util/contextCheck";
+import { Document_Selector_Markdown } from './util/generic';
 
 export function activate(context: ExtensionContext) {
-    context.subscriptions.push(languages.registerCompletionItemProvider(mdDocSelector, new MdCompletionItemProvider(), '(', '\\', '/', '[', '#'));
+    context.subscriptions.push(languages.registerCompletionItemProvider(Document_Selector_Markdown, new MdCompletionItemProvider(), '(', '\\', '/', '[', '#'));
 }
 
 class MdCompletionItemProvider implements CompletionItemProvider {

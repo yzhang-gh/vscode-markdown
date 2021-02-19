@@ -6,7 +6,7 @@ import MarkdownIt = require("markdown-it");
 import Token = require("markdown-it/lib/token");
 import LanguageIdentifier from "./contract/LanguageIdentifier";
 import type IDisposable from "./IDisposable";
-import { slugify } from './util';
+import { slugify } from "./util/slugify";
 import { MarkdownContribution, MarkdownContributionProvider, getMarkdownContributionProvider } from './markdownExtensions';
 
 // extensions that treat specially

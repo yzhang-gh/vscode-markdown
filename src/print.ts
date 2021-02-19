@@ -6,7 +6,7 @@ import { commands, ExtensionContext, TextDocument, Uri, window, workspace } from
 import { encodeHTML } from 'entities';
 import { localize } from './nls';
 import { mdEngine, extensionBlacklist } from "./markdownEngine";
-import { isMdEditor } from './util';
+import { isMdEditor } from "./util/generic";
 
 let thisContext: ExtensionContext;
 
