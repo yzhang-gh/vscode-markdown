@@ -1,18 +1,18 @@
-'use strict'
-
 import * as fs from 'fs';
+import * as path from "path";
+import * as vscode from "vscode";
 import sizeOf from 'image-size';
-import * as path from 'path';
-import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
 import { getAllTocEntry, IHeading } from './toc';
 import { mathEnvCheck } from "./util/contextCheck";
 import { Document_Selector_Markdown } from './util/generic';
 
-export function activate(context: ExtensionContext) {
-    context.subscriptions.push(languages.registerCompletionItemProvider(Document_Selector_Markdown, new MdCompletionItemProvider(), '(', '\\', '/', '[', '#'));
+export function activate(context: vscode.ExtensionContext) {
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider(Document_Selector_Markdown, new MdCompletionItemProvider(), '(', '\\', '/', '[', '#'));
 }
 
-class MdCompletionItemProvider implements CompletionItemProvider {
+type CompletionItemProviderResult = Promise<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem> | undefined>;
+
+class MdCompletionItemProvider implements vscode.CompletionItemProvider {
 
     // Suffixes explained:
     // \cmd         -> 0
@@ -88,8 +88,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'sout', 'boxed',
         'tag', 'tag*'
     ];
-    verticalLayout0 = ['atop']
-    verticalLayout1 = ['substack']
+    verticalLayout0 = ['atop'];
+    verticalLayout1 = ['substack'];
     verticalLayout2 = ['stackrel', 'overset', 'underset', 'raisebox'];
     overlap1 = ['mathllap', 'mathrlap', 'mathclap', 'llap', 'rlap', 'clap', 'smash'];
     spacing0 = [
@@ -116,7 +116,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'long', 'char', 'mathchoice', 'TextOrMath',
         '@ifstar', '@ifnextchar', '@firstoftwo', '@secondoftwo',
         'relax', 'expandafter', 'noexpand'
-    ]
+    ];
     bigOperators0 = [
         'sum', 'prod', 'bigotimes', 'bigvee',
         'int', 'coprod', 'bigoplus', 'bigwedge',
@@ -257,7 +257,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'xtofrom', 'xmapsto',
         'xlongequal'
     ];
-    braketNotation1 = ['bra', 'Bra', 'ket', 'Ket', 'braket']
+    braketNotation1 = ['bra', 'Bra', 'ket', 'Ket', 'braket'];
     classAssignment1 = [
         'mathbin', 'mathclose', 'mathinner', 'mathop',
         'mathopen', 'mathord', 'mathpunct', 'mathrel'
@@ -319,9 +319,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'circledS', 'spadesuit', 'spades',
         'maltese', 'minuso'
     ];
-    debugging0 = ['message', 'errmessage', 'show']
+    debugging0 = ['message', 'errmessage', 'show'];
 
-    mathCompletionItems: CompletionItem[];
+    mathCompletionItems: vscode.CompletionItem[];
 
     EXCLUDE_GLOB: string;
 
@@ -341,7 +341,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 ...this.debugging0
             ]
         )).map(cmd => {
-            let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
+            let item = new vscode.CompletionItem('\\' + cmd, vscode.CompletionItemKind.Function);
             item.insertText = cmd;
             return item;
         });
@@ -355,8 +355,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 ...this.braketNotation1, ...this.classAssignment1
             ]
         )).map(cmd => {
-            let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
-            item.insertText = new SnippetString(`${cmd}\{$1\}`);
+            let item = new vscode.CompletionItem('\\' + cmd, vscode.CompletionItemKind.Function);
+            item.insertText = new vscode.SnippetString(`${cmd}\{$1\}`);
             return item;
         });
         // \cmd{$1}{$2}
@@ -366,25 +366,25 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 ...this.fractions2, ...this.color2
             ]
         )).map(cmd => {
-            let item = new CompletionItem('\\' + cmd, CompletionItemKind.Function);
-            item.insertText = new SnippetString(`${cmd}\{$1\}\{$2\}`);
+            let item = new vscode.CompletionItem('\\' + cmd, vscode.CompletionItemKind.Function);
+            item.insertText = new vscode.SnippetString(`${cmd}\{$1\}\{$2\}`);
             return item;
         });
-        let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
-        envSnippet.insertText = new SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,rcases,smallmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
+        let envSnippet = new vscode.CompletionItem('\\begin', vscode.CompletionItemKind.Snippet);
+        envSnippet.insertText = new vscode.SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,rcases,smallmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
 
         // Pretend to support multi-workspacefolders
         let resource = null;
-        if (workspace.workspaceFolders !== undefined && workspace.workspaceFolders.length > 0) {
-            resource = workspace.workspaceFolders[0].uri;
+        if (vscode.workspace.workspaceFolders !== undefined && vscode.workspace.workspaceFolders.length > 0) {
+            resource = vscode.workspace.workspaceFolders[0].uri;
         }
 
         // Import macros from configurations
-        let configMacros = workspace.getConfiguration('markdown.extension.katex', resource).get<object>('macros');
-        var macroItems: CompletionItem[] = [];
+        let configMacros = vscode.workspace.getConfiguration('markdown.extension.katex', resource).get<object>('macros');
+        var macroItems: vscode.CompletionItem[] = [];
         for (const cmd of Object.keys(configMacros)) {
             const expansion: string = configMacros[cmd];
-            let item = new CompletionItem(cmd, CompletionItemKind.Function);
+            let item = new vscode.CompletionItem(cmd, vscode.CompletionItemKind.Function);
 
             // Find the number of arguments in the expansion
             let numArgs = 0;
@@ -395,7 +395,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 }
             }
 
-            item.insertText = new SnippetString(cmd.slice(1) + [...Array(numArgs).keys()].map(i => `\{$${i + 1}\}`).join(""));
+            item.insertText = new vscode.SnippetString(cmd.slice(1) + [...Array(numArgs).keys()].map(i => `\{$${i + 1}\}`).join(""));
             macroItems.push(item);
         }
 
@@ -413,8 +413,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         });
 
         let excludePatterns = ['**/node_modules', '**/bower_components', '**/*.code-search'];
-        if (workspace.getConfiguration('markdown.extension.completion', resource).get<boolean>('respectVscodeSearchExclude')) {
-            const configExclude = workspace.getConfiguration('search', resource).get<object>('exclude');
+        if (vscode.workspace.getConfiguration('markdown.extension.completion', resource).get<boolean>('respectVscodeSearchExclude')) {
+            const configExclude = vscode.workspace.getConfiguration('search', resource).get<object>('exclude');
             for (const key of Object.keys(configExclude)) {
                 if (configExclude[key] === true) {
                     excludePatterns.push(key);
@@ -426,44 +426,44 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         this.EXCLUDE_GLOB = '{' + excludePatterns.join(',') + '}';
     }
 
-    async provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
+    async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, _context: vscode.CompletionContext): CompletionItemProviderResult {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
 
         let matches;
         matches = lineTextBefore.match(/\\+$/);
         if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore) || /<img [^>]*src="[^"]*$/.test(lineTextBefore)) {
-            let completionItemList = await this.imagePathCompletion(document, position, token, _context)
-            return (completionItemList)
+            let completionItemList = await this.imagePathCompletion(document, position, token, _context);
+            return (completionItemList);
         } else if (
             //// ends with an odd number of backslashes
             (matches = lineTextBefore.match(/\\+$/)) !== null
             && matches[0].length % 2 !== 0
         ) {
-            let completionItemList = await this.mathCompletion(document, position, token, _context)
-            return (completionItemList)
+            let completionItemList = await this.mathCompletion(document, position, token, _context);
+            return (completionItemList);
         } else if (/\[[^\[\]]*$/.test(lineTextBefore)) {
-            let completionItemList = await this.referenceLinkLabelCompletion(document, position, token, _context)
-            return (completionItemList)
+            let completionItemList = await this.referenceLinkLabelCompletion(document, position, token, _context);
+            return (completionItemList);
         } else if (
             /\[[^\[\]]*?\]\(#[^#\)]*$/.test(lineTextBefore)
             || /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore)
             // /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // `[](url#anchor|` Link with anchor.
             // || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // `[]: url#anchor|` Link reference definition with anchor.
         ) {
-            let completionItemList = await this.anchorFromHeadingCompletion(document, position, token, _context)
-            return (completionItemList)
+            let completionItemList = await this.anchorFromHeadingCompletion(document, position, token, _context);
+            return (completionItemList);
         } else if (/\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/.test(lineTextBefore)) {
-            let completionItemList = await this.filePathsCompletion(document, position, token, _context)
-            return (completionItemList)
+            let completionItemList = await this.filePathsCompletion(document, position, token, _context);
+            return (completionItemList);
         } else {
             return [];
         }
     }
 
-    async imagePathCompletion(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
+    async imagePathCompletion(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, _context: vscode.CompletionContext): CompletionItemProviderResult {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character); //this line is duplicated on purpose for future extraction
-        
-        if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
+
+        if (vscode.workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
         //// 🤔 better name?
         let typedDir: string;
@@ -477,14 +477,14 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         const basePath = getBasepath(document, typedDir);
         const isRootedPath = typedDir.startsWith('/');
 
-        if (token.isCancellationRequested) {  
+        if (token.isCancellationRequested) {
             return;
         }
 
-        return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif,webp}', this.EXCLUDE_GLOB).then(uris => {
+        return vscode.workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif,webp}', this.EXCLUDE_GLOB).then(uris => {
             let items = uris.map(imgUri => {
                 const label = path.relative(basePath, imgUri.fsPath).replace(/\\/g, '/');
-                let item = new CompletionItem(label.replace(/ /g, '%20'), CompletionItemKind.File);
+                let item = new vscode.CompletionItem(label.replace(/ /g, '%20'), vscode.CompletionItemKind.File);
 
                 //// Add image preview
                 let dimensions: { width: number; height: number; };
@@ -499,7 +499,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     dimensions.height = Number(dimensions.height * maxWidth / dimensions.width);
                     dimensions.width = maxWidth;
                 }
-                item.documentation = new MarkdownString(`![${label}](${imgUri.fsPath.replace(/ /g, '%20')}|width=${dimensions.width},height=${dimensions.height})`);
+                item.documentation = new vscode.MarkdownString(`![${label}](${imgUri.fsPath.replace(/ /g, '%20')}|width=${dimensions.width},height=${dimensions.height})`);
 
                 item.sortText = label.replace(/\./g, '{');
 
@@ -511,10 +511,10 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             } else {
                 return items;
             }
-        });    
+        });
     }
 
-    async referenceLinkLabelCompletion(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
+    async referenceLinkLabelCompletion(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, _context: vscode.CompletionContext): CompletionItemProviderResult {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character); //this line is duplicated on purpose for future extraction
 
         const RXlookbehind = String.raw`(?<=(^[>]? {0,3}\[[ \t\r\n\f\v]*))`; // newline, not quoted, max 3 spaces, open [
@@ -575,17 +575,17 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         }
 
         let startIndex = lineTextBefore.lastIndexOf('[');
-        const range = new Range(position.with({ character: startIndex + 1 }), position);
+        const range = new vscode.Range(position.with({ character: startIndex + 1 }), position);
 
         if (token.isCancellationRequested) {
             return;
         }
 
-        const completionItemList = Array.from<IReferenceDefinition, CompletionItem>(refDefinitions.values(), ref => {
+        const completionItemList = Array.from<IReferenceDefinition, vscode.CompletionItem>(refDefinitions.values(), ref => {
             const label = ref.label;
-            const item = new CompletionItem(label, CompletionItemKind.Reference);
+            const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Reference);
             const usages = ref.usageCount;
-            item.documentation = new MarkdownString(label);
+            item.documentation = new vscode.MarkdownString(label);
             item.detail = usages === 1 ? `1 usage` : `${usages} usages`;
             // Prefer unused items. <https://github.com/yzhang-gh/vscode-markdown/pull/414#discussion_r272807189>
             item.sortText = usages === 0 ? `0-${label}` : `1-${label}`;
@@ -596,7 +596,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         return completionItemList;
     }
 
-    async anchorFromHeadingCompletion(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
+    async anchorFromHeadingCompletion(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, _context: vscode.CompletionContext): CompletionItemProviderResult {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character); //this line is duplicated on purpose for future extraction
         const lineTextAfter = document.lineAt(position.line).text.substring(position.character);
 
@@ -623,9 +623,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             }
         }
 
-        const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
+        const range = new vscode.Range(position.with({ character: startIndex + 1 }), endPosition);
 
-        if (token.isCancellationRequested) {  
+        if (token.isCancellationRequested) {
             return;
         }
 
@@ -655,8 +655,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             //// }
             const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
 
-            const headingCompletions = toc.map<CompletionItem>(heading => {
-                const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
+            const headingCompletions = toc.map<vscode.CompletionItem>(heading => {
+                const item = new vscode.CompletionItem('#' + heading.slug, vscode.CompletionItemKind.Reference);
 
                 if (addClosingParen) {
                     item.insertText = item.label + ')';
@@ -671,24 +671,24 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         });
     }
 
-    async filePathsCompletion(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
+    async filePathsCompletion(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, _context: vscode.CompletionContext): CompletionItemProviderResult {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character); //this line is duplicated on purpose for future extraction
-        
+
         //// Should be after anchor completions
-        if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
+        if (vscode.workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
         const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)[0];
         const basePath = getBasepath(document, typedDir);
         const isRootedPath = typedDir.startsWith('/');
 
-        if (token.isCancellationRequested) {  
+        if (token.isCancellationRequested) {
             return;
         }
 
-        return workspace.findFiles('**/*', this.EXCLUDE_GLOB).then(uris => {
+        return vscode.workspace.findFiles('**/*', this.EXCLUDE_GLOB).then(uris => {
             let items = uris.map(uri => {
                 const label = path.relative(basePath, uri.fsPath).replace(/\\/g, '/').replace(/ /g, '%20');
-                let item = new CompletionItem(label, CompletionItemKind.File);
+                let item = new vscode.CompletionItem(label, vscode.CompletionItemKind.File);
                 item.sortText = label.replace(/\./g, '{');
                 return item;
             });
@@ -701,7 +701,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         });
     }
 
-    async mathCompletion(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
+    async mathCompletion(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, _context: vscode.CompletionContext): CompletionItemProviderResult {
         if (mathEnvCheck(document, position) === "") {
             return [];
         } else {
@@ -714,15 +714,15 @@ class MdCompletionItemProvider implements CompletionItemProvider {
  * @param doc
  * @param dir The dir already typed in the src field, e.g. `[alt text](dir_here|)`
  */
-function getBasepath(doc: TextDocument, dir: string): string {
+function getBasepath(doc: vscode.TextDocument, dir: string): string {
     if (dir.includes('/')) {
         dir = dir.substr(0, dir.lastIndexOf('/') + 1);
     } else {
         dir = '';
     }
 
-    let root = workspace.getWorkspaceFolder(doc.uri).uri.fsPath;
-    const rootFolder = workspace.getConfiguration('markdown.extension.completion', doc.uri).get<string>('root', '');
+    let root = vscode.workspace.getWorkspaceFolder(doc.uri).uri.fsPath;
+    const rootFolder = vscode.workspace.getConfiguration('markdown.extension.completion', doc.uri).get<string>('root', '');
     if (rootFolder.length > 0 && fs.existsSync(path.join(root, rootFolder))) {
         root = path.join(root, rootFolder);
     }
