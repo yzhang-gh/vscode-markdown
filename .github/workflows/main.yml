@@ -49,20 +49,12 @@ jobs:
           npm install -g vsce
 
       # Our prepublish script runs in production mode by default.
-      - name: Build production
-        run: vsce package
-
-      - name: "Set prepublish script for debug build"
+      # We should run tests against debug build to make error messages as useful as possible.
+      - name: "Build"
         shell: pwsh
         run: |
-          $packageManifest = Get-Content './package.json' | ConvertFrom-Json -NoEnumerate
-          $packageManifest.scripts.'vscode:prepublish' = 'webpack --mode development'
-          $packageManifest | ConvertTo-Json -Depth 100 | Out-File -FilePath './package.json' -Encoding 'utf8NoBOM'
-
-      # We should run tests against debug build to make error messages as useful as possible.
-      # Thus, build a debug package first, and use it in test script later.
-      - name: Build debug
-        run: |
+          vsce package
+          $env:NODE_ENV = 'development'
           vsce package --out debug.vsix
 
       - name: Test

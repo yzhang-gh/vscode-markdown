@@ -13,9 +13,15 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+// NODE_ENV is a convention established by Express.
+// We only distinguish "development" or not.
+const isDevelopment = process.env["NODE_ENV"] === "development";
+
 const projectRootPath = path.resolve(__dirname, "..");
 
 /* Check environment. */
+
+console.log("Mode:", isDevelopment ? "development" : "production");
 
 // Warn if the caller might be using this module in a wrong way.
 if (process.cwd() !== projectRootPath) {
@@ -56,7 +62,7 @@ if (isWelcomeMessagesExist) {
 
 console.log("\nCompile extension...\n");
 
-spawn("npx", ["webpack", "--mode", "production"], {
+spawn("npx", ["webpack", "--mode", isDevelopment ? "development" : "production"], {
     cwd: projectRootPath,
     shell: process.platform === "win32", // Windows compatibility.
     stdio: "inherit",

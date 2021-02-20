@@ -50,15 +50,10 @@ jobs:
           npm ci
           npm install -g vsce
 
-      - name: "Set prepublish script for debug build"
+      - name: "Build debug"
         shell: pwsh
         run: |
-          $packageManifest = Get-Content './package.json' | ConvertFrom-Json -NoEnumerate
-          $packageManifest.scripts.'vscode:prepublish' = 'webpack --mode development'
-          $packageManifest | ConvertTo-Json -Depth 100 | Out-File -FilePath './package.json' -Encoding 'utf8NoBOM'
-
-      - name: Build debug
-        run: |
+          $env:NODE_ENV = 'development'
           vsce package --out debug.vsix
 
       - name: Test
