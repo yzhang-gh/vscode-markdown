@@ -75,8 +75,7 @@ class MdCompletionItemProvider implements vscode.CompletionItemProvider {
     async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, _context: vscode.CompletionContext): CompletionItemProviderResult {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
 
-        let matches;
-        matches = lineTextBefore.match(/\\+$/);
+        let matches: string[];
         if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore) || /<img [^>]*src="[^"]*$/.test(lineTextBefore)) {
             let completionItemList = await this.imagePathCompletion(document, position, token, _context);
             return (completionItemList);
