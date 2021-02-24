@@ -75,15 +75,13 @@ class MdCompletionItemProvider implements vscode.CompletionItemProvider {
     async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, _context: vscode.CompletionContext): CompletionItemProviderResult {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
 
-        let matches: string[];
-
         /**
         * List of regex expressions used for completion matching.
         */
         const matchRegex = {
             imagePath: /!\[[^\]]*?\]\([^\)]*$/,
             imagePathHTML: /<img [^>]*src="[^"]*$/,
-            latexCmd: /\[[^\[\]]*$/,
+            latexCmd: /(^|[^\\])([\\]{2})*\\$/, // ends with an odd number of backslashes
             linkAnchor: /\[[^\[\]]*?\]\(#[^#\)]*$/,
             refLinkAnchor: /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/,
             linkUrl: /\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/  // this is really linkUrl OR'd with linkRefUrl, 
@@ -94,11 +92,7 @@ class MdCompletionItemProvider implements vscode.CompletionItemProvider {
         if (matchRegex.imagePath.test(lineTextBefore) || matchRegex.imagePathHTML.test(lineTextBefore)) {
             let completionItemList = await this.imagePathCompletion(document, position, token, _context);
             return (completionItemList);
-        } else if (
-            //// ends with an odd number of backslashes
-            (matches = lineTextBefore.match(/\\+$/)) !== null
-            && matches[0].length % 2 !== 0
-        ) {
+        } else if (matchRegex.latexCmd.test(lineTextBefore)) {
             let completionItemList = await this.mathCompletion(document, position, token, _context);
             return (completionItemList);
         } else if (matchRegex.latexCmd.test(lineTextBefore)) {
