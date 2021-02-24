@@ -76,7 +76,22 @@ class MdCompletionItemProvider implements vscode.CompletionItemProvider {
         const lineTextBefore = document.lineAt(position.line).text.substring(0, position.character);
 
         let matches: string[];
-        if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore) || /<img [^>]*src="[^"]*$/.test(lineTextBefore)) {
+
+        /**
+        * List of regex expressions used for completion matching.
+        */
+        const matchRegex = {
+            imagePath: /!\[[^\]]*?\]\([^\)]*$/,
+            imagePathHTML: /<img [^>]*src="[^"]*$/,
+            latexCmd: /\[[^\[\]]*$/,
+            linkAnchor: /\[[^\[\]]*?\]\(#[^#\)]*$/,
+            refLinkAnchor: /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/,
+            linkUrl: /\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/  // this is really linkUrl OR'd with linkRefUrl, 
+            //linkUrlAnchor: /\[[^\]]*\]\((\S*)#[^\)]*$/, // `[](url#anchor|` Link with anchor.
+            //reLinkUrlAnchor: /\[[^\]]*\]\:\s?(\S*)#$/ // `[]: url#anchor|` Link reference definition with anchor.
+        };
+
+        if (matchRegex.imagePath.test(lineTextBefore) || matchRegex.imagePathHTML.test(lineTextBefore)) {
             let completionItemList = await this.imagePathCompletion(document, position, token, _context);
             return (completionItemList);
         } else if (
@@ -86,18 +101,18 @@ class MdCompletionItemProvider implements vscode.CompletionItemProvider {
         ) {
             let completionItemList = await this.mathCompletion(document, position, token, _context);
             return (completionItemList);
-        } else if (/\[[^\[\]]*$/.test(lineTextBefore)) {
+        } else if (matchRegex.latexCmd.test(lineTextBefore)) {
             let completionItemList = await this.referenceLinkLabelCompletion(document, position, token, _context);
             return (completionItemList);
         } else if (
-            /\[[^\[\]]*?\]\(#[^#\)]*$/.test(lineTextBefore)
-            || /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore)
-            // /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // `[](url#anchor|` Link with anchor.
-            // || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // `[]: url#anchor|` Link reference definition with anchor.
+            matchRegex.linkAnchor.test(lineTextBefore)
+            || matchRegex.refLinkAnchor.test(lineTextBefore)
+            // || matchRegex.linkUrlAnchor.test(lineTextBefore)
+            // || matchRegex.refLinkUrlAnchor.test(lineTextBefore)
         ) {
             let completionItemList = await this.anchorFromHeadingCompletion(document, position, token, _context);
             return (completionItemList);
-        } else if (/\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/.test(lineTextBefore)) {
+        } else if (matchRegex.linkUrl.test(lineTextBefore)) {
             let completionItemList = await this.filePathsCompletion(document, position, token, _context);
             return (completionItemList);
         } else {
