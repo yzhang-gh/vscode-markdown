@@ -101,9 +101,9 @@ function getMathState(editor: TextEditor, cursor: Position): MathBlockState {
     } else if (
         editor.document.lineAt(cursor.line).text === ''
         && cursor.line > 0
-        && editor.document.lineAt(cursor.line - 1).text === '$$'
+        && editor.document.lineAt(cursor.line - 1).text.endsWith('$$')
         && cursor.line < editor.document.lineCount - 1
-        && editor.document.lineAt(cursor.line + 1).text === '$$'
+        && editor.document.lineAt(cursor.line + 1).text.startsWith('$$')
     ) {
         return MathBlockState.MULTI_DISPLAYED
     } else {
@@ -133,7 +133,8 @@ function setMathState(editor: TextEditor, cursor: Position, oldMathBlockState: M
                 rangeToBeDeleted = new Range(new Position(cursor.line, cursor.character - 3), new Position(cursor.line, cursor.character + 3));
                 break;
             case MathBlockState.MULTI_DISPLAYED:
-                rangeToBeDeleted = new Range(new Position(cursor.line - 1, 0), new Position(cursor.line + 1, 2));
+                const startCharIndex = editor.document.lineAt(cursor.line - 1).text.length - 2;
+                rangeToBeDeleted = new Range(new Position(cursor.line - 1, startCharIndex), new Position(cursor.line + 1, 2));
                 break;
         }
         editBuilder.delete(rangeToBeDeleted)
