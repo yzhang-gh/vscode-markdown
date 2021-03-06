@@ -52,7 +52,7 @@ function onEnterKey(modifiers?: string) {
     }
 
     //// If it's an empty list item, remove it
-    if (/^(>|([-+*]|[0-9]+[.)])( +\[[ x]\])?)$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
+    if (/^([-+*]|[0-9]+[.)])( +\[[ x]\])?$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
         return editor.edit(editBuilder => {
             editBuilder.delete(line.range);
             editBuilder.insert(line.range.end, '\n');
@@ -63,7 +63,28 @@ function onEnterKey(modifiers?: string) {
 
     let matches;
     if (/^> /.test(textBeforeCursor)) {
-        // Quote block
+        // Block quotes
+
+        // Case 1: ending a blockquote if seeing 2 consecutive empty `>` lines
+        if (
+            // The current line is an empty line
+            line.text.replace(/[ \t]+$/, '') === '>'
+        ) {
+            if (cursorPos.line === 0) {
+                return editor.edit(editorBuilder => {
+                    editorBuilder.replace(new Range(new Position(0, 0), new Position(cursorPos.line, cursorPos.character)), '');
+                }).then(() => { editor.revealRange(editor.selection) });
+            } else {
+                const prevLineText = editor.document.lineAt(cursorPos.line - 1).text;
+                if (prevLineText.replace(/[ \t]+$/, '') === '>') {
+                    return editor.edit(editorBuilder => {
+                        editorBuilder.replace(new Range(new Position(cursorPos.line - 1, 0), new Position(cursorPos.line, cursorPos.character)), '\n');
+                    }).then(() => { editor.revealRange(editor.selection) });
+                }
+            }
+        }
+
+        // Case 2: `>` continuation
         return editor.edit(editBuilder => {
             editBuilder.insert(lineBreakPos, `\n> `);
         }).then(() => {
