@@ -115,7 +115,7 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
   and `Markdown: Print documents to HTML` (batch mode)
 
 - **Compatible** with other installed Markdown plugins (e.g. [Markdown Footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes))
-  The exported HTML should look the same as inside VSCode.
+  The exported HTML should look the same as inside VS Code.
 
 - Use comment `<!-- title: Your Title -->` to specify a title of the exported HTML.
 
@@ -215,7 +215,7 @@ Tip: also support the option `completion.root`
 | `markdown.extension.preview.autoShowPreviewToSide`         | `false`    | Automatically show preview when opening a Markdown file.                                         |
 | `markdown.extension.print.absoluteImgPath`                 | `true`     | Convert image path to absolute path                                                              |
 | `markdown.extension.print.imgToBase64`                     | `false`    | Convert images to base64 when printing to HTML                                                   |
-| `markdown.extension.print.includeVscodeStylesheets`        | `true`     | Whether to include VSCode's default styles                                                       |
+| `markdown.extension.print.includeVscodeStylesheets`        | `true`     | Whether to include VS Code's default styles                                                      |
 | `markdown.extension.print.onFileSave`                      | `false`    | Print to HTML on file save                                                                       |
 | `markdown.extension.print.theme`                           | `light`    | Theme of the exported HTML                                                                       |
 | `markdown.extension.print.validateUrls`                    | `true`     | Enable/disable URL validation when printing                                                      |
@@ -238,11 +238,12 @@ Tip: also support the option `completion.root`
 
 #### Q: Error "command 'markdown.extension.onXXXKey' not found"
 
-In most cases, it is because VSCode needs a few seconds to load this extension when you open a Markdown file *for the first time*. (You will see a message "Activating Extensions..." on the status bar.)
+- In most cases, it is because VS Code **needs a few seconds to load** this extension when you open a Markdown file *for the first time*. (You will see a message "Activating Extensions..." on the status bar.)
+- If you still see this "command not found" error after waiting for a long time, please try to **restart** VS Code (or **reinstall** this extension<sup>1</sup> if needed).
+- If it doesn't help, feel free to open a new issue on [GitHub](https://github.com/yzhang-gh/vscode-markdown/issues). It would be better if you can go to VS Code's menubar **Help** > **Toggle Developer Tools** and report any suspicious error information to us.
+- (As a last resort, you may choose to delete `onXXXKey` keys through [VS Code's Keyboard Shortcuts editor](https://code.visualstudio.com/docs/getstarted/keybindings) if you do not need the [list editing feature](https://github.com/yzhang-gh/vscode-markdown#list-editing) at all.)
 
-If you still see this "command not found" error after waiting for a long time, please try to restart VSCode (or reinstall this extension<sup>1</sup> if needed). Otherwise feel free to open a new issue on GitHub.
-
-<sup>1. uninstall this extension, <b>restart VSCode (important!)</b> and then reinstall</sup>
+<sup>1. uninstall this extension, <b>restart VS Code (important!)</b> and then reinstall</sup>
 
 #### Q: Which Markdown syntax is supported?
 
@@ -251,11 +252,11 @@ If you still see this "command not found" error after waiting for a long time, p
 - [Math support](https://github.com/waylonflinn/markdown-it-katex#syntax) (from KaTeX)
 - [Front matter](https://github.com/ParkSB/markdown-it-front-matter#valid-front-matter)
 
-For other Markdown syntax, you need to install the corresponding extensions from VSCode marketplace (e.g. [Mermaid diagram](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid), [emoji](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-emoji), [footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes) and [superscript](https://marketplace.visualstudio.com/items?itemName=DevHawk.markdown-sup)). Once installed, they will take effect in VSCode and also the exported HTML file.
+For other Markdown syntax, you need to install the corresponding extensions from VS Code marketplace (e.g. [Mermaid diagram](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid), [emoji](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-emoji), [footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes) and [superscript](https://marketplace.visualstudio.com/items?itemName=DevHawk.markdown-sup)). Once installed, they will take effect in VS Code and also the exported HTML file.
 
 #### Q: This extension has overridden some of my key bindings (e.g. <kbd>Ctrl</kbd> + <kbd>B</kbd>, <kbd>Alt</kbd> + <kbd>C</kbd>)
 
-You can easily manage key bindings with [VSCode's "Keyboard Shortcuts" page](https://code.visualstudio.com/docs/getstarted/keybindings). (Commands provided by this extension have prefix `markdown.extension`.)
+You can easily manage key bindings with [VS Code's **Keyboard Shortcuts** editor](https://code.visualstudio.com/docs/getstarted/keybindings). (Commands provided by this extension have prefix `markdown.extension`.)
 
 #### Q: The extension is unresponsive, causing lag etc. (performance issues)
 
