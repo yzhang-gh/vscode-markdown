@@ -156,33 +156,33 @@
             {
                 "command": "markdown.extension.onEnterKey",
                 "key": "enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
             },
             {
                 "command": "markdown.extension.onCtrlEnterKey",
                 "key": "ctrl+enter",
                 "mac": "cmd+enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections"
             },
             {
                 "command": "markdown.extension.onShiftEnterKey",
                 "key": "shift+enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections"
             },
             {
                 "command": "markdown.extension.onTabKey",
                 "key": "tab",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions"
             },
             {
                 "command": "markdown.extension.onShiftTabKey",
                 "key": "shift+tab",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions"
             },
             {
                 "command": "markdown.extension.onBackspaceKey",
                 "key": "backspace",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
             },
             {
                 "command": "markdown.extension.onMoveLineUp",
