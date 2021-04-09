@@ -123,6 +123,8 @@ async function updateToc() {
 
 function addSectionNumbers() {
     const editor = window.activeTextEditor;
+    const minimumLine: number = workspace.getConfiguration('markdown.extension.toc').get<boolean>('includeHeadingsBeforeToc')
+        ? 0 : editor.selection.start.line;
 
     if (!isMdEditor(editor)) {
         return;
@@ -132,7 +134,7 @@ function addSectionNumbers() {
 
     const doc = editor.document;
     const toc: readonly Readonly<IHeadingBase>[] = getAllRootHeading(doc, true, true)
-        .filter(i => i.canInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth);
+        .filter(i => i.lineIndex >= minimumLine && i.canInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth);
 
     if (toc.length === 0) {
         return;
@@ -251,12 +253,15 @@ function getProjectExcludedHeadings(doc: TextDocument): readonly Readonly<{ leve
  * Generates the Markdown text representation of the TOC.
  */
 // TODO: Redesign data structure to solve another bunch of bugs.
-async function generateTocText(doc: TextDocument): Promise<string> {
+async function generateTocText(doc: TextDocument, minimumLine?: number): Promise<string> {
+    const editor = window.activeTextEditor;
     const orderedListMarkerIsOne: boolean = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
+    minimumLine ??= workspace.getConfiguration('markdown.extension.toc').get<boolean>('includeHeadingsBeforeToc')
+        ? 0 : editor.selection.start.line;
 
     const toc: string[] = [];
     const tocEntries: readonly Readonly<IHeading>[] = getAllTocEntry(doc, { respectMagicCommentOmit: true, respectProjectLevelOmit: true })
-        .filter(i => i.canInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth); // Filter out excluded headings.
+        .filter(i => i.lineIndex >= minimumLine && i.canInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth); // Filter out excluded headings.
 
     if (tocEntries.length === 0) {
         return '';
@@ -318,13 +323,15 @@ async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string
         return result;
     }, []);
 
+    let newTocText: string;
     const tocRanges: Range[] = [];
-    const newTocText = await generateTocText(doc);
 
     for (const item of candidateLists) {
         const beginLineIndex = item[0];
         let endLineIndex = item[1];
         const opTokenIndex = item[2];
+
+        newTocText = await generateTocText(doc, beginLineIndex);
 
         //// #525 <!-- no toc --> comment
         if (

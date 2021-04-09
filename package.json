@@ -474,6 +474,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "%config.toc.updateOnSave.description%"
+                },
+                "markdown.extension.toc.includeHeadingsBeforeToc": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%config.toc.includeHeadingsBeforeToc.description%"
                 }
             }
         },

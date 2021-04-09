@@ -203,7 +203,6 @@ suite("TOC.", () => {
             new Selection(0, 0, 0, 0)
         );
         await resetConfiguration();
-
     });
 
     test("Ordered list (list markers larger than 9)", async () => {
@@ -820,6 +819,102 @@ suite("TOC.", () => {
                 '## 1. Heading 1',
                 '## 2. Heading 2',
                 '## 3. Heading 3',
+            ],
+            new Selection(0, 0, 0, 0)
+        );
+        await resetConfiguration();
+    });
+
+    test("Ignore headings before TOC", async () => {
+        await updateConfiguration({ config: [["markdown.extension.toc.includeHeadingsBeforeToc", false]] });
+        await testCommand("markdown.extension.toc.create",
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1',
+                '',
+                '### Section 1.1.1',
+                '',
+                '#### Section 1.1.1.1',
+                '',
+                '# Section 2',
+                '',
+                '## Section 2.1',
+                '',
+                '### Section 2.1.1',
+                '',
+                '#### Section 2.1.1.1',
+                '',
+                ''
+            ],
+            new Selection(7, 0, 7, 0),
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1',
+                '',
+                '### Section 1.1.1',
+                '',
+                '#### Section 1.1.1.1',
+                '',
+                '# Section 2',
+                '',
+                '## Section 2.1',
+                '',
+                '### Section 2.1.1',
+                '',
+                '#### Section 2.1.1.1',
+                '',
+                '- [Section 1.1](#section-11)',
+                '  - [Section 1.1.1](#section-111)',
+                '- [Section 2.1](#section-21)',
+                '  - [Section 2.1.1](#section-211)',
+                '',
+            ],
+            new Selection(20, 0, 20, 0)
+        );
+        await resetConfiguration();
+    });
+
+    test("Update (levels 2..3)", async () => {
+        await updateConfiguration({ config: [["markdown.extension.toc.levels", "2..3"]] });
+        await testCommand("markdown.extension.toc.update",
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1',
+                '',
+                '### Section 1.1.1',
+                '',
+                '#### Section 1.1.1.1',
+                '',
+                '# Section 2',
+                '',
+                '## Section 2.1',
+                '',
+                '- [Section 1.1](#section-11)',
+                '  - [Section 1.1.1](#section-111)',
+                '- [Section 2.1](#section-21)',
+                '  - [Section 2.1.1](#section-211)',
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1',
+                '',
+                '### Section 1.1.1',
+                '',
+                '#### Section 1.1.1.1',
+                '',
+                '# Section 2',
+                '',
+                '## Section 2.1',
+                '',
+                '- [Section 1.1](#section-11)',
+                '  - [Section 1.1.1](#section-111)',
+                '- [Section 2.1](#section-21)',
+                '',
             ],
             new Selection(0, 0, 0, 0)
         );

@@ -51,6 +51,7 @@
     "config.toc.slugifyMode.description": "The method to generate heading ID. This affects **links to headings** in **TOC**, **code completion**, and **printing**.",
     "config.toc.unorderedList.marker.description": "Use `-`, `*`, or `+` in the table of contents (for **unordered** list).",
     "config.toc.updateOnSave.description": "Auto update TOC on save.",
+    "config.toc.includeHeadingsBeforeToc.description": "Include headings before TOC.",
     "ui.exporting.messageCustomCssNotFound": "Custom CSS '{0}' not found.",
     "ui.exporting.messageExportingInProgress": "Printing '{0}' to {1} ...",
     "ui.exporting.messageRevertingToImagePaths": "Reverting to image paths instead of base64 encoding.",
