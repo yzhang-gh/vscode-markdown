@@ -256,8 +256,8 @@ function getProjectExcludedHeadings(doc: TextDocument): readonly Readonly<{ leve
 async function generateTocText(doc: TextDocument, minimumLine?: number): Promise<string> {
     const editor = window.activeTextEditor;
     const orderedListMarkerIsOne: boolean = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
-    minimumLine ??= workspace.getConfiguration('markdown.extension.toc').get<boolean>('includeHeadingsBeforeToc')
-        ? 0 : editor.selection.start.line;
+    minimumLine = workspace.getConfiguration('markdown.extension.toc').get<boolean>('includeHeadingsBeforeToc')
+        ? 0 : minimumLine ?? editor.selection.start.line;
 
     const toc: string[] = [];
     const tocEntries: readonly Readonly<IHeading>[] = getAllTocEntry(doc, { respectMagicCommentOmit: true, respectProjectLevelOmit: true })

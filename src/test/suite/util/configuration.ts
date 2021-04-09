@@ -14,6 +14,7 @@ const Default_Config: readonly IConfigurationRecord[] = [
     ["markdown.extension.toc.slugifyMode", "github"],
     ["markdown.extension.toc.omittedFromToc", Object.create(null)],
     ["markdown.extension.toc.downcaseLink", true],
+    ["markdown.extension.toc.includeHeadingsBeforeToc", true],
     ["markdown.extension.preview.autoShowPreviewToSide", false],
     ["markdown.extension.orderedList.marker", "ordered"],
     ["markdown.extension.italic.indicator", "*"],
