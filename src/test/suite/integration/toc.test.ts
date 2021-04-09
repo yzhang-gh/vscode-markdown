@@ -205,6 +205,99 @@ suite("TOC.", () => {
         await resetConfiguration();
     });
 
+    test("Create (ignore headings before TOC)", async () => {
+        await updateConfiguration({ config: [["markdown.extension.toc.includeHeadingsBeforeToc", false]] });
+        await testCommand("markdown.extension.toc.create",
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1',
+                '',
+                '### Section 1.1.1',
+                '',
+                '#### Section 1.1.1.1',
+                '',
+                '',
+                '# Section 2',
+                '',
+                '## Section 2.1',
+                '',
+                '### Section 2.1.1',
+                '',
+                '#### Section 2.1.1.1',
+                ''
+            ],
+            new Selection(8, 0, 8, 0),
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1',
+                '',
+                '### Section 1.1.1',
+                '',
+                '#### Section 1.1.1.1',
+                '',
+                '- [Section 2](#section-2)',
+                '  - [Section 2.1](#section-21)',
+                '    - [Section 2.1.1](#section-211)',
+                '      - [Section 2.1.1.1](#section-2111)',
+                '',
+                '# Section 2',
+                '',
+                '## Section 2.1',
+                '',
+                '### Section 2.1.1',
+                '',
+                '#### Section 2.1.1.1',
+                ''
+            ],
+            new Selection(12, 0, 12, 0)
+        );
+        await resetConfiguration();
+    });
+
+    test("Update (ignore headings before TOC)", async () => {
+        await updateConfiguration({ config: [["markdown.extension.toc.includeHeadingsBeforeToc", false]] });
+        await testCommand("markdown.extension.toc.update",
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1',
+                '',
+                '### Section 1.1.1',
+                '',
+                '#### Section 1.1.1.1',
+                '',
+                '- [Section 2](#section-2)',
+                '  - [Section 2.1](#section-21)',
+                '    - [Section 2.1.1](#section-211)',
+                '',
+                '# Section 2',
+                '',
+                '## Section 2.1',
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1',
+                '',
+                '### Section 1.1.1',
+                '',
+                '#### Section 1.1.1.1',
+                '',
+                '- [Section 2](#section-2)',
+                '  - [Section 2.1](#section-21)',
+                '',
+                '# Section 2',
+                '',
+                '## Section 2.1',
+            ],
+            new Selection(0, 0, 0, 0)
+        );
+        await resetConfiguration();
+    });
+
     test("Ordered list (list markers larger than 9)", async () => {
         await updateConfiguration({ config: [["markdown.extension.toc.orderedList", true]] });
         await testCommand('markdown.extension.toc.create',
