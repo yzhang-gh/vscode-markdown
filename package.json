@@ -511,7 +511,7 @@
         "test-compile": "tsc -p ./"
     },
     "dependencies": {
-        "@neilsustc/markdown-it-katex": "^0.6.1",
+        "@neilsustc/markdown-it-katex": "^0.13.5",
         "entities": "^2.2.0",
         "grapheme-splitter": "^1.0.4",
         "highlight.js": "^10.5.0",

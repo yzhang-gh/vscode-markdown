@@ -320,6 +320,22 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'maltese', 'minuso'
     ];
     debugging0 = ['message', 'errmessage', 'show']
+    envs = [
+        'matrix', 'array',
+        'pmatrix', 'bmatrix',
+        'vmatrix', 'Vmatrix',
+        'Bmatrix',
+        'cases', 'rcases',
+        'smallmatrix', 'subarray',
+        'equation', 'split', 'align',
+        'gather', 'alignat',
+        'CD',
+        'darray', 'dcases', 'drcases',
+        'matrix*', 'pmatrix*', 'bmatrix*',
+        'Bmatrix*', 'vmatrix*', 'Vmatrix*',
+        'equation*', 'gather*', 'align*', 'alignat*',
+        'gathered', 'aligned', 'alignedat'
+    ]
 
     mathCompletions: CompletionItem[];
 
@@ -371,7 +387,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             return item;
         });
         let envSnippet = new CompletionItem('\\begin', CompletionItemKind.Snippet);
-        envSnippet.insertText = new SnippetString('begin{${1|aligned,alignedat,array,bmatrix,Bmatrix,cases,darray,dcases,gathered,matrix,pmatrix,rcases,smallmatrix,vmatrix,Vmatrix|}}\n\t$2\n\\end{$1}');
+        envSnippet.insertText = new SnippetString('begin{${1|' + this.envs.join(',') + '|}}\n\t$2\n\\end{$1}');
 
         // Pretend to support multi-workspacefolders
         let resource = null;
