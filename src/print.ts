@@ -151,11 +151,11 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
         <title>${title ? encodeHTML(title) : ''}</title>
         ${extensionStyles}
         ${getStyles(doc.uri, hasMath, includeVscodeStyles)}
-        ${hasMath ? '<script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>' : ''}
-        ${extensionScripts}
     </head>
     <body class="vscode-body${config.get<string>('print.theme') === 'light' ? ' vscode-light' : ''}">
         ${body}
+        ${hasMath ? '<script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>' : ''}
+        ${extensionScripts}
     </body>
     </html>`;
 
@@ -322,7 +322,7 @@ async function getPreviewExtensionScripts() {
             continue;
         }
         for (const scriptFile of contribute.previewScripts) {
-            result += `<script type="text/javascript">\n/* From extension ${contribute.extensionId} */\n`;
+            result += `<script async type="text/javascript">\n/* From extension ${contribute.extensionId} */\n`;
             try {
                 result += await fs.promises.readFile(scriptFile.fsPath, { encoding: "utf8" });
             } catch (error) {
