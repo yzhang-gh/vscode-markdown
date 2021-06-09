@@ -27,7 +27,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - [FAQ](#faq)
     - [Q: Error "command 'markdown.extension.onXXXKey' not found"](#q-error-command-markdownextensiononxxxkey-not-found)
     - [Q: Which Markdown syntax is supported?](#q-which-markdown-syntax-is-supported)
-    - [Q: This extension has overridden some of my key bindings (e.g. <kbd>Ctrl</kbd> + <kbd>B</kbd>, <kbd>Alt</kbd> + <kbd>C</kbd>)](#q-this-extension-has-overridden-some-of-my-key-bindings-eg-ctrl--b-alt--c)
+    - [Q: This extension has overridden some of my key bindings (e.g. Ctrl + B, Alt + C)](#q-this-extension-has-overridden-some-of-my-key-bindings-eg-ctrl--b-alt--c)
     - [Q: The extension is unresponsive, causing lag etc. (performance issues)](#q-the-extension-is-unresponsive-causing-lag-etc-performance-issues)
 - [Changelog](#changelog)
 - [Latest Development Build](#latest-development-build)
@@ -219,6 +219,7 @@ Tip: also support the option `completion.root`
 | `markdown.extension.print.onFileSave`                      | `false`    | Print to HTML on file save                                                                       |
 | `markdown.extension.print.theme`                           | `light`    | Theme of the exported HTML                                                                       |
 | `markdown.extension.print.validateUrls`                    | `true`     | Enable/disable URL validation when printing                                                      |
+| `markdown.extension.print.enableCheckBoxes`                | `false`    | Enable/disable The checkboxes of task lists                                                      |
 | `markdown.extension.syntax.decorations`                    | `true`     | Add decorations to ~~strikethrough~~ and `code span`                                             |
 | `markdown.extension.syntax.decorationFileSizeLimit`        | 50000      | Don't render syntax decorations if a file is larger than this size (in byte/B)                   |
 | `markdown.extension.syntax.plainTheme`                     | `false`    | A distraction-free theme                                                                         |
