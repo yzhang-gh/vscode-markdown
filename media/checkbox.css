@@ -6,3 +6,36 @@
     margin-left: -20px;
     vertical-align: middle;
 }
+
+input[type="checkbox"]:before {
+    position: relative;
+    display: block;
+    width: 11px;
+    height: 11px;
+    border: 2px solid #767676;
+    border-radius: 3px;
+    content: "";
+    background: #ffffff;
+}
+
+input[type="checkbox"]:after {
+    position: relative;
+    display: block;
+    left: 2px;
+    top: -13px;
+    width: 11px;
+    height: 11px;
+    content: "";
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+input[type="checkbox"]:checked::before {
+    border: 2px solid #0075ff;
+    background: #0075ff;
+}
+
+input[type="checkbox"]:checked:after {
+    background-color: transparent;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTI4IDEyOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNjcuNDAyIDEyOEwwIDkyLjA1MmwxNC4zOC0yNi45Nkw1NC44MiA4Ni42NiAxMDEuMDQgMCAxMjggMTQuMzh6IiBmaWxsPSIjZmZmIi8+PC9zdmc+");
+}
