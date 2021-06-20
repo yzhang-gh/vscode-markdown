@@ -446,11 +446,12 @@
         "test-compile": "tsc -p ./"
     },
     "dependencies": {
-        "@neilsustc/markdown-it-katex": "^0.13.5",
+        "@neilsustc/markdown-it-katex": "^1.0.0",
         "entities": "^2.2.0",
         "grapheme-splitter": "^1.0.4",
         "highlight.js": "^10.5.0",
         "image-size": "^0.9.3",
+        "katex": "^0.13.11",
         "markdown-it": "^12.0.4",
         "markdown-it-task-lists": "^2.1.1",
         "string-similarity": "^4.0.4"
@@ -458,12 +459,12 @@
     "devDependencies": {
         "@types/glob": "^7.1.3",
         "@types/markdown-it": "^12.0.1",
-        "@types/mocha": "^8.2.0",
+        "@types/mocha": "^8.2.2",
         "@types/node": "~12.12.70",
         "@types/string-similarity": "^4.0.0",
         "@types/vscode": "~1.49.0",
         "glob": "^7.1.6",
-        "mocha": "^8.2.1",
+        "mocha": "^9.0.1",
         "ts-loader": "^8.0.14",
         "typescript": "~4.1.0",
         "vscode-test": "^1.5.0",
