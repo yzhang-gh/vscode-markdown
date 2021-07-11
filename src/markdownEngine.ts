@@ -4,7 +4,6 @@ import * as vscode from "vscode";
 import type { KatexOptions } from "katex";
 import MarkdownIt = require("markdown-it");
 import Token = require("markdown-it/lib/token");
-import LanguageIdentifier from "./contract/LanguageIdentifier";
 import type IDisposable from "./IDisposable";
 import { slugify } from "./util/slugify";
 import { MarkdownContribution, MarkdownContributionProvider, getMarkdownContributionProvider } from './markdownExtensions';
@@ -43,6 +42,9 @@ interface IMarkdownEngine extends IDisposable {
 
     /**
      * Parses the document.
+     *
+     * @throws {@link Error}
+     * Should throw exception if the document is not valid (closed, etc.).
      */
     getDocumentToken(document: vscode.TextDocument): DocumentToken | Thenable<DocumentToken>;
 
@@ -80,7 +82,7 @@ class CommonMarkEngine implements IStaticMarkdownEngine {
 
     private readonly _disposables: vscode.Disposable[];
 
-    private readonly _documentTokenCache = new Map<vscode.TextDocument, DocumentToken>();
+    private readonly _documentTokenCache = new WeakMap<vscode.TextDocument, DocumentToken>();
 
     private readonly _engine: MarkdownIt;
 
@@ -91,13 +93,7 @@ class CommonMarkEngine implements IStaticMarkdownEngine {
     constructor() {
         this._engine = new MarkdownIt('commonmark');
 
-        this._disposables = [
-            vscode.workspace.onDidCloseTextDocument(document => {
-                if (document.languageId === LanguageIdentifier.Markdown) {
-                    this._documentTokenCache.delete(document);
-                }
-            }),
-        ];
+        this._disposables = [];
     }
 
     public dispose(): void {
@@ -112,6 +108,10 @@ class CommonMarkEngine implements IStaticMarkdownEngine {
         // It's safe to be sync.
         // In the worst case, concurrent calls lead to run `parse()` multiple times.
         // Only performance regression. No data corruption.
+
+        if (document.isClosed) {
+            throw new Error("The document has been closed.");
+        }
 
         const cache = this._documentTokenCache.get(document);
 
@@ -141,7 +141,7 @@ class MarkdownEngine implements IDynamicMarkdownEngine {
 
     private readonly _disposables: vscode.Disposable[];
 
-    private readonly _documentTokenCache = new Map<vscode.TextDocument, DocumentToken>();
+    private readonly _documentTokenCache = new WeakMap<vscode.TextDocument, DocumentToken>();
 
     private _engine: MarkdownIt | undefined;
 
@@ -154,12 +154,6 @@ class MarkdownEngine implements IDynamicMarkdownEngine {
 
     constructor() {
         this._disposables = [
-            vscode.workspace.onDidCloseTextDocument(document => {
-                if (document.languageId === LanguageIdentifier.Markdown) {
-                    this._documentTokenCache.delete(document);
-                }
-            }),
-
             this.contributionsProvider.onContributionsChanged(() => {
                 this.newEngine().then((engine) => {
                     this._engine = engine;
@@ -182,6 +176,10 @@ class MarkdownEngine implements IDynamicMarkdownEngine {
     }
 
     public async getDocumentToken(document: vscode.TextDocument): Promise<DocumentToken> {
+        if (document.isClosed) {
+            throw new Error("The document has been closed.");
+        }
+
         const cache = this._documentTokenCache.get(document);
 
         if (cache && cache.version === document.version) {
