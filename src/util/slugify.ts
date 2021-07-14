@@ -122,17 +122,20 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
         return slug;
     },
 
-    [SlugifyMode.VisualStudioCode]: (slug: string): string => {
-        // <https://github.com/Microsoft/vscode/blob/f5738efe91cb1d0089d3605a318d693e26e5d15c/extensions/markdown-language-features/src/slugify.ts#L22-L29>
-        slug = encodeURI(
-            slug.trim()
+    [SlugifyMode.VisualStudioCode]: (rawContent: string, env: object): string => {
+        // https://github.com/microsoft/vscode/blob/0798d13f10b193df0297e301affe761b90a8bfa9/extensions/markdown-language-features/src/slugify.ts#L22-L29
+        return encodeURI(
+            // Simulate <https://github.com/microsoft/vscode/blob/0a57fd87b1d1ef0ff81750f84840ee4303b8800b/extensions/markdown-language-features/src/markdownEngine.ts#L286>.
+            // Not the same, but should cover most needs.
+            commonMarkEngine.engine.parseInline(rawContent, env)[0].children!
+                .reduce<string>((result, token) => result + token.content, "")
+                .trim()
+                .toLowerCase()
                 .replace(/\s+/g, "-") // Replace whitespace with -
-                .replace(/[\]\[\!\'\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\_\{\|\}\~\`。，、；：？！…—·ˉ¨‘’“”々～‖∶＂＇｀｜〃〔〕〈〉《》「」『』．〖〗【】（）［］｛｝]/g, "") // Remove known punctuators
+                .replace(/[\]\[\!\'\#\$\%\&\(\)\*\+\,\.\/\:\;\<\=\>\?\@\\\^\_\{\|\}\~\`。，、；：？！…—·ˉ¨‘’“”々～‖∶＂＇｀｜〃〔〕〈〉《》「」『』．〖〗【】（）［］｛｝]/g, "") // Remove known punctuators
                 .replace(/^\-+/, "") // Remove leading -
                 .replace(/\-+$/, "") // Remove trailing -
         );
-
-        return slug;
     }
 };
 

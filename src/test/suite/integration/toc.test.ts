@@ -437,42 +437,6 @@ suite("TOC.", () => {
         await resetConfiguration();
     });
 
-    test("Option `toc.downcaseLink`", async () => {
-        await updateConfiguration({
-            config: [
-                // VS Code tolerates uppercase characters.
-                ["markdown.extension.toc.slugifyMode", "vscode"],
-                ["markdown.extension.toc.downcaseLink", false],
-            ]
-        });
-        await testCommand('markdown.extension.toc.create',
-            [
-                '# Section 1',
-                '',
-                '## Section 1.1',
-                '',
-                '# Section 2',
-                '',
-                ''
-            ],
-            new Selection(6, 0, 6, 0),
-            [
-                '# Section 1',
-                '',
-                '## Section 1.1',
-                '',
-                '# Section 2',
-                '',
-                '- [Section 1](#Section-1)',
-                '  - [Section 1.1](#Section-11)',
-                '- [Section 2](#Section-2)',
-                '',
-            ],
-            new Selection(9, 0, 9, 0)
-        );
-        await resetConfiguration();
-    });
-
     test("Inline <!-- omit in toc -->", () => {
         return testCommand('markdown.extension.toc.create',
             [
