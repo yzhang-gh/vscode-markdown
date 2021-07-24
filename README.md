@@ -223,7 +223,6 @@ Tip: also support the option `completion.root`
 | `markdown.extension.syntax.decorationFileSizeLimit`        | 50000      | Don't render syntax decorations if a file is larger than this size (in byte/B)                   |
 | `markdown.extension.syntax.plainTheme`                     | `false`    | A distraction-free theme                                                                         |
 | `markdown.extension.tableFormatter.enabled`                | `true`     | Enable GFM table formatter                                                                       |
-| `markdown.extension.toc.downcaseLink`                      | `true`     | Force the TOC links to be lowercase                                                              |
 | `markdown.extension.toc.slugifyMode`                       | `github`   | Slugify mode for TOC link generation (`vscode`, `github`, `gitlab` or `gitea`)                   |
 | `markdown.extension.toc.omittedFromToc`                    | `{}`       | Lists of headings to omit by project file (e.g. `{ "README.md": ["# Introduction"] }`)           |
 | `markdown.extension.toc.levels`                            | `1..6`     | Control the heading levels to show in the table of contents.                                     |

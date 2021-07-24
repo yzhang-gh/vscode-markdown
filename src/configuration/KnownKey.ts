@@ -30,7 +30,6 @@ type KnownKey =
     | "theming.decoration.renderParagraph"
     | "theming.decoration.renderStrikethrough" // <- "syntax.decorations"
     | "theming.decoration.renderTrailingSpace"
-    | "toc.downcaseLink"
     | "toc.levels"
     | "toc.omittedFromToc" // To be superseded.
     | "toc.orderedList"

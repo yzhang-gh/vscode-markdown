@@ -43,7 +43,6 @@
     "config.theming.decoration.renderParagraph.description": "(**Experimental**)",
     "config.theming.decoration.renderStrikethrough.description": "Show a line through the middle of a [strikethrough](https://github.github.com/gfm/#strikethrough-extension-).",
     "config.theming.decoration.renderTrailingSpace.description": "Shade the background of trailing space (U+0020) characters on a [line](https://spec.commonmark.org/0.29/#line).",
-    "config.toc.downcaseLink.description": "Whether to **force** to downcase TOC links.",
     "config.toc.levels.description": "Range of levels for table of contents. Use `x..y` for level `x` to `y`.",
     "config.toc.omittedFromToc.description": "Lists of headings to omit by project file.\nExample:\n{ \"README.md\": [\"# Introduction\"] }",
     "config.toc.orderedList.description": "Use ordered list, that is:\n1. ...\n2. ...",

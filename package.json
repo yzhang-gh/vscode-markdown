@@ -413,11 +413,6 @@
                     "markdownDescription": "%config.theming.decoration.renderTrailingSpace.description%",
                     "scope": "application"
                 },
-                "markdown.extension.toc.downcaseLink": {
-                    "type": "boolean",
-                    "default": true,
-                    "markdownDescription": "%config.toc.downcaseLink.description%"
-                },
                 "markdown.extension.toc.levels": {
                     "type": "string",
                     "default": "1..6",

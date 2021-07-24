@@ -144,54 +144,36 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
  * @param heading - The raw content of the heading according to the CommonMark Spec.
  * @param env - The markdown-it environment sandbox (**mutable**).
  * @param mode - The slugify mode.
- * @param downcase - `true` to force to convert all the characters to lowercase. Otherwise, `false`.
  */
 export function slugify(heading: string, {
     env = Object.create(null),
     mode = configManager.get<SlugifyMode>("toc.slugifyMode"),
-    downcase = configManager.get<boolean>("toc.downcaseLink"),
-}: { env?: object; mode?: SlugifyMode; downcase?: boolean; }) {
+}: { env?: object; mode?: SlugifyMode; }) {
 
     // Do never twist the input here!
     // Pass the raw heading content as is to slugify function.
-    let slug = heading;
-
-    // Additional case conversion must be performed before calling slugify function.
-    // Because some slugify functions encode strings in their own way.
-    if (downcase) {
-        slug = slug.toLowerCase();
-    }
 
     // Sort by popularity.
     switch (mode) {
         case SlugifyMode.GitHub:
-            slug = Slugify_Methods[SlugifyMode.GitHub](slug, env);
-            break;
+            return Slugify_Methods[SlugifyMode.GitHub](heading, env);
 
         case SlugifyMode.GitLab:
-            slug = Slugify_Methods[SlugifyMode.GitLab](slug, env);
-            break;
+            return Slugify_Methods[SlugifyMode.GitLab](heading, env);
 
         case SlugifyMode.Gitea:
-            slug = Slugify_Methods[SlugifyMode.Gitea](slug, env);
-            break;
+            return Slugify_Methods[SlugifyMode.Gitea](heading, env);
 
         case SlugifyMode.VisualStudioCode:
-            slug = Slugify_Methods[SlugifyMode.VisualStudioCode](slug, env);
-            break;
+            return Slugify_Methods[SlugifyMode.VisualStudioCode](heading, env);
 
         case SlugifyMode.AzureDevOps:
-            slug = Slugify_Methods[SlugifyMode.AzureDevOps](slug, env);
-            break;
+            return Slugify_Methods[SlugifyMode.AzureDevOps](heading, env);
 
         case SlugifyMode.BitbucketCloud:
-            slug = Slugify_Methods[SlugifyMode.BitbucketCloud](slug, env);
-            break;
+            return Slugify_Methods[SlugifyMode.BitbucketCloud](heading, env);
 
         default:
-            slug = Slugify_Methods[SlugifyMode.GitHub](slug, env);
-            break;
+            return Slugify_Methods[SlugifyMode.GitHub](heading, env);
     }
-
-    return slug;
 }

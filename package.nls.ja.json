@@ -43,7 +43,6 @@
     "config.theming.decoration.renderParagraph.description": "（**実験的な機能**）",
     "config.theming.decoration.renderStrikethrough.description": "[取り消し線](https://github.github.com/gfm/#strikethrough-extension-)の中央に線を表示する",
     "config.theming.decoration.renderTrailingSpace.description": "[行（Line）](https://spec.commonmark.org/0.29/#line)末尾にある空白文字（U+0020）の背景をシェードする",
-    "config.toc.downcaseLink.description": "目次（TOC）用リンクを**強制的に**小文字化する",
     "config.toc.levels.description": "目次（TOC）における階層の範囲。 `x..y` と使用すれば、階層 `x` ～ `y` となります。",
     "config.toc.omittedFromToc.description": "プロジェクトファイルの目次（TOC）で除外する見出しの一覧。\n例：\n{ \"README.md\": [\"# Introduction\"] }",
     "config.toc.orderedList.description": "目次（TOC）に順序付きリストを使用する：\n1. ...\n2. ...",
