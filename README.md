@@ -239,11 +239,16 @@ Tip: also support the option `completion.root`
 #### Q: Error "command 'markdown.extension.onXXXKey' not found"
 
 - In most cases, it is because VS Code **needs a few seconds to load** this extension when you open a Markdown file *for the first time*. (You will see a message "Activating Extensions..." on the status bar.)
-- If you still see this "command not found" error after waiting for a long time, please try to **restart** VS Code (or **reinstall** this extension<sup>1</sup> if needed).
-- If it doesn't help, feel free to open a new issue on [GitHub](https://github.com/yzhang-gh/vscode-markdown/issues). It would be better if you can go to VS Code's menubar **Help** > **Toggle Developer Tools** and report any suspicious error information to us.
-- (As a last resort, you may choose to delete `onXXXKey` keys through [VS Code's Keyboard Shortcuts editor](https://code.visualstudio.com/docs/getstarted/keybindings) if you do not need the [list editing feature](https://github.com/yzhang-gh/vscode-markdown#list-editing) at all.)
 
-<sup>1. uninstall this extension, <b>restart VS Code (important!)</b> and then reinstall</sup>
+- If you still see this "command not found" error after waiting for a long time, please try to **restart** VS Code. If needed, **reinstall** this extension:
+
+  1. Uninstall this extension.
+  2. **Close and restart VS Code. (important!)**
+  3. Reinstall this extension.
+
+- If it doesn't help, feel free to open a new issue on [GitHub](https://github.com/yzhang-gh/vscode-markdown/issues/new/choose). It would be better if you can report any suspicious error information to us: It's usually in VS Code's menubar **Help** > **Toggle Developer Tools** > **Console**.
+
+- (As a last resort, you may choose to delete `onXXXKey` keys through [VS Code's Keyboard Shortcuts editor](https://code.visualstudio.com/docs/getstarted/keybindings) if you do not need the [list editing feature](https://github.com/yzhang-gh/vscode-markdown#list-editing) at all.)
 
 #### Q: Which Markdown syntax is supported?
 
@@ -272,7 +277,9 @@ See [CHANGELOG](CHANGELOG.md) for more information.
 
 ## Latest Development Build
 
-Download it [here](https://github.com/yzhang-gh/vscode-markdown/actions/), please click the latest passing event to download artifacts. There are two versions: `markdown-all-in-one-*.vsix` is the regular build, while `debug.vsix` is used to create a verbose CPU profile.
+Download it [here](https://github.com/yzhang-gh/vscode-markdown/actions/workflows/main.yml?query=event%3Apush+is%3Asuccess), please click the latest passing event to download artifacts.
+
+There are two versions: `markdown-all-in-one-*.vsix` is the regular build, while `debug.vsix` is used to create a verbose CPU profile.
 
 To install, execute `Extensions: Install from VSIX...` in the VS Code Command Palette (`ctrl + shift + p`)
 
