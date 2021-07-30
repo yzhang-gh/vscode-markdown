@@ -1,13 +1,13 @@
 //// <https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/src/markdownEngine.ts>
 
 import * as vscode from "vscode";
-import type { KatexOptions } from "katex";
 import MarkdownIt = require("markdown-it");
 import Token = require("markdown-it/lib/token");
 import LanguageIdentifier from "./contract/LanguageIdentifier";
 import type IDisposable from "./IDisposable";
 import { slugify } from "./util/slugify";
 import { MarkdownContribution, MarkdownContributionProvider, getMarkdownContributionProvider } from './markdownExtensions';
+import { extendMarkdownIt } from "./markdown-it-plugin-provider";
 
 // extensions that treat specially
 export const extensionBlacklist = new Set<string>(["vscode.markdown-language-features", "yzhang.markdown-all-in-one"]);
@@ -211,17 +211,6 @@ class MarkdownEngine implements IDynamicMarkdownEngine {
         let md: MarkdownIt;
 
         const hljs = await import('highlight.js');
-        // @ts-ignore
-        const mdtl = await import('markdown-it-task-lists');
-        // @ts-ignore
-        const mdkt = await import('@neilsustc/markdown-it-katex');
-
-        //// Make a deep copy as `macros` will be modified by KaTeX during initialization
-        let userMacros = JSON.parse(JSON.stringify(vscode.workspace.getConfiguration('markdown.extension.katex').get<object>('macros')));
-        const katexOptions: KatexOptions = { throwOnError: false };
-        if (Object.keys(userMacros).length !== 0) {
-            katexOptions['macros'] = userMacros;
-        }
 
         md = new MarkdownIt({
             html: true,
@@ -237,8 +226,8 @@ class MarkdownEngine implements IDynamicMarkdownEngine {
         });
 
         // contributions provided by this extension must be processed specially,
-        // since this extension may not finish activing when a engine is needed to be created.
-        md.use(mdtl).use(mdkt, katexOptions);
+        // since this extension may not finish activation when creating an engine.
+        extendMarkdownIt(md);
 
         if (!vscode.workspace.getConfiguration('markdown.extension.print').get<boolean>('validateUrls', true)) {
             md.validateLink = () => true;
