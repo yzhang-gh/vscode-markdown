@@ -6,7 +6,7 @@ import Token = require("markdown-it/lib/token");
 import LanguageIdentifier from "./contract/LanguageIdentifier";
 import type IDisposable from "./IDisposable";
 import { slugify } from "./util/slugify";
-import { MarkdownContribution, MarkdownContributionProvider, getMarkdownContributionProvider } from './markdownExtensions';
+import { getMarkdownContributionProvider } from './markdownExtensions';
 import { extendMarkdownIt } from "./markdown-it-plugin-provider";
 
 // extensions that treat specially
@@ -160,7 +160,7 @@ class MarkdownEngine implements IDynamicMarkdownEngine {
                 }
             }),
 
-            this.contributionsProvider.onContributionsChanged(() => {
+            this.contributionsProvider.onDidChangeContributions(() => {
                 this.newEngine().then((engine) => {
                     this._engine = engine;
                 });
@@ -235,7 +235,7 @@ class MarkdownEngine implements IDynamicMarkdownEngine {
         this.addNamedHeaders(md);
 
         for (const contribute of this.contributionsProvider.contributions) {
-            if (extensionBlacklist.has(contribute.extensionId)) {
+            if (extensionBlacklist.has(contribute.extensionId) || !contribute.extendMarkdownIt) {
                 continue;
             }
 

@@ -1,120 +1,182 @@
 // Reference to https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/src/markdownExtensions.ts
-// Changes have been made to differentiate contributions by extension id
-import { extensions, Disposable, Uri, Extension, Event, EventEmitter } from 'vscode';
-import * as path from 'path';
+// Note:
+// Not all extensions are implemented correctly.
+// Thus, we need to check redundantly when loading their contributions, typically in `resolveMarkdownContribution()`.
 
-const resolveExtensionResource = (extension: Extension<any>, resourcePath: string): Uri => {
-    return Uri.file(path.join(extension.extensionPath, resourcePath));
-};
+import * as vscode from "vscode";
+import MarkdownIt = require("markdown-it");
+import { Lazy } from "./util/lazy";
 
-const resolveExtensionResources = (extension: Extension<any>, resourcePaths: unknown): Uri[] => {
-    const result: Uri[] = [];
-    if (Array.isArray(resourcePaths)) {
-        for (const resource of resourcePaths) {
-            try {
-                result.push(resolveExtensionResource(extension, resource));
-            } catch (e) {
-                //Do nothing
-            }
-        }
-    }
-    return result;
-};
+/**
+ * Represents a VS Code extension with Markdown contribution.
+ *
+ * @see {@link https://code.visualstudio.com/api/extension-guides/markdown-extension}
+ * @see {@link https://code.visualstudio.com/api/references/extension-manifest}
+ */
+export interface IVscodeMarkdownExtension
+    extends vscode.Extension<{
+        readonly extendMarkdownIt?: (md: MarkdownIt) => MarkdownIt;
+    }> {
+    readonly packageJSON: {
+        readonly name: string;
+        readonly version: string;
+        readonly publisher: string;
+        readonly engines: { readonly [engine: string]: string };
+        readonly contributes?: {
+            /**
+             * `true` when the extension should provide `extendMarkdownIt()`.
+             */
+            readonly "markdown.markdownItPlugins"?: boolean;
 
-export interface MarkdownContribution {
-    readonly previewScripts: ReadonlyArray<Uri>;
-    readonly previewStyles: ReadonlyArray<Uri>;
-    readonly previewResourceRoot: Uri;
-    readonly extendMarkdownIt: (md: any) => Promise<any>;
-    readonly extensionId: string;
-}
+            /**
+             * A list of JavaScript files relative to the extension's root directory.
+             */
+            readonly "markdown.previewScripts"?: readonly string[];
 
-export namespace MarkdownContribution {
-    export function fromExtension(extension: Extension<any>): MarkdownContribution {
-        const contributes = extension.packageJSON && extension.packageJSON.contributes;
-        if (!contributes) {
-            return null;
-        }
-        if (!contributes['markdown.previewStyles']
-            && !contributes['markdown.previewScripts']
-            && !contributes['markdown.markdownItPlugins']) {
-                return null;
-        }
-        const previewStyles = resolveExtensionResources(extension, contributes['markdown.previewStyles']);
-        const previewScripts = resolveExtensionResources(extension, contributes['markdown.previewScripts']);
-        const previewResourceRoot = Uri.file(extension.extensionPath);
-        const extendMarkdownIt = getContributedExtender(contributes, extension);
-        const extensionId = extension.id;
-        return {
-            previewScripts,
-            previewStyles,
-            previewResourceRoot,
-            extendMarkdownIt,
-            extensionId
+            /**
+             * A list of CSS files relative to the extension's root directory.
+             */
+            readonly "markdown.previewStyles"?: readonly string[];
         };
-    }
+    };
+}
 
-    function getContributedExtender(contributes: any, extension: Extension<any>): (md: any) => Promise<any> {
-        if (contributes['markdown.markdownItPlugins']) {
-            return async (md: any) => {
-                if (!extension.isActive) {
-                    await extension.activate();
-                }
-                if (extension.exports && extension.exports.extendMarkdownIt) {
-                    return extension.exports.extendMarkdownIt(md);
-                }
-                return md;
-            };
+/**
+ * Represents the Markdown contribution from one VS Code extension.
+ */
+export interface IMarkdownContribution {
+    readonly extensionId: string;
+    readonly extensionUri: vscode.Uri;
+    readonly extendMarkdownIt?: (md: MarkdownIt) => Promise<MarkdownIt>;
+    readonly previewScripts?: readonly vscode.Uri[];
+    readonly previewStyles?: readonly vscode.Uri[];
+}
+
+/**
+ * Extracts and wraps `extendMarkdownIt()` from the extension.
+ */
+function getContributedMarkdownItPlugin(extension: IVscodeMarkdownExtension): (md: MarkdownIt) => Promise<MarkdownIt> {
+    return async (md) => {
+        const exports = await extension.activate();
+        if (exports && exports.extendMarkdownIt) {
+            return exports.extendMarkdownIt(md);
         }
-        return async (md: any) => md;
+        return md;
+    };
+}
+
+/**
+ * Resolves absolute Uris of paths from the extension.
+ *
+ * @param paths The list of paths relative to the extension's root directory.
+ *
+ * @returns A list of resolved absolute Uris.
+ * `undefined` indicates error.
+ */
+function resolveExtensionResourceUris(
+    extension: vscode.Extension<unknown>,
+    paths: readonly string[]
+): vscode.Uri[] | undefined {
+    try {
+        return paths.map((path) => vscode.Uri.joinPath(extension.extensionUri, path));
+    } catch {
+        return undefined; // Discard the extension.
     }
 }
 
-export interface MarkdownContributionProvider {
-    readonly contributions: ReadonlyArray<MarkdownContribution>;
-    readonly onContributionsChanged: Event<this>;
-    dispose(): void;
+/**
+ * Resolves the Markdown contribution from the VS Code extension.
+ */
+function resolveMarkdownContribution(extension: IVscodeMarkdownExtension): IMarkdownContribution | null {
+    const contributes = extension.packageJSON && extension.packageJSON.contributes;
+
+    if (!contributes) {
+        return null;
+    }
+
+    const extendMarkdownIt = contributes["markdown.markdownItPlugins"]
+        ? getContributedMarkdownItPlugin(extension)
+        : undefined;
+
+    const previewScripts =
+        contributes["markdown.previewScripts"] && contributes["markdown.previewScripts"].length
+            ? resolveExtensionResourceUris(extension, contributes["markdown.previewScripts"])
+            : undefined;
+
+    const previewStyles =
+        contributes["markdown.previewStyles"] && contributes["markdown.previewStyles"].length
+            ? resolveExtensionResourceUris(extension, contributes["markdown.previewStyles"])
+            : undefined;
+
+    if (!extendMarkdownIt && !previewScripts && !previewStyles) {
+        return null;
+    }
+
+    return {
+        extensionId: extension.id,
+        extensionUri: extension.extensionUri,
+        extendMarkdownIt,
+        previewScripts,
+        previewStyles,
+    };
 }
 
-class MdItContributionProvider implements Disposable, MarkdownContributionProvider {
-    private _cachedContributions?: ReadonlyArray<MarkdownContribution>;
+export interface IMarkdownContributionProvider extends vscode.Disposable {
+    // This is theoretically long-running, and should be a `getContributions()` method.
+    // But we're not motivated to rename it for now.
+    readonly contributions: ReadonlyArray<IMarkdownContribution>;
+
+    readonly onDidChangeContributions: vscode.Event<this>;
+}
+
+class MarkdownContributionProvider implements IMarkdownContributionProvider {
+    private readonly _onDidChangeContributions = new vscode.EventEmitter<this>();
+
+    protected readonly _disposables: vscode.Disposable[] = [];
+
+    private _cachedContributions: ReadonlyArray<IMarkdownContribution> | null = null;
+
     private _isDisposed = false;
-    protected _disposables: Disposable[] = [];
-    private readonly _onContributionsChanged = new EventEmitter<this>();
-    public readonly onContributionsChanged = this._onContributionsChanged.event;
+
+    public readonly onDidChangeContributions = this._onDidChangeContributions.event;
 
     public constructor() {
-        this._disposables.push(this._onContributionsChanged);
-        extensions.onDidChange(() => {
-            //TODO Check if necessary to clear cache
-            this._cachedContributions = null;
-            this._onContributionsChanged.fire(this);
-        }, undefined, this._disposables);
+        this._disposables.push(
+            this._onDidChangeContributions,
+
+            vscode.extensions.onDidChange(() => {
+                // `contributions` will rebuild the cache.
+                this._cachedContributions = null;
+                this._onDidChangeContributions.fire(this);
+            })
+        );
     }
 
-    public dispose(): any {
+    public dispose(): void {
         if (this._isDisposed) {
             return;
         }
-        this._isDisposed = true;
-        while (this._disposables.length) {
-            const item = this._disposables.pop();
-            if (item) {
-                item.dispose();
-            }
+
+        for (const item of this._disposables) {
+            item.dispose();
         }
+
+        this._disposables.length = 0;
+        this._isDisposed = true;
     }
 
     public get contributions() {
         if (!this._cachedContributions) {
-            this._cachedContributions = extensions.all
-                .map(MarkdownContribution.fromExtension)
-                .filter(contribution => !!contribution);;
+            this._cachedContributions = vscode.extensions.all
+                .map(resolveMarkdownContribution)
+                .filter((c): c is IMarkdownContribution => !!c);
         }
         return this._cachedContributions;
     }
 }
 
-export function getMarkdownContributionProvider(): MarkdownContributionProvider {
-    return new MdItContributionProvider();
+const defaultProvider = new Lazy(() => new MarkdownContributionProvider());
+
+export function getMarkdownContributionProvider(): IMarkdownContributionProvider {
+    return defaultProvider.value;
 }
