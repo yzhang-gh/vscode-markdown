@@ -5,7 +5,7 @@ import * as path from 'path';
 import { commands, ExtensionContext, TextDocument, Uri, window, workspace } from 'vscode';
 import { encodeHTML } from 'entities';
 import { localize } from './nls';
-import { mdEngine, extensionBlacklist } from "./markdownEngine";
+import { mdEngine } from "./markdownEngine";
 import { isMdEditor } from "./util/generic";
 
 let thisContext: ExtensionContext;
@@ -229,7 +229,7 @@ function readCss(fileName: string) {
 }
 
 function getStyles(uri: Uri, hasMathEnv: boolean, includeVscodeStyles: boolean) {
-    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">';
+    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">';
     const markdownCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">';
     const highlightCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">';
     const copyTeXCss = '<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">';
@@ -292,9 +292,6 @@ function getPreviewSettingStyles(): string {
 async function getPreviewExtensionStyles() {
     var result = "<style>\n"
     for (const contribute of mdEngine.contributionsProvider.contributions) {
-        if (extensionBlacklist.has(contribute.extensionId)) {
-            continue;
-        }
         if (!contribute.previewStyles || !contribute.previewStyles.length) {
             continue;
         }
@@ -315,9 +312,6 @@ async function getPreviewExtensionStyles() {
 async function getPreviewExtensionScripts() {
     var result = "";
     for (const contribute of mdEngine.contributionsProvider.contributions) {
-        if (extensionBlacklist.has(contribute.extensionId)) {
-            continue;
-        }
         if (!contribute.previewScripts || !contribute.previewScripts.length) {
             continue;
         }

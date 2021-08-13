@@ -9,9 +9,6 @@ import { slugify } from "./util/slugify";
 import { getMarkdownContributionProvider } from './markdownExtensions';
 import { extendMarkdownIt } from "./markdown-it-plugin-provider";
 
-// extensions that treat specially
-export const extensionBlacklist = new Set<string>(["vscode.markdown-language-features", "yzhang.markdown-all-in-one"]);
-
 // To help consumers.
 export type { MarkdownIt, Token };
 
@@ -235,7 +232,7 @@ class MarkdownEngine implements IDynamicMarkdownEngine {
         this.addNamedHeaders(md);
 
         for (const contribute of this.contributionsProvider.contributions) {
-            if (extensionBlacklist.has(contribute.extensionId) || !contribute.extendMarkdownIt) {
+            if (!contribute.extendMarkdownIt) {
                 continue;
             }
 

@@ -53,7 +53,19 @@ export interface IMarkdownContribution {
 }
 
 /**
+ * Represents a function that transforms `IMarkdownContribution`.
+ */
+export interface IFuncMarkdownContributionTransformer {
+    /**
+     * @returns `original` when no need to transform. Otherwise, a shallow copy with properties tweaked.
+     */
+    (original: IMarkdownContribution): IMarkdownContribution;
+}
+
+/**
  * Extracts and wraps `extendMarkdownIt()` from the extension.
+ *
+ * @returns A function that will activate the extension and invoke its `extendMarkdownIt()`.
  */
 function getContributedMarkdownItPlugin(extension: IVscodeMarkdownExtension): (md: MarkdownIt) => Promise<MarkdownIt> {
     return async (md) => {
@@ -86,6 +98,8 @@ function resolveExtensionResourceUris(
 
 /**
  * Resolves the Markdown contribution from the VS Code extension.
+ *
+ * This function extracts and wraps the contribution without validating the underlying resources.
  */
 function resolveMarkdownContribution(extension: IVscodeMarkdownExtension): IMarkdownContribution | null {
     const contributes = extension.packageJSON && extension.packageJSON.contributes;
@@ -121,6 +135,26 @@ function resolveMarkdownContribution(extension: IVscodeMarkdownExtension): IMark
     };
 }
 
+/**
+ * Skip these extensions!
+ */
+const Extension_Blacklist: ReadonlySet<string> = new Set<string>([
+    "vscode.markdown-language-features", // Deadlock.
+    "yzhang.markdown-all-in-one", // This.
+]);
+
+/**
+ * The contributions from these extensions can not be utilized directly.
+ *
+ * `ID -> Transformer`
+ */
+const Extension_Special_Treatment: ReadonlyMap<string, IFuncMarkdownContributionTransformer> = new Map([
+    ["vscode.markdown-math", (original) => ({ ...original, previewStyles: undefined })], // Its CSS is not portable. (#986)
+]);
+
+/**
+ * Represents a VS Code extension Markdown contribution provider.
+ */
 export interface IMarkdownContributionProvider extends vscode.Disposable {
     // This is theoretically long-running, and should be a `getContributions()` method.
     // But we're not motivated to rename it for now.
@@ -167,9 +201,22 @@ class MarkdownContributionProvider implements IMarkdownContributionProvider {
 
     public get contributions() {
         if (!this._cachedContributions) {
-            this._cachedContributions = vscode.extensions.all
-                .map(resolveMarkdownContribution)
-                .filter((c): c is IMarkdownContribution => !!c);
+            this._cachedContributions = vscode.extensions.all.reduce<IMarkdownContribution[]>((result, extension) => {
+                if (Extension_Blacklist.has(extension.id)) {
+                    return result;
+                }
+
+                const c = resolveMarkdownContribution(extension);
+
+                if (!c) {
+                    return result;
+                }
+
+                const t = Extension_Special_Treatment.get(extension.id);
+
+                result.push(t ? t(c) : c);
+                return result;
+            }, []);
         }
         return this._cachedContributions;
     }
