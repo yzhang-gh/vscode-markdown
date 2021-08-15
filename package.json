@@ -498,6 +498,12 @@
             }
         ]
     },
+    "capabilities": {
+        "virtualWorkspaces": {
+            "supported": "limited",
+            "description": "In virtual workspaces, some features may not work well."
+        }
+    },
     "scripts": {
         "vscode:prepublish": "node ./tools/prepublish.js",
         "compile": "webpack --mode none",
