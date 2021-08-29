@@ -207,15 +207,14 @@ class MarkdownEngine implements IDynamicMarkdownEngine {
     private async newEngine() {
         let md: MarkdownIt;
 
-        const hljs = await import('highlight.js');
+        const hljs: typeof import("highlight.js").default = require("highlight.js");
 
         md = new MarkdownIt({
             html: true,
             highlight: (str: string, lang?: string) => {
-                lang = normalizeHighlightLang(lang);
-                if (lang && hljs.getLanguage(lang)) {
+                if (lang && (lang = normalizeHighlightLang(lang)) && hljs.getLanguage(lang)) {
                     try {
-                        return hljs.highlight(lang, str, true).value;
+                        return hljs.highlight(str, { language: lang, ignoreIllegals: true }).value;
                     } catch { }
                 }
                 return ""; // Signal to markdown-it itself to handle it.
@@ -292,7 +291,12 @@ class MarkdownEngine implements IDynamicMarkdownEngine {
     }
 }
 
-function normalizeHighlightLang(lang: string | undefined) {
+/**
+ * Tries to convert the identifier to a language name supported by Highlight.js.
+ *
+ * @see {@link https://github.com/highlightjs/highlight.js/blob/main/SUPPORTED_LANGUAGES.md}
+ */
+function normalizeHighlightLang(lang: string): string {
     switch (lang && lang.toLowerCase()) {
         case 'tsx':
         case 'typescriptreact':
