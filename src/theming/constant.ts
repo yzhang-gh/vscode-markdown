@@ -6,12 +6,14 @@ import type ConfigKnownKey from "../configuration/KnownKey";
 // Keys are sorted in alphabetical order.
 
 const enum Color {
+    EditorCodeSpanBackground,
     EditorCodeSpanBorder,
     EditorFormattingMarkForeground,
     EditorTrailingSpaceBackground,
 }
 
 const colors: Readonly<Record<Color, vscode.ThemeColor>> = {
+    [Color.EditorCodeSpanBackground]: new vscode.ThemeColor("markdown.extension.editor.codeSpan.background"),
     [Color.EditorCodeSpanBorder]: new vscode.ThemeColor("markdown.extension.editor.codeSpan.border"),
     [Color.EditorFormattingMarkForeground]: new vscode.ThemeColor("markdown.extension.editor.formattingMark.foreground"),
     [Color.EditorTrailingSpaceBackground]: new vscode.ThemeColor("markdown.extension.editor.trailingSpace.background"),
@@ -57,6 +59,7 @@ export const enum DecorationClass {
  */
 export const decorationStyles: Readonly<Record<DecorationClass, Readonly<vscode.DecorationRenderOptions>>> = {
     [DecorationClass.CodeSpan]: {
+        backgroundColor: colors[Color.EditorCodeSpanBackground],
         border: "1px solid",
         borderColor: colors[Color.EditorCodeSpanBorder],
         borderRadius: "3px",

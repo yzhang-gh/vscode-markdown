@@ -33,6 +33,15 @@
     "contributes": {
         "colors": [
             {
+                "id": "markdown.extension.editor.codeSpan.background",
+                "description": "Background color of code spans in the Markdown editor.",
+                "defaults": {
+                    "dark": "#00000000",
+                    "light": "#00000000",
+                    "highContrast": "#00000000"
+                }
+            },
+            {
                 "id": "markdown.extension.editor.codeSpan.border",
                 "description": "Border color of code spans in the Markdown editor.",
                 "defaults": {
