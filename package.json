@@ -180,12 +180,14 @@
                 "command": "markdown.extension.onCopyLineUp",
                 "win": "shift+alt+up",
                 "mac": "shift+alt+up",
+                "linux": "ctrl+shift+alt+up",
                 "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.onCopyLineDown",
                 "win": "shift+alt+down",
                 "mac": "shift+alt+down",
+                "linux": "ctrl+shift+alt+down",
                 "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
             },
             {
