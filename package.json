@@ -463,7 +463,7 @@
                     "enum": [
                         "github",
                         "azureDevops",
-                        "bitbucketCloud",
+                        "bitbucket-cloud",
                         "gitea",
                         "gitlab",
                         "vscode"

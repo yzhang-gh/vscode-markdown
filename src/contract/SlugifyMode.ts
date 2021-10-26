@@ -9,7 +9,7 @@ const enum SlugifyMode {
     AzureDevOps = "azureDevops",
 
     /** Bitbucket Cloud */
-    BitbucketCloud = "bitbucketCloud",
+    BitbucketCloud = "bitbucket-cloud",
 
     /** Gitea */
     Gitea = "gitea",
