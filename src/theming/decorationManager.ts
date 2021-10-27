@@ -303,7 +303,7 @@ class DecorationManager implements IDecorationManager {
                 let handle = this._decorationHandles.get(target);
 
                 // Recheck applicability, since the user may happen to change settings.
-                if (configManager.get<boolean>(decorationClassConfigMap[target])) {
+                if (configManager.get(decorationClassConfigMap[target]) as boolean) {
                     // Create a new decoration type instance if needed.
                     if (!handle) {
                         handle = vscode.window.createTextEditorDecorationType(decorationStyles[target]);
@@ -356,7 +356,7 @@ class DecorationManager implements IDecorationManager {
 
         // Stop if the document exceeds max length.
         // The factor is for compatibility. There should be new logic someday.
-        if (document.getText().length * 1.5 > configManager.get<number>("syntax.decorationFileSizeLimit")) {
+        if (document.getText().length * 1.5 > configManager.get("syntax.decorationFileSizeLimit")) {
             return;
         }
 
@@ -365,7 +365,7 @@ class DecorationManager implements IDecorationManager {
             document,
             this._decorationWorkers,
             // No worry. `applyDecoration()` should recheck applicability.
-            this._supportedClasses.filter(target => configManager.get<boolean>(decorationClassConfigMap[target]))
+            this._supportedClasses.filter(target => configManager.get(decorationClassConfigMap[target]) as boolean)
         ));
     }
 }

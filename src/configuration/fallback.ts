@@ -1,18 +1,16 @@
-"use strict";
-
 import * as vscode from "vscode";
 import { IConfigurationFallbackMap } from "./manager";
+import { IConfigurationKeyTypeMap } from "./model";
 
 /**
  * Configuration keys that are no longer supported,
  * and will be removed in the next major version.
  */
-export const deprecated: readonly string[] = [
-    "syntax.decorations",
-];
+export const Deprecated_Keys = Object.freeze<string>([
+    "syntax.decorations", //
+]);
 
-export const fallbackMap: IConfigurationFallbackMap = {
-
+export const Fallback_Map = Object.freeze<IConfigurationFallbackMap<IConfigurationKeyTypeMap>>({
     "theming.decoration.renderCodeSpan": (scope): boolean => {
         const config = vscode.workspace.getConfiguration("markdown.extension", scope);
         const old = config.get<boolean | null>("syntax.decorations");
@@ -32,4 +30,4 @@ export const fallbackMap: IConfigurationFallbackMap = {
             return old;
         }
     },
-};
+});

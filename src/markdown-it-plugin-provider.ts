@@ -10,12 +10,12 @@ const katexOptions: KatexOptions = { throwOnError: false };
 export function extendMarkdownIt(md: MarkdownIt): MarkdownIt {
     md.use(require("markdown-it-task-lists"));
 
-    if (configManager.get<boolean>("math.enabled")) {
+    if (configManager.get("math.enabled")) {
         // We need side effects. (#521)
         require("katex/contrib/mhchem/mhchem");
 
-        // Deep copy, as KaTeX needs a mutable `macros`. <https://katex.org/docs/options.html>
-        const macros: KatexOptions["macros"] = JSON.parse(JSON.stringify(configManager.get<object>("katex.macros")));
+        // Deep copy, as KaTeX needs a normal mutable object. <https://katex.org/docs/options.html>
+        const macros: KatexOptions["macros"] = JSON.parse(JSON.stringify(configManager.get("katex.macros")));
 
         if (Object.keys(macros).length === 0) {
             delete katexOptions["macros"];

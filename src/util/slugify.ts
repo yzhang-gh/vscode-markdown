@@ -147,7 +147,7 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
  */
 export function slugify(heading: string, {
     env = Object.create(null),
-    mode = configManager.get<SlugifyMode>("toc.slugifyMode"),
+    mode = configManager.get("toc.slugifyMode"),
 }: { env?: object; mode?: SlugifyMode; }) {
 
     // Do never twist the input here!

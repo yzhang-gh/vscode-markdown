@@ -1,20 +1,16 @@
-"use strict";
-
 import * as vscode from "vscode";
 import type IDisposable from "../IDisposable";
-import type KnownKey from "./KnownKey";
-import { deprecated, fallbackMap } from "./defaultFallback";
+import { Deprecated_Keys, Fallback_Map } from "./fallback";
 
-export type IConfigurationFallbackMap = { readonly [key in KnownKey]?: (scope?: vscode.ConfigurationScope) => any; };
+export type IConfigurationFallbackMap<M> = { [key in keyof M]?: (scope?: vscode.ConfigurationScope) => M[key] };
 
-export interface IConfigurationManager extends IDisposable {
-
+export interface IConfigurationService<M> extends IDisposable {
     /**
      * Gets the value that an our own key denotes.
      * @param key The configuration key.
      * @param scope The scope, for which the configuration is asked.
      */
-    get<T>(key: KnownKey, scope?: vscode.ConfigurationScope): T;
+    get<K extends keyof M>(key: K, scope?: vscode.ConfigurationScope): M[K];
 
     /**
      * Gets the value that an absolute identifier denotes.
@@ -27,12 +23,11 @@ export interface IConfigurationManager extends IDisposable {
 /**
  * This is currently just a proxy that helps mapping our configuration keys.
  */
-class ConfigurationManager implements IConfigurationManager {
+class ConfigurationManager<M> implements IConfigurationService<M> {
+    private readonly _fallback: Readonly<IConfigurationFallbackMap<M>>;
 
-    private readonly _fallback: IConfigurationFallbackMap;
-
-    constructor(fallback: IConfigurationFallbackMap, deprecatedKeys: readonly string[]) {
-        this._fallback = Object.assign<IConfigurationFallbackMap, IConfigurationFallbackMap>(Object.create(null), fallback);
+    constructor(fallback: IConfigurationFallbackMap<M>, deprecatedKeys: readonly string[]) {
+        this._fallback = Object.isFrozen(fallback) ? fallback : Object.freeze({ ...fallback });
         this.showWarning(deprecatedKeys);
     }
 
@@ -55,22 +50,22 @@ class ConfigurationManager implements IConfigurationManager {
         }
     }
 
-    public get<T>(key: KnownKey, scope?: vscode.ConfigurationScope): T {
+    public get<K extends keyof M>(key: K, scope?: vscode.ConfigurationScope): M[K] {
         const fallback = this._fallback[key];
         if (fallback) {
             return fallback(scope);
         } else {
-            return vscode.workspace.getConfiguration("markdown.extension", scope).get<T>(key)!;
+            return vscode.workspace.getConfiguration("markdown.extension", scope).get<M[K]>(key as string)!;
         }
     }
 
     public getByAbsolute<T>(section: string, scope?: vscode.ConfigurationScope): T | undefined {
         if (section.startsWith("markdown.extension.")) {
-            return this.get<T>(section.slice(19) as KnownKey, scope);
+            return this.get(section.slice(19) as any, scope) as any;
         } else {
             return vscode.workspace.getConfiguration(undefined, scope).get<T>(section);
         }
     }
 }
 
-export const configManager = new ConfigurationManager(fallbackMap, deprecated);
+export const configManager = new ConfigurationManager(Fallback_Map, Deprecated_Keys);

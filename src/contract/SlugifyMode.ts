@@ -1,10 +1,7 @@
-"use strict";
-
 /**
  * Slugify mode.
  */
-const enum SlugifyMode {
-
+export const enum SlugifyMode {
     /** Azure DevOps */
     AzureDevOps = "azureDevops",
 

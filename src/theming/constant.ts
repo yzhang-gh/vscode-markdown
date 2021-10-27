@@ -1,7 +1,5 @@
-"use strict";
-
 import * as vscode from "vscode";
-import type ConfigKnownKey from "../configuration/KnownKey";
+import type { IConfigurationKnownKey } from "../configuration/model";
 
 // Keys are sorted in alphabetical order.
 
@@ -89,7 +87,7 @@ export const decorationStyles: Readonly<Record<DecorationClass, Readonly<vscode.
 /**
  * DecorationClass -> Configuration key
  */
-export const decorationClassConfigMap: Readonly<Record<DecorationClass, ConfigKnownKey>> = {
+export const decorationClassConfigMap: Readonly<Record<DecorationClass, IConfigurationKnownKey>> = {
     [DecorationClass.CodeSpan]: "theming.decoration.renderCodeSpan",
     [DecorationClass.HardLineBreak]: "theming.decoration.renderHardLineBreak",
     [DecorationClass.Link]: "theming.decoration.renderLink",
