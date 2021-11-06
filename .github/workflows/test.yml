@@ -48,7 +48,7 @@ jobs:
       - name: "Install dependencies"
         run: |
           npm ci
-          npm install -g vsce
+          npm install -g vsce@1
 
       - name: "Build debug"
         shell: pwsh

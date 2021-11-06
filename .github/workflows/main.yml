@@ -46,7 +46,7 @@ jobs:
       - name: "Install dependencies"
         run: |
           npm ci
-          npm install -g vsce
+          npm install -g vsce@1
 
       # Our prepublish script runs in production mode by default.
       # We should run tests against debug build to make error messages as useful as possible.
