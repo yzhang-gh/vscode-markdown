@@ -470,24 +470,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                 let items = uris.map(imgUri => {
                     const label = path.relative(basePath, imgUri.fsPath).replace(/\\/g, '/');
                     let item = new CompletionItem(label.replace(/ /g, '%20'), CompletionItemKind.File);
-
-                    //// Add image preview
-                    let dimensions: { width: number; height: number; };
-                    try {
-                        dimensions = sizeOf(imgUri.fsPath);
-                    } catch (error) {
-                        console.error(error);
-                        return item;
-                    }
-                    const maxWidth = 318;
-                    if (dimensions.width > maxWidth) {
-                        dimensions.height = Number(dimensions.height * maxWidth / dimensions.width);
-                        dimensions.width = maxWidth;
-                    }
-                    item.documentation = new MarkdownString(`![${label}](${imgUri.fsPath.replace(/ /g, '%20')}|width=${dimensions.width},height=${dimensions.height})`);
-
-                    item.sortText = label.replace(/\./g, '{');
-
+                    item.documentation = "image:" + JSON.stringify({ fsPath: imgUri.fsPath, label });
                     return item;
                 });
 
@@ -693,6 +676,30 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         } else {
             return [];
         }
+    }
+
+    resolveCompletionItem(item: CompletionItem, token: CancellationToken): ProviderResult<CompletionItem> {
+        if (item.kind === CompletionItemKind.File && typeof item.documentation === "string" && item.documentation.startsWith("image:")) {
+            const { fsPath, label }: { fsPath: string, label: string } = JSON.parse(item.documentation.slice("image:".length));
+
+            //// Add image preview
+            let dimensions: { width: number; height: number; };
+            try {
+                dimensions = sizeOf(fsPath);
+            } catch (error) {
+                console.error(error);
+                item.documentation = error + ""
+                return item;
+            }
+            const maxWidth = 318;
+            if (dimensions.width > maxWidth) {
+                dimensions.height = Number(dimensions.height * maxWidth / dimensions.width);
+                dimensions.width = maxWidth;
+            }
+            item.documentation = new MarkdownString(`![${label}](${fsPath.replace(/ /g, '%20')}|width=${dimensions.width},height=${dimensions.height})`);
+            item.sortText = label.replace(/\./g, '{');
+        }
+        return item;
     }
 }
 
