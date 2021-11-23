@@ -333,7 +333,7 @@ function styleByWrapping(startPattern: string, endPattern?: string) {
                 // `**|**` to `|`
                 let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
                 let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
-                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, new Range(start, end), false, startPattern);
+                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, new Range(start, end), false, startPattern, endPattern);
             } else {
                 // Select word under cursor
                 let wordRange = editor.document.getWordRangeAtPosition(cursorPos);
@@ -345,7 +345,7 @@ function styleByWrapping(startPattern: string, endPattern?: string) {
                 if (startPattern === '~~' && /^\s*[\*\+\-] (\[[ x]\] )? */g.test(currentTextLine.text)) {
                     wordRange = currentTextLine.range.with(new Position(cursorPos.line, currentTextLine.text.match(/^\s*[\*\+\-] (\[[ x]\] )? */g)[0].length));
                 }
-                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, wordRange, false, startPattern);
+                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, wordRange, false, startPattern, endPattern);
             }
         } else {
             // Text selected
