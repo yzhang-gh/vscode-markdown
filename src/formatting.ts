@@ -304,11 +304,7 @@ export function isSingleLink(text: string): boolean {
     return singleLinkRegex.test(text);
 }
 
-function styleByWrapping(startPattern: string, endPattern?: string) {
-    if (endPattern == undefined) {
-        endPattern = startPattern;
-    }
-
+function styleByWrapping(startPattern: string, endPattern = startPattern) {
     let editor = window.activeTextEditor;
     let selections = editor.selections;
 
@@ -316,7 +312,7 @@ function styleByWrapping(startPattern: string, endPattern?: string) {
     let shifts: [Position, number][] = [];
     let newSelections: Selection[] = selections.slice();
 
-    selections.forEach((selection, i) => {
+    for (const [i, selection] of selections.entries()) {
 
         let cursorPos = selection.active;
         const shift = shifts.map(([pos, s]) => (selection.start.line == pos.line && selection.start.character >= pos.character) ? s : 0)
@@ -351,7 +347,7 @@ function styleByWrapping(startPattern: string, endPattern?: string) {
             // Text selected
             wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, selection, true, startPattern, endPattern);
         }
-    });
+    }
 
     return workspace.applyEdit(batchEdit).then(() => {
         editor.selections = newSelections;
@@ -368,11 +364,7 @@ function styleByWrapping(startPattern: string, endPattern?: string) {
  * @param startPtn
  * @param endPtn
  */
-function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position, number][], newSelections: Selection[], i: number, shift: number, cursor: Position, range: Range, isSelected: boolean, startPtn: string, endPtn?: string) {
-    if (endPtn == undefined) {
-        endPtn = startPtn;
-    }
-
+function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position, number][], newSelections: Selection[], i: number, shift: number, cursor: Position, range: Range, isSelected: boolean, startPtn: string, endPtn: string) {
     let text = editor.document.getText(range);
     const prevSelection = newSelections[i];
     const ptnLength = (startPtn + endPtn).length;
