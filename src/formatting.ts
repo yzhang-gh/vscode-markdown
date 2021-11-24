@@ -324,7 +324,7 @@ function styleByWrapping(startPattern: string, endPattern = startPattern) {
                 // `**text|**` to `**text**|`
                 let newCursorPos = cursorPos.with({ character: cursorPos.character + shift + endPattern.length });
                 newSelections[i] = new Selection(newCursorPos, newCursorPos);
-                return;
+                break;
             } else if (getContext(editor, cursorPos, startPattern) === `${startPattern}|${endPattern}`) {
                 // `**|**` to `|`
                 let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
