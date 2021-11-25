@@ -29,33 +29,24 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: "Setup Node.js environment"
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: "12"
-
-      - name: "Cache Node.js packages"
-        id: "cache"
-        uses: actions/cache@v2
-        with:
-          # npm cache files are stored in `~/.npm` on Linux.
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: "14"
+          cache: "npm"
 
       - name: "Install dependencies"
         run: |
           npm ci
-          npm install -g vsce@1
+          npm install -g vsce@"^2.5"
 
       # Our prepublish script runs in production mode by default.
       # We should run tests against debug build to make error messages as useful as possible.
       - name: "Build"
         shell: pwsh
         run: |
-          vsce package
+          vsce package --pre-release
           $env:NODE_ENV = 'development'
-          vsce package --out debug.vsix
+          vsce package --pre-release --out debug.vsix
 
       - name: Test
         uses: GabrielBB/xvfb-action@v1.0
@@ -67,14 +58,6 @@ jobs:
         with:
           name: Markdown-All-in-One-${{ github.sha }}
           path: ./*.vsix
-
-      # Keep the cache of the default branch clean.
-      # This is regarded as a post-run step that we don't really pay attention to.
-      # Run it last to save waiting time.
-      - name: "Verify npm cache"
-        if: ${{ steps.cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/master' }}
-        run: |
-          npm cache verify
 
       # If the run failed, npm log may help to diagnose.
       - name: "(debug) Upload npm log"

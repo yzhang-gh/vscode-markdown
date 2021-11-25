@@ -31,24 +31,15 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: "Setup Node.js environment"
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: "12"
-
-      - name: "Cache Node.js packages"
-        id: "cache"
-        uses: actions/cache@v2
-        with:
-          # npm cache files are stored in `~/.npm` on Linux.
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: "14"
+          cache: "npm"
 
       - name: "Install dependencies"
         run: |
           npm ci
-          npm install -g vsce@1
+          npm install -g vsce@"^2.5"
 
       - name: "Build debug"
         shell: pwsh
