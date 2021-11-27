@@ -94,7 +94,7 @@ enum MathBlockState {
 }
 
 function getMathState(editor: TextEditor, cursor: Position): MathBlockState {
-    if (getContext(editor, cursor, '$') === '$|$') {
+    if (getContext(editor, cursor, '$', '$') === '$|$') {
         return MathBlockState.INLINE;
     } else if (getContext(editor, cursor, '$$ ', ' $$') === '$$ | $$') {
         return MathBlockState.SINGLE_DISPLAYED;
@@ -304,6 +304,7 @@ export function isSingleLink(text: string): boolean {
     return singleLinkRegex.test(text);
 }
 
+// Read PR #1052 before touching this please!
 function styleByWrapping(startPattern: string, endPattern = startPattern) {
     let editor = window.activeTextEditor;
     let selections = editor.selections;
@@ -319,13 +320,19 @@ function styleByWrapping(startPattern: string, endPattern = startPattern) {
             .reduce((a, b) => a + b, 0);
 
         if (selection.isEmpty) {
+            const context = getContext(editor, cursorPos, startPattern, endPattern);
+
             // No selected text
-            if (startPattern !== '~~' && getContext(editor, cursorPos, startPattern) === `${startPattern}text|${endPattern}`) {
+            if (
+                startPattern === endPattern &&
+                ["**", "*", "__", "_"].includes(startPattern) &&
+                context === `${startPattern}text|${endPattern}`
+            ) {
                 // `**text|**` to `**text**|`
                 let newCursorPos = cursorPos.with({ character: cursorPos.character + shift + endPattern.length });
                 newSelections[i] = new Selection(newCursorPos, newCursorPos);
                 continue;
-            } else if (getContext(editor, cursorPos, startPattern) === `${startPattern}|${endPattern}`) {
+            } else if (context === `${startPattern}|${endPattern}`) {
                 // `**|**` to `|`
                 let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
                 let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
@@ -424,18 +431,11 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
     newSelections[i] = newSelection;
 }
 
-function isWrapped(text: string, startPattern: string, endPattern?: string): boolean {
-    if (endPattern == undefined) {
-        endPattern = startPattern;
-    }
+function isWrapped(text: string, startPattern: string, endPattern: string): boolean {
     return text.startsWith(startPattern) && text.endsWith(endPattern);
 }
 
-function getContext(editor: TextEditor, cursorPos: Position, startPattern: string, endPattern?: string): string {
-    if (endPattern == undefined) {
-        endPattern = startPattern;
-    }
-
+function getContext(editor: TextEditor, cursorPos: Position, startPattern: string, endPattern: string): string {
     let startPositionCharacter = cursorPos.character - startPattern.length;
     let endPositionCharacter = cursorPos.character + endPattern.length;
 
