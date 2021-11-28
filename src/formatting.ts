@@ -94,7 +94,7 @@ enum MathBlockState {
 }
 
 function getMathState(editor: TextEditor, cursor: Position): MathBlockState {
-    if (getContext(editor, cursor, '$') === '$|$') {
+    if (getContext(editor, cursor, '$', '$') === '$|$') {
         return MathBlockState.INLINE;
     } else if (getContext(editor, cursor, '$$ ', ' $$') === '$$ | $$') {
         return MathBlockState.SINGLE_DISPLAYED;
@@ -304,11 +304,8 @@ export function isSingleLink(text: string): boolean {
     return singleLinkRegex.test(text);
 }
 
-function styleByWrapping(startPattern: string, endPattern?: string) {
-    if (endPattern == undefined) {
-        endPattern = startPattern;
-    }
-
+// Read PR #1052 before touching this please!
+function styleByWrapping(startPattern: string, endPattern = startPattern) {
     let editor = window.activeTextEditor;
     let selections = editor.selections;
 
@@ -316,24 +313,30 @@ function styleByWrapping(startPattern: string, endPattern?: string) {
     let shifts: [Position, number][] = [];
     let newSelections: Selection[] = selections.slice();
 
-    selections.forEach((selection, i) => {
+    for (const [i, selection] of selections.entries()) {
 
         let cursorPos = selection.active;
         const shift = shifts.map(([pos, s]) => (selection.start.line == pos.line && selection.start.character >= pos.character) ? s : 0)
             .reduce((a, b) => a + b, 0);
 
         if (selection.isEmpty) {
+            const context = getContext(editor, cursorPos, startPattern, endPattern);
+
             // No selected text
-            if (startPattern !== '~~' && getContext(editor, cursorPos, startPattern) === `${startPattern}text|${endPattern}`) {
+            if (
+                startPattern === endPattern &&
+                ["**", "*", "__", "_"].includes(startPattern) &&
+                context === `${startPattern}text|${endPattern}`
+            ) {
                 // `**text|**` to `**text**|`
                 let newCursorPos = cursorPos.with({ character: cursorPos.character + shift + endPattern.length });
                 newSelections[i] = new Selection(newCursorPos, newCursorPos);
-                return;
-            } else if (getContext(editor, cursorPos, startPattern) === `${startPattern}|${endPattern}`) {
+                continue;
+            } else if (context === `${startPattern}|${endPattern}`) {
                 // `**|**` to `|`
                 let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
                 let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
-                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, new Range(start, end), false, startPattern);
+                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, new Range(start, end), false, startPattern, endPattern);
             } else {
                 // Select word under cursor
                 let wordRange = editor.document.getWordRangeAtPosition(cursorPos);
@@ -345,13 +348,13 @@ function styleByWrapping(startPattern: string, endPattern?: string) {
                 if (startPattern === '~~' && /^\s*[\*\+\-] (\[[ x]\] )? */g.test(currentTextLine.text)) {
                     wordRange = currentTextLine.range.with(new Position(cursorPos.line, currentTextLine.text.match(/^\s*[\*\+\-] (\[[ x]\] )? */g)[0].length));
                 }
-                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, wordRange, false, startPattern);
+                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, wordRange, false, startPattern, endPattern);
             }
         } else {
             // Text selected
             wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, selection, true, startPattern, endPattern);
         }
-    });
+    }
 
     return workspace.applyEdit(batchEdit).then(() => {
         editor.selections = newSelections;
@@ -368,11 +371,7 @@ function styleByWrapping(startPattern: string, endPattern?: string) {
  * @param startPtn
  * @param endPtn
  */
-function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position, number][], newSelections: Selection[], i: number, shift: number, cursor: Position, range: Range, isSelected: boolean, startPtn: string, endPtn?: string) {
-    if (endPtn == undefined) {
-        endPtn = startPtn;
-    }
-
+function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position, number][], newSelections: Selection[], i: number, shift: number, cursor: Position, range: Range, isSelected: boolean, startPtn: string, endPtn: string) {
     let text = editor.document.getText(range);
     const prevSelection = newSelections[i];
     const ptnLength = (startPtn + endPtn).length;
@@ -432,18 +431,11 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
     newSelections[i] = newSelection;
 }
 
-function isWrapped(text: string, startPattern: string, endPattern?: string): boolean {
-    if (endPattern == undefined) {
-        endPattern = startPattern;
-    }
+function isWrapped(text: string, startPattern: string, endPattern: string): boolean {
     return text.startsWith(startPattern) && text.endsWith(endPattern);
 }
 
-function getContext(editor: TextEditor, cursorPos: Position, startPattern: string, endPattern?: string): string {
-    if (endPattern == undefined) {
-        endPattern = startPattern;
-    }
-
+function getContext(editor: TextEditor, cursorPos: Position, startPattern: string, endPattern: string): string {
     let startPositionCharacter = cursorPos.character - startPattern.length;
     let endPositionCharacter = cursorPos.character + endPattern.length;
 
