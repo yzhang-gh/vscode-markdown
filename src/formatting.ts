@@ -28,7 +28,8 @@ const singleLinkRegex: RegExp = createLinkRegex();
 // Return Promise because need to chain operations in unit tests
 
 function toggleBold() {
-    return styleByWrapping('**');
+    let indicator = workspace.getConfiguration('markdown.extension.bold').get<string>('indicator');
+    return styleByWrapping(indicator);
 }
 
 function toggleItalic() {

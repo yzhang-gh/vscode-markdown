@@ -16,6 +16,7 @@
     "config.completion.respectVscodeSearchExclude": "Whether to exclude files from auto-completion using VS Code's `#search.exclude#` setting. (`node_modules`, `bower_components` and `*.code-search` are **always excluded**, not affected by this option.)",
     "config.completion.root": "The root folder for path auto-completion.",
     "config.italic.indicator.description": "Use `*` or `_` to wrap italic text.",
+    "config.bold.indicator.description": "Use `**` or `__` to wrap bold text.",
     "config.katex.macros.description": "User-defined KaTeX macros.",
     "config.list.indentationSize.description": "List indentation scheme. (Also affects TOC generation.)\n\nWhether to use different indentation sizes on different list contexts or stick to VS Code's tab size.",
     "config.list.indentationSize.enumDescriptions.adaptive": "Adaptive indentation size according to the context, trying to **left align the sublist with its parent's content**. For example:\n\n```markdown\n- Parent\n  - Sublist\n\n1. Parent\n   1. Sublist\n\n10. Parent with longer marker\n    1. Sublist\n```",

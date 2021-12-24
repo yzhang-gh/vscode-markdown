@@ -81,6 +81,15 @@ suite("Formatting.", () => {
         );
     });
 
+    test("Toggle bold. Use `__`", async () => {
+        await updateConfiguration({ config: [["markdown.extension.bold.indicator", "__"]] });
+        await testCommand('markdown.extension.editing.toggleBold',
+            ['text'], new Selection(0, 0, 0, 4),
+            ['__text__'], new Selection(0, 0, 0, 8)
+        );
+        await resetConfiguration();
+    });
+
     test("Toggle italic. Use `*`", () => {
         return testCommand('markdown.extension.editing.toggleItalic',
             ['text'], new Selection(0, 0, 0, 4),

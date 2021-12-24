@@ -65,6 +65,11 @@ const regexDecorTypeMappingPlainTheme: ReadonlyArray<[RegExp, ReadonlyArray<Deco
         /(\*\*)([^\*\`\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s].*?[^\*\`\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s])(\*\*)/,
         [DecorationType.gray, DecorationType.baseColor, DecorationType.gray]
     ],
+    // __bold__
+    [
+        /(__)([^\*\`\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s].*?[^\*\`\!\@\#\%\^\&\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s])(__)/,
+        [DecorationType.gray, DecorationType.baseColor, DecorationType.gray]
+    ],
 ];
 
 //#endregion Constant
