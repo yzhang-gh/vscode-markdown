@@ -4,7 +4,7 @@ import { commands, ExtensionContext, Position, Range, Selection, TextEditor, win
 import { isInFencedCodeBlock, mathEnvCheck } from "./util/contextCheck";
 
 export function activate(context: ExtensionContext) {
-    commands.executeCommand('setContext', 'selectionInMarkdownList', false);
+    commands.executeCommand('setContext', 'markdown.extension.editor.cursor.inMarkdownList', false);
 
     context.subscriptions.push(
         commands.registerCommand('markdown.extension.onEnterKey', onEnterKey),
@@ -149,15 +149,15 @@ function updateContextKey() {
     let lineText = editor.document.lineAt(cursorPos.line).text;
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line) || mathEnvCheck(editor.document, cursorPos)) {
-        commands.executeCommand('setContext', 'selectionInMarkdownList', false);
+        commands.executeCommand('setContext', 'markdown.extension.editor.cursor.inMarkdownList', false);
     }
     else {
         let inList = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.test(lineText);
         if(inList) {
-            commands.executeCommand('setContext', 'selectionInMarkdownList', true);
+            commands.executeCommand('setContext', 'markdown.extension.editor.cursor.inMarkdownList', true);
         }
         else {
-            commands.executeCommand('setContext', 'selectionInMarkdownList', false);
+            commands.executeCommand('setContext', 'markdown.extension.editor.cursor.inMarkdownList', false);
         }
     }
     return;
