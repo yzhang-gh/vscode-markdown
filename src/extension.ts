@@ -2,6 +2,7 @@
 
 import { ExtensionContext, languages, Uri, window, workspace } from 'vscode';
 import { configManager } from "./configuration/manager";
+import { contextServiceManager } from "./contextService/manager"
 import { decorationManager } from "./theming/decorationManager";
 import * as completion from './completion';
 import * as formatting from './formatting';
@@ -20,7 +21,7 @@ export function activate(context: ExtensionContext) {
     configNls({ extensionContext: context });
 
     context.subscriptions.push(
-        configManager, decorationManager, commonMarkEngine, mdEngine
+        configManager, contextServiceManager, decorationManager, commonMarkEngine, mdEngine
     );
 
     activateMdExt(context);
@@ -29,6 +30,8 @@ export function activate(context: ExtensionContext) {
 }
 
 function activateMdExt(context: ExtensionContext) {
+    // Context services
+    contextServiceManager.activate(context);
     // Override `Enter`, `Tab` and `Backspace` keys
     listEditing.activate(context);
     // Shortcuts
