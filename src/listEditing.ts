@@ -4,8 +4,6 @@ import { commands, ExtensionContext, Position, Range, Selection, TextEditor, win
 import { isInFencedCodeBlock, mathEnvCheck } from "./util/contextCheck";
 
 export function activate(context: ExtensionContext) {
-    commands.executeCommand('setContext', 'markdown.extension.editor.cursor.inMarkdownList', false);
-
     context.subscriptions.push(
         commands.registerCommand('markdown.extension.onEnterKey', onEnterKey),
         commands.registerCommand('markdown.extension.onCtrlEnterKey', () => { return onEnterKey('ctrl'); }),
@@ -19,9 +17,7 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.onCopyLineDown', onCopyLineDown),
         commands.registerCommand('markdown.extension.onCopyLineUp', onCopyLineUp),
         commands.registerCommand('markdown.extension.onIndentLines', onIndentLines),
-        commands.registerCommand('markdown.extension.onOutdentLines', onOutdentLines),
-        window.onDidChangeActiveTextEditor(() => updateContextKey()),
-        window.onDidChangeTextEditorSelection(() => updateContextKey())
+        commands.registerCommand('markdown.extension.onOutdentLines', onOutdentLines)
     );
 }
 
@@ -141,26 +137,6 @@ function onEnterKey(modifiers?: string) {
     } else {
         return asNormal('enter', modifiers);
     }
-}
-
-function updateContextKey() {
-    let editor = window.activeTextEditor;
-    let cursorPos = editor.selection.start;
-    let lineText = editor.document.lineAt(cursorPos.line).text;
-
-    if (isInFencedCodeBlock(editor.document, cursorPos.line) || mathEnvCheck(editor.document, cursorPos)) {
-        commands.executeCommand('setContext', 'markdown.extension.editor.cursor.inMarkdownList', false);
-    }
-    else {
-        let inList = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.test(lineText);
-        if(inList) {
-            commands.executeCommand('setContext', 'markdown.extension.editor.cursor.inMarkdownList', true);
-        }
-        else {
-            commands.executeCommand('setContext', 'markdown.extension.editor.cursor.inMarkdownList', false);
-        }
-    }
-    return;
 }
 
 function onTabKey(modifiers?: string) {
