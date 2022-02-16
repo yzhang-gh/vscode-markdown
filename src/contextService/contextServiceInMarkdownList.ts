@@ -21,12 +21,12 @@ export class ContextServiceEditorInMarkdownList extends AbsContextService {
     protected updateContextState() {
         let editor = window.activeTextEditor;
         let cursorPos = editor.selection.start;
-        let lineText = editor.document.lineAt(cursorPos.line).text;
     
         if (isInFencedCodeBlock(editor.document, cursorPos.line) || mathEnvCheck(editor.document, cursorPos)) {
             this.setState(false);
         }
         else {
+            let lineText = editor.document.lineAt(cursorPos.line).text;
             let inList = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.test(lineText);
             if(inList) {
                 this.setState(true);
