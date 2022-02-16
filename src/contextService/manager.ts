@@ -2,21 +2,28 @@
 
 import type IDisposable from "../IDisposable";
 import { ExtensionContext } from 'vscode';
+import { AbsContextService } from "./IContextService";
 import { ContextServiceEditorInMarkdownList } from "./contextServiceInMarkdownList";
 
 export class ContextServiceManager implements IDisposable {
-    private editorInMarkdownList: ContextServiceEditorInMarkdownList;
+    private readonly contextServices: Array<AbsContextService> = [];
 
     public constructor() {
-        this.editorInMarkdownList = new ContextServiceEditorInMarkdownList("markdown.extension.editor.cursor.inMarkdownList");
+        // push context services
+        this.contextServices.push(new ContextServiceEditorInMarkdownList("markdown.extension.editor.cursor.inMarkdownList"));
     }
 
     public activate(context: ExtensionContext) {
-        this.editorInMarkdownList.activate(context);
+        for (const service of this.contextServices) {
+            service.activate(context);
+        }
     }
 
     public dispose(): void {
-        this.editorInMarkdownList.dispose();
+        while (this.contextServices.length > 0) {
+            const service = this.contextServices.pop();
+            service.dispose();
+        }
     }
 }
 
