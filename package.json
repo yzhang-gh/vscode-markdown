@@ -192,7 +192,7 @@
             {
                 "command": "markdown.extension.onTabKey",
                 "key": "tab",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !inlineSuggestionVisible && !editorHasMultipleSelections && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions && markdown.extension.editor.cursor.inMarkdownList && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !inlineSuggestionVisible && !editorHasMultipleSelections && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions && markdown.extension.editor.cursor.inList && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onShiftTabKey",

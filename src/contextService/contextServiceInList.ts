@@ -3,7 +3,7 @@
 import { ExtensionContext, window } from 'vscode';
 import { AbsContextService } from "./IContextService";
 
-export class ContextServiceEditorInMarkdownList extends AbsContextService {
+export class ContextServiceEditorInList extends AbsContextService {
     public activate(context: ExtensionContext) {
         // set initial state of context
         this.setState(false);
