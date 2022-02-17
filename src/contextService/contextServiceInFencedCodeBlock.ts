@@ -2,8 +2,9 @@
 
 import { ExtensionContext, window } from 'vscode';
 import { AbsContextService } from "./IContextService";
+import { isInFencedCodeBlock } from "../util/contextCheck";
 
-export class ContextServiceEditorInMarkdownList extends AbsContextService {
+export class ContextServiceEditorInFencedCodeBlock extends AbsContextService {
     public activate(context: ExtensionContext) {
         // set initial state of context
         this.setState(false);
@@ -20,10 +21,8 @@ export class ContextServiceEditorInMarkdownList extends AbsContextService {
     protected updateContextState() {
         let editor = window.activeTextEditor;
         let cursorPos = editor.selection.start;
-        let lineText = editor.document.lineAt(cursorPos.line).text;
-
-        let inList = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.test(lineText);
-        if (inList) {
+    
+        if (isInFencedCodeBlock(editor.document, cursorPos.line)) {
             this.setState(true);
         }
         else {
