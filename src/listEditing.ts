@@ -36,7 +36,7 @@ function onEnterKey(modifiers?: string) {
         lineBreakPos = line.range.end;
     }
 
-    if (modifiers == 'shift' || isInFencedCodeBlock(editor.document, cursorPos.line) || mathEnvCheck(editor.document, cursorPos)) {
+    if (modifiers == 'shift') {
         return asNormal('enter', modifiers);
     }
 
@@ -168,10 +168,6 @@ function onBackspaceKey() {
     let cursor = editor.selection.active;
     let document = editor.document;
     let textBeforeCursor = document.lineAt(cursor.line).text.substr(0, cursor.character);
-
-    if (isInFencedCodeBlock(document, cursor.line) || mathEnvCheck(editor.document, cursor)) {
-        return asNormal('backspace');
-    }
 
     if (!editor.selection.isEmpty) {
         return asNormal('backspace').then(() => fixMarker(findNextMarkerLineNumber()));
