@@ -144,10 +144,6 @@ function onTabKey(modifiers?: string) {
     let cursorPos = editor.selection.start;
     let lineText = editor.document.lineAt(cursorPos.line).text;
 
-    if (isInFencedCodeBlock(editor.document, cursorPos.line) || mathEnvCheck(editor.document, cursorPos)) {
-        return asNormal('tab', modifiers);
-    }
-
     let match = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.exec(lineText);
     if (
         match
