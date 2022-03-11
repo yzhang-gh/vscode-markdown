@@ -1,9 +1,10 @@
 'use strict'
 
 import { ExtensionContext, Position, TextDocument, window } from 'vscode';
-import { AbsContextService } from "./IContextService";
+import { AbsContextService } from "./i-context-service";
+import { isInFencedCodeBlock } from "../util/contextCheck";
 
-export class ContextServiceEditorInList extends AbsContextService {
+export class ContextServiceEditorInFencedCodeBlock extends AbsContextService {
     public onActivate(context: ExtensionContext) {
         // set initial state of context
         this.setState(false);
@@ -20,10 +21,7 @@ export class ContextServiceEditorInList extends AbsContextService {
     }
 
     private updateContextState(document: TextDocument, cursorPos: Position) {
-        let lineText = document.lineAt(cursorPos.line).text;
-
-        let inList = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.test(lineText);
-        if (inList) {
+        if (isInFencedCodeBlock(document, cursorPos.line)) {
             this.setState(true);
         }
         else {

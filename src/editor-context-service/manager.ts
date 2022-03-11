@@ -2,10 +2,10 @@
 
 import type IDisposable from "../IDisposable";
 import { ExtensionContext, window } from 'vscode';
-import { AbsContextService } from "./IContextService";
-import { ContextServiceEditorInList } from "./contextServiceInList";
-import { ContextServiceEditorInFencedCodeBlock } from "./contextServiceInFencedCodeBlock";
-import { ContextServiceEditorInMathEn } from "./contextServiceInMathEnv";
+import { AbsContextService } from "./i-context-service";
+import { ContextServiceEditorInList } from "./context-service-in-list";
+import { ContextServiceEditorInFencedCodeBlock } from "./context-service-in-fenced-code-block";
+import { ContextServiceEditorInMathEn } from "./context-service-in-math-env";
 
 export class ContextServiceManager implements IDisposable {
     private readonly contextServices: Array<AbsContextService> = [];

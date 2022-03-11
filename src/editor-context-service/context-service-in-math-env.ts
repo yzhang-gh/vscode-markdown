@@ -1,7 +1,7 @@
 'use strict'
 
 import { ExtensionContext, Position, TextDocument, window } from 'vscode';
-import { AbsContextService } from "./IContextService";
+import { AbsContextService } from "./i-context-service";
 import { mathEnvCheck } from "../util/contextCheck";
 
 export class ContextServiceEditorInMathEn extends AbsContextService {

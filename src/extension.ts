@@ -2,7 +2,7 @@
 
 import { ExtensionContext, languages, Uri, window, workspace } from 'vscode';
 import { configManager } from "./configuration/manager";
-import { contextServiceManager } from "./contextService/manager"
+import { contextServiceManager } from "./editor-context-service/manager"
 import { decorationManager } from "./theming/decorationManager";
 import * as completion from './completion';
 import * as formatting from './formatting';
