@@ -144,6 +144,8 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
     const extensionStyles = await getPreviewExtensionStyles();
     const extensionScripts = await getPreviewExtensionScripts();
     const includeVscodeStyles = config.get<boolean>('print.includeVscodeStylesheets')
+    const themeKind = config.get<string>('print.theme');
+    const themeClass = themeKind === 'light' ? 'vscode-light' : themeKind === 'dark' ? 'vscode-dark' : '';
     const html = `<!DOCTYPE html>
     <html>
     <head>
@@ -152,7 +154,7 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
         ${extensionStyles}
         ${getStyles(doc.uri, hasMath, includeVscodeStyles)}
     </head>
-    <body class="vscode-body${config.get<string>('print.theme') === 'light' ? ' vscode-light' : config.get<string>('print.theme') === 'dark' ? ' vscode-dark' : ''}">
+    <body class="vscode-body ${themeClass}">
         ${body}
         ${hasMath ? '<script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>' : ''}
         ${extensionScripts}
