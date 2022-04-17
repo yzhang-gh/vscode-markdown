@@ -3,10 +3,10 @@
     "displayName": "%ext.displayName%",
     "description": "%ext.description%",
     "icon": "images/Markdown-mark.png",
-    "version": "3.4.0",
+    "version": "3.4.1",
     "publisher": "yzhang",
     "engines": {
-        "vscode": "^1.38.0"
+        "vscode": "^1.53.0"
     },
     "categories": [
         "Programming Languages",
