@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\test",
+    "\\src\\test\\suite",
+    "\\src\\test\\suite\\integration"
+  ],
+  "SelectedNode": "\\.gitignore",
+  "PreviewInSolutionExplorer": false
+}

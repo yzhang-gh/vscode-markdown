@@ -99,9 +99,6 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     }
 
     private formatTable(text: string, doc: TextDocument, options: FormattingOptions) {
-        const cellPadding = ' ';
-        const cellPaddingLength = cellPadding.length * 2;
-
         const delimiterRowNum = 1;
 
         let delimiterRowNoPadding = workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('delimiterRowNoPadding');
@@ -145,7 +142,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 if (num != delimiterRowNum) {
                     //// Treat CJK characters as 2 English ones because of Unicode stuff
                     const numOfUnicodeChars = splitter.countGraphemes(cell);
-                    const width = (cjkRegex.test(cell) ? numOfUnicodeChars + cell.match(cjkRegex).length : numOfUnicodeChars) + cellPaddingLength;
+                    const width = (cjkRegex.test(cell) ? numOfUnicodeChars + cell.match(cjkRegex).length : numOfUnicodeChars);
                     colWidth[i] = colWidth[i] > width ? colWidth[i] : width;
                 }
 
@@ -158,55 +155,38 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         lines[delimiterRowNum] = lines[delimiterRowNum].map((cell, i) => {
             if (/:-+:/.test(cell)) {
                 //:---:
-                const minimalWidth = delimiterRowNoPadding ? 5 : 5 + cellPaddingLength;
-                const numberOfColons = 2;
-
-                colWidth[i] = Math.max(colWidth[i], minimalWidth);
+                colWidth[i] = Math.max(colWidth[i], delimiterRowNoPadding ? 3 : 5);
                 colAlign[i] = ColumnAlignment.Center;
 
-                let numberOfDelimiters = this.calculateNumberOfDelimiters(colWidth[i], numberOfColons, delimiterRowNoPadding, cellPaddingLength);
-
-                return ':' + '-'.repeat(numberOfDelimiters) + ':';
+                return ':' + '-'.repeat(delimiterRowNoPadding ? colWidth[i] : colWidth[i] - 2) + ':';
             } else if (/:-+/.test(cell)) {
                 //:---
-                const minimalWidth = delimiterRowNoPadding ? 4 : 4 + cellPaddingLength;
-                const numberOfColons = 1;
-
-                colWidth[i] = Math.max(colWidth[i], minimalWidth);
+                colWidth[i] = Math.max(colWidth[i], delimiterRowNoPadding ? 2 : 4);
                 colAlign[i] = ColumnAlignment.Left;
 
-                let numberOfDelimiters = this.calculateNumberOfDelimiters(colWidth[i], numberOfColons, delimiterRowNoPadding, cellPaddingLength);
-
-                return ':' + '-'.repeat(numberOfDelimiters);
+                return ':' + '-'.repeat(delimiterRowNoPadding ? colWidth[i] - 1 + 2 : colWidth[i] - 1);
             } else if (/-+:/.test(cell)) {
                 //---:
-                const minimalWidth = delimiterRowNoPadding ? 4 : 4 + cellPaddingLength;
-                const numberOfColons = 1;
-
-                colWidth[i] = Math.max(colWidth[i], minimalWidth);
+                colWidth[i] = Math.max(colWidth[i], delimiterRowNoPadding ? 2 : 4);
                 colAlign[i] = ColumnAlignment.Right;
 
-                let numberOfDelimiters = this.calculateNumberOfDelimiters(colWidth[i], numberOfColons, delimiterRowNoPadding, cellPaddingLength);
-
-                return '-'.repeat(numberOfDelimiters) + ':';
+                return '-'.repeat(delimiterRowNoPadding ? colWidth[i] - 1 + 2 : colWidth[i] - 1) + ':';
             } else if (/-+/.test(cell)) {
                 //---
-                const minimalWidth = delimiterRowNoPadding ? 3 : 3 + cellPaddingLength;
-                const numberOfColons = 0;
-
-                colWidth[i] = Math.max(colWidth[i], minimalWidth);
+                colWidth[i] = Math.max(colWidth[i], delimiterRowNoPadding ? 1 : 3);
                 colAlign[i] = ColumnAlignment.None;
 
-                let numberOfDelimiters = this.calculateNumberOfDelimiters(colWidth[i], numberOfColons, delimiterRowNoPadding, cellPaddingLength);
-
-                return '-'.repeat(numberOfDelimiters);
+                return '-'.repeat(delimiterRowNoPadding ? colWidth[i] + 2 : colWidth[i]);
             } else {
                 colAlign[i] = ColumnAlignment.None;
             }
         });
 
         return lines.map((row, i) => {
-            let rowNum = i;
+            if (delimiterRowNoPadding && i === delimiterRowNum) {
+                return indentation + '|' + row.join('|') + '|';
+            }
+
             let cells = row.map((cell, i) => {
                 const desiredWidth = colWidth[i];
                 let jsLength = splitter.splitGraphemes(cell + ' '.repeat(desiredWidth)).slice(0, desiredWidth).join('').length;
@@ -215,34 +195,20 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                     jsLength -= cell.match(cjkRegex).length;
                 }
 
-                if (delimiterRowNoPadding && rowNum === delimiterRowNum) {
-                    return this.alignText(cell, colAlign[i], jsLength, '');
-                }
-
-                return this.alignText(cell, colAlign[i], jsLength, cellPadding);
+                return this.alignText(cell, colAlign[i], jsLength);
             });
 
-            return indentation + '|' + cells.join('|') + '|';
+            return indentation + '| ' + cells.join(' | ') + ' |';
         }).join(doc.eol === EndOfLine.LF ? '\n' : '\r\n');
     }
 
-    private alignText(text: string, align: ColumnAlignment, length: number, padding: string) {
+    private alignText(text: string, align: ColumnAlignment, length: number) {
         if (align === ColumnAlignment.Center && length > text.length) {
-            return (padding + ' '.repeat(Math.floor((length - text.length) / 2) - padding.length) + text + ' '.repeat(length) + padding).slice(0, length);
+            return (' '.repeat(Math.floor((length - text.length) / 2)) + text + ' '.repeat(length)).slice(0, length);
         } else if (align === ColumnAlignment.Right) {
-            return (padding + ' '.repeat(length) + text + padding).slice(-length);
+            return (' '.repeat(length) + text).slice(-length);
         } else {
-            return (padding + text + ' '.repeat(length) + padding).slice(0, length);
+            return (text + ' '.repeat(length)).slice(0, length);
         }
-    }
-
-    private calculateNumberOfDelimiters(columnWidth: number, numberOfColons: number, delimiterRowNoPadding: boolean, cellPaddingLength: number) {
-        let numberOfDelimiters = 0;
-
-        let paddingLength = delimiterRowNoPadding ? 0 : cellPaddingLength;
-
-        numberOfDelimiters = columnWidth - numberOfColons - paddingLength;
-
-        return numberOfDelimiters;
     }
 }
