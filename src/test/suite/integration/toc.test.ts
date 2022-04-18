@@ -1,4 +1,4 @@
-import { workspace, Selection } from 'vscode';
+import { Selection } from "vscode";
 import { resetConfiguration, updateConfiguration } from "../util/configuration";
 import { testCommand, Test_Md_File_Path } from "../util/generic";
 
@@ -367,7 +367,7 @@ suite("TOC.", () => {
     test("Exclude omitted headings (`toc.omittedFromToc`)", async () => {
         await updateConfiguration({
             config: [["markdown.extension.toc.omittedFromToc", {
-                [Test_Md_File_Path]: [
+                [Test_Md_File_Path.fsPath]: [
                     // With more than one space between sharps and text.
                     '#  Introduction',
                     // With spaces before sharps ans special chars.

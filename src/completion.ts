@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import sizeOf from 'image-size';
 import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
+import { configManager } from "./configuration/manager";
 import { getAllTocEntry, IHeading } from './toc';
 import { mathEnvCheck } from "./util/contextCheck";
 import { Document_Selector_Markdown } from './util/generic';
@@ -390,16 +391,12 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         envSnippet.insertText = new SnippetString('begin{${1|' + this.envs.join(',') + '|}}\n\t$2\n\\end{$1}');
 
         // Pretend to support multi-workspacefolders
-        let resource = null;
-        if (workspace.workspaceFolders !== undefined && workspace.workspaceFolders.length > 0) {
-            resource = workspace.workspaceFolders[0].uri;
-        }
+        const folder = workspace.workspaceFolders?.[0]?.uri;
 
         // Import macros from configurations
-        let configMacros = workspace.getConfiguration('markdown.extension.katex', resource).get<object>('macros');
+        const configMacros = configManager.get("katex.macros", folder);
         var macroItems: CompletionItem[] = [];
-        for (const cmd of Object.keys(configMacros)) {
-            const expansion: string = configMacros[cmd];
+        for (const [cmd, expansion] of Object.entries(configMacros)) {
             let item = new CompletionItem(cmd, CompletionItemKind.Function);
 
             // Find the number of arguments in the expansion
@@ -418,28 +415,30 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         this.mathCompletions = [...c1, ...c2, ...c3, envSnippet, ...macroItems];
 
         // Sort
-        this.mathCompletions.forEach(item => {
-            item.sortText = item.label.replace(/[a-zA-Z]/g, c => {
+        for (const item of this.mathCompletions) {
+            const label = typeof item.label === "string" ? item.label : item.label.label;
+            item.sortText = label.replace(/[a-zA-Z]/g, (c) => {
                 if (/[a-z]/.test(c)) {
                     return `0${c}`;
                 } else {
                     return `1${c.toLowerCase()}`;
                 }
             });
-        });
+        }
 
-        let excludePatterns = ['**/node_modules', '**/bower_components', '**/*.code-search'];
-        if (workspace.getConfiguration('markdown.extension.completion', resource).get<boolean>('respectVscodeSearchExclude')) {
-            const configExclude = workspace.getConfiguration('search', resource).get<object>('exclude');
-            for (const key of Object.keys(configExclude)) {
-                if (configExclude[key] === true) {
-                    excludePatterns.push(key);
+        const Always_Exclude = ["**/node_modules", "**/bower_components", "**/*.code-search"];
+        const excludePatterns = new Set(Always_Exclude);
+
+        if (configManager.get("completion.respectVscodeSearchExclude", folder)) {
+            const vscodeSearchExclude = configManager.getByAbsolute<object>("search.exclude", folder)!;
+            for (const [pattern, enabled] of Object.entries(vscodeSearchExclude)) {
+                if (enabled) {
+                    excludePatterns.add(pattern);
                 }
             }
         }
 
-        excludePatterns = Array.from(new Set(excludePatterns));
-        this.EXCLUDE_GLOB = '{' + excludePatterns.join(',') + '}';
+        this.EXCLUDE_GLOB = "{" + Array.from(excludePatterns).join(",") + "}";
     }
 
     async provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
@@ -467,17 +466,26 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             const isRootedPath = typedDir.startsWith('/');
 
             return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif,webp}', this.EXCLUDE_GLOB).then(uris => {
-                let items = uris.map(imgUri => {
+                const items: CompletionItem[] = [];
+
+                for (const imgUri of uris) {
                     const label = path.relative(basePath, imgUri.fsPath).replace(/\\/g, '/');
+
+                    if (isRootedPath && label.startsWith("..")) {
+                        continue;
+                    }
+
                     let item = new CompletionItem(label.replace(/ /g, '%20'), CompletionItemKind.File);
+                    items.push(item);
 
                     //// Add image preview
                     let dimensions: { width: number; height: number; };
                     try {
+                        // @ts-ignore Deprecated.
                         dimensions = sizeOf(imgUri.fsPath);
                     } catch (error) {
                         console.error(error);
-                        return item;
+                        continue;
                     }
                     const maxWidth = 318;
                     if (dimensions.width > maxWidth) {
@@ -487,15 +495,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     item.documentation = new MarkdownString(`![${label}](${imgUri.fsPath.replace(/ /g, '%20')}|width=${dimensions.width},height=${dimensions.height})`);
 
                     item.sortText = label.replace(/\./g, '{');
-
-                    return item;
-                });
-
-                if (isRootedPath) {
-                    return items.filter(item => !item.label.startsWith('..'));
-                } else {
-                    return items;
                 }
+
+                return items;
             });
         } else if (
             //// ends with an odd number of backslashes
@@ -672,24 +674,26 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             //// Should be after anchor completions
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
-            const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)[0];
+            const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)![0];
             const basePath = getBasepath(document, typedDir);
             const isRootedPath = typedDir.startsWith('/');
 
-            return workspace.findFiles('**/*', this.EXCLUDE_GLOB).then(uris => {
-                let items = uris.map(uri => {
-                    const label = path.relative(basePath, uri.fsPath).replace(/\\/g, '/').replace(/ /g, '%20');
-                    let item = new CompletionItem(label, CompletionItemKind.File);
-                    item.sortText = label.replace(/\./g, '{');
-                    return item;
-                });
+            const files = await workspace.findFiles("**/*", this.EXCLUDE_GLOB);
 
-                if (isRootedPath) {
-                    return items.filter(item => !item.label.startsWith('..'));
-                } else {
-                    return items;
+            const items: CompletionItem[] = [];
+
+            for (const uri of files) {
+                const label = path.relative(basePath, uri.fsPath).replace(/\\/g, "/").replace(/ /g, "%20");
+                if (isRootedPath && label.startsWith("..")) {
+                    continue;
                 }
-            });
+
+                const item = new CompletionItem(label, CompletionItemKind.File);
+                item.sortText = label.replace(/\./g, "{");
+                items.push(item);
+            }
+
+            return items;
         } else {
             return [];
         }
@@ -707,7 +711,7 @@ function getBasepath(doc: TextDocument, dir: string): string {
         dir = '';
     }
 
-    let root = workspace.getWorkspaceFolder(doc.uri).uri.fsPath;
+    let root = workspace.getWorkspaceFolder(doc.uri)!.uri.fsPath;
     const rootFolder = workspace.getConfiguration('markdown.extension.completion', doc.uri).get<string>('root', '');
     if (rootFolder.length > 0 && fs.existsSync(path.join(root, rootFolder))) {
         root = path.join(root, rootFolder);
