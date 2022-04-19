@@ -34,6 +34,13 @@ export function activate(_: ExtensionContext) {
 
 export function deactivate() { }
 
+enum ColumnAlignment {
+    None,
+    Left,
+    Center,
+    Right
+}
+
 class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     public provideDocumentFormattingEdits(document: TextDocument, options: FormattingOptions, token: CancellationToken): TextEdit[] | Thenable<TextEdit[]> {
         let edits: TextEdit[] = [];
@@ -63,7 +70,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         //// GitHub issue #431
         const singleColumnHyphenLine = String.raw`(?:\| *:?-+:? *\|)`;
 
-        const hyphenLine =  String.raw`[ \t]*(?:${multiColumnHyphenLine}|${singleColumnHyphenLine})[ \t]*`;
+        const hyphenLine = String.raw`[ \t]*(?:${multiColumnHyphenLine}|${singleColumnHyphenLine})[ \t]*`;
 
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
         return text.match(tableRegex);
@@ -92,26 +99,28 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     }
 
     private formatTable(text: string, doc: TextDocument, options: FormattingOptions) {
-        let indentation = this.getTableIndentation(text, options);
+        const delimiterRowIndex = 1;
+        const delimiterRowNoPadding = workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('delimiterRowNoPadding');
+        const indentation = this.getTableIndentation(text, options);
 
-        let rows: string[] = [];
-        let rowsNoIndentPattern = new RegExp(/^\s*(\S.*)$/gum);
+        const rows: string[] = [];
+        const rowsNoIndentPattern = new RegExp(/^\s*(\S.*)$/gum);
         let match = null;
         while ((match = rowsNoIndentPattern.exec(text)) !== null) {
             rows.push(match[1].trim());
         }
 
-        // Desired width of each column
-        let colWidth = [];
+        // Column "content" width (the length of the longest cell in each column), **without padding**
+        const colWidth = [];
         // Alignment of each column
-        let colAlign = []
+        const colAlign = []
         // Regex to extract cell content.
         // GitHub #24
-        let fieldRegExp = new RegExp(/((\\\||[^\|])*)\|/gu);
+        const fieldRegExp = new RegExp(/((\\\||[^\|])*)\|/gu);
         // https://www.ling.upenn.edu/courses/Spring_2003/ling538/UnicodeRanges.html
-        let cjkRegex = /[\u3000-\u9fff\uac00-\ud7af\uff01-\uff60]/g;
+        const cjkRegex = /[\u3000-\u9fff\uac00-\ud7af\uff01-\uff60]/g;
 
-        let lines = rows.map((row, num) => {
+        const lines = rows.map((row, iRow) => {
             // Normalize
             if (row.startsWith('|')) {
                 row = row.slice(1);
@@ -120,73 +129,85 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 row = row + '|';
             }
 
+            // Parse cells in the current row
             let field = null;
             let values = [];
-            let i = 0;
+            let iCol = 0;
             while ((field = fieldRegExp.exec(row)) !== null) {
                 let cell = field[1].trim();
                 values.push(cell);
-
-                //// Calculate `colWidth`
-                //// Ignore length of dash-line to enable width reduction
-                if (num != 1) {
-                    //// Treat CJK characters as 2 English ones because of Unicode stuff
+                // Ignore the length of delimiter-line before we normalize it
+                if (iRow != delimiterRowIndex) {
+                    // Treat CJK characters as 2 English ones because of Unicode stuff
                     const numOfUnicodeChars = splitter.countGraphemes(cell);
                     const width = cjkRegex.test(cell) ? numOfUnicodeChars + cell.match(cjkRegex).length : numOfUnicodeChars;
-                    colWidth[i] = colWidth[i] > width ? colWidth[i] : width;
+                    colWidth[iCol] = colWidth[iCol] > width ? colWidth[iCol] : width;
                 }
-
-                i++;
+                iCol++;
             }
             return values;
         });
 
-        // Normalize the num of hyphen, use Math.max to determine minimum length based on dash-line format
-        lines[1] = lines[1].map((cell, i) => {
+        // Normalize the num of hyphen
+        lines[delimiterRowIndex] = lines[delimiterRowIndex].map((cell, iCol) => {
             if (/:-+:/.test(cell)) {
-                //:---:
-                colWidth[i] = Math.max(colWidth[i], 5);
-                colAlign[i] = 'c';
-                return ':' + '-'.repeat(colWidth[i] - 2) + ':';
+                // :---:
+                colAlign[iCol] = ColumnAlignment.Center;
+
+                // Update `colWidth` (lower bound) based on the column alignment specification
+                colWidth[iCol] = Math.max(colWidth[iCol], delimiterRowNoPadding ? 5 - 2 : 5);
+                const specWidth = delimiterRowNoPadding ? colWidth[iCol] + 2 : colWidth[iCol];
+
+                return ':' + '-'.repeat(specWidth - 2) + ':';
             } else if (/:-+/.test(cell)) {
-                //:---
-                colWidth[i] = Math.max(colWidth[i], 4);
-                colAlign[i] = 'l';
-                return ':' + '-'.repeat(colWidth[i] - 1);
+                // :---
+                colAlign[iCol] = ColumnAlignment.Left;
+                colWidth[iCol] = Math.max(colWidth[iCol], delimiterRowNoPadding ? 4 - 2 : 4);
+                const specWidth = delimiterRowNoPadding ? colWidth[iCol] + 2 : colWidth[iCol];
+
+                return ':' + '-'.repeat(specWidth - 1);
             } else if (/-+:/.test(cell)) {
-                //---:
-                colWidth[i] = Math.max(colWidth[i], 4);
-                colAlign[i] = 'r';
-                return '-'.repeat(colWidth[i] - 1) + ':';
+                // ---:
+                colAlign[iCol] = ColumnAlignment.Right;
+                colWidth[iCol] = Math.max(colWidth[iCol], delimiterRowNoPadding ? 4 - 2 : 4);
+                const specWidth = delimiterRowNoPadding ? colWidth[iCol] + 2 : colWidth[iCol];
+
+                return '-'.repeat(specWidth - 1) + ':';
             } else if (/-+/.test(cell)) {
-                //---
-                colWidth[i] = Math.max(colWidth[i], 3);
-                colAlign[i] = 'l';
-                return '-'.repeat(colWidth[i]);
+                // ---
+                colAlign[iCol] = ColumnAlignment.None;
+                colWidth[iCol] = Math.max(colWidth[iCol], delimiterRowNoPadding ? 3 - 2 : 3);
+                const specWidth = delimiterRowNoPadding ? colWidth[iCol] + 2 : colWidth[iCol];
+
+                return '-'.repeat(specWidth);
             } else {
-                colAlign[i] = 'l';
+                colAlign[iCol] = ColumnAlignment.None;
             }
         });
 
-        return lines.map(row => {
-            let cells = row.map((cell, i) => {
-                const desiredWidth = colWidth[i];
+        return lines.map((row, iRow) => {
+            if (iRow === delimiterRowIndex && delimiterRowNoPadding) {
+                return indentation + '|' + row.join('|') + '|';
+            }
+
+            let cells = row.map((cell, iCol) => {
+                const desiredWidth = colWidth[iCol];
                 let jsLength = splitter.splitGraphemes(cell + ' '.repeat(desiredWidth)).slice(0, desiredWidth).join('').length;
 
                 if (cjkRegex.test(cell)) {
                     jsLength -= cell.match(cjkRegex).length;
                 }
 
-                return this.alignText(cell, colAlign[i], jsLength);
+                return this.alignText(cell, colAlign[iCol], jsLength);
             });
             return indentation + '| ' + cells.join(' | ') + ' |';
         }).join(doc.eol === EndOfLine.LF ? '\n' : '\r\n');
     }
 
-    private alignText(text: string, align: string, length: number) {
-        if (align === 'c' && length > text.length) {
+    private alignText(text: string, align: ColumnAlignment, length: number) {
+        if (align === ColumnAlignment.Center && length > text.length) {
             return (' '.repeat(Math.floor((length - text.length) / 2)) + text + ' '.repeat(length)).slice(0, length);
-        } else if (align === 'r') {
+        } else if (align === ColumnAlignment.Right) {
             return (' '.repeat(length) + text).slice(-length);
         } else {
             return (text + ' '.repeat(length)).slice(0, length);

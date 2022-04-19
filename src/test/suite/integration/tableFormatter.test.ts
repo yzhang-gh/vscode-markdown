@@ -311,4 +311,40 @@ suite("Table formatter.", () => {
             ],
             new Selection(0, 0, 0, 0));
     });
+
+    test("Delimiter row without padding", async () => {
+        await updateConfiguration({ config: [["markdown.extension.tableFormatter.delimiterRowNoPadding", true]] });
+        await testCommand('editor.action.formatDocument',
+            [
+                '| a | b | c | d |',
+                '| --- | :--- | ---: | :---: |',
+                '| w | x | y | z |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| a | b  |  c |  d  |',
+                '|---|:---|---:|:---:|',
+                '| w | x  |  y |  z  |'
+            ],
+            new Selection(0,0,0,0));
+        await resetConfiguration();
+    });
+
+    test("Delimiter row without padding, longer data", async () => {
+        await updateConfiguration({ config: [["markdown.extension.tableFormatter.delimiterRowNoPadding", true]] });
+        await testCommand('editor.action.formatDocument',
+            [
+                '| a | b-long | c | d-longest |',
+                '| --- | :--- | ---: | :---: |',
+                '| w | x | y-longer | z |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| a | b-long |        c | d-longest |',
+                '|---|:-------|---------:|:---------:|',
+                '| w | x      | y-longer |     z     |'
+            ],
+            new Selection(0,0,0,0));
+        await resetConfiguration();
+    });
 });

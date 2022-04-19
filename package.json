@@ -399,6 +399,11 @@
                     "default": false,
                     "markdownDescription": "%config.tableFormatter.normalizeIndentation.description%"
                 },
+                "markdown.extension.tableFormatter.delimiterRowNoPadding": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "%config.tableFormatter.delimiterRowNoPadding.description%"
+                },
                 "markdown.extension.theming.decoration.renderCodeSpan": {
                     "type": "boolean",
                     "default": true,
