@@ -142,7 +142,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
                 if (num != delimiterRowNum) {
                     //// Treat CJK characters as 2 English ones because of Unicode stuff
                     const numOfUnicodeChars = splitter.countGraphemes(cell);
-                    const width = (cjkRegex.test(cell) ? numOfUnicodeChars + cell.match(cjkRegex).length : numOfUnicodeChars);
+                    const width = cjkRegex.test(cell) ? numOfUnicodeChars + cell.match(cjkRegex).length : numOfUnicodeChars;
                     colWidth[i] = colWidth[i] > width ? colWidth[i] : width;
                 }
 
