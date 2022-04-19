@@ -1,3 +1,39 @@
+## 3.4.1 (2022.4.17)
+
+**Update 3.4.2**: fix dependencies.
+
+### Breaking Changes
+
+- [Table formatter] Now you need to escape the pipe character (`|`) inside table cells, even if it is in a code span. ([#24](https://github.com/yzhang-gh/vscode-markdown/issues/24)). This behavior follows the [GFM spec](https://github.github.com/gfm/#example-200).
+
+### New
+
+- [Auto completion] Add `.webp` files to the image path suggestions ([#934](https://github.com/yzhang-gh/vscode-markdown/issues/934)).
+
+### Fixes
+
+- Resolve <kbd>Tab</kbd> conflict when `inlineSuggestionVisible`, e.g., GitHub Copilot ([#665](https://github.com/yzhang-gh/vscode-markdown/issues/665), [#1011](https://github.com/yzhang-gh/vscode-markdown/issues/1011)).
+- Multi-cursor list editing ([#829](https://github.com/yzhang-gh/vscode-markdown/issues/829), [#926](https://github.com/yzhang-gh/vscode-markdown/issues/926)).
+- You can now add section numbers larger than 99 ([#852](https://github.com/yzhang-gh/vscode-markdown/issues/852)).
+- Resolve keybinding conflict <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>Up/Down</kbd> on Linux ([#857](https://github.com/yzhang-gh/vscode-markdown/issues/857)).
+- TOC with a heading ending with literal `#` ([#867](https://github.com/yzhang-gh/vscode-markdown/issues/867)).
+- Load extension-contributed scripts asynchronously ([#956](https://github.com/yzhang-gh/vscode-markdown/pull/956)). Thanks, [Jay Park (@phoihos)](https://github.com/phoihos).
+- The internal command `_wrapBy` ignores the `after` argument ([#1051](https://github.com/yzhang-gh/vscode-markdown/pull/1051)). Thanks, [@King-of-Infinite-Space](https://github.com/King-of-Infinite-Space).
+- Set `vscode-dark` class when exporting to HTML with dark theme ([#1091](https://github.com/yzhang-gh/vscode-markdown/pull/1091)). Thanks, [Raphael Sander (@raphaelsander)](https://github.com/raphaelsander).
+
+### Others
+
+- Code health ([#869](https://github.com/yzhang-gh/vscode-markdown/pull/869)). Thanks to [@Lemmingh](https://github.com/Lemmingh).
+- (Temporary fix) The `toggleMath` issue with blockquotes ([#907](https://github.com/yzhang-gh/vscode-markdown/issues/907)).
+- Update Japanese translations ([#909](https://github.com/yzhang-gh/vscode-markdown/pull/909)). Thanks, [にせ十字 (@falsecross)](https://github.com/falsecross).
+- [Math] Upgrade KaTeX ([#943](https://github.com/yzhang-gh/vscode-markdown/issues/943)).
+- The `togglePreview` command has been replaced by `closePreview` ([`05fb1af`](https://github.com/yzhang-gh/vscode-markdown/commit/05fb1af27150fa8c1c271fc03533d28787ea25d1)).
+- Enable virtual workspaces support (limited functionality) ([#948](https://github.com/yzhang-gh/vscode-markdown/pull/948), [#996](https://github.com/yzhang-gh/vscode-markdown/pull/996))
+- Update Markdown word pattern ([#1092](https://github.com/yzhang-gh/vscode-markdown/issues/1092)).
+- A few documentation improvements.
+
+---
+
 ### 3.4.0 (2020.11.14)
 
 - **New**: New TOC slugify mode `azureDevops` ([#802](https://github.com/yzhang-gh/vscode-markdown/issues/802)).
