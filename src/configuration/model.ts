@@ -41,6 +41,7 @@ export interface IConfigurationKeyTypeMap {
 
     "tableFormatter.enabled": boolean;
     "tableFormatter.normalizeIndentation": boolean;
+    "tableFormatter.delimiterRowNoPadding": boolean;
 
     /** Formerly "syntax.decorations" */
     "theming.decoration.renderCodeSpan": boolean;

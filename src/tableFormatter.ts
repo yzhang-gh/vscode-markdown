@@ -34,6 +34,13 @@ export function activate(_: ExtensionContext) {
 
 export function deactivate() { }
 
+enum ColumnAlignment {
+    None,
+    Left,
+    Center,
+    Right
+}
+
 class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     public provideDocumentFormattingEdits(document: TextDocument, options: FormattingOptions, token: CancellationToken): TextEdit[] | Thenable<TextEdit[]> {
         let edits: TextEdit[] = [];
@@ -63,7 +70,7 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         //// GitHub issue #431
         const singleColumnHyphenLine = String.raw`(?:\| *:?-+:? *\|)`;
 
-        const hyphenLine =  String.raw`[ \t]*(?:${multiColumnHyphenLine}|${singleColumnHyphenLine})[ \t]*`;
+        const hyphenLine = String.raw`[ \t]*(?:${multiColumnHyphenLine}|${singleColumnHyphenLine})[ \t]*`;
 
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
         return text.match(tableRegex);
@@ -92,6 +99,10 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
     }
 
     private formatTable(text: string, doc: TextDocument, options: FormattingOptions) {
+        const delimiterRowNum = 1;
+
+        let delimiterRowNoPadding = workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('delimiterRowNoPadding');
+
         let indentation = this.getTableIndentation(text, options);
 
         let rows: string[] = [];
@@ -126,13 +137,12 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
             while ((field = fieldRegExp.exec(row)) !== null) {
                 let cell = field[1].trim();
                 values.push(cell);
-
                 //// Calculate `colWidth`
-                //// Ignore length of dash-line to enable width reduction
-                if (num != 1) {
+                //// Ignore length of delimiter-line to enable width reduction
+                if (num != delimiterRowNum) {
                     //// Treat CJK characters as 2 English ones because of Unicode stuff
                     const numOfUnicodeChars = splitter.countGraphemes(cell);
-                    const width = cjkRegex.test(cell) ? numOfUnicodeChars + cell.match(cjkRegex).length : numOfUnicodeChars;
+                    const width = (cjkRegex.test(cell) ? numOfUnicodeChars + cell.match(cjkRegex).length : numOfUnicodeChars);
                     colWidth[i] = colWidth[i] > width ? colWidth[i] : width;
                 }
 
@@ -142,33 +152,41 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         });
 
         // Normalize the num of hyphen, use Math.max to determine minimum length based on dash-line format
-        lines[1] = lines[1].map((cell, i) => {
+        lines[delimiterRowNum] = lines[delimiterRowNum].map((cell, i) => {
             if (/:-+:/.test(cell)) {
                 //:---:
-                colWidth[i] = Math.max(colWidth[i], 5);
-                colAlign[i] = 'c';
-                return ':' + '-'.repeat(colWidth[i] - 2) + ':';
+                colWidth[i] = Math.max(colWidth[i], delimiterRowNoPadding ? 3 : 5);
+                colAlign[i] = ColumnAlignment.Center;
+
+                return ':' + '-'.repeat(delimiterRowNoPadding ? colWidth[i] : colWidth[i] - 2) + ':';
             } else if (/:-+/.test(cell)) {
                 //:---
-                colWidth[i] = Math.max(colWidth[i], 4);
-                colAlign[i] = 'l';
-                return ':' + '-'.repeat(colWidth[i] - 1);
+                colWidth[i] = Math.max(colWidth[i], delimiterRowNoPadding ? 2 : 4);
+                colAlign[i] = ColumnAlignment.Left;
+
+                return ':' + '-'.repeat(delimiterRowNoPadding ? colWidth[i] - 1 + 2 : colWidth[i] - 1);
             } else if (/-+:/.test(cell)) {
                 //---:
-                colWidth[i] = Math.max(colWidth[i], 4);
-                colAlign[i] = 'r';
-                return '-'.repeat(colWidth[i] - 1) + ':';
+                colWidth[i] = Math.max(colWidth[i], delimiterRowNoPadding ? 2 : 4);
+                colAlign[i] = ColumnAlignment.Right;
+
+                return '-'.repeat(delimiterRowNoPadding ? colWidth[i] - 1 + 2 : colWidth[i] - 1) + ':';
             } else if (/-+/.test(cell)) {
                 //---
-                colWidth[i] = Math.max(colWidth[i], 3);
-                colAlign[i] = 'l';
-                return '-'.repeat(colWidth[i]);
+                colWidth[i] = Math.max(colWidth[i], delimiterRowNoPadding ? 1 : 3);
+                colAlign[i] = ColumnAlignment.None;
+
+                return '-'.repeat(delimiterRowNoPadding ? colWidth[i] + 2 : colWidth[i]);
             } else {
-                colAlign[i] = 'l';
+                colAlign[i] = ColumnAlignment.None;
             }
         });
 
-        return lines.map(row => {
+        return lines.map((row, i) => {
+            if (delimiterRowNoPadding && i === delimiterRowNum) {
+                return indentation + '|' + row.join('|') + '|';
+            }
+
             let cells = row.map((cell, i) => {
                 const desiredWidth = colWidth[i];
                 let jsLength = splitter.splitGraphemes(cell + ' '.repeat(desiredWidth)).slice(0, desiredWidth).join('').length;
@@ -179,14 +197,15 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
 
                 return this.alignText(cell, colAlign[i], jsLength);
             });
+
             return indentation + '| ' + cells.join(' | ') + ' |';
         }).join(doc.eol === EndOfLine.LF ? '\n' : '\r\n');
     }
 
-    private alignText(text: string, align: string, length: number) {
-        if (align === 'c' && length > text.length) {
+    private alignText(text: string, align: ColumnAlignment, length: number) {
+        if (align === ColumnAlignment.Center && length > text.length) {
             return (' '.repeat(Math.floor((length - text.length) / 2)) + text + ' '.repeat(length)).slice(0, length);
-        } else if (align === 'r') {
+        } else if (align === ColumnAlignment.Right) {
             return (' '.repeat(length) + text).slice(-length);
         } else {
             return (text + ' '.repeat(length)).slice(0, length);

@@ -37,6 +37,7 @@
     "config.syntax.plainTheme.description": "(**Experimental**) Report issue at <https://github.com/yzhang-gh/vscode-markdown/issues/185>.",
     "config.tableFormatter.enabled.description": "Enable [GitHub Flavored Markdown](https://github.github.com/gfm/) table formatter.",
     "config.tableFormatter.normalizeIndentation.description": "Normalize table indentation to closest multiple of configured editor tab size.",
+    "config.tableFormatter.delimiterRowNoPadding.description": "Don't add padding to the delimiter row.",
     "config.theming.decoration.renderCodeSpan.description": "Apply a border around a [code span](https://spec.commonmark.org/0.29/#code-spans).",
     "config.theming.decoration.renderHardLineBreak.description": "(**Experimental**)",
     "config.theming.decoration.renderLink.description": "(**Experimental**)",
