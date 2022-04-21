@@ -1,3 +1,9 @@
+## 3.x
+
+### New
+
+- [TOC] Use `<!-- omit from toc -->` to omit a certain section from the table of contents. `<!-- omit in toc -->` is still supported for backward compatibility ([#1118](https://github.com/yzhang-gh/vscode-markdown/issues/1118)).
+
 ## 3.4.1 (2022.4.17)
 
 **Update 3.4.2**: fix dependencies.
