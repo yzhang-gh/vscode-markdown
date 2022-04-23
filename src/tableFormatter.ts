@@ -161,9 +161,7 @@ class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider
                 const graphemeCount = splitter.countGraphemes(cell);
                 const cjkPoints = cell.match(cjkRegex);
                 const width = graphemeCount + (cjkPoints?.length ?? 0);
-                if (colWidth[i] < width) {
-                    colWidth[i] = width;
-                }
+                colWidth[i] = width;
 
                 i++;
             }
