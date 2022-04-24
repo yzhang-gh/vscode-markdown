@@ -27,7 +27,7 @@ export function activate(context: ExtensionContext) {
 
         return {
             extendMarkdownIt(md) {
-                require('katex/contrib/mhchem/mhchem');
+                require('katex/dist/contrib/mhchem');
                 return md.use(require('markdown-it-task-lists'))
                     .use(require('@neilsustc/markdown-it-katex'), katexOptions);
             }
