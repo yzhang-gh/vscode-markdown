@@ -4,13 +4,20 @@
 
 - [TOC] Use `<!-- omit from toc -->` to omit a certain section from the table of contents. `<!-- omit in toc -->` is still supported for backward compatibility ([#1118](https://github.com/yzhang-gh/vscode-markdown/issues/1118)).
 
+## 3.4.3 (2022.4.24)
+
+### Fixes
+
+- [Math] mhchem support ([#1116](https://github.com/yzhang-gh/vscode-markdown/issues/1116)).
+- VS Code freezes because of the new word pattern ([#1117](https://github.com/yzhang-gh/vscode-markdown/issues/1117)).
+
 ## 3.4.1 (2022.4.17)
 
 **Update 3.4.2**: fix dependencies.
 
 ### Breaking Changes
 
-- [Table formatter] Now you need to escape the pipe character (`|`) inside table cells, even if it is in a code span. ([#24](https://github.com/yzhang-gh/vscode-markdown/issues/24)). This behavior follows the [GFM spec](https://github.github.com/gfm/#example-200).
+- [Table formatter] Now you need to escape the pipe character (`|`) inside table cells, even if it is in a code span. This behavior follows the [GFM spec](https://github.github.com/gfm/#example-200). ([#24](https://github.com/yzhang-gh/vscode-markdown/issues/24))
 
 ### New
 
