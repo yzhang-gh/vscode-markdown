@@ -12,7 +12,7 @@ export function extendMarkdownIt(md: MarkdownIt): MarkdownIt {
 
     if (configManager.get("math.enabled")) {
         // We need side effects. (#521)
-        require("katex/contrib/mhchem/mhchem");
+        require("katex/contrib/mhchem");
 
         // Deep copy, as KaTeX needs a normal mutable object. <https://katex.org/docs/options.html>
         const macros: KatexOptions["macros"] = JSON.parse(JSON.stringify(configManager.get("katex.macros")));
