@@ -5,9 +5,10 @@ import { postprocess } from "micromark/lib/postprocess"
 
 
 export function activate(context: vscode.ExtensionContext) {
+    // This link provider is only enabled if `markdown.extension.theming.autoHide.link` is true and makes the label part of links clickable.
     context.subscriptions.push(vscode.languages.registerDocumentLinkProvider({ language: "markdown" }, {
         provideDocumentLinks(document, token) {
-            if (["emphasis", "link", "strong", "strikethrough", "escape"].every((k) => !vscode.workspace.getConfiguration().get<boolean>(`markdown.extension.theming.autoHide.${k}`))) { return }
+            if (!vscode.workspace.getConfiguration().get<boolean>(`markdown.extension.theming.autoHide.link`)) { return }
             const result: vscode.DocumentLink[] = []
 
             const text = document.getText()
