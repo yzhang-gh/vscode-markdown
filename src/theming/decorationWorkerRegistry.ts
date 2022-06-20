@@ -4,6 +4,11 @@ import * as vscode from "vscode";
 import { commonMarkEngine, mdEngine } from "../markdownEngine";
 import { DecorationClass } from "./constant";
 import { IDecorationRecord, IWorkerRegistry } from "./decorationManager";
+import { preprocess } from "micromark/lib/preprocess"
+import { parse } from "micromark/lib/parse"
+import { postprocess } from "micromark/lib/postprocess"
+import { math } from "micromark-extension-math"
+import { gfm } from 'micromark-extension-gfm'
 
 // ## Organization
 //
@@ -37,62 +42,44 @@ import { IDecorationRecord, IWorkerRegistry } from "./decorationManager";
  */
 const decorationWorkerRegistry: IWorkerRegistry = {
     [DecorationClass.MarkdownSyntax]: async (document, token): Promise<IDecorationRecord> => {
-        if (token.isCancellationRequested) {
-            throw undefined;
-        }
+        if (token.isCancellationRequested) { throw undefined; }
 
         // Tokens in, for example, table doesn't have `map`.
         // Tables themselves are strange enough. So, skipping them is acceptable.
         if (document.lineCount > 2000) {
             await new Promise((resolve) => { setTimeout(resolve, 500) })
         }
-        if (token.isCancellationRequested) {
-            throw undefined;
-        }
-        const tokens = (await mdEngine.getDocumentToken(document)).tokens
-            .filter(t => t.type === "inline" && t.map);
+        if (token.isCancellationRequested) { throw undefined; }
 
-        if (token.isCancellationRequested) {
-            throw undefined;
-        }
+        const filter: string[] = []
+        const config = vscode.workspace.getConfiguration("markdown.extension.theming.autoHide")
+        if (config.get<boolean>("emphasis")) { filter.push("emphasisSequence") }
+        if (config.get<boolean>("link")) { filter.push("resource") }
+        if (config.get<boolean>("strong")) { filter.push("strongSequence") }
+        if (config.get<boolean>("strikethrough")) { filter.push("strikethroughSequence") }
+
+        const shouldHideBackslash = config.get<boolean>("escape")
+        if (filter.length === 0 && !shouldHideBackslash) { return }
 
         const ranges: vscode.Range[] = [];
-        const text = document.getText();
-        for (const { children, map } of tokens) {
-            let beginOffset = document.offsetAt(new vscode.Position(map![0], 0))
-
-            const hide = (offset: number, length: number) => {
-                ranges.push(new vscode.Range(document.positionAt(offset), document.positionAt(offset + length)));
-                return offset + length;
+        let image = 0
+        for (const [eventType, token, _tokenizeContext] of postprocess(parse({ extensions: [math(), gfm({ singleTilde: false })] }).document().write(preprocess()(document.getText(), undefined, true)))) {
+            if (eventType === "enter" && token.type === "image") {
+                image++
+            } else if (eventType === "exit" && token.type === "image") {
+                image--
             }
-            for (const t of children!) {
-                if (["strong_open", "em_open", "s_open"].includes(t.type)) {
-                    beginOffset += Math.max(0, text.slice(beginOffset).match(/[^\n\r]/).index!)
-                    beginOffset = hide(Math.max(text.indexOf(t.markup, beginOffset), beginOffset), t.markup.length)
-                } else if (["strong_close", "em_close", "s_close"].includes(t.type)) {
-                    beginOffset = hide(Math.max(text.indexOf(t.markup, beginOffset), beginOffset), t.markup.length)
-                } else if (t.type === "link_open") {
-                    beginOffset = hide(Math.max(text.indexOf("[", beginOffset), beginOffset), 1);
-                } else if (t.type === "link_close") {
-                    beginOffset = hide(beginOffset, Math.max(text.indexOf(")", beginOffset), beginOffset) - beginOffset + 1);
-                } else if (t.type === "image") {
-                    beginOffset = Math.max(text.indexOf("!", beginOffset), beginOffset)
-                    beginOffset = Math.max(text.indexOf(")", text.indexOf("]", beginOffset)), beginOffset) + 1;
-                } else if (t.type === "code_inline") {
-                    beginOffset = Math.max(text.indexOf(t.markup, beginOffset), beginOffset) + t.markup.length;
-                    beginOffset = Math.max(text.indexOf(t.content, beginOffset), beginOffset) + t.content.length;
-                    beginOffset = Math.max(text.indexOf(t.markup, beginOffset), beginOffset) + t.markup.length;
-                } else if (t.type === "html_inline") {
-                    if (t.content.startsWith(`<input class="task-list-item-checkbox"`)) {
-                        beginOffset = Math.max(text.indexOf("]", beginOffset), beginOffset) + 1;
-                    }
-                } else {
-                    beginOffset = Math.max(text.indexOf(t.content, beginOffset), beginOffset) + t.content.length;
+            if (image > 0) {
+                continue
+            }
+
+            if (eventType === "enter") {
+                // The list of the possible values of token.type: https://github.com/micromark/micromark/blob/d838b56d11868798997150585f60063b458cb09b/packages/micromark-util-symbol/types.js#L12
+                if (filter.includes(token.type)) {
+                    ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1));
+                } else if (shouldHideBackslash && token.type === "characterEscape") {
+                    ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.start.line - 1, token.start.column));
                 }
-            }
-
-            if (token.isCancellationRequested) {
-                throw undefined;
             }
         }
 

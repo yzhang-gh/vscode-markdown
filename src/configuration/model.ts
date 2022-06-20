@@ -44,7 +44,11 @@ export interface IConfigurationKeyTypeMap {
     "tableFormatter.delimiterRowNoPadding": boolean;
 
     /** Formerly "syntax.decorations" */
-    "theming.decoration.hideMarkdownSyntax": boolean;
+    "theming.autoHide.emphasis": boolean;
+    "theming.autoHide.link": boolean;
+    "theming.autoHide.strong": boolean;
+    "theming.autoHide.strikethrough": boolean;
+    "theming.autoHide.escape": boolean;
     "theming.decoration.renderCodeSpan": boolean;
     "theming.decoration.renderHardLineBreak": boolean;
     "theming.decoration.renderLink": boolean;

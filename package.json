@@ -404,10 +404,34 @@
                     "default": false,
                     "markdownDescription": "%config.tableFormatter.delimiterRowNoPadding.description%"
                 },
-                "markdown.extension.theming.decoration.hideMarkdownSyntax": {
+                "markdown.extension.theming.autoHide.emphasis": {
                     "type": "boolean",
                     "default": true,
-                    "markdownDescription": "%config.theming.decoration.hideMarkdownSyntax.description%",
+                    "markdownDescription": "%config.theming.decoration.autoHide.emphasis.description%",
+                    "scope": "application"
+                },
+                "markdown.extension.theming.autoHide.link": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "%config.theming.decoration.autoHide.link.description%",
+                    "scope": "application"
+                },
+                "markdown.extension.theming.autoHide.strong": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "%config.theming.decoration.autoHide.strong.description%",
+                    "scope": "application"
+                },
+                "markdown.extension.theming.autoHide.strikethrough": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "%config.theming.decoration.autoHide.strikethrough.description%",
+                    "scope": "application"
+                },
+                "markdown.extension.theming.autoHide.escape": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "%config.theming.decoration.autoHide.escape.description%",
                     "scope": "application"
                 },
                 "markdown.extension.theming.decoration.renderCodeSpan": {
@@ -553,6 +577,9 @@
         "katex": "^0.15.1",
         "markdown-it": "^12.2.0",
         "markdown-it-task-lists": "^2.1.1",
+        "micromark": "^3.0.10",
+        "micromark-extension-gfm": "^2.0.1",
+        "micromark-extension-math": "^2.0.2",
         "string-similarity": "^4.0.4"
     },
     "devDependencies": {

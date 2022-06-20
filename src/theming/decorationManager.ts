@@ -311,7 +311,8 @@ class DecorationManager implements IDecorationManager {
                 let handle = this._decorationHandles.get(target);
 
                 // Recheck applicability, since the user may happen to change settings.
-                if (configManager.get(decorationClassConfigMap[target]) as boolean) {
+                const condition = decorationClassConfigMap[target]
+                if (condition === true || configManager.get(condition) as boolean) {
                     // Create a new decoration type instance if needed.
                     if (!handle) {
                         handle = vscode.window.createTextEditorDecorationType(decorationStyles[target]);
@@ -373,7 +374,10 @@ class DecorationManager implements IDecorationManager {
             document,
             this._decorationWorkers,
             // No worry. `applyDecoration()` should recheck applicability.
-            this._supportedClasses.filter(target => configManager.get(decorationClassConfigMap[target]) as boolean)
+            this._supportedClasses.filter(target => {
+                const condition = decorationClassConfigMap[target]
+                return condition === true || configManager.get(condition) as boolean
+            })
         ));
     }
 }

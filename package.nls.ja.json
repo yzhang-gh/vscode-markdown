@@ -37,7 +37,6 @@
     "config.syntax.plainTheme.description": "（**実験的な機能**）問題の報告はこちらへ：<https://github.com/yzhang-gh/vscode-markdown/issues/185>",
     "config.tableFormatter.enabled.description": "[GitHub Flavored Markdown](https://github.github.com/gfm/)のテーブルフォーマッターを有効化",
     "config.tableFormatter.normalizeIndentation.description": "設定されているタブのサイズに最も近い倍数となるよう、テーブルのインデントを正規化する",
-    "config.theming.decoration.hideMarkdownSyntax.description": "（**実験的な機能**）",
     "config.theming.decoration.renderCodeSpan.description": "[インラインコード](https://spec.commonmark.org/0.29/#code-spans)の周囲に境界線を適用する",
     "config.theming.decoration.renderHardLineBreak.description": "（**実験的な機能**）",
     "config.theming.decoration.renderLink.description": "（**実験的な機能**）",

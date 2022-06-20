@@ -91,8 +91,8 @@ export const decorationStyles: Readonly<Record<DecorationClass, Readonly<vscode.
 /**
  * DecorationClass -> Configuration key
  */
-export const decorationClassConfigMap: Readonly<Record<DecorationClass, IConfigurationKnownKey>> = {
-    [DecorationClass.MarkdownSyntax]: "theming.decoration.hideMarkdownSyntax",
+export const decorationClassConfigMap: Readonly<Record<DecorationClass, IConfigurationKnownKey | true>> = {
+    [DecorationClass.MarkdownSyntax]: true,
     [DecorationClass.CodeSpan]: "theming.decoration.renderCodeSpan",
     [DecorationClass.HardLineBreak]: "theming.decoration.renderHardLineBreak",
     [DecorationClass.Link]: "theming.decoration.renderLink",
