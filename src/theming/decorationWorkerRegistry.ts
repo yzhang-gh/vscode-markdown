@@ -36,6 +36,68 @@ import { IDecorationRecord, IWorkerRegistry } from "./decorationManager";
  * The registry of decoration analysis workers.
  */
 const decorationWorkerRegistry: IWorkerRegistry = {
+    [DecorationClass.MarkdownSyntax]: async (document, token): Promise<IDecorationRecord> => {
+        if (token.isCancellationRequested) {
+            throw undefined;
+        }
+
+        // Tokens in, for example, table doesn't have `map`.
+        // Tables themselves are strange enough. So, skipping them is acceptable.
+        if (document.lineCount > 2000) {
+            await new Promise((resolve) => { setTimeout(resolve, 500) })
+        }
+        if (token.isCancellationRequested) {
+            throw undefined;
+        }
+        const tokens = (await mdEngine.getDocumentToken(document)).tokens
+            .filter(t => t.type === "inline" && t.map);
+
+        if (token.isCancellationRequested) {
+            throw undefined;
+        }
+
+        const ranges: vscode.Range[] = [];
+        const text = document.getText();
+        for (const { children, map } of tokens) {
+            let beginOffset = document.offsetAt(new vscode.Position(map![0], 0))
+
+            const hide = (offset: number, length: number) => {
+                ranges.push(new vscode.Range(document.positionAt(offset), document.positionAt(offset + length)));
+                return offset + length;
+            }
+            for (const t of children!) {
+                if (["strong_open", "em_open", "s_open"].includes(t.type)) {
+                    beginOffset += Math.max(0, text.slice(beginOffset).match(/[^\n\r]/).index!)
+                    beginOffset = hide(Math.max(text.indexOf(t.markup, beginOffset), beginOffset), t.markup.length)
+                } else if (["strong_close", "em_close", "s_close"].includes(t.type)) {
+                    beginOffset = hide(Math.max(text.indexOf(t.markup, beginOffset), beginOffset), t.markup.length)
+                } else if (t.type === "link_open") {
+                    beginOffset = hide(Math.max(text.indexOf("[", beginOffset), beginOffset), 1);
+                } else if (t.type === "link_close") {
+                    beginOffset = hide(beginOffset, Math.max(text.indexOf(")", beginOffset), beginOffset) - beginOffset + 1);
+                } else if (t.type === "image") {
+                    beginOffset = Math.max(text.indexOf("!", beginOffset), beginOffset)
+                    beginOffset = Math.max(text.indexOf(")", text.indexOf("]", beginOffset)), beginOffset) + 1;
+                } else if (t.type === "code_inline") {
+                    beginOffset = Math.max(text.indexOf(t.markup, beginOffset), beginOffset) + t.markup.length;
+                    beginOffset = Math.max(text.indexOf(t.content, beginOffset), beginOffset) + t.content.length;
+                    beginOffset = Math.max(text.indexOf(t.markup, beginOffset), beginOffset) + t.markup.length;
+                } else if (t.type === "html_inline") {
+                    if (t.content.startsWith(`<input class="task-list-item-checkbox"`)) {
+                        beginOffset = Math.max(text.indexOf("]", beginOffset), beginOffset) + 1;
+                    }
+                } else {
+                    beginOffset = Math.max(text.indexOf(t.content, beginOffset), beginOffset) + t.content.length;
+                }
+            }
+
+            if (token.isCancellationRequested) {
+                throw undefined;
+            }
+        }
+
+        return { target: DecorationClass.MarkdownSyntax, ranges };
+    },
 
     [DecorationClass.CodeSpan]: async (document, token): Promise<IDecorationRecord> => {
         if (token.isCancellationRequested) {

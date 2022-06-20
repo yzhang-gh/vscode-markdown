@@ -404,6 +404,12 @@
                     "default": false,
                     "markdownDescription": "%config.tableFormatter.delimiterRowNoPadding.description%"
                 },
+                "markdown.extension.theming.decoration.hideMarkdownSyntax": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "%config.theming.decoration.hideMarkdownSyntax.description%",
+                    "scope": "application"
+                },
                 "markdown.extension.theming.decoration.renderCodeSpan": {
                     "type": "boolean",
                     "default": true,

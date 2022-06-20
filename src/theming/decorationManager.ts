@@ -219,6 +219,7 @@ class DecorationManager implements IDecorationManager {
 
             vscode.workspace.onDidCloseTextDocument(this.collectGarbage, this),
             vscode.window.onDidChangeActiveTextEditor(editor => { if (editor) { this.applyDecoration(editor); } }),
+            vscode.window.onDidChangeTextEditorSelection((e) => { this.applyDecoration(e.textEditor); }),
         ];
     }
 
@@ -287,6 +288,13 @@ class DecorationManager implements IDecorationManager {
         const debounceToken =
             (this._displayDebounceHandle = new vscode.CancellationTokenSource()).token;
 
+        const selectedLines = new Set<number>()
+        for (const sel of editor.selections) {
+            for (let i = sel.start.line; i <= sel.end.line; i++) {
+                selectedLines.add(i)
+            }
+        }
+
         // Queue the display refresh job.
         (async (): Promise<void> => {
             if (task.state === TaskState.Pending) {
@@ -327,7 +335,7 @@ class DecorationManager implements IDecorationManager {
                 }
 
                 // Create a shallow copy for VS Code to use. This operation shouldn't cost much.
-                editor.setDecorations(handle, Array.from(ranges));
+                editor.setDecorations(handle, ranges.filter((r) => target !== DecorationClass.MarkdownSyntax || (!selectedLines.has(r.start.line) && !selectedLines.has(r.end.line))));
             }
         })();
     }

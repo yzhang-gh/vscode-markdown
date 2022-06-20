@@ -28,6 +28,7 @@
     "config.syntax.plainTheme.description": "（**实验性**）请在 <https://github.com/yzhang-gh/vscode-markdown/issues/185> 报告问题。",
     "config.tableFormatter.enabled.description": "启用 [GitHub Flavored Markdown](https://github.github.com/gfm/) 表格格式化。",
     "config.tableFormatter.normalizeIndentation.description": "使位于列表内的表格的缩进长度为制表符长度（`tabSize`）。",
+    "config.theming.decoration.hideMarkdownSyntax.description": "（**实验性**）",
     "config.theming.decoration.renderCodeSpan.description": "在[行内代码 (code span)](https://spec.commonmark.org/0.29/#code-spans) 周围显示边框。",
     "config.theming.decoration.renderStrikethrough.description": "显示[删除线 (strikethrough)](https://github.github.com/gfm/#strikethrough-extension-)。",
     "config.theming.decoration.renderTrailingSpace.description": "为[行](https://spec.commonmark.org/0.29/#line)末端的空格 (U+0020) 字符添加底纹背景。",

@@ -44,6 +44,7 @@ const fontIcons: Readonly<Record<FontIcon, Readonly<vscode.ThemableDecorationAtt
 };
 
 export const enum DecorationClass {
+    MarkdownSyntax,
     CodeSpan,
     HardLineBreak,
     Link,
@@ -56,6 +57,9 @@ export const enum DecorationClass {
  * Rendering styles for each decoration class.
  */
 export const decorationStyles: Readonly<Record<DecorationClass, Readonly<vscode.DecorationRenderOptions>>> = {
+    [DecorationClass.MarkdownSyntax]: {
+        textDecoration: "none; display: none;",
+    },
     [DecorationClass.CodeSpan]: {
         backgroundColor: colors[Color.EditorCodeSpanBackground],
         border: "1px solid",
@@ -88,6 +92,7 @@ export const decorationStyles: Readonly<Record<DecorationClass, Readonly<vscode.
  * DecorationClass -> Configuration key
  */
 export const decorationClassConfigMap: Readonly<Record<DecorationClass, IConfigurationKnownKey>> = {
+    [DecorationClass.MarkdownSyntax]: "theming.decoration.hideMarkdownSyntax",
     [DecorationClass.CodeSpan]: "theming.decoration.renderCodeSpan",
     [DecorationClass.HardLineBreak]: "theming.decoration.renderHardLineBreak",
     [DecorationClass.Link]: "theming.decoration.renderLink",
