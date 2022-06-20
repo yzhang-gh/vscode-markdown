@@ -61,6 +61,9 @@ const decorationWorkerRegistry: IWorkerRegistry = {
             let beginOffset = initOffset;
             let endOffset = initOffset;
             for (const t of children!) {
+                if (t.type === "html_inline") {
+                    continue;
+                }
                 if (t.type !== "code_inline") {
                     beginOffset += t.content.length; // Not accurate, but enough.
                     continue;
