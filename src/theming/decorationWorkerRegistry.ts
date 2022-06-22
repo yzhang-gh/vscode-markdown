@@ -62,7 +62,7 @@ const decorationWorkerRegistry: IWorkerRegistry = {
         if (filter.length === 0 && !shouldHideLinks && !shouldHideBackslash) { return { target: DecorationClass.MarkdownSyntax, ranges: [] } }
 
         const ranges: vscode.Range[] = [];
-        const link: { hasLabel: boolean, ranges: vscode.Range[] }[] = [];
+        let link: { hasLabel: boolean, ranges: vscode.Range[] } | null = null;
         let image = 0
         const text = document.getText()
 
@@ -77,22 +77,22 @@ const decorationWorkerRegistry: IWorkerRegistry = {
 
             // Link `[label](resource)`
             if (eventType === "enter" && token.type === "link") {
-                link.push({ hasLabel: false, ranges: [] })
+                link = { hasLabel: false, ranges: [] }
             }
-            if (link.length > 0 && eventType === "enter" && token.type === "labelText") {
-                link[link.length - 1].hasLabel = /\S/.test(text.slice(token.start.offset, token.end.offset))
+            if (link !== null && eventType === "enter" && token.type === "labelText") {
+                link.hasLabel = /\S/.test(text.slice(token.start.offset, token.end.offset))
             }
-            if (link.length > 0 && eventType === "enter" && token.type === "labelMarker") {
-                link[link.length - 1].ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1))
+            if (link !== null && eventType === "enter" && token.type === "labelMarker") {
+                link.ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1))
             }
-            if (link.length > 0 && eventType === "enter" && token.type === "resource") {
-                link[link.length - 1].ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1))
+            if (link !== null && eventType === "enter" && token.type === "resource") {
+                link.ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1))
             }
             if (eventType === "exit" && token.type === "link") {
-                const last = link.pop()
-                if (last?.hasLabel) {  // If the link label is not empty
-                    ranges.push(...last.ranges)
+                if (link?.hasLabel) {  // If the link label is not empty
+                    ranges.push(...link.ranges)
                 }
+                link = null
             }
 
             // Emphasis, strong, and strikethrough
