@@ -407,31 +407,31 @@
                 "markdown.extension.theming.autoHide.emphasis": {
                     "type": "boolean",
                     "default": true,
-                    "markdownDescription": "%config.theming.decoration.autoHide.emphasis.description%",
+                    "markdownDescription": "%config.theming.autoHide.emphasis.description%",
                     "scope": "application"
                 },
                 "markdown.extension.theming.autoHide.link": {
                     "type": "boolean",
                     "default": false,
-                    "markdownDescription": "%config.theming.decoration.autoHide.link.description%",
+                    "markdownDescription": "%config.theming.autoHide.link.description%",
                     "scope": "application"
                 },
                 "markdown.extension.theming.autoHide.strong": {
                     "type": "boolean",
                     "default": true,
-                    "markdownDescription": "%config.theming.decoration.autoHide.strong.description%",
+                    "markdownDescription": "%config.theming.autoHide.strong.description%",
                     "scope": "application"
                 },
                 "markdown.extension.theming.autoHide.strikethrough": {
                     "type": "boolean",
                     "default": true,
-                    "markdownDescription": "%config.theming.decoration.autoHide.strikethrough.description%",
+                    "markdownDescription": "%config.theming.autoHide.strikethrough.description%",
                     "scope": "application"
                 },
                 "markdown.extension.theming.autoHide.escape": {
                     "type": "boolean",
                     "default": true,
-                    "markdownDescription": "%config.theming.decoration.autoHide.escape.description%",
+                    "markdownDescription": "%config.theming.autoHide.escape.description%",
                     "scope": "application"
                 },
                 "markdown.extension.theming.decoration.renderCodeSpan": {
