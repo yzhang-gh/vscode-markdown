@@ -54,32 +54,55 @@ const decorationWorkerRegistry: IWorkerRegistry = {
         const filter: string[] = []
         const config = vscode.workspace.getConfiguration("markdown.extension.theming.autoHide")
         if (config.get<boolean>("emphasis")) { filter.push("emphasisSequence") }
-        if (config.get<boolean>("link")) { filter.push("resource") }
         if (config.get<boolean>("strong")) { filter.push("strongSequence") }
         if (config.get<boolean>("strikethrough")) { filter.push("strikethroughSequence") }
 
+        const shouldHideLinks = config.get<boolean>("link")
         const shouldHideBackslash = config.get<boolean>("escape")
-        if (filter.length === 0 && !shouldHideBackslash) { return }
+        if (filter.length === 0 && !shouldHideLinks && !shouldHideBackslash) { return { target: DecorationClass.MarkdownSyntax, ranges: [] } }
 
         const ranges: vscode.Range[] = [];
+        const link: { hasLabel: boolean, ranges: vscode.Range[] }[] = [];
         let image = 0
-        for (const [eventType, token, _tokenizeContext] of postprocess(parse({ extensions: [math(), gfm({ singleTilde: false })] }).document().write(preprocess()(document.getText(), undefined, true)))) {
-            if (eventType === "enter" && token.type === "image") {
-                image++
-            } else if (eventType === "exit" && token.type === "image") {
-                image--
+        const text = document.getText()
+
+        // The list of the possible values of token.type: https://github.com/micromark/micromark/blob/d838b56d11868798997150585f60063b458cb09b/packages/micromark-util-symbol/types.js#L12
+        for (const [eventType, token, _tokenizeContext] of postprocess(parse({ extensions: [math(), gfm({ singleTilde: false })] }).document().write(preprocess()(text, undefined, true)))) {
+            // Skip `![label](resource)`
+            if (token.type === "image") {
+                if (eventType === "enter") { image++; }
+                if (eventType === "exit") { image--; }
             }
-            if (image > 0) {
-                continue
+            if (image > 0) { continue }
+
+            // Link `[label](resource)`
+            if (eventType === "enter" && token.type === "link") {
+                link.push({ hasLabel: false, ranges: [] })
+            }
+            if (link.length > 0 && eventType === "enter" && token.type === "labelText") {
+                link[link.length - 1].hasLabel = /\S/.test(text.slice(token.start.offset, token.end.offset))
+            }
+            if (link.length > 0 && eventType === "enter" && token.type === "labelMarker") {
+                link[link.length - 1].ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1))
+            }
+            if (link.length > 0 && eventType === "enter" && token.type === "resource") {
+                link[link.length - 1].ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1))
+            }
+            if (eventType === "exit" && token.type === "link") {
+                const last = link.pop()
+                if (last?.hasLabel) {  // If the link label is not empty
+                    ranges.push(...last.ranges)
+                }
             }
 
-            if (eventType === "enter") {
-                // The list of the possible values of token.type: https://github.com/micromark/micromark/blob/d838b56d11868798997150585f60063b458cb09b/packages/micromark-util-symbol/types.js#L12
-                if (filter.includes(token.type)) {
-                    ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1));
-                } else if (shouldHideBackslash && token.type === "characterEscape") {
-                    ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.start.line - 1, token.start.column));
-                }
+            // Emphasis, strong, and strikethrough
+            if (eventType === "enter" && filter.includes(token.type)) {
+                ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1));
+            }
+
+            // characterEscape
+            if (shouldHideBackslash && eventType === "enter" && token.type === "characterEscape") {
+                ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.start.line - 1, token.start.column));
             }
         }
 

@@ -39,7 +39,7 @@
     "config.tableFormatter.normalizeIndentation.description": "Normalize table indentation to closest multiple of configured editor tab size.",
     "config.tableFormatter.delimiterRowNoPadding.description": "Don't add padding to the delimiter row.",
     "config.theming.autoHide.emphasis.description": "Hide emphasis sequences `*`.",
-    "config.theming.autoHide.link.description": "Hide the URLs of links.",
+    "config.theming.autoHide.link.description": "Hide link syntax `[`, `](resource)`.",
     "config.theming.autoHide.strong.description": "Hide strong sequences `**`.",
     "config.theming.autoHide.strikethrough.description": "Hide strikethrough sequences `~~`.",
     "config.theming.autoHide.escape.description": "Hide character escapes `\\`.",
