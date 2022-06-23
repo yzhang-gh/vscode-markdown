@@ -76,23 +76,25 @@ const decorationWorkerRegistry: IWorkerRegistry = {
             if (image > 0) { continue }
 
             // Link `[label](resource)`
-            if (eventType === "enter" && token.type === "link") {
-                link = { hasLabel: false, ranges: [] }
-            }
-            if (link !== null && eventType === "enter" && token.type === "labelText") {
-                link.hasLabel = /\S/.test(text.slice(token.start.offset, token.end.offset))
-            }
-            if (link !== null && eventType === "enter" && token.type === "labelMarker") {
-                link.ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1))
-            }
-            if (link !== null && eventType === "enter" && token.type === "resource") {
-                link.ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1))
-            }
-            if (eventType === "exit" && token.type === "link") {
-                if (link?.hasLabel) {  // If the link label is not empty
-                    ranges.push(...link.ranges)
+            if (shouldHideLinks) {
+                if (eventType === "enter" && token.type === "link") {
+                    link = { hasLabel: false, ranges: [] }
                 }
-                link = null
+                if (link !== null && eventType === "enter" && token.type === "labelText") {
+                    link.hasLabel = /\S/.test(text.slice(token.start.offset, token.end.offset))
+                }
+                if (link !== null && eventType === "enter" && token.type === "labelMarker") {
+                    link.ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1))
+                }
+                if (link !== null && eventType === "enter" && token.type === "resource") {
+                    link.ranges.push(new vscode.Range(token.start.line - 1, token.start.column - 1, token.end.line - 1, token.end.column - 1))
+                }
+                if (eventType === "exit" && token.type === "link") {
+                    if (link?.hasLabel) {  // If the link label is not empty
+                        ranges.push(...link.ranges)
+                    }
+                    link = null
+                }
             }
 
             // Emphasis, strong, and strikethrough
