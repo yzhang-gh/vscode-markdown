@@ -94,10 +94,15 @@ function onEnterKey(modifiers?: string) {
                 editor.selection = new Selection(newCursorPos, newCursorPos);
             }
         }).then(() => { editor.revealRange(editor.selection) });
-    } else if ((matches = /^(\s*[-+*] +(\[[ x]\] +)?)/.exec(textBeforeCursor)) !== null) {
+    } else if ((matches = /^((\s*[-+*] +)(\[[ x]\] +)?)/.exec(textBeforeCursor)) !== null) {
         // Unordered list
         return editor.edit(editBuilder => {
-            editBuilder.insert(lineBreakPos, `\n${matches[1].replace('[x]', '[ ]')}`);
+            if (matches[0] === textBeforeCursor && matches[3] && modifiers !== 'ctrl') {
+                editBuilder.replace(new Range(cursorPos.line, matches[2].length + 1, cursorPos.line, matches[2].length + 2), " ");
+                editBuilder.insert(lineBreakPos, `\n${matches[1]}`);
+            } else {
+                editBuilder.insert(lineBreakPos, `\n${matches[1].replace('[x]', '[ ]')}`);
+            }
         }).then(() => {
             // Fix cursor position
             if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
