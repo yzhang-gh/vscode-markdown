@@ -97,10 +97,24 @@ function onEnterKey(modifiers?: string) {
     } else if ((matches = /^((\s*[-+*] +)(\[[ x]\] +)?)/.exec(textBeforeCursor)) !== null) {
         // Unordered list
         return editor.edit(editBuilder => {
-            if (matches[0] === textBeforeCursor && matches[3] && modifiers !== 'ctrl') {
+            if (
+                matches[3] &&                       // If it is a task list item and
+                matches[0] === textBeforeCursor &&  // the cursor is right after the checkbox "- [x] |item1"
+                modifiers !== 'ctrl'
+            ) {
+                // Move the task list item to the next line
+                // - [x] |item1
+                // ↓
+                // - [ ] 
+                // - [x] |item1
                 editBuilder.replace(new Range(cursorPos.line, matches[2].length + 1, cursorPos.line, matches[2].length + 2), " ");
                 editBuilder.insert(lineBreakPos, `\n${matches[1]}`);
             } else {
+                // Insert "- [ ]"
+                // - [ ] item1|
+                // ↓
+                // - [ ] item1
+                // - [ ] |
                 editBuilder.insert(lineBreakPos, `\n${matches[1].replace('[x]', '[ ]')}`);
             }
         }).then(() => {
