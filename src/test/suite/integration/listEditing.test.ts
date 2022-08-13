@@ -11,7 +11,7 @@ suite("List editing.", () => {
         await resetConfiguration();
     });
 
-    test("Enter key. Continue list item", () => {
+    test("Enter key. Continue list item. '- item1|'", () => {
         return testCommand('markdown.extension.onEnterKey',
             [
                 '- item1'
@@ -20,6 +20,19 @@ suite("List editing.", () => {
             [
                 '- item1',
                 '- '
+            ],
+            new Selection(1, 2, 1, 2));
+    });
+
+    test("Enter key. Continue list item. '- |item1'", () => {
+        return testCommand('markdown.extension.onEnterKey',
+            [
+                '- item1'
+            ],
+            new Selection(0, 2, 0, 2),
+            [
+                '- ',
+                '- item1'
             ],
             new Selection(1, 2, 1, 2));
     });
@@ -63,6 +76,32 @@ suite("List editing.", () => {
             ],
             new Selection(1, 6, 1, 6));
     });
+
+    test("Enter key. Continue GFM checkbox item. '- [x] |item1'", () => {
+        return testCommand('markdown.extension.onEnterKey',
+            [
+                '- [x] item1'
+            ],
+            new Selection(0, 6, 0, 6),
+            [
+                '- [ ] ',
+                '- [x] item1'
+            ],
+            new Selection(1, 6, 1, 6));
+    });
+
+    test("Ctrl+Enter key. Continue GFM checkbox item. '- [x] |item1'", () => {
+        return testCommand('markdown.extension.onCtrlEnterKey',
+            [
+                '- [x] item1'
+            ],
+            new Selection(0, 6, 0, 6),
+            [
+                '- [x] item1',
+                '- [ ] '
+            ],
+            new Selection(1, 6, 1, 6));
+    })
 
     test("Enter key. Keep list item text indentation. '1.  item1|'", () => {
         return testCommand('markdown.extension.onEnterKey',
