@@ -95,11 +95,17 @@ function onEnterKey(modifiers?: IModifier) {
             }
         }).then(() => { editor.revealRange(editor.selection) });
     } else if ((matches = /^((\s*[-+*] +)(\[[ x]\] +)?)/.exec(textBeforeCursor)) !== null) {
+        // satisfy compiler's null check
+        const match0 = matches[0];
+        const match1 = matches[1];
+        const match2 = matches[2];
+        const match3 = matches[3];
+
         // Unordered list
         return editor.edit(editBuilder => {
             if (
-                matches[3] &&                       // If it is a task list item and
-                matches[0] === textBeforeCursor &&  // the cursor is right after the checkbox "- [x] |item1"
+                match3 &&                       // If it is a task list item and
+                match0 === textBeforeCursor &&  // the cursor is right after the checkbox "- [x] |item1"
                 modifiers !== 'ctrl'
             ) {
                 // Move the task list item to the next line
@@ -107,15 +113,15 @@ function onEnterKey(modifiers?: IModifier) {
                 // ↓
                 // - [ ] 
                 // - [x] |item1
-                editBuilder.replace(new Range(cursorPos.line, matches[2].length + 1, cursorPos.line, matches[2].length + 2), " ");
-                editBuilder.insert(lineBreakPos, `\n${matches[1]}`);
+                editBuilder.replace(new Range(cursorPos.line, match2.length + 1, cursorPos.line, match2.length + 2), " ");
+                editBuilder.insert(lineBreakPos, `\n${match1}`);
             } else {
                 // Insert "- [ ]"
                 // - [ ] item1|
                 // ↓
                 // - [ ] item1
                 // - [ ] |
-                editBuilder.insert(lineBreakPos, `\n${matches[1].replace('[x]', '[ ]')}`);
+                editBuilder.insert(lineBreakPos, `\n${match1.replace('[x]', '[ ]')}`);
             }
         }).then(() => {
             // Fix cursor position
