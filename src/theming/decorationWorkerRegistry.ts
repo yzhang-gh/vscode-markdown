@@ -56,7 +56,8 @@ const decorationWorkerRegistry: IWorkerRegistry = {
         const ranges: vscode.Range[] = [];
 
         for (const { content, children, map } of tokens) {
-            const initOffset = text.indexOf(content, document.offsetAt(new vscode.Position(map![0], 0)));
+            let initOffset = document.offsetAt(new vscode.Position(map![0], 0))
+            initOffset = Math.max(text.indexOf(content, initOffset), initOffset);
 
             let beginOffset = initOffset;
             let endOffset = initOffset;
