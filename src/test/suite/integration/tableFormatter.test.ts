@@ -1,5 +1,5 @@
 import { Selection } from "vscode";
-import { resetConfiguration } from "../util/configuration";
+import { resetConfiguration, updateConfiguration } from "../util/configuration";
 import { testCommand } from "../util/generic";
 
 suite("Table formatter.", () => {
