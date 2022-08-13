@@ -3,6 +3,7 @@
 
 # Development tools, intermediate build results, and temporary files
 .vscode-test/
+build/**
 out/
 test/**
 tools/
@@ -19,7 +20,7 @@ src/
 .github/
 .vscode/
 .gitignore
-tsconfig.json
+**/tsconfig*.json
 package-json.lock
 webpack.config.js
 

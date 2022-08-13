@@ -1,0 +1,23 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "$comment": "Here are only compilerOptions shared across the project. Please sort them in the order of the TSConfig Reference.",
+    "compilerOptions": {
+        "strict": true,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "exactOptionalPropertyTypes": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+
+        "moduleResolution": "Node",
+
+        "newLine": "lf",
+
+        "allowSyntheticDefaultImports": false,
+        "esModuleInterop": false,
+        "forceConsistentCasingInFileNames": true
+    }
+}

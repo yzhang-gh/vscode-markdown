@@ -67,7 +67,7 @@ interface IDecorationAnalysisTask {
      *
      * Only available when the task is `Fulfilled`. Otherwise, `undefined`.
      */
-    readonly result?: readonly IDecorationRecord[];
+    readonly result: undefined | readonly IDecorationRecord[];
 
     /**
      * The state of the task.
