@@ -30,7 +30,7 @@ interface IHeadingBase {
     lineIndex: number;
 
     /**
-     * `true` to show in TOC. `false` to omit in TOC.
+     * `true` to show in TOC. `false` to omit from TOC.
      */
     canInToc: boolean;
 }
@@ -523,7 +523,7 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
         .replace(/^( {0,3})<!--([^]*?)-->.*$/gm, (match: string, leading: string, content: string) => {
             // Remove HTML block comment, together with all the text in the lines it occupies. <https://spec.commonmark.org/0.29/#html-blocks>
             // Exclude our magic comment.
-            if (leading.length === 0 && content === ' omit in toc ') {
+            if (leading.length === 0 && /omit (in|from) toc/.test(content)) {
                 return match;
             } else {
                 return replacer(match);
@@ -562,7 +562,7 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
      * Mark omitted headings
      * =====================
      *
-     * - headings with magic comment `<!-- omit in toc -->` (on their own)
+     * - headings with magic comment `<!-- omit from toc -->` (on their own)
      * - headings from `getProjectExcludedHeadings()` (and their subheadings)
      *
      * Note:
@@ -608,11 +608,11 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
                 // The magic comment is above the heading.
                 (
                     i > 0
-                    && '<!-- omit in toc -->' === lines[i - 1]
+                    && /^<!-- omit (in|from) toc -->$/.test(lines[i - 1])
                 )
 
                 // The magic comment is at the end of the heading.
-                || crtLineText.endsWith('<!-- omit in toc -->')
+                || /<!-- omit (in|from) toc -->$/.test(crtLineText)
             )
         ) {
             entry.canInToc = false;

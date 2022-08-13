@@ -143,7 +143,9 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
     const hasMath = hasMathEnv(doc.getText());
     const extensionStyles = await getPreviewExtensionStyles();
     const extensionScripts = await getPreviewExtensionScripts();
-    const includeVscodeStyles = config.get<boolean>('print.includeVscodeStylesheets')
+    const includeVscodeStyles = config.get<boolean>('print.includeVscodeStylesheets')!;
+    const themeKind = config.get<string>('print.theme');
+    const themeClass = themeKind === 'light' ? 'vscode-light' : themeKind === 'dark' ? 'vscode-dark' : '';
     const html = `<!DOCTYPE html>
     <html>
     <head>
@@ -152,7 +154,7 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
         ${extensionStyles}
         ${getStyles(doc.uri, hasMath, includeVscodeStyles)}
     </head>
-    <body class="vscode-body${config.get<string>('print.theme') === 'light' ? ' vscode-light' : ''}">
+    <body class="vscode-body ${themeClass}">
         ${body}
         ${hasMath ? '<script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>' : ''}
         ${extensionScripts}
@@ -174,7 +176,8 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
 }
 
 function batchPrint() {
-    const doc = window.activeTextEditor.document;
+    const doc = window.activeTextEditor?.document;
+    // @ts-ignore Needs refactoring.
     const root = workspace.getWorkspaceFolder(doc.uri).uri;
     window.showOpenDialog({ defaultUri: root, openLabel: 'Select source folder', canSelectFiles: false, canSelectFolders: true }).then(uris => {
         if (uris && uris.length > 0) {
@@ -193,7 +196,7 @@ function batchPrint() {
                     prompt: 'Please specify an output folder'
                 }).then(outFolder => {
                     uris.forEach(uri => {
-                        print('html', uri, path.join(outFolder, path.relative(selectedPath, path.dirname(uri.fsPath))));
+                        print('html', uri, path.join(outFolder!, path.relative(selectedPath, path.dirname(uri.fsPath))));
                     });
                 });
             });

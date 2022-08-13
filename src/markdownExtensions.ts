@@ -47,9 +47,9 @@ export interface IVscodeMarkdownExtension
 export interface IMarkdownContribution {
     readonly extensionId: string;
     readonly extensionUri: vscode.Uri;
-    readonly extendMarkdownIt?: (md: MarkdownIt) => Promise<MarkdownIt>;
-    readonly previewScripts?: readonly vscode.Uri[];
-    readonly previewStyles?: readonly vscode.Uri[];
+    readonly extendMarkdownIt?: undefined | ((md: MarkdownIt) => Promise<MarkdownIt>);
+    readonly previewScripts?: undefined | readonly vscode.Uri[];
+    readonly previewStyles?: undefined | readonly vscode.Uri[];
 }
 
 /**
@@ -101,11 +101,11 @@ function resolveExtensionResourceUris(
  *
  * This function extracts and wraps the contribution without validating the underlying resources.
  */
-function resolveMarkdownContribution(extension: IVscodeMarkdownExtension): IMarkdownContribution | null {
+function resolveMarkdownContribution(extension: IVscodeMarkdownExtension): IMarkdownContribution | undefined {
     const contributes = extension.packageJSON && extension.packageJSON.contributes;
 
     if (!contributes) {
-        return null;
+        return;
     }
 
     const extendMarkdownIt = contributes["markdown.markdownItPlugins"]
@@ -123,7 +123,7 @@ function resolveMarkdownContribution(extension: IVscodeMarkdownExtension): IMark
             : undefined;
 
     if (!extendMarkdownIt && !previewScripts && !previewStyles) {
-        return null;
+        return;
     }
 
     return {
@@ -168,7 +168,7 @@ class MarkdownContributionProvider implements IMarkdownContributionProvider {
 
     protected readonly _disposables: vscode.Disposable[] = [];
 
-    private _cachedContributions: ReadonlyArray<IMarkdownContribution> | null = null;
+    private _cachedContributions: ReadonlyArray<IMarkdownContribution> | undefined = undefined;
 
     private _isDisposed = false;
 
@@ -180,7 +180,7 @@ class MarkdownContributionProvider implements IMarkdownContributionProvider {
 
             vscode.extensions.onDidChange(() => {
                 // `contributions` will rebuild the cache.
-                this._cachedContributions = null;
+                this._cachedContributions = undefined;
                 this._onDidChangeContributions.fire(this);
             })
         );

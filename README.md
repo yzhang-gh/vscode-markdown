@@ -64,7 +64,7 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
   <details>
   <summary>Click to expand</summary>
 
-  1. Add `<!-- omit in toc -->` at the end of a heading to ignore it in TOC\
+  1. Add `<!-- omit from toc -->` at the end of a heading to ignore it in TOC\
     (It can also be placed above a heading)
 
   2. Use `toc.levels` setting.
@@ -114,8 +114,8 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 - Commands `Markdown: Print current document to HTML`
   and `Markdown: Print documents to HTML` (batch mode)
 
-- **Compatible** with other installed Markdown plugins (e.g. [Markdown Footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes))
-  The exported HTML should look the same as inside VS Code.
+- **Compatible** with other installed Markdown plugins (e.g. [Markdown Footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes)).
+  The exported HTML should look the same as inside VS Code (except for a few theme colors due to the limitations of APIs).
 
 - Use comment `<!-- title: Your Title -->` to specify a title of the exported HTML.
 
@@ -161,7 +161,7 @@ Tip: also support the option `completion.root`
 
   <p><img src="https://github.com/yzhang-gh/vscode-markdown/raw/master/images/gifs/paste-link.gif" alt="paste link" width="342px"></p>
 
-- Override "Open Preview" keybinding with "Toggle Preview", which means you can close preview using the same keybinding (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
+- Add "Close Preview" keybinding, which allows you to close the preview tab using the same keybinding of "Open Preview" (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> or <kbd>Ctrl</kbd> + <kbd>K</kbd> <kbd>V</kbd>).
 
 ## Available Commands
 

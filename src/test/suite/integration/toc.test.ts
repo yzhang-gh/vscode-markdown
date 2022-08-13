@@ -1,4 +1,4 @@
-import { workspace, Selection } from 'vscode';
+import { Selection } from "vscode";
 import { resetConfiguration, updateConfiguration } from "../util/configuration";
 import { testCommand, Test_Md_File_Path } from "../util/generic";
 
@@ -367,7 +367,7 @@ suite("TOC.", () => {
     test("Exclude omitted headings (`toc.omittedFromToc`)", async () => {
         await updateConfiguration({
             config: [["markdown.extension.toc.omittedFromToc", {
-                [Test_Md_File_Path]: [
+                [Test_Md_File_Path.fsPath]: [
                     // With more than one space between sharps and text.
                     '#  Introduction',
                     // With spaces before sharps ans special chars.
@@ -437,12 +437,12 @@ suite("TOC.", () => {
         await resetConfiguration();
     });
 
-    test("Inline <!-- omit in toc -->", () => {
+    test("Inline <!-- omit from toc -->", () => {
         return testCommand('markdown.extension.toc.create',
             [
                 '# Section 1',
                 '',
-                '## Section 1.1 <!-- omit in toc -->',
+                '## Section 1.1 <!-- omit from toc -->',
                 '',
                 '# Section 2',
                 '',
@@ -452,7 +452,7 @@ suite("TOC.", () => {
             [
                 '# Section 1',
                 '',
-                '## Section 1.1 <!-- omit in toc -->',
+                '## Section 1.1 <!-- omit from toc -->',
                 '',
                 '# Section 2',
                 '',
@@ -463,12 +463,12 @@ suite("TOC.", () => {
             new Selection(8, 0, 8, 0));
     });
 
-    test("<!-- omit in toc --> in previous line", () => {
+    test("<!-- omit from toc --> in previous line", () => {
         return testCommand('markdown.extension.toc.create',
             [
                 '# Section 1',
                 '',
-                '<!-- omit in toc -->',
+                '<!-- omit from toc -->',
                 '## Section 1.1',
                 '',
                 '<!-- omit in toc -->',
@@ -482,7 +482,7 @@ suite("TOC.", () => {
             [
                 '# Section 1',
                 '',
-                '<!-- omit in toc -->',
+                '<!-- omit from toc -->',
                 '## Section 1.1',
                 '',
                 '<!-- omit in toc -->',

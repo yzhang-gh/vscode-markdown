@@ -3,10 +3,10 @@
     "displayName": "%ext.displayName%",
     "description": "%ext.description%",
     "icon": "images/Markdown-mark.png",
-    "version": "3.4.0",
+    "version": "3.5.0",
     "publisher": "yzhang",
     "engines": {
-        "vscode": "^1.49.0"
+        "vscode": "^1.63.0"
     },
     "categories": [
         "Programming Languages",
@@ -29,7 +29,7 @@
         "onCommand:markdown.extension.printToHtmlBatch",
         "workspaceContains:README.md"
     ],
-    "main": "./dist/extension",
+    "main": "./dist/node/main.js",
     "contributes": {
         "colors": [
             {
@@ -399,6 +399,11 @@
                     "default": false,
                     "markdownDescription": "%config.tableFormatter.normalizeIndentation.description%"
                 },
+                "markdown.extension.tableFormatter.delimiterRowNoPadding": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "%config.tableFormatter.delimiterRowNoPadding.description%"
+                },
                 "markdown.extension.theming.decoration.renderCodeSpan": {
                     "type": "boolean",
                     "default": true,
@@ -527,37 +532,38 @@
         }
     },
     "scripts": {
-        "vscode:prepublish": "node ./tools/prepublish.js",
-        "compile": "webpack --mode none",
-        "watch": "webpack --mode none --watch",
-        "test": "tsc -p ./ && node ./out/test/runTest.js",
-        "test-compile": "tsc -p ./"
+        "vscode:prepublish": "npm run build",
+        "build": "node ./build/build.js",
+        "dev-build": "webpack --mode development",
+        "dev-compile": "tsc --build --watch --verbose",
+        "pretest": "tsc --build",
+        "test": "node ./out/test/runTest.js"
     },
     "dependencies": {
         "@neilsustc/markdown-it-katex": "^1.0.0",
         "entities": "^3.0.1",
         "grapheme-splitter": "^1.0.4",
-        "highlight.js": "^11.3.1",
+        "highlight.js": "^11.5.1",
         "image-size": "^0.9.3",
-        "katex": "^0.15.1",
-        "markdown-it": "^12.2.0",
+        "katex": "^0.15.3",
+        "markdown-it": "^12.3.2",
         "markdown-it-task-lists": "^2.1.1",
         "string-similarity": "^4.0.4"
     },
     "devDependencies": {
         "@types/glob": "^7.2.0",
-        "@types/katex": "^0.11.1",
+        "@types/katex": "^0.14.0",
         "@types/markdown-it": "^12.2.3",
-        "@types/mocha": "^9.0.0",
-        "@types/node": "~12.12.70",
+        "@types/mocha": "^9.1.0",
+        "@types/node": "~14.18.13",
         "@types/string-similarity": "^4.0.0",
-        "@types/vscode": "~1.49.0",
+        "@types/vscode": "~1.63.2",
         "@vscode/test-electron": "^1.6.2",
         "glob": "^7.2.0",
-        "mocha": "^9.1.3",
-        "ts-loader": "^9.2.6",
-        "typescript": "~4.4.4",
-        "webpack": "~5.49.0",
-        "webpack-cli": "^4.9.1"
+        "mocha": "^9.2.2",
+        "ts-loader": "^9.2.8",
+        "typescript": "~4.5.5",
+        "webpack": "~5.65.0",
+        "webpack-cli": "^4.9.2"
     }
 }
