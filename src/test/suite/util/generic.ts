@@ -51,9 +51,11 @@ export async function testCommand(
         editBuilder.delete(fullRange);
         editBuilder.insert(new vscode.Position(0, 0), initLines.join("\n"));
     });
+    editor.selection = initSelection;
+
+    await new Promise(res => setTimeout(res, 50));
 
     // Run the command.
-    editor.selection = initSelection;
     await vscode.commands.executeCommand(command);
 
     // Assert.
