@@ -32,7 +32,7 @@ function toggleBold() {
 }
 
 function toggleItalic() {
-    let indicator = workspace.getConfiguration('markdown.extension.italic').get<string>('indicator');
+    let indicator = workspace.getConfiguration('markdown.extension.italic').get<string>('indicator')!;
     return styleByWrapping(indicator);
 }
 
@@ -41,7 +41,7 @@ function toggleCodeSpan() {
 }
 
 function toggleCodeBlock() {
-    let editor = window.activeTextEditor;
+    const editor = window.activeTextEditor!;
     return editor.insertSnippet(new SnippetString('```$0\n$TM_SELECTED_TEXT\n```'));
 }
 
@@ -50,7 +50,7 @@ function toggleStrikethrough() {
 }
 
 async function toggleHeadingUp() {
-    let editor = window.activeTextEditor;
+    const editor = window.activeTextEditor!;
     let lineIndex = editor.selection.active.line;
     let lineText = editor.document.lineAt(lineIndex).text;
 
@@ -65,7 +65,7 @@ async function toggleHeadingUp() {
 }
 
 function toggleHeadingDown() {
-    let editor = window.activeTextEditor;
+    const editor = window.activeTextEditor!;
     let lineIndex = editor.selection.active.line;
     let lineText = editor.document.lineAt(lineIndex).text;
 
@@ -190,7 +190,7 @@ const transTable = [
 const reverseTransTable = new Array<MathBlockState>(...transTable).reverse();
 
 function toggleMath(transTable: MathBlockState[]) {
-    let editor = window.activeTextEditor;
+    const editor = window.activeTextEditor!;
     if (!editor.selection.isEmpty) return;
     let cursor = editor.selection.active;
 
@@ -200,11 +200,11 @@ function toggleMath(transTable: MathBlockState[]) {
 }
 
 function toggleList() {
-    const editor = window.activeTextEditor;
+    const editor = window.activeTextEditor!;
     const doc = editor.document;
     let batchEdit = new WorkspaceEdit();
 
-    editor.selections.forEach(selection => {
+    for (const selection of editor.selections) {
         if (selection.isEmpty) {
             toggleListSingleLine(doc, selection.active.line, batchEdit);
         } else {
@@ -212,9 +212,9 @@ function toggleList() {
                 toggleListSingleLine(doc, i, batchEdit);
             }
         }
-    });
+    }
 
-    return workspace.applyEdit(batchEdit).then(() => fixMarker());
+    return workspace.applyEdit(batchEdit).then(() => fixMarker(editor));
 }
 
 function toggleListSingleLine(doc: TextDocument, line: number, wsEdit: WorkspaceEdit) {
@@ -229,10 +229,10 @@ function toggleListSingleLine(doc: TextDocument, line: number, wsEdit: Workspace
     } else if (lineTextContent.startsWith("+ ")) {
         wsEdit.replace(doc.uri, new Range(line, indentation, line, indentation + 2), "1. ");
     } else if (/^\d+\. /.test(lineTextContent)) {
-        const lenOfDigits = /^(\d+)\./.exec(lineText.trim())[1].length;
+        const lenOfDigits = /^(\d+)\./.exec(lineText.trim())![1].length;
         wsEdit.replace(doc.uri, new Range(line, indentation + lenOfDigits, line, indentation + lenOfDigits + 1), ")");
     } else if (/^\d+\) /.test(lineTextContent)) {
-        const lenOfDigits = /^(\d+)\)/.exec(lineText.trim())[1].length;
+        const lenOfDigits = /^(\d+)\)/.exec(lineText.trim())![1].length;
         wsEdit.delete(doc.uri, new Range(line, indentation, line, indentation + lenOfDigits + 2));
     } else {
         wsEdit.insert(doc.uri, new Position(line, indentation), "- ");
@@ -240,7 +240,7 @@ function toggleListSingleLine(doc: TextDocument, line: number, wsEdit: Workspace
 }
 
 async function paste() {
-    const editor = window.activeTextEditor;
+    const editor = window.activeTextEditor!;
     const selection = editor.selection;
     if (selection.isSingleLine && !isSingleLink(editor.document.getText(selection))) {
         const text = await env.clipboard.readText();
@@ -306,7 +306,7 @@ export function isSingleLink(text: string): boolean {
 
 // Read PR #1052 before touching this please!
 function styleByWrapping(startPattern: string, endPattern = startPattern) {
-    let editor = window.activeTextEditor;
+    const editor = window.activeTextEditor!;
     let selections = editor.selections;
 
     let batchEdit = new WorkspaceEdit();
@@ -346,7 +346,7 @@ function styleByWrapping(startPattern: string, endPattern = startPattern) {
                 // One special case: toggle strikethrough in task list
                 const currentTextLine = editor.document.lineAt(cursorPos.line);
                 if (startPattern === '~~' && /^\s*[\*\+\-] (\[[ x]\] )? */g.test(currentTextLine.text)) {
-                    wordRange = currentTextLine.range.with(new Position(cursorPos.line, currentTextLine.text.match(/^\s*[\*\+\-] (\[[ x]\] )? */g)[0].length));
+                    wordRange = currentTextLine.range.with(new Position(cursorPos.line, currentTextLine.text.match(/^\s*[\*\+\-] (\[[ x]\] )? */g)![0].length));
                 }
                 wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, wordRange, false, startPattern, endPattern);
             }

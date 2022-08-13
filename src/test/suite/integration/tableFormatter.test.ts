@@ -1,4 +1,4 @@
-import { workspace, Selection } from 'vscode';
+import { Selection } from "vscode";
 import { resetConfiguration, updateConfiguration } from "../util/configuration";
 import { testCommand } from "../util/generic";
 

@@ -2,7 +2,8 @@
 
 // https://github.github.com/gfm/#tables-extension-
 
-import { CancellationToken, Disposable, DocumentFormattingEditProvider, EndOfLine, ExtensionContext, FormattingOptions, languages, Range, TextDocument, TextEdit, workspace } from 'vscode';
+import * as vscode from "vscode";
+import { configManager } from "./configuration/manager";
 import { Document_Selector_Markdown } from "./util/generic";
 //// This module can only be referenced with ECMAScript imports/exports by turning on the 'esModuleInterop' flag and referencing its default export.
 // import { GraphemeSplitter } from 'grapheme-splitter';
@@ -10,29 +11,42 @@ import GraphemeSplitter = require('grapheme-splitter');
 
 const splitter = new GraphemeSplitter();
 
-export function activate(_: ExtensionContext) {
-    let registration: Disposable | undefined;
-
-    function registerFormatterIfEnabled() {
-        const isEnabled = workspace.getConfiguration().get('markdown.extension.tableFormatter.enabled', true);
-        if (isEnabled && !registration) {
-            registration = languages.registerDocumentFormattingEditProvider(Document_Selector_Markdown, new MarkdownDocumentFormatter());
-        } else if (!isEnabled && registration) {
-            registration.dispose();
-            registration = undefined;
-        }
-    }
-
-    registerFormatterIfEnabled();
-
-    workspace.onDidChangeConfiguration(event => {
-        if (event.affectsConfiguration('markdown.extension.tableFormatter.enabled')) {
-            registerFormatterIfEnabled();
-        }
-    });
+interface ITableRange {
+    text: string;
+    offset: number;
+    range: vscode.Range;
 }
 
-export function deactivate() { }
+// Dedicated objects for managing the formatter.
+const d0 = Object.freeze<vscode.Disposable & { _disposables: vscode.Disposable[] }>({
+    _disposables: [],
+    dispose: function () {
+        for (const item of this._disposables) {
+            item.dispose();
+        }
+        this._disposables.length = 0;
+    },
+});
+
+const registerFormatter = () => {
+    if (configManager.get("tableFormatter.enabled")) {
+        d0._disposables.push(vscode.languages.registerDocumentFormattingEditProvider(Document_Selector_Markdown, new MarkdownDocumentFormatter()));
+    } else {
+        d0.dispose();
+    }
+}
+
+export function activate(context: vscode.ExtensionContext) {
+    const d1 = vscode.workspace.onDidChangeConfiguration((event) => {
+        if (event.affectsConfiguration("markdown.extension.tableFormatter.enabled")) {
+            registerFormatter();
+        }
+    });
+
+    registerFormatter();
+
+    context.subscriptions.push(d1, d0);
+}
 
 enum ColumnAlignment {
     None,
@@ -41,24 +55,23 @@ enum ColumnAlignment {
     Right
 }
 
-class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
-    public provideDocumentFormattingEdits(document: TextDocument, options: FormattingOptions, token: CancellationToken): TextEdit[] | Thenable<TextEdit[]> {
-        let edits: TextEdit[] = [];
-        let tables = this.detectTables(document.getText());
-        if (tables !== null) {
-            let startingPos = 0;
-            tables.forEach(table => {
-                const tableRange = this.getRange(document, table, startingPos);
-                edits.push(new TextEdit(tableRange, this.formatTable(table, document, options)));
-                startingPos = document.offsetAt(tableRange.end);
-            });
-            return edits;
-        } else {
-            return [];
+class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider {
+    provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken) {
+        const tables = this.detectTables(document);
+        if (!tables || token.isCancellationRequested) {
+            return;
         }
+
+        const edits: vscode.TextEdit[] = tables.map(
+            (target) => new vscode.TextEdit(target.range, this.formatTable(target, document, options))
+        );
+
+        return edits;
     }
 
-    private detectTables(text: string) {
+    private detectTables(document: vscode.TextDocument): ITableRange[] | undefined {
+        const text = document.getText();
+
         const lineBreak = String.raw`\r?\n`;
         const contentLine = String.raw`\|?.*\|.*\|?`;
 
@@ -73,14 +86,20 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
         const hyphenLine = String.raw`[ \t]*(?:${multiColumnHyphenLine}|${singleColumnHyphenLine})[ \t]*`;
 
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
-        return text.match(tableRegex);
-    }
 
-    private getRange(document: TextDocument, text: string, startingPos: number) {
-        let documentText = document.getText();
-        let start = document.positionAt(documentText.indexOf(text, startingPos));
-        let end = document.positionAt(documentText.indexOf(text, startingPos) + text.length);
-        return new Range(start, end);
+        const result: ITableRange[] = Array.from(
+            text.matchAll(tableRegex),
+            (item): ITableRange => ({
+                text: item[0],
+                offset: item.index!,
+                range: new vscode.Range(
+                    document.positionAt(item.index!),
+                    document.positionAt(item.index! + item[0].length)
+                ),
+            })
+        );
+
+        return result.length ? result : undefined;
     }
 
     /**
@@ -88,32 +107,31 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
      * In case of `markdown.extension.table.normalizeIndentation` is `enabled` it is rounded to the closest multiple of
      * the configured `tabSize`.
      */
-    private getTableIndentation(text: string, options: FormattingOptions) {
-        let doNormalize = workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('normalizeIndentation');
+    private getTableIndentation(text: string, options: vscode.FormattingOptions) {
+        let doNormalize = configManager.get("tableFormatter.normalizeIndentation");
         let indentRegex = new RegExp(/^(\s*)\S/u);
         let match = text.match(indentRegex);
-        let spacesInFirstLine = match[1].length;
+        let spacesInFirstLine = match?.[1].length ?? 0;
         let tabStops = Math.round(spacesInFirstLine / options.tabSize);
         let spaces = doNormalize ? " ".repeat(options.tabSize * tabStops) : " ".repeat(spacesInFirstLine);
         return spaces;
     }
 
-    private formatTable(text: string, doc: TextDocument, options: FormattingOptions) {
+    private formatTable(target: ITableRange, doc: vscode.TextDocument, options: vscode.FormattingOptions) {
+        // The following operations require the Unicode Normalization Form C (NFC).
+        const text = target.text.normalize();
+
         const delimiterRowIndex = 1;
-        const delimiterRowNoPadding = workspace.getConfiguration('markdown.extension.tableFormatter').get<boolean>('delimiterRowNoPadding');
+        const delimiterRowNoPadding = configManager.get('tableFormatter.delimiterRowNoPadding');
         const indentation = this.getTableIndentation(text, options);
 
-        const rows: string[] = [];
         const rowsNoIndentPattern = new RegExp(/^\s*(\S.*)$/gum);
-        let match = null;
-        while ((match = rowsNoIndentPattern.exec(text)) !== null) {
-            rows.push(match[1].trim());
-        }
+        const rows: string[] = Array.from(text.matchAll(rowsNoIndentPattern), (match) => match[1].trim());
 
-        // Column "content" width (the length of the longest cell in each column), **without padding**
-        const colWidth = [];
+        // Desired "visual" width of each column (the length of the longest cell in each column), **without padding**
+        const colWidth: number[] = [];
         // Alignment of each column
-        const colAlign = []
+        const colAlign: ColumnAlignment[] = [];
         // Regex to extract cell content.
         // GitHub #24
         const fieldRegExp = new RegExp(/((\\\||[^\|])*)\|/gu);
@@ -130,58 +148,64 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
             }
 
             // Parse cells in the current row
-            let field = null;
             let values = [];
             let iCol = 0;
-            while ((field = fieldRegExp.exec(row)) !== null) {
+            for (const field of row.matchAll(fieldRegExp)) {
                 let cell = field[1].trim();
                 values.push(cell);
+
                 // Ignore the length of delimiter-line before we normalize it
-                if (iRow != delimiterRowIndex) {
-                    // Treat CJK characters as 2 English ones because of Unicode stuff
-                    const numOfUnicodeChars = splitter.countGraphemes(cell);
-                    const width = cjkRegex.test(cell) ? numOfUnicodeChars + cell.match(cjkRegex).length : numOfUnicodeChars;
-                    colWidth[iCol] = colWidth[iCol] > width ? colWidth[iCol] : width;
+                if (iRow === delimiterRowIndex) {
+                    continue;
                 }
+
+                // Calculate the desired "visual" column width.
+                // The following notes help to understand the precondition for our calculation.
+                // They don't reflect how text layout engines really work.
+                // For more information, please consult UAX #11.
+                // A grapheme cluster may comprise multiple Unicode code points.
+                // One CJK grapheme consists of one CJK code point, in NFC.
+                // In typical fixed-width typesetting without ligature, one grapheme is finally mapped to one glyph.
+                // Such a glyph is usually the same width as an ASCII letter, but a CJK glyph is twice.
+
+                const graphemeCount = splitter.countGraphemes(cell);
+                const cjkPoints = cell.match(cjkRegex);
+                const width = graphemeCount + (cjkPoints?.length ?? 0);
+                colWidth[iCol] = Math.max(colWidth[iCol] || 0, width);
+
                 iCol++;
             }
             return values;
         });
 
-        // Normalize the num of hyphen
+        // Normalize the num of hyphen according to the desired column length
         lines[delimiterRowIndex] = lines[delimiterRowIndex].map((cell, iCol) => {
             if (/:-+:/.test(cell)) {
                 // :---:
                 colAlign[iCol] = ColumnAlignment.Center;
-
-                // Update `colWidth` (lower bound) based on the column alignment specification
+                // Update the lower bound of visual `colWidth` (without padding) based on the column alignment specification
                 colWidth[iCol] = Math.max(colWidth[iCol], delimiterRowNoPadding ? 5 - 2 : 5);
+                // The length of all `-`, `:` chars in this delimiter cell
                 const specWidth = delimiterRowNoPadding ? colWidth[iCol] + 2 : colWidth[iCol];
-
                 return ':' + '-'.repeat(specWidth - 2) + ':';
             } else if (/:-+/.test(cell)) {
                 // :---
                 colAlign[iCol] = ColumnAlignment.Left;
                 colWidth[iCol] = Math.max(colWidth[iCol], delimiterRowNoPadding ? 4 - 2 : 4);
                 const specWidth = delimiterRowNoPadding ? colWidth[iCol] + 2 : colWidth[iCol];
-
                 return ':' + '-'.repeat(specWidth - 1);
             } else if (/-+:/.test(cell)) {
                 // ---:
                 colAlign[iCol] = ColumnAlignment.Right;
                 colWidth[iCol] = Math.max(colWidth[iCol], delimiterRowNoPadding ? 4 - 2 : 4);
                 const specWidth = delimiterRowNoPadding ? colWidth[iCol] + 2 : colWidth[iCol];
-
                 return '-'.repeat(specWidth - 1) + ':';
-            } else if (/-+/.test(cell)) {
+            } else {
                 // ---
                 colAlign[iCol] = ColumnAlignment.None;
                 colWidth[iCol] = Math.max(colWidth[iCol], delimiterRowNoPadding ? 3 - 2 : 3);
                 const specWidth = delimiterRowNoPadding ? colWidth[iCol] + 2 : colWidth[iCol];
-
                 return '-'.repeat(specWidth);
-            } else {
-                colAlign[iCol] = ColumnAlignment.None;
             }
         });
 
@@ -191,17 +215,18 @@ class MarkdownDocumentFormatter implements DocumentFormattingEditProvider {
             }
 
             let cells = row.map((cell, iCol) => {
-                const desiredWidth = colWidth[iCol];
-                let jsLength = splitter.splitGraphemes(cell + ' '.repeat(desiredWidth)).slice(0, desiredWidth).join('').length;
+                const visualWidth = colWidth[iCol];
+                let jsLength = splitter.splitGraphemes(cell + ' '.repeat(visualWidth)).slice(0, visualWidth).join('').length;
 
-                if (cjkRegex.test(cell)) {
-                    jsLength -= cell.match(cjkRegex).length;
+                const cjkPoints = cell.match(cjkRegex);
+                if (cjkPoints) {
+                    jsLength -= cjkPoints.length;
                 }
 
                 return this.alignText(cell, colAlign[iCol], jsLength);
             });
             return indentation + '| ' + cells.join(' | ') + ' |';
-        }).join(doc.eol === EndOfLine.LF ? '\n' : '\r\n');
+        }).join(doc.eol === vscode.EndOfLine.LF ? '\n' : '\r\n');
     }
 
     private alignText(text: string, align: ColumnAlignment, length: number) {

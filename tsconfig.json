@@ -1,24 +1,13 @@
 {
+    "extends": "./tsconfig.base.json",
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "es2019",
-        "outDir": "out",
-        "lib": [
-            "es2019",
-            "es2020.bigint",
-            "es2020.promise",
-            "es2020.string"
-        ],
-        "forceConsistentCasingInFileNames": true,
-        "newLine": "lf",
-        "sourceMap": true,
+        "module": "CommonJS",
+        "target": "ES2020",
+        "lib": ["ES2020"],
+        "noUnusedLocals": false,
         "rootDir": "src",
-        "strict": true,
-        "noImplicitAny": false,
-        "strictNullChecks": false
+        "outDir": "out",
+        "sourceMap": true
     },
-    "exclude": [
-        "node_modules",
-        ".vscode-test"
-    ]
+    "include": ["src/**/*"]
 }

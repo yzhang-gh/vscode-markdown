@@ -1,7 +1,7 @@
-'use strict'
-
 import { commands, ExtensionContext, Position, Range, Selection, TextEditor, window, workspace, WorkspaceEdit } from 'vscode';
 import { isInFencedCodeBlock, mathEnvCheck } from "./util/contextCheck";
+
+type IModifier = "ctrl" | "shift";
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
@@ -24,8 +24,8 @@ export function activate(context: ExtensionContext) {
 // The commands here are only bound to keys with `when` clause containing `editorTextFocus && !editorReadonly`. (package.json)
 // So we don't need to check whether `activeTextEditor` returns `undefined` in most cases.
 
-function onEnterKey(modifiers?: string) {
-    let editor = window.activeTextEditor;
+function onEnterKey(modifiers?: IModifier) {
+    const editor = window.activeTextEditor!;
     let cursorPos: Position = editor.selection.active;
     let line = editor.document.lineAt(cursorPos.line);
     let textBeforeCursor = line.text.substr(0, cursorPos.character);
@@ -37,7 +37,7 @@ function onEnterKey(modifiers?: string) {
     }
 
     if (modifiers == 'shift' || isInFencedCodeBlock(editor.document, cursorPos.line) || mathEnvCheck(editor.document, cursorPos)) {
-        return asNormal('enter', modifiers);
+        return asNormal(editor, 'enter', modifiers);
     }
 
     //// This is a possibility that the current line is a thematic break `<hr>` (GitHub #785)
@@ -48,7 +48,7 @@ function onEnterKey(modifiers?: string) {
             || lineTextNoSpace.replace(/\*/g, '').length === 0
         )
     ) {
-        return asNormal('enter', modifiers);
+        return asNormal(editor, 'enter', modifiers);
     }
 
     //// If it's an empty list item, remove it
@@ -58,10 +58,10 @@ function onEnterKey(modifiers?: string) {
             editBuilder.insert(line.range.end, '\n');
         }).then(() => {
             editor.revealRange(editor.selection);
-        }).then(() => fixMarker(findNextMarkerLineNumber()));
+        }).then(() => fixMarker(editor));
     }
 
-    let matches;
+    let matches: RegExpExecArray | null;
     if (/^> /.test(textBeforeCursor)) {
         // Block quotes
 
@@ -120,7 +120,7 @@ function onEnterKey(modifiers?: string) {
         }).then(() => {
             // Fix cursor position
             if (modifiers == 'ctrl' && !cursorPos.isEqual(lineBreakPos)) {
-                let newCursorPos = cursorPos.with(line.lineNumber + 1, matches[1].length);
+                let newCursorPos = cursorPos.with(line.lineNumber + 1, matches![1].length);
                 editor.selection = new Selection(newCursorPos, newCursorPos);
             }
         }).then(() => { editor.revealRange(editor.selection) });
@@ -152,19 +152,19 @@ function onEnterKey(modifiers?: string) {
                 let newCursorPos = cursorPos.with(line.lineNumber + 1, toBeAdded.length);
                 editor.selection = new Selection(newCursorPos, newCursorPos);
             }
-        }).then(() => fixMarker()).then(() => { editor.revealRange(editor.selection) });
+        }).then(() => fixMarker(editor)).then(() => { editor.revealRange(editor.selection); });
     } else {
-        return asNormal('enter', modifiers);
+        return asNormal(editor, 'enter', modifiers);
     }
 }
 
-function onTabKey(modifiers?: string) {
-    let editor = window.activeTextEditor;
+function onTabKey(modifiers?: IModifier) {
+    const editor = window.activeTextEditor!;
     let cursorPos = editor.selection.start;
     let lineText = editor.document.lineAt(cursorPos.line).text;
 
     if (isInFencedCodeBlock(editor.document, cursorPos.line) || mathEnvCheck(editor.document, cursorPos)) {
-        return asNormal('tab', modifiers);
+        return asNormal(editor, 'tab', modifiers);
     }
 
     let match = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.exec(lineText);
@@ -177,44 +177,44 @@ function onTabKey(modifiers?: string) {
         )
     ) {
         if (modifiers === 'shift') {
-            return outdent(editor).then(() => fixMarker());
+            return outdent(editor).then(() => fixMarker(editor));
         } else {
-            return indent(editor).then(() => fixMarker());
+            return indent(editor).then(() => fixMarker(editor));
         }
     } else {
-        return asNormal('tab', modifiers);
+        return asNormal(editor, 'tab', modifiers);
     }
 }
 
 function onBackspaceKey() {
-    let editor = window.activeTextEditor
+    const editor = window.activeTextEditor!;
     let cursor = editor.selection.active;
     let document = editor.document;
     let textBeforeCursor = document.lineAt(cursor.line).text.substr(0, cursor.character);
 
     if (isInFencedCodeBlock(document, cursor.line) || mathEnvCheck(editor.document, cursor)) {
-        return asNormal('backspace');
+        return asNormal(editor, 'backspace');
     }
 
     if (!editor.selection.isEmpty) {
-        return asNormal('backspace').then(() => fixMarker(findNextMarkerLineNumber()));
+        return asNormal(editor, 'backspace').then(() => fixMarker(editor));
     } else if (/^\s+([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor === `  - `, `   1. `
-        return outdent(editor).then(() => fixMarker());
+        return outdent(editor).then(() => fixMarker(editor));
     } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor === `- `, `1. `
         return editor.edit(editBuilder => {
             editBuilder.replace(new Range(cursor.with({ character: 0 }), cursor), ' '.repeat(textBeforeCursor.length))
-        }).then(() => fixMarker(findNextMarkerLineNumber()));
+        }).then(() => fixMarker(editor));
     } else if (/^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] )$/.test(textBeforeCursor)) {
         // e.g. textBeforeCursor === `- [ ]`, `1. [x]`, `  - [x]`
-        return deleteRange(editor, new Range(cursor.with({ character: textBeforeCursor.length - 4 }), cursor)).then(() => fixMarker(findNextMarkerLineNumber()));
+        return deleteRange(editor, new Range(cursor.with({ character: textBeforeCursor.length - 4 }), cursor)).then(() => fixMarker(editor));
     } else {
-        return asNormal('backspace');
+        return asNormal(editor, 'backspace');
     }
 }
 
-function asNormal(key: string, modifiers?: string) {
+function asNormal(editor: TextEditor, key: "backspace" | "enter" | "tab", modifiers?: IModifier) {
     switch (key) {
         case 'enter':
             if (modifiers === 'ctrl') {
@@ -226,7 +226,7 @@ function asNormal(key: string, modifiers?: string) {
             if (modifiers === 'shift') {
                 return commands.executeCommand('editor.action.outdentLines');
             } else if (
-                window.activeTextEditor.selection.isEmpty
+                editor.selection.isEmpty
                 && workspace.getConfiguration('emmet').get<boolean>('triggerExpansionOnTab')
             ) {
                 return commands.executeCommand('editor.emmet.action.expandAbbreviation');
@@ -246,11 +246,7 @@ function asNormal(key: string, modifiers?: string) {
  *
  * then indent the current line to align with the previous list item.
  */
-function indent(editor?: TextEditor) {
-    if (!editor) {
-        editor = window.activeTextEditor;
-    }
-
+function indent(editor: TextEditor) {
     if (workspace.getConfiguration("markdown.extension.list", editor.document.uri).get<string>("indentationSize") === "adaptive") {
         try {
             const selection = editor.selection;
@@ -274,11 +270,7 @@ function indent(editor?: TextEditor) {
 /**
  * Similar to `indent`-function
  */
-function outdent(editor?: TextEditor) {
-    if (!editor) {
-        editor = window.activeTextEditor;
-    }
-
+function outdent(editor: TextEditor) {
     if (workspace.getConfiguration("markdown.extension.list", editor.document.uri).get<string>("indentationSize") === "adaptive") {
         try {
             const selection = editor.selection;
@@ -320,16 +312,13 @@ function tryDetermineIndentationSize(editor: TextEditor, line: number, currentIn
 }
 
 /**
- * Returns the line number of the next ordered list item starting either from
- * the specified line or the beginning of the current selection.
+ * Returns the line index of the next ordered list item starting from the specified line.
+ *
+ * @param line
+ * Defaults to the beginning of the current primary selection (`editor.selection.start.line`)
+ * in order to find the first marker following either the cursor or the entire selected range.
  */
-function findNextMarkerLineNumber(line?: number): number {
-    let editor = window.activeTextEditor;
-    if (line === undefined) {
-        // Use start.line instead of active.line so that we can find the first
-        // marker following either the cursor or the entire selected range
-        line = editor.selection.start.line;
-    }
+function findNextMarkerLineNumber(editor: TextEditor, line = editor.selection.start.line): number | undefined {
     while (line < editor.document.lineCount) {
         const lineText = editor.document.lineAt(line).text;
 
@@ -379,14 +368,13 @@ function lookUpwardForMarker(editor: TextEditor, line: number, currentIndentatio
 /**
  * Fix ordered list marker *iteratively* starting from current line
  */
-export function fixMarker(line?: number) {
+export function fixMarker(editor: TextEditor, line?: number): Thenable<unknown> | void {
     if (!workspace.getConfiguration('markdown.extension.orderedList').get<boolean>('autoRenumber')) return;
     if (workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'one') return;
 
-    let editor = window.activeTextEditor;
     if (line === undefined) {
         // Use either the first line containing an ordered list marker within the selection or the active line
-        line = findNextMarkerLineNumber();
+        line = findNextMarkerLineNumber(editor);
         if (line === undefined || line > editor.selection.end.line) {
             line = editor.selection.active.line;
         }
@@ -414,16 +402,16 @@ export function fixMarker(line?: number) {
                 // Add enough trailing spaces so that the text is still aligned at the same indentation level as it was previously, but always keep at least one space
                 fixedMarkerString += delimiter + " ".repeat(Math.max(1, listIndent - (fixedMarkerString + delimiter).length));
 
-                editBuilder.replace(new Range(line, leadingSpace.length, line, leadingSpace.length + listIndent), fixedMarkerString);
+                editBuilder.replace(new Range(line!, leadingSpace.length, line!, leadingSpace.length + listIndent), fixedMarkerString);
             },
             { undoStopBefore: false, undoStopAfter: false }
         ).then(() => {
-            let nextLine = line + 1;
+            let nextLine = line! + 1;
             let indentString = " ".repeat(listIndent);
             while (editor.document.lineCount > nextLine) {
                 const nextLineText = editor.document.lineAt(nextLine).text;
                 if (/^\s*[0-9]+[.)] +/.test(nextLineText)) {
-                    return fixMarker(nextLine);
+                    return fixMarker(editor, nextLine);
                 } else if (/^\s*$/.test(nextLineText)) {
                     nextLine++;
                 } else if (listIndent <= 4 && !nextLineText.startsWith(indentString)) {
@@ -446,12 +434,12 @@ function deleteRange(editor: TextEditor, range: Range): Thenable<boolean> {
     );
 }
 
-function checkTaskList() {
+function checkTaskList(): Thenable<unknown> | void {
     // - Look into selections for lines that could be checked/unchecked.
     // - The first matching line dictates the new state for all further lines.
     //   - I.e. if the first line is unchecked, only other unchecked lines will
     //     be considered, and vice versa.
-    let editor = window.activeTextEditor;
+    const editor = window.activeTextEditor!;
     const uncheckedRegex = /^(\s*([-+*]|[0-9]+[.)]) +\[) \]/
     const checkedRegex = /^(\s*([-+*]|[0-9]+[.)]) +\[)x\]/
     let toBeToggled: Position[] = [] // all spots that have an "[x]" resp. "[ ]" which should be toggled
@@ -467,7 +455,7 @@ function checkTaskList() {
                 continue;
             }
 
-            let matches: RegExpExecArray;
+            let matches: RegExpExecArray | null;
             if (
                 (matches = uncheckedRegex.exec(line.text))
                 && newState !== false
@@ -496,31 +484,37 @@ function checkTaskList() {
 }
 
 function onMoveLineUp() {
+    const editor = window.activeTextEditor!;
     return commands.executeCommand('editor.action.moveLinesUpAction')
-        .then(() => fixMarker());
+        .then(() => fixMarker(editor));
 }
 
 function onMoveLineDown() {
+    const editor = window.activeTextEditor!;
     return commands.executeCommand('editor.action.moveLinesDownAction')
-        .then(() => fixMarker(findNextMarkerLineNumber(window.activeTextEditor.selection.start.line - 1)));
+        .then(() => fixMarker(editor, findNextMarkerLineNumber(editor, editor.selection.start.line - 1)));
 }
 
 function onCopyLineUp() {
+    const editor = window.activeTextEditor!;
     return commands.executeCommand('editor.action.copyLinesUpAction')
-        .then(() => fixMarker());
+        .then(() => fixMarker(editor));
 }
 
 function onCopyLineDown() {
+    const editor = window.activeTextEditor!;
     return commands.executeCommand('editor.action.copyLinesDownAction')
-        .then(() => fixMarker());
+        .then(() => fixMarker(editor));
 }
 
 function onIndentLines() {
-    return indent().then(() => fixMarker());
+    const editor = window.activeTextEditor!;
+    return indent(editor).then(() => fixMarker(editor));
 }
 
 function onOutdentLines() {
-    return outdent().then(() => fixMarker());
+    const editor = window.activeTextEditor!;
+    return outdent(editor).then(() => fixMarker(editor));
 }
 
 export function deactivate() { }
