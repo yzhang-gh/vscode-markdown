@@ -324,7 +324,7 @@ function tryDetermineIndentationSize(editor: TextEditor, line: number, currentIn
  * Defaults to the beginning of the current primary selection (`editor.selection.start.line`)
  * in order to find the first marker following either the cursor or the entire selected range.
  */
-function findNextMarkerLineNumber(editor: TextEditor, line = editor.selection.start.line): number | undefined {
+function findNextMarkerLineNumber(editor: TextEditor, line = editor.selection.start.line): number {
     while (line < editor.document.lineCount) {
         const lineText = editor.document.lineAt(line).text;
 
@@ -338,7 +338,7 @@ function findNextMarkerLineNumber(editor: TextEditor, line = editor.selection.st
         }
         line++;
     }
-    return undefined;
+    return -1;
 }
 
 /**
@@ -390,13 +390,9 @@ export function fixMarker(editor: TextEditor, line?: number): Thenable<unknown> 
     if (workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') == 'one') return;
 
     if (line === undefined) {
-        // Use either the first line containing an ordered list marker within the selection or the active line
         line = findNextMarkerLineNumber(editor);
-        if (line === undefined || line > editor.selection.end.line) {
-            line = editor.selection.active.line;
-        }
     }
-    if (line < 0 || editor.document.lineCount <= line) {
+    if (line < 0 || line >= editor.document.lineCount) {
         return;
     }
 
