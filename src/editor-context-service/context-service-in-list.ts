@@ -4,7 +4,7 @@ import { ExtensionContext, Position, TextDocument, window } from 'vscode';
 import { AbsContextService } from "./i-context-service";
 
 export class ContextServiceEditorInList extends AbsContextService {
-    public onActivate(context: ExtensionContext) {
+    public onActivate(_context: ExtensionContext) {
         // set initial state of context
         this.setState(false);
     }

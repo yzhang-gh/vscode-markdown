@@ -5,7 +5,7 @@ import { AbsContextService } from "./i-context-service";
 import { isInFencedCodeBlock } from "../util/contextCheck";
 
 export class ContextServiceEditorInFencedCodeBlock extends AbsContextService {
-    public onActivate(context: ExtensionContext) {
+    public onActivate(_context: ExtensionContext) {
         // set initial state of context
         this.setState(false);
     }

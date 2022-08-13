@@ -31,12 +31,16 @@ export class ContextServiceManager implements IDisposable {
     public dispose(): void {
         while (this.contextServices.length > 0) {
             const service = this.contextServices.pop();
-            service.dispose();
+            service!.dispose();
         }
     }
 
     private onDidChangeActiveTextEditor() {
         const editor = window.activeTextEditor;
+        if (editor === undefined) {
+            return;
+        }
+
         const cursorPos = editor.selection.start;
         const document = editor.document;
 
@@ -44,8 +48,13 @@ export class ContextServiceManager implements IDisposable {
             service.onDidChangeActiveTextEditor(document, cursorPos);
         }
     }
+
     private onDidChangeTextEditorSelection() {
         const editor = window.activeTextEditor;
+        if (editor === undefined) {
+            return;
+        }
+
         const cursorPos = editor.selection.start;
         const document = editor.document;
 
