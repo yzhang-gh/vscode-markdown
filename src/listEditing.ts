@@ -344,26 +344,37 @@ function findNextMarkerLineNumber(editor: TextEditor, line = editor.selection.st
 /**
  * Looks for the previous ordered list marker at the same indentation level
  * and returns the marker number that should follow it.
+ * 
+ * @param currentIndentation treat tabs as if they were replaced by spaces with a tab stop of 4 characters
  *
  * @returns the fixed marker number
  */
 function lookUpwardForMarker(editor: TextEditor, line: number, currentIndentation: number): number {
-    while (--line >= 0) {
-        const lineText = editor.document.lineAt(line).text;
+    let prevLine = line;
+    while (--prevLine >= 0) {
+        const prevLineText = editor.document.lineAt(prevLine).text.replace(/\t/g, '    ');
         let matches;
-        if ((matches = /^(\s*)(([0-9]+)[.)] +)/.exec(lineText)) !== null) {
-            let leadingSpace: string = matches[1];
-            let marker = matches[3];
-            if (leadingSpace.length === currentIndentation) {
-                return Number(marker) + 1;
+        if ((matches = /^(\s*)(([0-9]+)[.)] +)/.exec(prevLineText)) !== null) {
+            // The previous line has a list marker
+            let prevLeadingSpace: string = matches[1];
+            let prevMarker = matches[3];
+            if (currentIndentation < prevLeadingSpace.length) {
+                // yet to find a sibling item
+                continue;
             } else if (
-                (!leadingSpace.includes('\t') && leadingSpace.length + matches[2].length <= currentIndentation)
-                || leadingSpace.includes('\t') && leadingSpace.length + 1 <= currentIndentation
+                currentIndentation >= prevLeadingSpace.length
+                && currentIndentation < (prevLeadingSpace + prevMarker).length + 1
             ) {
+                // found a sibling item
+                return Number(prevMarker) + 1;
+            } else if (currentIndentation >= (prevLeadingSpace + prevMarker).length + 1) {
+                // found a parent item
                 return 1;
             }
-        } else if ((matches = /^(\s*)\S/.exec(lineText)) !== null) {
-            if (matches[1].length <= currentIndentation) {
+        } else if ((matches = /^(\s*)\S/.exec(prevLineText)) !== null) {
+            // The previous line doesn't have a list marker
+            if (matches[1].length < 3) {
+                // no enough indentation for a list item
                 break;
             }
         }
@@ -396,11 +407,13 @@ export function fixMarker(editor: TextEditor, line?: number): Thenable<unknown> 
         let marker = matches[2];
         let delimiter = matches[3];
         let trailingSpace = matches[4];
-        let fixedMarker = lookUpwardForMarker(editor, line, leadingSpace.length);
+        console.log(currentLineText);
+        let fixedMarker = lookUpwardForMarker(editor, line, leadingSpace.replace(/\t/g, '    ').length);
         let listIndent = marker.length + delimiter.length + trailingSpace.length;
         let fixedMarkerString = String(fixedMarker);
 
         return editor.edit(
+            // fix the marker (current line)
             editBuilder => {
                 if (marker === fixedMarkerString) {
                     return;
@@ -413,14 +426,15 @@ export function fixMarker(editor: TextEditor, line?: number): Thenable<unknown> 
             { undoStopBefore: false, undoStopAfter: false }
         ).then(() => {
             let nextLine = line! + 1;
-            let indentString = " ".repeat(listIndent);
             while (editor.document.lineCount > nextLine) {
                 const nextLineText = editor.document.lineAt(nextLine).text;
                 if (/^\s*[0-9]+[.)] +/.test(nextLineText)) {
                     return fixMarker(editor, nextLine);
-                } else if (/^\s*$/.test(nextLineText)) {
-                    nextLine++;
-                } else if (listIndent <= 4 && !nextLineText.startsWith(indentString)) {
+                } else if (
+                    editor.document.lineAt(nextLine - 1).isEmptyOrWhitespace  // This line is a block
+                    && !nextLineText.startsWith(" ".repeat(3))                // and doesn't have enough indentation
+                    && !nextLineText.startsWith("\t")                         // so terminates the current list.
+                ) {
                     return;
                 } else {
                     nextLine++;
