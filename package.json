@@ -3,7 +3,7 @@
     "displayName": "%ext.displayName%",
     "description": "%ext.description%",
     "icon": "images/Markdown-mark.png",
-    "version": "3.4.0",
+    "version": "3.5.0",
     "publisher": "yzhang",
     "engines": {
         "vscode": "^1.63.0"
@@ -398,6 +398,11 @@
                     "type": "boolean",
                     "default": false,
                     "markdownDescription": "%config.tableFormatter.normalizeIndentation.description%"
+                },
+                "markdown.extension.tableFormatter.delimiterRowNoPadding": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "%config.tableFormatter.delimiterRowNoPadding.description%"
                 },
                 "markdown.extension.theming.decoration.renderCodeSpan": {
                     "type": "boolean",

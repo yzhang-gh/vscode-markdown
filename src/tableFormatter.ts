@@ -48,6 +48,13 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(d1, d0);
 }
 
+enum ColumnAlignment {
+    None,
+    Left,
+    Center,
+    Right
+}
+
 class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider {
     provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken) {
         const tables = this.detectTables(document);
@@ -76,7 +83,7 @@ class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider
         //// GitHub issue #431
         const singleColumnHyphenLine = String.raw`(?:\| *:?-+:? *\|)`;
 
-        const hyphenLine =  String.raw`[ \t]*(?:${multiColumnHyphenLine}|${singleColumnHyphenLine})[ \t]*`;
+        const hyphenLine = String.raw`[ \t]*(?:${multiColumnHyphenLine}|${singleColumnHyphenLine})[ \t]*`;
 
         const tableRegex = new RegExp(contentLine + lineBreak + hyphenLine + '(?:' + lineBreak + contentLine + ')*', 'g');
 
@@ -114,22 +121,24 @@ class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider
         // The following operations require the Unicode Normalization Form C (NFC).
         const text = target.text.normalize();
 
-        let indentation = this.getTableIndentation(text, options);
+        const delimiterRowIndex = 1;
+        const delimiterRowNoPadding = configManager.get('tableFormatter.delimiterRowNoPadding');
+        const indentation = this.getTableIndentation(text, options);
 
-        let rowsNoIndentPattern = new RegExp(/^\s*(\S.*)$/gum);
+        const rowsNoIndentPattern = new RegExp(/^\s*(\S.*)$/gum);
         const rows: string[] = Array.from(text.matchAll(rowsNoIndentPattern), (match) => match[1].trim());
 
-        // Desired "visual" width of each column
+        // Desired "visual" width of each column (the length of the longest cell in each column), **without padding**
         const colWidth: number[] = [];
         // Alignment of each column
-        const colAlign: ("l" | "c" | "r")[] = [];
+        const colAlign: ColumnAlignment[] = [];
         // Regex to extract cell content.
         // GitHub #24
-        let fieldRegExp = new RegExp(/((\\\||[^\|])*)\|/gu);
+        const fieldRegExp = new RegExp(/((\\\||[^\|])*)\|/gu);
         // https://www.ling.upenn.edu/courses/Spring_2003/ling538/UnicodeRanges.html
-        let cjkRegex = /[\u3000-\u9fff\uac00-\ud7af\uff01-\uff60]/g;
+        const cjkRegex = /[\u3000-\u9fff\uac00-\ud7af\uff01-\uff60]/g;
 
-        let lines = rows.map((row, iRow) => {
+        const lines = rows.map((row, iRow) => {
             // Normalize
             if (row.startsWith('|')) {
                 row = row.slice(1);
@@ -138,14 +147,15 @@ class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider
                 row = row + '|';
             }
 
+            // Parse cells in the current row
             let values = [];
             let iCol = 0;
             for (const field of row.matchAll(fieldRegExp)) {
                 let cell = field[1].trim();
                 values.push(cell);
 
-                // The length of the dash-line doesn't matter
-                if (iRow === 1) {
+                // Ignore the length of delimiter-line before we normalize it
+                if (iRow === delimiterRowIndex) {
                     continue;
                 }
 
@@ -169,31 +179,41 @@ class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider
         });
 
         // Normalize the num of hyphen according to the desired column length
-        lines[1] = lines[1].map((cell, iCol) => {
+        lines[delimiterRowIndex] = lines[delimiterRowIndex].map((cell, iCol) => {
             if (/:-+:/.test(cell)) {
                 // :---:
-                colWidth[iCol] = Math.max(colWidth[iCol], 5);
-                colAlign[iCol] = 'c';
-                return ':' + '-'.repeat(colWidth[iCol] - 2) + ':';
+                colAlign[iCol] = ColumnAlignment.Center;
+                // Update the lower bound of visual `colWidth` (without padding) based on the column alignment specification
+                colWidth[iCol] = Math.max(colWidth[iCol], delimiterRowNoPadding ? 5 - 2 : 5);
+                // The length of all `-`, `:` chars in this delimiter cell
+                const specWidth = delimiterRowNoPadding ? colWidth[iCol] + 2 : colWidth[iCol];
+                return ':' + '-'.repeat(specWidth - 2) + ':';
             } else if (/:-+/.test(cell)) {
                 // :---
-                colWidth[iCol] = Math.max(colWidth[iCol], 4);
-                colAlign[iCol] = 'l';
-                return ':' + '-'.repeat(colWidth[iCol] - 1);
+                colAlign[iCol] = ColumnAlignment.Left;
+                colWidth[iCol] = Math.max(colWidth[iCol], delimiterRowNoPadding ? 4 - 2 : 4);
+                const specWidth = delimiterRowNoPadding ? colWidth[iCol] + 2 : colWidth[iCol];
+                return ':' + '-'.repeat(specWidth - 1);
             } else if (/-+:/.test(cell)) {
                 // ---:
-                colWidth[iCol] = Math.max(colWidth[iCol], 4);
-                colAlign[iCol] = 'r';
-                return '-'.repeat(colWidth[iCol] - 1) + ':';
+                colAlign[iCol] = ColumnAlignment.Right;
+                colWidth[iCol] = Math.max(colWidth[iCol], delimiterRowNoPadding ? 4 - 2 : 4);
+                const specWidth = delimiterRowNoPadding ? colWidth[iCol] + 2 : colWidth[iCol];
+                return '-'.repeat(specWidth - 1) + ':';
             } else {
                 // ---
-                colWidth[iCol] = Math.max(colWidth[iCol], 3);
-                colAlign[iCol] = 'l';
-                return '-'.repeat(colWidth[iCol]);
+                colAlign[iCol] = ColumnAlignment.None;
+                colWidth[iCol] = Math.max(colWidth[iCol], delimiterRowNoPadding ? 3 - 2 : 3);
+                const specWidth = delimiterRowNoPadding ? colWidth[iCol] + 2 : colWidth[iCol];
+                return '-'.repeat(specWidth);
             }
         });
 
-        return lines.map(row => {
+        return lines.map((row, iRow) => {
+            if (iRow === delimiterRowIndex && delimiterRowNoPadding) {
+                return indentation + '|' + row.join('|') + '|';
+            }
+
             let cells = row.map((cell, iCol) => {
                 const visualWidth = colWidth[iCol];
                 let jsLength = splitter.splitGraphemes(cell + ' '.repeat(visualWidth)).slice(0, visualWidth).join('').length;
@@ -209,10 +229,10 @@ class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider
         }).join(doc.eol === vscode.EndOfLine.LF ? '\n' : '\r\n');
     }
 
-    private alignText(text: string, align: string, length: number) {
-        if (align === 'c' && length > text.length) {
+    private alignText(text: string, align: ColumnAlignment, length: number) {
+        if (align === ColumnAlignment.Center && length > text.length) {
             return (' '.repeat(Math.floor((length - text.length) / 2)) + text + ' '.repeat(length)).slice(0, length);
-        } else if (align === 'r') {
+        } else if (align === ColumnAlignment.Right) {
             return (' '.repeat(length) + text).slice(-length);
         } else {
             return (text + ' '.repeat(length)).slice(0, length);
