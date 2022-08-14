@@ -395,7 +395,6 @@ export function fixMarker(editor: TextEditor, line?: number): Thenable<unknown> 
         let marker = matches[2];
         let delimiter = matches[3];
         let trailingSpace = matches[4];
-        console.log(currentLineText);
         let fixedMarker = lookUpwardForMarker(editor, line, leadingSpace.replace(/\t/g, '    ').length);
         let listIndent = marker.length + delimiter.length + trailingSpace.length;
         let fixedMarkerString = String(fixedMarker);
