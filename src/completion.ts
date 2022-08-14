@@ -15,12 +15,15 @@ export function activate(context: ExtensionContext) {
 
 class MdCompletionItemProvider implements CompletionItemProvider {
 
+    //
     // Suffixes explained:
     // \cmd         -> 0
     // \cmd{$1}     -> 1
     // \cmd{$1}{$2} -> 2
     //
     // Use linebreak to mimic the structure of the KaTeX [Support Table](https://katex.org/docs/supported.html)
+    // source https://github.com/KaTeX/KaTeX/blob/main/docs/supported.md
+    //
     accents1 = [
         'tilde', 'mathring',
         'widetilde', 'overgroup',
@@ -33,7 +36,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'ddot', 'underleftrightarrow', 'underbrace',
         'grave', 'overline', 'overlinesegment',
         'hat', 'underline', 'underlinesegment',
-        'widehat', 'widecheck'
+        'widehat', 'widecheck', 'underbar'
     ];
     delimiters0 = [
         'lparen', 'rparen', 'lceil', 'rceil', 'uparrow',
@@ -87,6 +90,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'bcancel', 'underbrace',
         'xcancel', 'not =',
         'sout', 'boxed',
+        'phase',
         'tag', 'tag*'
     ];
     verticalLayout0 = ['atop']
@@ -96,7 +100,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     spacing0 = [
         'thinspace', 'medspace', 'thickspace', 'enspace',
         'quad', 'qquad', 'negthinspace', 'negmedspace',
-        'nobreakspace', 'negthickspace'
+        'nobreakspace', 'negthickspace', 'space', 'mathstrut'
     ];
     spacing1 = [
         'kern', 'mkern', 'mskip', 'hskip',
@@ -149,53 +153,55 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     binomialCoefficients0 = ['choose'];
     binomialCoefficients2 = ['binom', 'dbinom', 'tbinom', 'brace', 'brack'];
     mathOperators0 = [
-        'arcsin', 'cotg', 'ln', 'det',
-        'arccos', 'coth', 'log', 'gcd',
-        'arctan', 'csc', 'sec', 'inf',
-        'arctg', 'ctg', 'sin', 'lim',
-        'arcctg', 'cth', 'sinh', 'liminf',
-        'arg', 'deg', 'sh', 'limsup',
-        'ch', 'dim', 'tan', 'max',
-        'cos', 'exp', 'tanh', 'min',
-        'cosec', 'hom', 'tg', 'Pr',
-        'cosh', 'ker', 'th', 'sup',
-        'cot', 'lg', 'argmax',
-        'argmin', 'limits'
+        'arcsin', 'cosec', 'deg', 'sec',
+        'arccos', 'cosh', 'dim', 'sin',
+        'arctan', 'cot', 'exp', 'sinh',
+        'arctg', 'cotg', 'hom', 'sh',
+        'arcctg', 'coth', 'ker', 'tan',
+        'arg', 'csc', 'lg', 'tanh',
+        'ch', 'ctg', 'ln', 'tg',
+        'cos', 'cth', 'log', 'th',
+        'argmax', 'injlim', 'min', 'varinjlim',
+        'argmin', 'lim', 'plim', 'varliminf',
+        'det', 'liminf', 'Pr', 'varlimsup',
+        'gcd', 'limsup', 'projlim', 'varprojlim',
+        'inf', 'max', 'sup'
     ];
-    mathOperators1 = ['operatorname'];
+    mathOperators1 = ['operatorname', 'operatorname*', 'operatornamewithlimits'];
     sqrt1 = ['sqrt'];
     relations0 = [
-        'eqcirc', 'lesseqgtr', 'sqsupset',
-        'eqcolon', 'lesseqqgtr', 'sqsupseteq',
-        'Eqcolon', 'lessgtr', 'Subset',
-        'eqqcolon', 'lesssim', 'subset',
-        'approx', 'Eqqcolon', 'll', 'subseteq', 'sube',
-        'approxeq', 'eqsim', 'lll', 'subseteqq',
-        'asymp', 'eqslantgtr', 'llless', 'succ',
-        'backepsilon', 'eqslantless', 'lt', 'succapprox',
-        'backsim', 'equiv', 'mid', 'succcurlyeq',
-        'backsimeq', 'fallingdotseq', 'models', 'succeq',
-        'between', 'frown', 'multimap', 'succsim',
-        'bowtie', 'ge', 'owns', 'Supset',
-        'bumpeq', 'geq', 'parallel', 'supset',
-        'Bumpeq', 'geqq', 'perp', 'supseteq',
-        'circeq', 'geqslant', 'pitchfork', 'supseteqq',
-        'colonapprox', 'gg', 'prec', 'thickapprox',
-        'Colonapprox', 'ggg', 'precapprox', 'thicksim',
-        'coloneq', 'gggtr', 'preccurlyeq', 'trianglelefteq',
-        'Coloneq', 'gt', 'preceq', 'triangleq',
-        'coloneqq', 'gtrapprox', 'precsim', 'trianglerighteq',
-        'Coloneqq', 'gtreqless', 'propto', 'varpropto',
-        'colonsim', 'gtreqqless', 'risingdotseq', 'vartriangle',
-        'Colonsim', 'gtrless', 'shortmid', 'vartriangleleft',
-        'cong', 'gtrsim', 'shortparallel', 'vartriangleright',
-        'curlyeqprec', 'in', 'sim', 'vcentcolon',
-        'curlyeqsucc', 'Join', 'simeq', 'vdash',
-        'dashv', 'le', 'smallfrown', 'vDash',
-        'dblcolon', 'leq', 'smallsmile', 'Vdash',
-        'doteq', 'leqq', 'smile', 'Vvdash',
-        'Doteq', 'leqslant', 'sqsubset',
-        'doteqdot', 'lessapprox', 'sqsubseteq'
+        'doteqdot', 'lessapprox', 'smile',
+        'eqcirc', 'lesseqgtr', 'sqsubset',
+        'eqcolon', 'minuscolon', 'lesseqqgtr', 'sqsubseteq',
+        'Eqcolon', 'minuscoloncolon', 'lessgtr', 'sqsupset',
+        'approx', 'eqqcolon', 'equalscolon', 'lesssim', 'sqsupseteq',
+        'approxcolon', 'Eqqcolon', 'equalscoloncolon', 'll', 'Subset',
+        'approxcoloncolon', 'eqsim', 'lll', 'subset', 'sub',
+        'approxeq', 'eqslantgtr', 'llless', 'subseteq', 'sube',
+        'asymp', 'eqslantless', 'lt', 'subseteqq',
+        'backepsilon', 'equiv', 'mid', 'succ',
+        'backsim', 'fallingdotseq', 'models', 'succapprox',
+        'backsimeq', 'frown', 'multimap', 'succcurlyeq',
+        'between', 'ge', 'origof', 'succeq',
+        'bowtie', 'geq', 'owns', 'succsim',
+        'bumpeq', 'geqq', 'parallel', 'Supset',
+        'Bumpeq', 'geqslant', 'perp', 'supset',
+        'circeq', 'gg', 'pitchfork', 'supseteq', 'supe',
+        'colonapprox', 'ggg', 'prec', 'supseteqq',
+        'Colonapprox', 'coloncolonapprox', 'gggtr', 'precapprox', 'thickapprox',
+        'coloneq', 'colonminus', 'gt', 'preccurlyeq', 'thicksim',
+        'Coloneq', 'coloncolonminus', 'gtrapprox', 'preceq', 'trianglelefteq',
+        'coloneqq', 'colonequals', 'gtreqless', 'precsim', 'triangleq',
+        'Coloneqq', 'coloncolonequals', 'gtreqqless', 'propto', 'trianglerighteq',
+        'colonsim', 'gtrless', 'risingdotseq', 'varpropto',
+        'Colonsim', 'coloncolonsim', 'gtrsim', 'shortmid', 'vartriangle',
+        'cong', 'imageof', 'shortparallel', 'vartriangleleft',
+        'curlyeqprec', 'in', 'isin', 'sim', 'vartriangleright',
+        'curlyeqsucc', 'Join', 'simcolon', 'vcentcolon', 'ratio',
+        'dashv', 'le', 'simcoloncolon', 'vdash',
+        'dblcolon', 'coloncolon', 'leq', 'simeq', 'vDash',
+        'doteq', 'leqq', 'smallfrown', 'Vdash',
+        'Doteq', 'leqslant', 'smallsmile', 'Vvdash',
     ];
     negatedRelations0 = [
         'gnapprox', 'ngeqslant', 'nsubseteq', 'precneqq',
@@ -272,7 +278,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'textnormal', 'boldsymbol', 'mathbb',
         'text', 'bm', 'frak',
         'mathsf', 'mathtt', 'mathfrak',
-        'textsf', 'texttt', 'mathcal', 'mathscr'
+        'textsf', 'texttt', 'mathcal', 'mathscr',
+        'pmb'
     ];
     size0 = [
         'Huge', 'huge', 'LARGE', 'Large', 'large',
