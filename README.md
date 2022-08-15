@@ -210,6 +210,7 @@ Tip: also support the option `completion.root`
 | `markdown.extension.italic.indicator`                      | `*`        | Use `*` or `_` to wrap italic text                                                               |
 | `markdown.extension.katex.macros`                          | `{}`       | KaTeX macros e.g. `{ "\\name": "expansion", ... }`                                               |
 | `markdown.extension.list.indentationSize`                  | `adaptive` | Use different indentation size for ordered and unordered list                                    |
+| `markdown.extension.list.toggle.candidate-markers`         | `[ "-", "*", "+", "1.", "1)" ]`  | Use a array for toggle ordered list marker e.g. `["*", "1."]`              |
 | `markdown.extension.orderedList.autoRenumber`              | `true`     | Auto fix list markers as you edits                                                               |
 | `markdown.extension.orderedList.marker`                    | `ordered`  | Or `one`: always use `1.` as ordered list marker                                                 |
 | `markdown.extension.preview.autoShowPreviewToSide`         | `false`    | Automatically show preview when opening a Markdown file.                                         |

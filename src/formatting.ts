@@ -221,22 +221,94 @@ function toggleListSingleLine(doc: TextDocument, line: number, wsEdit: Workspace
     const lineText = doc.lineAt(line).text;
     const indentation = lineText.trim().length === 0 ? lineText.length : lineText.indexOf(lineText.trim());
     const lineTextContent = lineText.substr(indentation);
+    const currentMarker = getCurrentListStart(lineTextContent);
+    const nextMarker = getNextListStart(currentMarker);
 
-    if (lineTextContent.startsWith("- ")) {
-        wsEdit.replace(doc.uri, new Range(line, indentation, line, indentation + 2), "* ");
-    } else if (lineTextContent.startsWith("* ")) {
-        wsEdit.replace(doc.uri, new Range(line, indentation, line, indentation + 2), "+ ");
-    } else if (lineTextContent.startsWith("+ ")) {
-        wsEdit.replace(doc.uri, new Range(line, indentation, line, indentation + 2), "1. ");
-    } else if (/^\d+\. /.test(lineTextContent)) {
+    // 1. delete current list marker
+    wsEdit.delete(doc.uri, new Range(line, indentation, line, getMarkerEndCharacter(currentMarker, lineText)));
+
+    // 2. insert next list marker
+    if (nextMarker !== empty)
+        wsEdit.insert(doc.uri, new Position(line, indentation), nextMarker);
+}
+
+const empty = "";
+const dash = "- ";
+const star = "* ";
+const plus = "+ ";
+const num = "1. ";
+const numClosingParetheses = "1) ";
+const simpleListStart = [dash, star, plus]
+const defaultMarkerArray = [dash, star, plus, num, numClosingParetheses];
+
+const numRegex = /^\d+\. /;
+const numClosingParethesesRegex = /^\d+\) /;
+    
+function getMarkerEndCharacter(currentMarker: string, lineText: string): number {
+    const indentation = lineText.trim().length === 0 ? lineText.length : lineText.indexOf(lineText.trim());
+    const lineTextContent = lineText.substr(indentation);
+    
+    let endCharacter = 0;
+    if (simpleListStart.includes(currentMarker)) {
+        endCharacter = indentation + 2;
+    } else if (numRegex.test(lineTextContent)) {
+        // number
         const lenOfDigits = /^(\d+)\./.exec(lineText.trim())![1].length;
-        wsEdit.replace(doc.uri, new Range(line, indentation + lenOfDigits, line, indentation + lenOfDigits + 1), ")");
-    } else if (/^\d+\) /.test(lineTextContent)) {
+        endCharacter = indentation + lenOfDigits + 2;
+    } else if (numClosingParethesesRegex.test(lineTextContent)) {
+        // number with )
         const lenOfDigits = /^(\d+)\)/.exec(lineText.trim())![1].length;
-        wsEdit.delete(doc.uri, new Range(line, indentation, line, indentation + lenOfDigits + 2));
-    } else {
-        wsEdit.insert(doc.uri, new Position(line, indentation), "- ");
+        endCharacter = indentation + lenOfDigits + 2;
     }
+    return endCharacter;
+}
+
+/**
+ * get list start marker
+ */
+function getCurrentListStart(lineTextContent: string):string {
+    if (lineTextContent.startsWith(dash)) {
+        return dash;
+    } else if (lineTextContent.startsWith(star)) {
+        return star;
+    } else if (lineTextContent.startsWith(plus)) {
+        return plus;
+    } else if (numRegex.test(lineTextContent)) {
+        return num;
+    } else if (numClosingParethesesRegex.test(lineTextContent)) {
+        return numClosingParetheses;
+    } else {
+        return empty;
+    }
+}
+
+/**
+ * get next candidate marker from configArray
+ */
+function getNextListStart(current: string):string {
+    const configArray = getCandidateMarkers();
+    let next = configArray[0];
+    const index = configArray.indexOf(current);
+    if (index >= 0 && index < configArray.length - 1)
+        next = configArray[index + 1];
+    return next;
+}
+
+/**
+ * get candidate markers array from configuration 
+ */
+function getCandidateMarkers(): string[] {
+    // read configArray from configuration and append space
+    let configArray = workspace.getConfiguration('markdown.extension.list.toggle').get<string[]>('candidate-markers');
+    if (!(configArray instanceof Array))
+        return defaultMarkerArray;
+    
+    // append a space after trim, markers must end with a space and remove unknown markers
+    configArray = configArray.map((e) => e + " ").filter((e) => defaultMarkerArray.includes(e));
+    // push empty in the configArray for init status without list marker
+    configArray.push(empty);
+
+    return configArray;
 }
 
 async function paste() {
