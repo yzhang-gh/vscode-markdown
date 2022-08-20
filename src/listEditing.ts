@@ -65,16 +65,16 @@ function onEnterKey(modifiers?: IModifier) {
     if (/^> /.test(textBeforeCursor)) {
         // Block quotes
 
-        // Case 1: ending a blockquote if seeing 2 consecutive empty `>` lines
-        if (
-            // The current line is an empty line
-            line.text.replace(/[ \t]+$/, '') === '>'
-        ) {
+        // Case 1: ending a blockquote if:
+        const isEmptyArrowLine = line.text.replace(/[ \t]+$/, '') === '>';
+        if (isEmptyArrowLine) {
             if (cursorPos.line === 0) {
+                // it is an empty '>' line and also the first line of the document
                 return editor.edit(editorBuilder => {
                     editorBuilder.replace(new Range(new Position(0, 0), new Position(cursorPos.line, cursorPos.character)), '');
                 }).then(() => { editor.revealRange(editor.selection) });
             } else {
+                // there have been 2 consecutive empty `>` lines
                 const prevLineText = editor.document.lineAt(cursorPos.line - 1).text;
                 if (prevLineText.replace(/[ \t]+$/, '') === '>') {
                     return editor.edit(editorBuilder => {
@@ -86,6 +86,11 @@ function onEnterKey(modifiers?: IModifier) {
 
         // Case 2: `>` continuation
         return editor.edit(editBuilder => {
+            if (isEmptyArrowLine) {
+                const startPos = new Position(cursorPos.line, line.text.trim().length);
+                editBuilder.delete(new Range(startPos, line.range.end));
+                lineBreakPos = startPos;
+            }
             editBuilder.insert(lineBreakPos, `\n> `);
         }).then(() => {
             // Fix cursor position
