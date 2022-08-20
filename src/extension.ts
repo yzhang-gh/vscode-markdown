@@ -13,7 +13,6 @@ import { config as configNls, localize } from './nls';
 import resolveResource from "./nls/resolveResource";
 import * as preview from './preview';
 import * as print from './print';
-import * as decorations from './syntaxDecorations';
 import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
 
@@ -38,8 +37,6 @@ function activateMdExt(context: ExtensionContext) {
     formatting.activate(context);
     // Toc
     toc.activate(context);
-    // Syntax decorations
-    decorations.activate(context);
     // Images paths and math commands completions
     completion.activate(context);
     // Print to PDF
