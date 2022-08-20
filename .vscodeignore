@@ -26,3 +26,7 @@ webpack.config.js
 
 # The welcome flag file
 welcome/WELCOMED
+
+# VS Code maps local image paths to GitHub paths
+images
+!images/Markdown-mark.png
