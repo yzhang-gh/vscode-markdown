@@ -36,7 +36,7 @@ function onEnterKey(modifiers?: IModifier) {
         lineBreakPos = line.range.end;
     }
 
-    if (modifiers == 'shift' || isInFencedCodeBlock(editor.document, cursorPos.line) || mathEnvCheck(editor.document, cursorPos)) {
+    if (modifiers == 'shift') {
         return asNormal(editor, 'enter', modifiers);
     }
 
@@ -169,10 +169,6 @@ function onTabKey(modifiers?: IModifier) {
     let cursorPos = editor.selection.start;
     let lineText = editor.document.lineAt(cursorPos.line).text;
 
-    if (isInFencedCodeBlock(editor.document, cursorPos.line) || mathEnvCheck(editor.document, cursorPos)) {
-        return asNormal(editor, 'tab', modifiers);
-    }
-
     let match = /^\s*([-+*]|[0-9]+[.)]) +(\[[ x]\] +)?/.exec(lineText);
     if (
         match
@@ -197,10 +193,6 @@ function onBackspaceKey() {
     let cursor = editor.selection.active;
     let document = editor.document;
     let textBeforeCursor = document.lineAt(cursor.line).text.substr(0, cursor.character);
-
-    if (isInFencedCodeBlock(document, cursor.line) || mathEnvCheck(editor.document, cursor)) {
-        return asNormal(editor, 'backspace');
-    }
 
     if (!editor.selection.isEmpty) {
         return asNormal(editor, 'backspace').then(() => fixMarker(editor));

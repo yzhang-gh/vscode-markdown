@@ -176,33 +176,33 @@
             {
                 "command": "markdown.extension.onEnterKey",
                 "key": "enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode' && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onCtrlEnterKey",
                 "key": "ctrl+enter",
                 "mac": "cmd+enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onShiftEnterKey",
                 "key": "shift+enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onTabKey",
                 "key": "tab",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !inlineSuggestionVisible && !editorHasMultipleSelections && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !inlineSuggestionVisible && !editorHasMultipleSelections && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions && markdown.extension.editor.cursor.inList && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onShiftTabKey",
                 "key": "shift+tab",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions && markdown.extension.editor.cursor.inList && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onBackspaceKey",
                 "key": "backspace",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode'"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode' && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onMoveLineUp",
