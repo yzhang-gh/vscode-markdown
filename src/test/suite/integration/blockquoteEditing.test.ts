@@ -33,7 +33,7 @@ suite("Block quote editing.", () => {
             new Selection(1, 2, 1, 2),
             [
                 '> item1',
-                '> ',
+                '>',
                 '> '
             ],
             new Selection(2, 2, 2, 2));
