@@ -53,7 +53,7 @@ export async function testCommand(
     });
     editor.selection = initSelection;
 
-    await new Promise(res => setTimeout(res, 50));
+    await sleep(50);
 
     // Run the command.
     await vscode.commands.executeCommand(command);

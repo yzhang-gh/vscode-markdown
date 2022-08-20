@@ -5,6 +5,8 @@ import { AbsContextService } from "./i-context-service";
 import { isInFencedCodeBlock } from "../util/contextCheck";
 
 export class ContextServiceEditorInFencedCodeBlock extends AbsContextService {
+    public contextName: string = "markdown.extension.editor.cursor.inFencedCodeBlock";
+
     public onActivate(_context: ExtensionContext) {
         // set initial state of context
         this.setState(false);

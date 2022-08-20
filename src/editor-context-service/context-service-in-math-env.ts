@@ -5,6 +5,8 @@ import { AbsContextService } from "./i-context-service";
 import { mathEnvCheck } from "../util/contextCheck";
 
 export class ContextServiceEditorInMathEn extends AbsContextService {
+    public contextName: string = "markdown.extension.editor.cursor.inMathEnv";
+
     public onActivate(_context: ExtensionContext) {
         // set initial state of context
         this.setState(false);

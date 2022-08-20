@@ -4,6 +4,8 @@ import { ExtensionContext, Position, TextDocument, window } from 'vscode';
 import { AbsContextService } from "./i-context-service";
 
 export class ContextServiceEditorInList extends AbsContextService {
+    public contextName: string = "markdown.extension.editor.cursor.inList";
+
     public onActivate(_context: ExtensionContext) {
         // set initial state of context
         this.setState(false);

@@ -11,37 +11,6 @@ suite("No list editing.", () => {
         await resetConfiguration();
     });
 
-    test("Enter key. Disable in fenced code block", () => {
-        return testCommand('markdown.extension.onEnterKey',
-            [
-                '```',
-                '- item1'
-            ],
-            new Selection(1, 7, 1, 7),
-            [
-                '```',
-                '- item1',
-                ''
-            ],
-            new Selection(2, 0, 2, 0));
-    });
-
-    test("Enter key. Respect indentation rules", () => {
-        return testCommand('markdown.extension.onEnterKey',
-            [
-                '```',
-                '{}'
-            ],
-            new Selection(1, 1, 1, 1),
-            [
-                '```',
-                '{',
-                '    ',
-                '}'
-            ],
-            new Selection(2, 4, 2, 4));
-    });
-
     test("Backspace key: '-  |'", () => {
         return testCommand('markdown.extension.onBackspaceKey',
             [

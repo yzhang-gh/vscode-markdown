@@ -12,9 +12,9 @@ export class ContextServiceManager implements IDisposable {
 
     public constructor() {
         // push context services
-        this.contextServices.push(new ContextServiceEditorInList("markdown.extension.editor.cursor.inList"));
-        this.contextServices.push(new ContextServiceEditorInFencedCodeBlock("markdown.extension.editor.cursor.inFencedCodeBlock"));
-        this.contextServices.push(new ContextServiceEditorInMathEn("markdown.extension.editor.cursor.inMathEnv"));
+        this.contextServices.push(new ContextServiceEditorInList());
+        this.contextServices.push(new ContextServiceEditorInFencedCodeBlock());
+        this.contextServices.push(new ContextServiceEditorInMathEn());
     }
 
     public activate(context: ExtensionContext) {
@@ -26,6 +26,8 @@ export class ContextServiceManager implements IDisposable {
             window.onDidChangeActiveTextEditor(() => this.onDidChangeActiveTextEditor()),
             window.onDidChangeTextEditorSelection(() => this.onDidChangeTextEditorSelection())
         );
+        // initialize context state
+        this.onDidChangeActiveTextEditor();
     }
 
     public dispose(): void {

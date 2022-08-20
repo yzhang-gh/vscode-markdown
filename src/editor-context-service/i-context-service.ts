@@ -19,11 +19,7 @@ interface IContextService extends IDisposable {
 }
 
 export abstract class AbsContextService implements IContextService {
-    constructor(contextName: string) {
-        this.contextName = contextName;
-    }
-
-    protected readonly contextName: string;
+    public abstract readonly contextName: string;
 
     /**
      * activate context service
