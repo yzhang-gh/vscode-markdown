@@ -228,34 +228,55 @@ function toggleListSingleLine(doc: TextDocument, line: number, wsEdit: Workspace
     wsEdit.delete(doc.uri, new Range(line, indentation, line, getMarkerEndCharacter(currentMarker, lineText)));
 
     // 2. insert next list marker
-    if (nextMarker !== empty)
+    if (nextMarker !== ListMarker.EMPTY)
         wsEdit.insert(doc.uri, new Position(line, indentation), nextMarker);
 }
 
-const empty = "";
-const dash = "- ";
-const star = "* ";
-const plus = "+ ";
-const num = "1. ";
-const numClosingParetheses = "1) ";
-const simpleListStart = [dash, star, plus]
-const defaultMarkerArray = [dash, star, plus, num, numClosingParetheses];
+/**
+ * List candidate markers enum
+ */
+enum ListMarker {
+    EMPTY = "",
+    DASH = "- ",
+    STAR = "* ",
+    PLUS = "+ ",
+    NUM = "1. ",
+    NUM_CLOSING_PARETHESES = "1) "
+}
 
-const numRegex = /^\d+\. /;
-const numClosingParethesesRegex = /^\d+\) /;
+function getListMarker(listMarker: string): ListMarker {
+    if ("- " === listMarker) {
+        return ListMarker.DASH;
+    } else if  ("* " === listMarker) {
+        return ListMarker.STAR;
+    }  else if  ("+ " === listMarker) {
+        return ListMarker.PLUS;
+    }  else if  ("1. " === listMarker) {
+        return ListMarker.NUM;
+    } else if ("1) " === listMarker) {
+        return ListMarker.NUM_CLOSING_PARETHESES;
+    } else {
+        return ListMarker.EMPTY;
+    }
+}
+
+const listMarkerSimpleListStart = [ListMarker.DASH, ListMarker.STAR, ListMarker.PLUS]
+const listMarkerDefaultMarkerArray = [ListMarker.DASH, ListMarker.STAR, ListMarker.PLUS, ListMarker.NUM, ListMarker.NUM_CLOSING_PARETHESES]
+const listMarkerNumRegex = /^\d+\. /;
+const listMarkerNumClosingParethesesRegex = /^\d+\) /;
     
-function getMarkerEndCharacter(currentMarker: string, lineText: string): number {
+function getMarkerEndCharacter(currentMarker: ListMarker, lineText: string): number {
     const indentation = lineText.trim().length === 0 ? lineText.length : lineText.indexOf(lineText.trim());
     const lineTextContent = lineText.substr(indentation);
     
     let endCharacter = 0;
-    if (simpleListStart.includes(currentMarker)) {
+    if (listMarkerSimpleListStart.includes(currentMarker)) {
         endCharacter = indentation + 2;
-    } else if (numRegex.test(lineTextContent)) {
+    } else if (listMarkerNumRegex.test(lineTextContent)) {
         // number
         const lenOfDigits = /^(\d+)\./.exec(lineText.trim())![1].length;
         endCharacter = indentation + lenOfDigits + 2;
-    } else if (numClosingParethesesRegex.test(lineTextContent)) {
+    } else if (listMarkerNumClosingParethesesRegex.test(lineTextContent)) {
         // number with )
         const lenOfDigits = /^(\d+)\)/.exec(lineText.trim())![1].length;
         endCharacter = indentation + lenOfDigits + 2;
@@ -266,26 +287,26 @@ function getMarkerEndCharacter(currentMarker: string, lineText: string): number 
 /**
  * get list start marker
  */
-function getCurrentListStart(lineTextContent: string):string {
-    if (lineTextContent.startsWith(dash)) {
-        return dash;
-    } else if (lineTextContent.startsWith(star)) {
-        return star;
-    } else if (lineTextContent.startsWith(plus)) {
-        return plus;
-    } else if (numRegex.test(lineTextContent)) {
-        return num;
-    } else if (numClosingParethesesRegex.test(lineTextContent)) {
-        return numClosingParetheses;
+function getCurrentListStart(lineTextContent: string): ListMarker {
+    if (lineTextContent.startsWith(ListMarker.DASH)) {
+        return ListMarker.DASH;
+    } else if (lineTextContent.startsWith(ListMarker.STAR)) {
+        return ListMarker.STAR;
+    } else if (lineTextContent.startsWith(ListMarker.PLUS)) {
+        return ListMarker.PLUS;
+    } else if (listMarkerNumRegex.test(lineTextContent)) {
+        return ListMarker.NUM;
+    } else if (listMarkerNumClosingParethesesRegex.test(lineTextContent)) {
+        return ListMarker.NUM_CLOSING_PARETHESES;
     } else {
-        return empty;
+        return ListMarker.EMPTY;
     }
 }
 
 /**
  * get next candidate marker from configArray
  */
-function getNextListStart(current: string):string {
+function getNextListStart(current: ListMarker): ListMarker {
     const configArray = getCandidateMarkers();
     let next = configArray[0];
     const index = configArray.indexOf(current);
@@ -297,18 +318,18 @@ function getNextListStart(current: string):string {
 /**
  * get candidate markers array from configuration 
  */
-function getCandidateMarkers(): string[] {
+function getCandidateMarkers(): ListMarker[] {
     // read configArray from configuration and append space
     let configArray = workspace.getConfiguration('markdown.extension.list.toggle').get<string[]>('candidate-markers');
     if (!(configArray instanceof Array))
-        return defaultMarkerArray;
+        return listMarkerDefaultMarkerArray;
     
     // append a space after trim, markers must end with a space and remove unknown markers
-    configArray = configArray.map((e) => e + " ").filter((e) => defaultMarkerArray.includes(e));
+    let listMarkerArray = configArray.map((e) => getListMarker(e + " ")).filter((e) => listMarkerDefaultMarkerArray.includes(e));
     // push empty in the configArray for init status without list marker
-    configArray.push(empty);
+    listMarkerArray.push(ListMarker.EMPTY);
 
-    return configArray;
+    return listMarkerArray;
 }
 
 async function paste() {
