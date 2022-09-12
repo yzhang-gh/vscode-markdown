@@ -308,6 +308,23 @@
                     "markdownDescription": "%config.list.indentationSize.description%",
                     "scope": "resource"
                 },
+                "markdown.extension.list.toggle.candidate-markers": {
+                    "type": "array",
+                    "default": [
+                        "-",
+                        "*",
+                        "+",
+                        "1.",
+                        "1)"
+                    ],
+                    "items" : {
+                        "enum": ["-", "*", "+", "1.", "1)"]
+                    },
+                    "minItems": 1,
+                    "maxItems": 5,
+                    "uniqueItems": true,
+                    "description": "%config.list.toggle.candidate-markers.description%"
+                },
                 "markdown.extension.math.enabled": {
                     "type": "boolean",
                     "default": true,

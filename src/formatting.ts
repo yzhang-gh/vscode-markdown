@@ -221,22 +221,115 @@ function toggleListSingleLine(doc: TextDocument, line: number, wsEdit: Workspace
     const lineText = doc.lineAt(line).text;
     const indentation = lineText.trim().length === 0 ? lineText.length : lineText.indexOf(lineText.trim());
     const lineTextContent = lineText.substr(indentation);
+    const currentMarker = getCurrentListStart(lineTextContent);
+    const nextMarker = getNextListStart(currentMarker);
 
-    if (lineTextContent.startsWith("- ")) {
-        wsEdit.replace(doc.uri, new Range(line, indentation, line, indentation + 2), "* ");
-    } else if (lineTextContent.startsWith("* ")) {
-        wsEdit.replace(doc.uri, new Range(line, indentation, line, indentation + 2), "+ ");
-    } else if (lineTextContent.startsWith("+ ")) {
-        wsEdit.replace(doc.uri, new Range(line, indentation, line, indentation + 2), "1. ");
-    } else if (/^\d+\. /.test(lineTextContent)) {
-        const lenOfDigits = /^(\d+)\./.exec(lineText.trim())![1].length;
-        wsEdit.replace(doc.uri, new Range(line, indentation + lenOfDigits, line, indentation + lenOfDigits + 1), ")");
-    } else if (/^\d+\) /.test(lineTextContent)) {
-        const lenOfDigits = /^(\d+)\)/.exec(lineText.trim())![1].length;
-        wsEdit.delete(doc.uri, new Range(line, indentation, line, indentation + lenOfDigits + 2));
+    // 1. delete current list marker
+    wsEdit.delete(doc.uri, new Range(line, indentation, line, getMarkerEndCharacter(currentMarker, lineText)));
+
+    // 2. insert next list marker
+    if (nextMarker !== ListMarker.EMPTY)
+        wsEdit.insert(doc.uri, new Position(line, indentation), nextMarker);
+}
+
+/**
+ * List candidate markers enum
+ */
+enum ListMarker {
+    EMPTY = "",
+    DASH = "- ",
+    STAR = "* ",
+    PLUS = "+ ",
+    NUM = "1. ",
+    NUM_CLOSING_PARETHESES = "1) "
+}
+
+function getListMarker(listMarker: string): ListMarker {
+    if ("- " === listMarker) {
+        return ListMarker.DASH;
+    } else if  ("* " === listMarker) {
+        return ListMarker.STAR;
+    }  else if  ("+ " === listMarker) {
+        return ListMarker.PLUS;
+    }  else if  ("1. " === listMarker) {
+        return ListMarker.NUM;
+    } else if ("1) " === listMarker) {
+        return ListMarker.NUM_CLOSING_PARETHESES;
     } else {
-        wsEdit.insert(doc.uri, new Position(line, indentation), "- ");
+        return ListMarker.EMPTY;
     }
+}
+
+const listMarkerSimpleListStart = [ListMarker.DASH, ListMarker.STAR, ListMarker.PLUS]
+const listMarkerDefaultMarkerArray = [ListMarker.DASH, ListMarker.STAR, ListMarker.PLUS, ListMarker.NUM, ListMarker.NUM_CLOSING_PARETHESES]
+const listMarkerNumRegex = /^\d+\. /;
+const listMarkerNumClosingParethesesRegex = /^\d+\) /;
+    
+function getMarkerEndCharacter(currentMarker: ListMarker, lineText: string): number {
+    const indentation = lineText.trim().length === 0 ? lineText.length : lineText.indexOf(lineText.trim());
+    const lineTextContent = lineText.substr(indentation);
+    
+    let endCharacter = 0;
+    if (listMarkerSimpleListStart.includes(currentMarker)) {
+        endCharacter = indentation + 2;
+    } else if (listMarkerNumRegex.test(lineTextContent)) {
+        // number
+        const lenOfDigits = /^(\d+)\./.exec(lineText.trim())![1].length;
+        endCharacter = indentation + lenOfDigits + 2;
+    } else if (listMarkerNumClosingParethesesRegex.test(lineTextContent)) {
+        // number with )
+        const lenOfDigits = /^(\d+)\)/.exec(lineText.trim())![1].length;
+        endCharacter = indentation + lenOfDigits + 2;
+    }
+    return endCharacter;
+}
+
+/**
+ * get list start marker
+ */
+function getCurrentListStart(lineTextContent: string): ListMarker {
+    if (lineTextContent.startsWith(ListMarker.DASH)) {
+        return ListMarker.DASH;
+    } else if (lineTextContent.startsWith(ListMarker.STAR)) {
+        return ListMarker.STAR;
+    } else if (lineTextContent.startsWith(ListMarker.PLUS)) {
+        return ListMarker.PLUS;
+    } else if (listMarkerNumRegex.test(lineTextContent)) {
+        return ListMarker.NUM;
+    } else if (listMarkerNumClosingParethesesRegex.test(lineTextContent)) {
+        return ListMarker.NUM_CLOSING_PARETHESES;
+    } else {
+        return ListMarker.EMPTY;
+    }
+}
+
+/**
+ * get next candidate marker from configArray
+ */
+function getNextListStart(current: ListMarker): ListMarker {
+    const configArray = getCandidateMarkers();
+    let next = configArray[0];
+    const index = configArray.indexOf(current);
+    if (index >= 0 && index < configArray.length - 1)
+        next = configArray[index + 1];
+    return next;
+}
+
+/**
+ * get candidate markers array from configuration 
+ */
+function getCandidateMarkers(): ListMarker[] {
+    // read configArray from configuration and append space
+    let configArray = workspace.getConfiguration('markdown.extension.list.toggle').get<string[]>('candidate-markers');
+    if (!(configArray instanceof Array))
+        return listMarkerDefaultMarkerArray;
+    
+    // append a space after trim, markers must end with a space and remove unknown markers
+    let listMarkerArray = configArray.map((e) => getListMarker(e + " ")).filter((e) => listMarkerDefaultMarkerArray.includes(e));
+    // push empty in the configArray for init status without list marker
+    listMarkerArray.push(ListMarker.EMPTY);
+
+    return listMarkerArray;
 }
 
 async function paste() {
