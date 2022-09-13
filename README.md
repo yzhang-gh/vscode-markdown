@@ -64,7 +64,7 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
   <details>
   <summary>Click to expand</summary>
 
-  1. Add `<!-- omit from toc -->` at the end of a heading to ignore it in TOC\
+  1. Add `<!-- omit in toc -->` at the end of a heading to ignore it in TOC\
     (It can also be placed above a heading)
 
   2. Use `toc.levels` setting.
