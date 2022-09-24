@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import sizeOf from 'image-size';
 import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, CompletionItemProvider, CompletionList, ExtensionContext, languages, MarkdownString, Position, ProviderResult, Range, SnippetString, TextDocument, workspace } from 'vscode';
+import { configManager } from "./configuration/manager";
 import { getAllTocEntry, IHeading } from './toc';
 import { mathEnvCheck } from "./util/contextCheck";
 import { Document_Selector_Markdown } from './util/generic';
@@ -14,12 +15,15 @@ export function activate(context: ExtensionContext) {
 
 class MdCompletionItemProvider implements CompletionItemProvider {
 
+    //
     // Suffixes explained:
     // \cmd         -> 0
     // \cmd{$1}     -> 1
     // \cmd{$1}{$2} -> 2
     //
     // Use linebreak to mimic the structure of the KaTeX [Support Table](https://katex.org/docs/supported.html)
+    // source https://github.com/KaTeX/KaTeX/blob/main/docs/supported.md
+    //
     accents1 = [
         'tilde', 'mathring',
         'widetilde', 'overgroup',
@@ -32,7 +36,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'ddot', 'underleftrightarrow', 'underbrace',
         'grave', 'overline', 'overlinesegment',
         'hat', 'underline', 'underlinesegment',
-        'widehat', 'widecheck'
+        'widehat', 'widecheck', 'underbar'
     ];
     delimiters0 = [
         'lparen', 'rparen', 'lceil', 'rceil', 'uparrow',
@@ -86,6 +90,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'bcancel', 'underbrace',
         'xcancel', 'not =',
         'sout', 'boxed',
+        'phase',
         'tag', 'tag*'
     ];
     verticalLayout0 = ['atop']
@@ -95,7 +100,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     spacing0 = [
         'thinspace', 'medspace', 'thickspace', 'enspace',
         'quad', 'qquad', 'negthinspace', 'negmedspace',
-        'nobreakspace', 'negthickspace'
+        'nobreakspace', 'negthickspace', 'space', 'mathstrut'
     ];
     spacing1 = [
         'kern', 'mkern', 'mskip', 'hskip',
@@ -148,53 +153,55 @@ class MdCompletionItemProvider implements CompletionItemProvider {
     binomialCoefficients0 = ['choose'];
     binomialCoefficients2 = ['binom', 'dbinom', 'tbinom', 'brace', 'brack'];
     mathOperators0 = [
-        'arcsin', 'cotg', 'ln', 'det',
-        'arccos', 'coth', 'log', 'gcd',
-        'arctan', 'csc', 'sec', 'inf',
-        'arctg', 'ctg', 'sin', 'lim',
-        'arcctg', 'cth', 'sinh', 'liminf',
-        'arg', 'deg', 'sh', 'limsup',
-        'ch', 'dim', 'tan', 'max',
-        'cos', 'exp', 'tanh', 'min',
-        'cosec', 'hom', 'tg', 'Pr',
-        'cosh', 'ker', 'th', 'sup',
-        'cot', 'lg', 'argmax',
-        'argmin', 'limits'
+        'arcsin', 'cosec', 'deg', 'sec',
+        'arccos', 'cosh', 'dim', 'sin',
+        'arctan', 'cot', 'exp', 'sinh',
+        'arctg', 'cotg', 'hom', 'sh',
+        'arcctg', 'coth', 'ker', 'tan',
+        'arg', 'csc', 'lg', 'tanh',
+        'ch', 'ctg', 'ln', 'tg',
+        'cos', 'cth', 'log', 'th',
+        'argmax', 'injlim', 'min', 'varinjlim',
+        'argmin', 'lim', 'plim', 'varliminf',
+        'det', 'liminf', 'Pr', 'varlimsup',
+        'gcd', 'limsup', 'projlim', 'varprojlim',
+        'inf', 'max', 'sup'
     ];
-    mathOperators1 = ['operatorname'];
+    mathOperators1 = ['operatorname', 'operatorname*', 'operatornamewithlimits'];
     sqrt1 = ['sqrt'];
     relations0 = [
-        'eqcirc', 'lesseqgtr', 'sqsupset',
-        'eqcolon', 'lesseqqgtr', 'sqsupseteq',
-        'Eqcolon', 'lessgtr', 'Subset',
-        'eqqcolon', 'lesssim', 'subset',
-        'approx', 'Eqqcolon', 'll', 'subseteq', 'sube',
-        'approxeq', 'eqsim', 'lll', 'subseteqq',
-        'asymp', 'eqslantgtr', 'llless', 'succ',
-        'backepsilon', 'eqslantless', 'lt', 'succapprox',
-        'backsim', 'equiv', 'mid', 'succcurlyeq',
-        'backsimeq', 'fallingdotseq', 'models', 'succeq',
-        'between', 'frown', 'multimap', 'succsim',
-        'bowtie', 'ge', 'owns', 'Supset',
-        'bumpeq', 'geq', 'parallel', 'supset',
-        'Bumpeq', 'geqq', 'perp', 'supseteq',
-        'circeq', 'geqslant', 'pitchfork', 'supseteqq',
-        'colonapprox', 'gg', 'prec', 'thickapprox',
-        'Colonapprox', 'ggg', 'precapprox', 'thicksim',
-        'coloneq', 'gggtr', 'preccurlyeq', 'trianglelefteq',
-        'Coloneq', 'gt', 'preceq', 'triangleq',
-        'coloneqq', 'gtrapprox', 'precsim', 'trianglerighteq',
-        'Coloneqq', 'gtreqless', 'propto', 'varpropto',
-        'colonsim', 'gtreqqless', 'risingdotseq', 'vartriangle',
-        'Colonsim', 'gtrless', 'shortmid', 'vartriangleleft',
-        'cong', 'gtrsim', 'shortparallel', 'vartriangleright',
-        'curlyeqprec', 'in', 'sim', 'vcentcolon',
-        'curlyeqsucc', 'Join', 'simeq', 'vdash',
-        'dashv', 'le', 'smallfrown', 'vDash',
-        'dblcolon', 'leq', 'smallsmile', 'Vdash',
-        'doteq', 'leqq', 'smile', 'Vvdash',
-        'Doteq', 'leqslant', 'sqsubset',
-        'doteqdot', 'lessapprox', 'sqsubseteq'
+        'doteqdot', 'lessapprox', 'smile',
+        'eqcirc', 'lesseqgtr', 'sqsubset',
+        'eqcolon', 'minuscolon', 'lesseqqgtr', 'sqsubseteq',
+        'Eqcolon', 'minuscoloncolon', 'lessgtr', 'sqsupset',
+        'approx', 'eqqcolon', 'equalscolon', 'lesssim', 'sqsupseteq',
+        'approxcolon', 'Eqqcolon', 'equalscoloncolon', 'll', 'Subset',
+        'approxcoloncolon', 'eqsim', 'lll', 'subset', 'sub',
+        'approxeq', 'eqslantgtr', 'llless', 'subseteq', 'sube',
+        'asymp', 'eqslantless', 'lt', 'subseteqq',
+        'backepsilon', 'equiv', 'mid', 'succ',
+        'backsim', 'fallingdotseq', 'models', 'succapprox',
+        'backsimeq', 'frown', 'multimap', 'succcurlyeq',
+        'between', 'ge', 'origof', 'succeq',
+        'bowtie', 'geq', 'owns', 'succsim',
+        'bumpeq', 'geqq', 'parallel', 'Supset',
+        'Bumpeq', 'geqslant', 'perp', 'supset',
+        'circeq', 'gg', 'pitchfork', 'supseteq', 'supe',
+        'colonapprox', 'ggg', 'prec', 'supseteqq',
+        'Colonapprox', 'coloncolonapprox', 'gggtr', 'precapprox', 'thickapprox',
+        'coloneq', 'colonminus', 'gt', 'preccurlyeq', 'thicksim',
+        'Coloneq', 'coloncolonminus', 'gtrapprox', 'preceq', 'trianglelefteq',
+        'coloneqq', 'colonequals', 'gtreqless', 'precsim', 'triangleq',
+        'Coloneqq', 'coloncolonequals', 'gtreqqless', 'propto', 'trianglerighteq',
+        'colonsim', 'gtrless', 'risingdotseq', 'varpropto',
+        'Colonsim', 'coloncolonsim', 'gtrsim', 'shortmid', 'vartriangle',
+        'cong', 'imageof', 'shortparallel', 'vartriangleleft',
+        'curlyeqprec', 'in', 'isin', 'sim', 'vartriangleright',
+        'curlyeqsucc', 'Join', 'simcolon', 'vcentcolon', 'ratio',
+        'dashv', 'le', 'simcoloncolon', 'vdash',
+        'dblcolon', 'coloncolon', 'leq', 'simeq', 'vDash',
+        'doteq', 'leqq', 'smallfrown', 'Vdash',
+        'Doteq', 'leqslant', 'smallsmile', 'Vvdash',
     ];
     negatedRelations0 = [
         'gnapprox', 'ngeqslant', 'nsubseteq', 'precneqq',
@@ -271,7 +278,8 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         'textnormal', 'boldsymbol', 'mathbb',
         'text', 'bm', 'frak',
         'mathsf', 'mathtt', 'mathfrak',
-        'textsf', 'texttt', 'mathcal', 'mathscr'
+        'textsf', 'texttt', 'mathcal', 'mathscr',
+        'pmb'
     ];
     size0 = [
         'Huge', 'huge', 'LARGE', 'Large', 'large',
@@ -390,16 +398,12 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         envSnippet.insertText = new SnippetString('begin{${1|' + this.envs.join(',') + '|}}\n\t$2\n\\end{$1}');
 
         // Pretend to support multi-workspacefolders
-        let resource = null;
-        if (workspace.workspaceFolders !== undefined && workspace.workspaceFolders.length > 0) {
-            resource = workspace.workspaceFolders[0].uri;
-        }
+        const folder = workspace.workspaceFolders?.[0]?.uri;
 
         // Import macros from configurations
-        let configMacros = workspace.getConfiguration('markdown.extension.katex', resource).get<object>('macros');
+        const configMacros = configManager.get("katex.macros", folder);
         var macroItems: CompletionItem[] = [];
-        for (const cmd of Object.keys(configMacros)) {
-            const expansion: string = configMacros[cmd];
+        for (const [cmd, expansion] of Object.entries(configMacros)) {
             let item = new CompletionItem(cmd, CompletionItemKind.Function);
 
             // Find the number of arguments in the expansion
@@ -418,28 +422,30 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         this.mathCompletions = [...c1, ...c2, ...c3, envSnippet, ...macroItems];
 
         // Sort
-        this.mathCompletions.forEach(item => {
-            item.sortText = item.label.replace(/[a-zA-Z]/g, c => {
+        for (const item of this.mathCompletions) {
+            const label = typeof item.label === "string" ? item.label : item.label.label;
+            item.sortText = label.replace(/[a-zA-Z]/g, (c) => {
                 if (/[a-z]/.test(c)) {
                     return `0${c}`;
                 } else {
                     return `1${c.toLowerCase()}`;
                 }
             });
-        });
+        }
 
-        let excludePatterns = ['**/node_modules', '**/bower_components', '**/*.code-search'];
-        if (workspace.getConfiguration('markdown.extension.completion', resource).get<boolean>('respectVscodeSearchExclude')) {
-            const configExclude = workspace.getConfiguration('search', resource).get<object>('exclude');
-            for (const key of Object.keys(configExclude)) {
-                if (configExclude[key] === true) {
-                    excludePatterns.push(key);
+        const Always_Exclude = ["**/node_modules", "**/bower_components", "**/*.code-search"];
+        const excludePatterns = new Set(Always_Exclude);
+
+        if (configManager.get("completion.respectVscodeSearchExclude", folder)) {
+            const vscodeSearchExclude = configManager.getByAbsolute<object>("search.exclude", folder)!;
+            for (const [pattern, enabled] of Object.entries(vscodeSearchExclude)) {
+                if (enabled) {
+                    excludePatterns.add(pattern);
                 }
             }
         }
 
-        excludePatterns = Array.from(new Set(excludePatterns));
-        this.EXCLUDE_GLOB = '{' + excludePatterns.join(',') + '}';
+        this.EXCLUDE_GLOB = "{" + Array.from(excludePatterns).join(",") + "}";
     }
 
     async provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, _context: CompletionContext): Promise<CompletionItem[] | CompletionList<CompletionItem> | undefined> {
@@ -467,17 +473,26 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             const isRootedPath = typedDir.startsWith('/');
 
             return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif,webp}', this.EXCLUDE_GLOB).then(uris => {
-                let items = uris.map(imgUri => {
+                const items: CompletionItem[] = [];
+
+                for (const imgUri of uris) {
                     const label = path.relative(basePath, imgUri.fsPath).replace(/\\/g, '/');
+
+                    if (isRootedPath && label.startsWith("..")) {
+                        continue;
+                    }
+
                     let item = new CompletionItem(label.replace(/ /g, '%20'), CompletionItemKind.File);
+                    items.push(item);
 
                     //// Add image preview
                     let dimensions: { width: number; height: number; };
                     try {
+                        // @ts-ignore Deprecated.
                         dimensions = sizeOf(imgUri.fsPath);
                     } catch (error) {
                         console.error(error);
-                        return item;
+                        continue;
                     }
                     const maxWidth = 318;
                     if (dimensions.width > maxWidth) {
@@ -487,15 +502,9 @@ class MdCompletionItemProvider implements CompletionItemProvider {
                     item.documentation = new MarkdownString(`![${label}](${imgUri.fsPath.replace(/ /g, '%20')}|width=${dimensions.width},height=${dimensions.height})`);
 
                     item.sortText = label.replace(/\./g, '{');
-
-                    return item;
-                });
-
-                if (isRootedPath) {
-                    return items.filter(item => !item.label.startsWith('..'));
-                } else {
-                    return items;
                 }
+
+                return items;
             });
         } else if (
             //// ends with an odd number of backslashes
@@ -672,24 +681,26 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             //// Should be after anchor completions
             if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
-            const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)[0];
+            const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)![0];
             const basePath = getBasepath(document, typedDir);
             const isRootedPath = typedDir.startsWith('/');
 
-            return workspace.findFiles('**/*', this.EXCLUDE_GLOB).then(uris => {
-                let items = uris.map(uri => {
-                    const label = path.relative(basePath, uri.fsPath).replace(/\\/g, '/').replace(/ /g, '%20');
-                    let item = new CompletionItem(label, CompletionItemKind.File);
-                    item.sortText = label.replace(/\./g, '{');
-                    return item;
-                });
+            const files = await workspace.findFiles("**/*", this.EXCLUDE_GLOB);
 
-                if (isRootedPath) {
-                    return items.filter(item => !item.label.startsWith('..'));
-                } else {
-                    return items;
+            const items: CompletionItem[] = [];
+
+            for (const uri of files) {
+                const label = path.relative(basePath, uri.fsPath).replace(/\\/g, "/").replace(/ /g, "%20");
+                if (isRootedPath && label.startsWith("..")) {
+                    continue;
                 }
-            });
+
+                const item = new CompletionItem(label, CompletionItemKind.File);
+                item.sortText = label.replace(/\./g, "{");
+                items.push(item);
+            }
+
+            return items;
         } else {
             return [];
         }
@@ -707,7 +718,7 @@ function getBasepath(doc: TextDocument, dir: string): string {
         dir = '';
     }
 
-    let root = workspace.getWorkspaceFolder(doc.uri).uri.fsPath;
+    let root = workspace.getWorkspaceFolder(doc.uri)!.uri.fsPath;
     const rootFolder = workspace.getConfiguration('markdown.extension.completion', doc.uri).get<string>('root', '');
     if (rootFolder.length > 0 && fs.existsSync(path.join(root, rootFolder))) {
         root = path.join(root, rootFolder);

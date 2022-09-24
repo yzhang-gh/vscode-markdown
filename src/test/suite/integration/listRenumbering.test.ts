@@ -1,5 +1,5 @@
-import { workspace, Selection } from 'vscode';
-import { resetConfiguration, updateConfiguration } from "../util/configuration";
+import { Selection } from "vscode";
+import { resetConfiguration } from "../util/configuration";
 import { testCommand } from "../util/generic";
 
 suite("Ordered list renumbering.", () => {
@@ -112,7 +112,7 @@ suite("Ordered list renumbering.", () => {
             new Selection(1, 0, 1, 0));
     });
 
-    test("Backspace key. github#411", () => {
+    test("Backspace key. GitHub#411", () => {
         return testCommand('markdown.extension.onBackspaceKey',
             [
                 '1. one',
@@ -132,6 +132,29 @@ suite("Ordered list renumbering.", () => {
                 '3. three'
             ],
             new Selection(1, 3, 1, 3));
+    });
+
+    test("Backspace key. GitHub#1155 (tab indented list)", () => {
+        return testCommand('markdown.extension.onBackspaceKey',
+            [
+                '1. Item to be deleted',
+                '2. First level 1',
+                '	1. Second level 1',
+                '	2. Second level 2',
+                '3. First level 2',
+                '	1. Second level 1',
+                '	2. Second level 2'
+            ],
+            new Selection(0, 0, 1, 0),
+            [
+                '1. First level 1',
+                '	1. Second level 1',
+                '	2. Second level 2',
+                '2. First level 2',
+                '	1. Second level 1',
+                '	2. Second level 2'
+            ],
+            new Selection(0, 0, 0, 0));
     });
 
     test("Tab key. Fix ordered marker. 1", () => {

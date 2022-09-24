@@ -4,8 +4,8 @@ import * as vscode from "vscode";
 
 //#region Constant
 
-export const Test_Workspace_Path = path.resolve(__dirname, "..", "..", "..", "..", "test");
-export const Test_Md_File_Path = path.resolve(Test_Workspace_Path, "test.md");
+export const Test_Workspace_Path = vscode.Uri.file(path.resolve(__dirname, "..", "..", "..", "..", "test"));
+export const Test_Md_File_Path = vscode.Uri.joinPath(Test_Workspace_Path, "test.md");
 
 //#endregion Constant
 
@@ -15,8 +15,8 @@ export const Test_Md_File_Path = path.resolve(Test_Workspace_Path, "test.md");
  * Opens a document with the corresponding editor.
  * @param file A Uri or file system path which identifies the resource.
  */
-export async function openDocument(file: vscode.Uri | string): Promise<readonly [vscode.TextDocument, vscode.TextEditor]> {
-    const document = await vscode.workspace.openTextDocument(file as any);
+export const openDocument = async (file: vscode.Uri): Promise<readonly [vscode.TextDocument, vscode.TextEditor]> => {
+    const document = await vscode.workspace.openTextDocument(file);
     const editor = await vscode.window.showTextDocument(document);
     return [document, editor];
 };
@@ -51,9 +51,11 @@ export async function testCommand(
         editBuilder.delete(fullRange);
         editBuilder.insert(new vscode.Position(0, 0), initLines.join("\n"));
     });
+    editor.selection = initSelection;
+
+    await sleep(50);
 
     // Run the command.
-    editor.selection = initSelection;
     await vscode.commands.executeCommand(command);
 
     // Assert.

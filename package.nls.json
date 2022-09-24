@@ -20,6 +20,7 @@
     "config.list.indentationSize.description": "List indentation scheme. (Also affects TOC generation.)\n\nWhether to use different indentation sizes on different list contexts or stick to VS Code's tab size.",
     "config.list.indentationSize.enumDescriptions.adaptive": "Adaptive indentation size according to the context, trying to **left align the sublist with its parent's content**. For example:\n\n```markdown\n- Parent\n  - Sublist\n\n1. Parent\n   1. Sublist\n\n10. Parent with longer marker\n    1. Sublist\n```",
     "config.list.indentationSize.enumDescriptions.inherit": "Use the configured tab size of the current document (see the status bar). For example (with `tabSize: 4`):\n\n```markdown\n- Parent\n    - Sublist\n\n1. Parent\n    1. Sublist\n\n10. Parent with longer marker\n    1. Sublist\n```",
+    "config.list.toggle.candidate-markers.description": "List candidate markers. It will cycle through those markers",
     "config.math.enabled": "Enable basic math support (Powered by KaTeX).",
     "config.orderedList.autoRenumber.description": "Auto fix ordered list markers.",
     "config.orderedList.marker.description": "Ordered list marker.",

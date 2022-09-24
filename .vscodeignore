@@ -3,6 +3,7 @@
 
 # Development tools, intermediate build results, and temporary files
 .vscode-test/
+build/**
 out/
 test/**
 tools/
@@ -19,9 +20,13 @@ src/
 .github/
 .vscode/
 .gitignore
-tsconfig.json
+**/tsconfig*.json
 package-json.lock
 webpack.config.js
 
 # The welcome flag file
 welcome/WELCOMED
+
+# VS Code maps local image paths to GitHub paths
+images
+!images/Markdown-mark.png

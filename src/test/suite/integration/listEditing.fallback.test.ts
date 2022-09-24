@@ -1,5 +1,5 @@
-import { workspace, Selection } from 'vscode';
-import { resetConfiguration, updateConfiguration } from "../util/configuration";
+import { Selection } from "vscode";
+import { resetConfiguration } from "../util/configuration";
 import { testCommand } from "../util/generic";
 
 suite("No list editing.", () => {
@@ -9,37 +9,6 @@ suite("No list editing.", () => {
 
     suiteTeardown(async () => {
         await resetConfiguration();
-    });
-
-    test("Enter key. Disable in fenced code block", () => {
-        return testCommand('markdown.extension.onEnterKey',
-            [
-                '```',
-                '- item1'
-            ],
-            new Selection(1, 7, 1, 7),
-            [
-                '```',
-                '- item1',
-                ''
-            ],
-            new Selection(2, 0, 2, 0));
-    });
-
-    test("Enter key. Respect indentation rules", () => {
-        return testCommand('markdown.extension.onEnterKey',
-            [
-                '```',
-                '{}'
-            ],
-            new Selection(1, 1, 1, 1),
-            [
-                '```',
-                '{',
-                '    ',
-                '}'
-            ],
-            new Selection(2, 4, 2, 4));
     });
 
     test("Backspace key: '-  |'", () => {

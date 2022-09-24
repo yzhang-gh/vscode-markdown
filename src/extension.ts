@@ -2,6 +2,7 @@
 
 import { ExtensionContext, languages, Uri, window, workspace } from 'vscode';
 import { configManager } from "./configuration/manager";
+import { contextServiceManager } from "./editor-context-service/manager"
 import { decorationManager } from "./theming/decorationManager";
 import * as completion from './completion';
 import * as formatting from './formatting';
@@ -12,7 +13,6 @@ import { config as configNls, localize } from './nls';
 import resolveResource from "./nls/resolveResource";
 import * as preview from './preview';
 import * as print from './print';
-import * as decorations from './syntaxDecorations';
 import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
 
@@ -20,7 +20,7 @@ export function activate(context: ExtensionContext) {
     configNls({ extensionContext: context });
 
     context.subscriptions.push(
-        configManager, decorationManager, commonMarkEngine, mdEngine
+        configManager, contextServiceManager, decorationManager, commonMarkEngine, mdEngine
     );
 
     activateMdExt(context);
@@ -29,14 +29,14 @@ export function activate(context: ExtensionContext) {
 }
 
 function activateMdExt(context: ExtensionContext) {
+    // Context services
+    contextServiceManager.activate(context);
     // Override `Enter`, `Tab` and `Backspace` keys
     listEditing.activate(context);
     // Shortcuts
     formatting.activate(context);
     // Toc
     toc.activate(context);
-    // Syntax decorations
-    decorations.activate(context);
     // Images paths and math commands completions
     completion.activate(context);
     // Print to PDF
