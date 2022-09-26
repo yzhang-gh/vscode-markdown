@@ -5,8 +5,8 @@ import { fixMarker } from './listEditing';
 
 export function activate(context: ExtensionContext) {
     context.subscriptions.push(
-        commands.registerCommand('markdown.extension.editing.toggleBold', toggleBold),
-        commands.registerCommand('markdown.extension.editing.toggleItalic', toggleItalic),
+        commands.registerCommand('markdown.extension.editing.toggleBold', () => toggleEmphasis(EmphasisType.BOLD)),
+        commands.registerCommand('markdown.extension.editing.toggleItalic', () => toggleEmphasis(EmphasisType.ITALIC)),
         commands.registerCommand('markdown.extension.editing.toggleCodeSpan', toggleCodeSpan),
         commands.registerCommand('markdown.extension.editing.toggleStrikethrough', toggleStrikethrough),
         commands.registerCommand('markdown.extension.editing.toggleMath', () => toggleMath(transTable)),
@@ -27,12 +27,13 @@ const singleLinkRegex: RegExp = createLinkRegex();
 
 // Return Promise because need to chain operations in unit tests
 
-function toggleBold() {
-    return styleByWrapping('**');
+enum EmphasisType {
+    ITALIC,
+    BOLD
 }
 
-function toggleItalic() {
-    let indicator = workspace.getConfiguration('markdown.extension.italic').get<string>('indicator')!;
+function toggleEmphasis(type: EmphasisType) {
+    let indicator = workspace.getConfiguration('markdown.extension.' + EmphasisType[type].toLowerCase()).get<string>('indicator')!;
     return styleByWrapping(indicator);
 }
 

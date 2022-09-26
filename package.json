@@ -289,6 +289,15 @@
                         "_"
                     ]
                 },
+                "markdown.extension.bold.indicator": {
+                    "type": "string",
+                    "default": "**",
+                    "markdownDescription": "%config.bold.indicator.description%",
+                    "enum": [
+                        "**",
+                        "__"
+                    ]
+                },
                 "markdown.extension.katex.macros": {
                     "type": "object",
                     "default": {},

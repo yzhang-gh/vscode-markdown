@@ -16,6 +16,7 @@
     "config.completion.respectVscodeSearchExclude": "VS Codeの `#search.exclude#` 設定を使用して、オートコンプリートからファイルを除外する（`node_modules` や、`bower_components` や、`*.code-search` は**常に除外**され、このオプションの影響を受けません）",
     "config.completion.root": "Pathを自動補完する際のルートフォルダ",
     "config.italic.indicator.description": "斜体テキストの囲いに `*` と `_` のどちらを使用するか",
+    "config.bold.indicator.description": "太字の囲み文字に `**` と `__` のどちらを使用するか",
     "config.katex.macros.description": "ユーザ定義のKaTeXマクロ",
     "config.list.indentationSize.description": "リスト構文のインデント形式（TOCの生成にも影響します）\n\nリスト構文のコンテキストによって異なったインデント幅を使用するか、VS Codeにおけるタブのサイズに従うかどうか",
     "config.list.indentationSize.enumDescriptions.adaptive": "コンテキストに応じたインデント幅を使用します。**サブ項目をその親の項目に左揃えで配置**させます。例：\n\n```markdown\n- 親項目\n  - サブ項目\n\n1. 親項目\n   1. サブ項目\n\n10. マーカーが長い親項目\n    1. サブ項目\n```",

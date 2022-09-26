@@ -208,6 +208,7 @@ Tip: also support the option `completion.root`
 | `markdown.extension.completion.respectVscodeSearchExclude` | `true`     | Whether to consider `search.exclude` option when providing file path completions                 |
 | `markdown.extension.completion.root`                       |            | Root folder when providing file path completions (It takes effect when the path starts with `/`) |
 | `markdown.extension.italic.indicator`                      | `*`        | Use `*` or `_` to wrap italic text                                                               |
+| `markdown.extension.bold.indicator`                        | `**`       | Use `**` or `__` to wrap bold text                                                               |
 | `markdown.extension.katex.macros`                          | `{}`       | KaTeX macros e.g. `{ "\\name": "expansion", ... }`                                               |
 | `markdown.extension.list.indentationSize`                  | `adaptive` | Use different indentation size for ordered and unordered list                                    |
 | `markdown.extension.list.toggle.candidate-markers`         | `[ "-", "*", "+", "1.", "1)" ]`  | Use a array for toggle ordered list marker e.g. `["*", "1."]`              |

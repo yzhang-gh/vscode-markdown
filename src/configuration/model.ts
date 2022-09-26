@@ -1,4 +1,4 @@
-import type { MarkdownBulletListMarker, MarkdownEmphasisIndicator } from "../contract/MarkdownSpec";
+import type { MarkdownBulletListMarker, MarkdownEmphasisIndicator, MarkdownStrongEmphasisIndicator } from "../contract/MarkdownSpec";
 import type { SlugifyMode } from "../contract/SlugifyMode";
 
 /**
@@ -11,6 +11,7 @@ export interface IConfigurationKeyTypeMap {
     "completion.root": string;
 
     "italic.indicator": MarkdownEmphasisIndicator;
+    "bold.indicator": MarkdownStrongEmphasisIndicator;
 
     /**
      * A collection of custom macros.

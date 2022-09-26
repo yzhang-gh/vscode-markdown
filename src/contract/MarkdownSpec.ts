@@ -22,6 +22,15 @@ export const enum MarkdownEmphasisIndicator {
 }
 
 /**
+ * CommonMark strong emphasis indicator.
+ * https://spec.commonmark.org/0.29/#emphasis-and-strong-emphasis
+ */
+ export const enum MarkdownStrongEmphasisIndicator {
+    Asterisk = "**",
+    Underscore = "__",
+}
+
+/**
  * The heading level allowed by the CommonMark Spec.
  * https://spec.commonmark.org/0.29/#atx-headings
  */
