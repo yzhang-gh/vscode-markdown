@@ -79,6 +79,7 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
         // Since we don't care about line numbers, a simple alternation is enough and slightly faster.
         title = doc.getText().split(/\n|\r/g).find(lineText => lineText.startsWith('#') && /^#{1,6} /.test(lineText));
         if (title) {
+            title = title.replace(/<!--(.*?)-->/g, '');
             title = title.trim().replace(/^#+/, '').replace(/#+$/, '').trim();
         }
     }
