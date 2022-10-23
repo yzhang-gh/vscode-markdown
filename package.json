@@ -26,6 +26,7 @@
     "license": "MIT",
     "activationEvents": [
         "onLanguage:markdown",
+        "onLanguage:rmd",
         "onCommand:markdown.extension.printToHtmlBatch",
         "workspaceContains:README.md"
     ],
@@ -142,13 +143,13 @@
                 "command": "markdown.extension.editing.toggleBold",
                 "key": "ctrl+b",
                 "mac": "cmd+b",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown || editorTextFocus && !editorReadonly && editorLangId == rmd"
             },
             {
                 "command": "markdown.extension.editing.toggleItalic",
                 "key": "ctrl+i",
                 "mac": "cmd+i",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown || editorTextFocus && !editorReadonly && editorLangId == rmd"
             },
             {
                 "command": "markdown.extension.editing.toggleStrikethrough",
@@ -171,7 +172,7 @@
                 "command": "markdown.extension.editing.toggleMath",
                 "key": "ctrl+m",
                 "mac": "cmd+m",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown || editorTextFocus && !editorReadonly && editorLangId == rmd"
             },
             {
                 "command": "markdown.extension.onEnterKey",
@@ -326,8 +327,14 @@
                         "1.",
                         "1)"
                     ],
-                    "items" : {
-                        "enum": ["-", "*", "+", "1.", "1)"]
+                    "items": {
+                        "enum": [
+                            "-",
+                            "*",
+                            "+",
+                            "1.",
+                            "1)"
+                        ]
                     },
                     "minItems": 1,
                     "maxItems": 5,
@@ -522,6 +529,16 @@
                     "type": "boolean",
                     "default": true,
                     "description": "%config.toc.updateOnSave.description%"
+                },
+                "markdown.extension.supportedLangIds": {
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "enum": [
+                            "rmd"
+                        ]
+                    },
+                    "description": "%config.supportedLangIds.description%"
                 }
             }
         },

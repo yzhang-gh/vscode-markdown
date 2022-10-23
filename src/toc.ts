@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as stringSimilarity from 'string-similarity';
 import { CancellationToken, CodeLens, CodeLensProvider, commands, EndOfLine, ExtensionContext, languages, Position, Range, TextDocument, TextDocumentWillSaveEvent, TextEditor, Uri, window, workspace, WorkspaceEdit } from 'vscode';
 import { commonMarkEngine, mdEngine, Token } from './markdownEngine';
-import { isMdEditor, Document_Selector_Markdown, Regexp_Fenced_Code_Block } from "./util/generic";
+import { isMdDocument, Document_Selector_Markdown, Regexp_Fenced_Code_Block } from "./util/generic";
 import { slugify } from "./util/slugify";
 import type * as MarkdownSpec from "./contract/MarkdownSpec";
 import SlugifyMode from "./contract/SlugifyMode";
@@ -75,7 +75,7 @@ export function activate(context: ExtensionContext) {
 async function createToc() {
     const editor = window.activeTextEditor;
 
-    if (!isMdEditor(editor)) {
+    if (!editor || !isMdDocument(editor.document)) {
         return;
     }
 
@@ -91,7 +91,7 @@ async function createToc() {
 async function updateToc() {
     const editor = window.activeTextEditor;
 
-    if (!isMdEditor(editor)) {
+    if (!editor || !isMdDocument(editor.document)) {
         return;
     }
 
@@ -124,7 +124,7 @@ async function updateToc() {
 function addSectionNumbers() {
     const editor = window.activeTextEditor;
 
-    if (!isMdEditor(editor)) {
+    if (!editor || !isMdDocument(editor.document)) {
         return;
     }
 
@@ -162,7 +162,7 @@ function addSectionNumbers() {
 
 function removeSectionNumbers() {
     const editor = window.activeTextEditor;
-    if (!isMdEditor(editor)) {
+    if (!editor || !isMdDocument(editor.document)) {
         return;
     }
     const doc = editor.document;

@@ -3,11 +3,11 @@
 import * as vscode from "vscode";
 import MarkdownIt = require("markdown-it");
 import Token = require("markdown-it/lib/token");
-import LanguageIdentifier from "./contract/LanguageIdentifier";
 import type IDisposable from "./IDisposable";
 import { slugify } from "./util/slugify";
 import { getMarkdownContributionProvider } from './markdownExtensions';
 import { extendMarkdownIt } from "./markdown-it-plugin-provider";
+import { isMdDocument } from "./util/generic";
 
 // To help consumers.
 export type { MarkdownIt, Token };
@@ -90,7 +90,7 @@ class CommonMarkEngine implements IStaticMarkdownEngine {
 
         this._disposables = [
             vscode.workspace.onDidCloseTextDocument(document => {
-                if (document.languageId === LanguageIdentifier.Markdown) {
+                if (isMdDocument(document)) {
                     this._documentTokenCache.delete(document);
                 }
             }),
@@ -152,7 +152,7 @@ class MarkdownEngine implements IDynamicMarkdownEngine {
     constructor() {
         this._disposables = [
             vscode.workspace.onDidCloseTextDocument(document => {
-                if (document.languageId === LanguageIdentifier.Markdown) {
+                if (isMdDocument(document)) {
                     this._documentTokenCache.delete(document);
                 }
             }),

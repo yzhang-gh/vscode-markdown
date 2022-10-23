@@ -6,7 +6,7 @@ import { commands, ExtensionContext, TextDocument, Uri, window, workspace } from
 import { encodeHTML } from 'entities';
 import { localize } from './nls';
 import { mdEngine } from "./markdownEngine";
-import { isMdEditor } from "./util/generic";
+import { isMdDocument } from "./util/generic";
 
 let thisContext: ExtensionContext;
 
@@ -33,7 +33,7 @@ function onDidSave(doc: TextDocument) {
 async function print(type: string, uri?: Uri, outFolder?: string) {
     const editor = window.activeTextEditor;
 
-    if (!isMdEditor(editor)) {
+    if (!editor || !isMdDocument(editor?.document)) {
         window.showErrorMessage(localize("ui.general.messageNoValidMarkdownFile"));
         return;
     }

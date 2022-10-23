@@ -1,9 +1,9 @@
 "use strict";
 
 import * as vscode from "vscode";
-import LanguageIdentifier from "../contract/LanguageIdentifier";
-import type IDisposable from "../IDisposable";
 import { configManager } from "../configuration/manager";
+import type IDisposable from "../IDisposable";
+import { isMdDocument } from "../util/generic";
 import { DecorationClass, decorationClassConfigMap, decorationStyles } from "./constant";
 import decorationWorkerRegistry from "./decorationWorkerRegistry";
 
@@ -263,10 +263,10 @@ class DecorationManager implements IDecorationManager {
      * When it is reached, related task will be unavailable, thus by design, this method will quit.
      */
     private applyDecoration(editor: vscode.TextEditor): void {
-        const document = editor.document;
-        if (document.languageId !== LanguageIdentifier.Markdown) {
+        if (!isMdDocument(editor.document)) {
             return;
         }
+        const document = editor.document;
 
         // The task can be in any state (typically pending, fulfilled, obsolete) during this call.
         // The editor can be suspended or even disposed at any time.
@@ -347,7 +347,7 @@ class DecorationManager implements IDecorationManager {
      * Initiates and **queues** a decoration cache update task that is linked to the document.
      */
     private updateCache(document: vscode.TextDocument): void {
-        if (document.languageId !== LanguageIdentifier.Markdown) {
+        if (!isMdDocument(document)) {
             return;
         }
 
