@@ -8,7 +8,7 @@ const katexOptions: KatexOptions = { throwOnError: false };
  * https://code.visualstudio.com/api/extension-guides/markdown-extension#adding-support-for-new-syntax-with-markdownit-plugins
  */
 export function extendMarkdownIt(md: MarkdownIt): MarkdownIt {
-    md.use(require("markdown-it-task-lists"));
+    md.use(require("markdown-it-task-lists"), {enabled: true});
 
     if (configManager.get("math.enabled")) {
         // We need side effects. (#521)
