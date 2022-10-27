@@ -5,4 +5,5 @@
 .task-list-item-checkbox {
     margin-left: -20px;
     vertical-align: middle;
+    pointer-events: none;
 }
