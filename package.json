@@ -85,7 +85,7 @@
             },
             {
                 "command": "markdown.extension.toc.addSecNumbers",
-                "enablement": "editorLangId == markdown",
+                "enablement": "editorLangId =~ /markdown|rmd|qmd/",
                 "title": "%command.toc.addSecNumbers.title%",
                 "category": "Markdown All in One"
             },
@@ -532,7 +532,7 @@
                 },
                 "markdown.extension.supportedLangIds": {
                     "type": "array",
-                    "default": [],
+                    "default": ["rmd", "markdown"],
                     "items": {
                         "enum": [
                             "rmd"
