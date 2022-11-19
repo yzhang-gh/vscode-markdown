@@ -73,31 +73,31 @@
         "commands": [
             {
                 "command": "markdown.extension.toc.create",
-                "enablement": "editorLangId == markdown",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^qmd$/",
                 "title": "%command.toc.create.title%",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.toc.update",
-                "enablement": "editorLangId == markdown",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^qmd$/",
                 "title": "%command.toc.update.title%",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.toc.addSecNumbers",
-                "enablement": "editorLangId =~ /markdown|rmd|qmd/",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^qmd$/",
                 "title": "%command.toc.addSecNumbers.title%",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.toc.removeSecNumbers",
-                "enablement": "editorLangId =~ /markdown|rmd|qmd/",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^qmd$/",
                 "title": "%command.toc.removeSecNumbers.title%",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.printToHtml",
-                "enablement": "editorLangId == markdown",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^qmd$/",
                 "title": "%command.printToHtml.title%",
                 "category": "Markdown All in One"
             },
@@ -109,31 +109,31 @@
             },
             {
                 "command": "markdown.extension.editing.toggleCodeSpan",
-                "enablement": "editorLangId == markdown",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^qmd$/",
                 "title": "%command.editing.toggleCodeSpan.title%",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.editing.toggleMath",
-                "enablement": "editorLangId == markdown",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^qmd$/",
                 "title": "%command.editing.toggleMath.title%",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.editing.toggleMathReverse",
-                "enablement": "editorLangId == markdown",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^qmd$/",
                 "title": "%command.editing.toggleMathReverse.title%",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.editing.toggleList",
-                "enablement": "editorLangId == markdown",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^qmd$/",
                 "title": "%command.editing.toggleList.title%",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.editing.toggleCodeBlock",
-                "enablement": "editorLangId == markdown",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^qmd$/",
                 "title": "%command.editing.toggleCodeBlock.title%",
                 "category": "Markdown All in One"
             }
@@ -143,108 +143,108 @@
                 "command": "markdown.extension.editing.toggleBold",
                 "key": "ctrl+b",
                 "mac": "cmd+b",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown || editorTextFocus && !editorReadonly && editorLangId == rmd"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/"
             },
             {
                 "command": "markdown.extension.editing.toggleItalic",
                 "key": "ctrl+i",
                 "mac": "cmd+i",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown || editorTextFocus && !editorReadonly && editorLangId == rmd"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/"
             },
             {
                 "command": "markdown.extension.editing.toggleStrikethrough",
                 "key": "alt+s",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !isMac"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !isMac"
             },
             {
                 "command": "markdown.extension.editing.toggleHeadingUp",
                 "key": "ctrl+shift+]",
                 "mac": "ctrl+shift+]",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/"
             },
             {
                 "command": "markdown.extension.editing.toggleHeadingDown",
                 "key": "ctrl+shift+[",
                 "mac": "ctrl+shift+[",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/"
             },
             {
                 "command": "markdown.extension.editing.toggleMath",
                 "key": "ctrl+m",
                 "mac": "cmd+m",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown || editorTextFocus && !editorReadonly && editorLangId == rmd"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/"
             },
             {
                 "command": "markdown.extension.onEnterKey",
                 "key": "enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode' && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !suggestWidgetVisible && !editorHasMultipleSelections && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode' && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onCtrlEnterKey",
                 "key": "ctrl+enter",
                 "mac": "cmd+enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !suggestWidgetVisible && !editorHasMultipleSelections && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onShiftEnterKey",
                 "key": "shift+enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !suggestWidgetVisible && !editorHasMultipleSelections && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onTabKey",
                 "key": "tab",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !inlineSuggestionVisible && !editorHasMultipleSelections && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions && markdown.extension.editor.cursor.inList && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !suggestWidgetVisible && !inlineSuggestionVisible && !editorHasMultipleSelections && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions && markdown.extension.editor.cursor.inList && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onShiftTabKey",
                 "key": "shift+tab",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions && markdown.extension.editor.cursor.inList && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !suggestWidgetVisible && !editorHasMultipleSelections && !editorTabMovesFocus && !inSnippetMode && !hasSnippetCompletions && !hasOtherSuggestions && markdown.extension.editor.cursor.inList && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onBackspaceKey",
                 "key": "backspace",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible && !editorHasMultipleSelections && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode' && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !suggestWidgetVisible && !editorHasMultipleSelections && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode' && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onMoveLineUp",
                 "key": "alt+up",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.onMoveLineDown",
                 "key": "alt+down",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.onCopyLineUp",
                 "win": "shift+alt+up",
                 "mac": "shift+alt+up",
                 "linux": "ctrl+shift+alt+up",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.onCopyLineDown",
                 "win": "shift+alt+down",
                 "mac": "shift+alt+down",
                 "linux": "ctrl+shift+alt+down",
-                "when": "editorTextFocus && !editorReadonly && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.onIndentLines",
                 "key": "ctrl+]",
                 "mac": "cmd+]",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.onOutdentLines",
                 "key": "ctrl+[",
                 "mac": "cmd+[",
-                "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+                "when": "editorTextFocus && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && !suggestWidgetVisible"
             },
             {
                 "command": "markdown.extension.checkTaskList",
                 "key": "alt+c",
-                "when": "editorTextFocus && editorLangId == markdown"
+                "when": "editorTextFocus && editorLangId =~ /^markdown$|^rmd$|^qmd$/"
             },
             {
                 "command": "markdown.extension.closePreview",
@@ -262,7 +262,7 @@
                 "command": "markdown.extension.editing.paste",
                 "key": "ctrl+v",
                 "mac": "cmd+v",
-                "when": "editorTextFocus && editorLangId == markdown && editorHasSelection"
+                "when": "editorTextFocus && editorLangId =~ /^markdown$|^rmd$|^qmd$/ && editorHasSelection"
             }
         ],
         "configuration": {
@@ -535,7 +535,8 @@
                     "default": [],
                     "items": {
                         "enum": [
-                            "rmd", "qmd"
+                            "rmd",
+                            "qmd"
                         ]
                     },
                     "description": "%config.extraLangIds.description%"
