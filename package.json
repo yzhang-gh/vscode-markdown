@@ -530,7 +530,7 @@
                     "default": true,
                     "description": "%config.toc.updateOnSave.description%"
                 },
-                "markdown.extension.supportedLangIds": {
+                "markdown.extension.extraLangIds": {
                     "type": "array",
                     "default": [],
                     "items": {
@@ -538,7 +538,7 @@
                             "rmd", "qmd"
                         ]
                     },
-                    "description": "%config.supportedLangIds.description%"
+                    "description": "%config.extraLangIds.description%"
                 }
             }
         },
