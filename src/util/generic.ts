@@ -19,7 +19,7 @@ export const Regexp_Fenced_Code_Block = /^ {0,3}(?<fence>(?<char>[`~])\k<char>{2
 
 export function isMdDocument(doc: vscode.TextDocument | undefined): boolean {
     if (doc) {
-        const extraLangIds = vscode.workspace.getConfiguration("markdown.extension", doc.uri).get<Array<string>>("supportedLangIds");
+        const extraLangIds = vscode.workspace.getConfiguration("markdown.extension", doc.uri).get<Array<string>>("extraLangIds");
         if (extraLangIds?.includes(doc.languageId)) {
             return true;
         }

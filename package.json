@@ -85,13 +85,13 @@
             },
             {
                 "command": "markdown.extension.toc.addSecNumbers",
-                "enablement": "editorLangId == markdown",
+                "enablement": "editorLangId =~ /markdown|rmd|qmd/",
                 "title": "%command.toc.addSecNumbers.title%",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.toc.removeSecNumbers",
-                "enablement": "editorLangId == markdown",
+                "enablement": "editorLangId =~ /markdown|rmd|qmd/",
                 "title": "%command.toc.removeSecNumbers.title%",
                 "category": "Markdown All in One"
             },
@@ -530,15 +530,15 @@
                     "default": true,
                     "description": "%config.toc.updateOnSave.description%"
                 },
-                "markdown.extension.supportedLangIds": {
+                "markdown.extension.extraLangIds": {
                     "type": "array",
                     "default": [],
                     "items": {
                         "enum": [
-                            "rmd"
+                            "rmd", "qmd"
                         ]
                     },
-                    "description": "%config.supportedLangIds.description%"
+                    "description": "%config.extraLangIds.description%"
                 }
             }
         },
