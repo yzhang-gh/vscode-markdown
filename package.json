@@ -91,7 +91,7 @@
             },
             {
                 "command": "markdown.extension.toc.removeSecNumbers",
-                "enablement": "editorLangId == markdown",
+                "enablement": "editorLangId =~ /markdown|rmd|qmd/",
                 "title": "%command.toc.removeSecNumbers.title%",
                 "category": "Markdown All in One"
             },
@@ -532,10 +532,10 @@
                 },
                 "markdown.extension.supportedLangIds": {
                     "type": "array",
-                    "default": ["rmd", "markdown"],
+                    "default": [],
                     "items": {
                         "enum": [
-                            "rmd"
+                            "rmd", "qmd"
                         ]
                     },
                     "description": "%config.supportedLangIds.description%"
