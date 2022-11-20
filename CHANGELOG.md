@@ -6,7 +6,7 @@
 - [List continuation] The continuation of task list should now has the same behavior as other editors ([#1138](https://github.com/yzhang-gh/vscode-markdown/pull/1138)). Thanks, [@yy0931](https://github.com/yy0931).
 - [List] New option `list.toggle.candidate-markers` to custom list markers when you use command `Toggle list` ([#1145](https://github.com/yzhang-gh/vscode-markdown/pull/1145)). Thanks, [@petergithub](https://github.com/petergithub).
 - Add a new option `bold.indicator` so you can use either `**` or `__` for bold text ([#1174](https://github.com/yzhang-gh/vscode-markdown/pull/1174)). Thanks, [@krsche](https://github.com/krsche) and [Samuel Weinhardt (@samuel-weinhardt)](https://github.com/samuel-weinhardt).
-- [R Markdown] Add support for R Markdown and a new option `extraLangIds` which accepts only `rmd` and `qmd` for now. ([#618](https://github.com/yzhang-gh/vscode-markdown/issues/618)). Thank [Dongdong Kong (@kongdd)](https://github.com/kongdd) for [#1198](https://github.com/yzhang-gh/vscode-markdown/pull/1198).
+- [R Markdown] Add support for R Markdown and a new option `extraLangIds` which accepts only `rmd` ~~and `qmd`~~ for now. ([#618](https://github.com/yzhang-gh/vscode-markdown/issues/618)). Thank [Dongdong Kong (@kongdd)](https://github.com/kongdd) for [#1198](https://github.com/yzhang-gh/vscode-markdown/pull/1198).
 - [GFM task lists] Checkboxes are now visually enabled but but not clickable([#1189](https://github.com/yzhang-gh/vscode-markdown/pull/1189)). Thanks, [Ian Holst (@ianholst)](https://github.com/ianholst).
 
 ### Fixes
@@ -14,7 +14,7 @@
 - Update word pattern for code spans and strikethrough ([#1130](https://github.com/yzhang-gh/vscode-markdown/pull/1130)). Thanks, [@Yarakashi-Kikohshi](https://github.com/Yarakashi-Kikohshi).
 - [Syntax decorations] of code spans ([#1134](https://github.com/yzhang-gh/vscode-markdown/pull/1134), [#1135](https://github.com/yzhang-gh/vscode-markdown/pull/1135)). Thanks, [@yy0931](https://github.com/yy0931).
 - [Ordered list renumbering] An issue with sub-list ([#1155](https://github.com/yzhang-gh/vscode-markdown/issues/1155)).
-- [HTML] Remove `<!-- omit from toc -->` comment in the exported HTML ([#1175](https://github.com/yzhang-gh/vscode-markdown/issues/1175)).
+- [HTML] Remove `<!-- omit from toc -->` comment in the title of the exported HTML ([#1175](https://github.com/yzhang-gh/vscode-markdown/issues/1175)).
 
 ### Others
 
