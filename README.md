@@ -175,7 +175,7 @@ Tip: also support the option `completion.root`
 - Markdown All in One: Print documents to HTML
 - Markdown All in One: Toggle math environment
 - Markdown All in One: Toggle list
-  - It will cycle through list markers (`-`, `*`, `+`, `1.` and `1)`)
+  - It will cycle through list markers (by default `-`, `*`, `+`, `1.` and `1)`, which can be changed with option `list.toggle.candidate-markers`).
 
 ## Keyboard Shortcuts
 
