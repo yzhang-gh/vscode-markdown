@@ -40,7 +40,7 @@
     "config.toc.slugifyMode.description": "生成标题 ID 的方法。该设置影响**目录**、**代码自动补全**、**打印**中**指向标题的链接**。",
     "config.toc.unorderedList.marker.description": "在目录中使用 `-`，`*` 或 `+` （仅对于**无序**列表）。",
     "config.toc.updateOnSave.description": "保存时自动更新目录。",
-    "config.extraLangIds.description": "支持的其他语言列表（如rmd, qmd），默认为空。",
+    "config.extraLangIds.description": "支持的其他语言列表（如rmd, quarto），默认为空。",
     "ui.exporting.messageCustomCssNotFound": "自定义样式 '{0}' 未找到。",
     "ui.exporting.messageExportingInProgress": "将 '{0}' 打印到 {1} …",
     "ui.exporting.messageRevertingToImagePaths": "已使用图像路径而不是 base64 编码。",
