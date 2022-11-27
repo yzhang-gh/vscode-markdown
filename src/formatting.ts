@@ -221,7 +221,7 @@ function toggleList() {
 function toggleListSingleLine(doc: TextDocument, line: number, wsEdit: WorkspaceEdit) {
     const lineText = doc.lineAt(line).text;
     const indentation = lineText.trim().length === 0 ? lineText.length : lineText.indexOf(lineText.trim());
-    const lineTextContent = lineText.substr(indentation);
+    const lineTextContent = lineText.slice(indentation);
     const currentMarker = getCurrentListStart(lineTextContent);
     const nextMarker = getNextListStart(currentMarker);
 
@@ -268,19 +268,20 @@ const listMarkerNumClosingParethesesRegex = /^\d+\) /;
     
 function getMarkerEndCharacter(currentMarker: ListMarker, lineText: string): number {
     const indentation = lineText.trim().length === 0 ? lineText.length : lineText.indexOf(lineText.trim());
-    const lineTextContent = lineText.substr(indentation);
+    const lineTextContent = lineText.slice(indentation);
     
-    let endCharacter = 0;
+    let endCharacter = indentation;
     if (listMarkerSimpleListStart.includes(currentMarker)) {
-        endCharacter = indentation + 2;
+        // `- `, `* `, `+ `
+        endCharacter += 2;
     } else if (listMarkerNumRegex.test(lineTextContent)) {
         // number
         const lenOfDigits = /^(\d+)\./.exec(lineText.trim())![1].length;
-        endCharacter = indentation + lenOfDigits + 2;
+        endCharacter += lenOfDigits + 2;
     } else if (listMarkerNumClosingParethesesRegex.test(lineTextContent)) {
         // number with )
         const lenOfDigits = /^(\d+)\)/.exec(lineText.trim())![1].length;
-        endCharacter = indentation + lenOfDigits + 2;
+        endCharacter += lenOfDigits + 2;
     }
     return endCharacter;
 }
