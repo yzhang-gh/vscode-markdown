@@ -117,7 +117,7 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 - **Compatible** with other installed Markdown plugins (e.g. [Markdown Footnotes](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-footnotes)).
   The exported HTML should look the same as inside VS Code (except for a few theme colors due to the limitations of APIs).
 
-- Use comment `<!-- title: Your Title -->` to specify a title of the exported HTML.
+- Use comment `<!-- title: Your Title -->` (in the first line) to specify a title of the exported HTML.
 
 - Plain links to `.md` files will be converted to `.html`.
 
