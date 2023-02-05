@@ -272,7 +272,7 @@ class MarkdownEngine implements IDynamicMarkdownEngine {
             let slug = slugify(raw, { env });
 
             let lastCount = this._slugCount.get(slug);
-            if (lastCount) {
+            if (lastCount !== undefined) {
                 lastCount++;
                 this._slugCount.set(slug, lastCount);
                 slug += '-' + lastCount;
