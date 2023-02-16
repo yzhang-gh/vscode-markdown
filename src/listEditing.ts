@@ -11,6 +11,7 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.onTabKey', onTabKey),
         commands.registerCommand('markdown.extension.onShiftTabKey', () => { return onTabKey('shift'); }),
         commands.registerCommand('markdown.extension.onBackspaceKey', onBackspaceKey),
+        commands.registerCommand('markdown.extension.toggleTaskList', toggleTaskList),
         commands.registerCommand('markdown.extension.checkTaskList', checkTaskList),
         commands.registerCommand('markdown.extension.onMoveLineDown', onMoveLineDown),
         commands.registerCommand('markdown.extension.onMoveLineUp', onMoveLineUp),
@@ -444,6 +445,57 @@ function deleteRange(editor: TextEditor, range: Range): Thenable<boolean> {
         // We will enable undoStop after fixing markers
         { undoStopBefore: true, undoStopAfter: false }
     );
+}
+
+function toggleTaskList(): Thenable<unknown> | void {
+    // - Look into lines that be lists/task-lists.
+    // - The first matching line dictates the new state for all further lines.
+    //   - I.e. if the first line is task-lists, only other task-lists lines will
+    //     be considered, and vice versa.
+    const editor = window.activeTextEditor!;
+    const listRegex = /^(\s*)([-+*]|[0-9]+[.)])(?! +\[[x ]\]) +/
+    const tasklistRegex = /^(\s*)([-+*]|[0-9]+[.)]) +\[[x ]\] */
+    let replaceRanges: Range[] = []
+    let newState: boolean | undefined = undefined // true = "- [ ]", false = "- ", undefined = no matching lines
+
+    // go through all touched lines of all selections.
+    for (const selection of editor.selections) {
+        for (let i = selection.start.line; i <= selection.end.line; i++) {
+            const line = editor.document.lineAt(i);
+            const lineStart = line.range.start;
+
+            if (!selection.isSingleLine && (selection.start.isEqual(line.range.end) || selection.end.isEqual(line.range.start))) {
+                continue;
+            }
+
+            let matches: RegExpExecArray | null;
+            if (
+                (matches = listRegex.exec(line.text))
+            ) {
+                if(newState === undefined)newState = true;
+            } else if (
+                (matches = tasklistRegex.exec(line.text))
+            ) {
+                if(newState === undefined)newState = false;
+            }
+
+            if(matches){
+                replaceRanges.push(new Range(
+                    lineStart.with({ character: matches[1].length }),
+                    lineStart.with({ character: matches[0].length}),
+                ));
+            }
+        }
+    }
+
+    if (newState !== undefined) {
+        const newChar = newState ? '- [ ] ' : '- ';
+        return editor.edit(editBuilder => {
+            for (const range of replaceRanges) {
+                editBuilder.replace(range, newChar);
+            }
+        });
+    }
 }
 
 function checkTaskList(): Thenable<unknown> | void {
