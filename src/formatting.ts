@@ -339,8 +339,9 @@ async function paste() {
     const selection = editor.selection;
     if (selection.isSingleLine && !isSingleLink(editor.document.getText(selection))) {
         const text = await env.clipboard.readText();
-        if (isSingleLink(text)) {
-            return commands.executeCommand("editor.action.insertSnippet", { "snippet": `[$TM_SELECTED_TEXT$0](${text})` });
+        const textTrimmed = text.trim();
+        if (isSingleLink(textTrimmed)) {
+            return commands.executeCommand("editor.action.insertSnippet", { "snippet": `[$TM_SELECTED_TEXT$0](${textTrimmed})` });
         }
     }
     return commands.executeCommand("editor.action.clipboardPasteAction");
