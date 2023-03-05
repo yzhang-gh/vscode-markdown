@@ -352,21 +352,30 @@ function lookUpwardForMarker(editor: TextEditor, line: number, currentIndentatio
         const prevLineText = editor.document.lineAt(prevLine).text.replace(/\t/g, '    ');
         let matches;
         if ((matches = /^(\s*)(([0-9]+)[.)] +)/.exec(prevLineText)) !== null) {
-            // The previous line has a list marker
-            let prevLeadingSpace: string = matches[1];
-            let prevMarker = matches[3];
+            // The previous line has an ordered list marker
+            const prevLeadingSpace: string = matches[1];
+            const prevMarker = matches[3];
             if (currentIndentation < prevLeadingSpace.length) {
                 // yet to find a sibling item
                 continue;
             } else if (
                 currentIndentation >= prevLeadingSpace.length
-                && currentIndentation < (prevLeadingSpace + prevMarker).length + 1
+                && currentIndentation <= (prevLeadingSpace + prevMarker).length
             ) {
                 // found a sibling item
                 return Number(prevMarker) + 1;
-            } else if (currentIndentation >= (prevLeadingSpace + prevMarker).length + 1) {
+            } else if (currentIndentation > (prevLeadingSpace + prevMarker).length) {
                 // found a parent item
                 return 1;
+            } else {
+                // not possible
+            }
+        } else if ((matches = /^(\s*)([-+*] +)/.exec(prevLineText)) !== null) {
+            // The previous line has an unordered list marker
+            const prevLeadingSpace: string = matches[1];
+            if (currentIndentation >= prevLeadingSpace.length) {
+                // stop finding
+                break;
             }
         } else if ((matches = /^(\s*)\S/.exec(prevLineText)) !== null) {
             // The previous line doesn't have a list marker
