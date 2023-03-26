@@ -271,107 +271,84 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             });
 
             return completionItemList;
-        } else if (
-            /\[[^\[\]]*?\]\(#[^#\)]*$/.test(lineTextBefore)
-            || /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore)
-            // /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // `[](url#anchor|` Link with anchor.
-            // || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // `[]: url#anchor|` Link reference definition with anchor.
-        ) {
-            /* ┌───────────────────────────┐
-               │ Anchor tags from headings │
-               └───────────────────────────┘ */
-            let startIndex = lineTextBefore.lastIndexOf('#') - 1;
-            let isLinkRefDefinition = /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore); // The same as the 2nd conditon above.
-            let endPosition = position;
+        // } else if (
+        //     /\[[^\[\]]*?\]\(#[^#\)]*$/.test(lineTextBefore)
+        //     || /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore)
+        //     // /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // `[](url#anchor|` Link with anchor.
+        //     // || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // `[]: url#anchor|` Link reference definition with anchor.
+        // ) {
+        //     /* ┌───────────────────────────┐
+        //        │ Anchor tags from headings │
+        //        └───────────────────────────┘ */
+        //     let startIndex = lineTextBefore.lastIndexOf('#') - 1;
+        //     let isLinkRefDefinition = /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore); // The same as the 2nd conditon above.
+        //     let endPosition = position;
 
-            let addClosingParen = false;
-            if (/^([^\) ]+\s*|^\s*)\)/.test(lineTextAfter)) {
-                // try to detect if user wants to replace a link (i.e. matching closing paren and )
-                // Either: ... <CURSOR> something <whitespace> )
-                //     or: ... <CURSOR> <whitespace> )
-                //     or: ... <CURSOR> )     (endPosition assignment is a no-op for this case)
+        //     let addClosingParen = false;
+        //     if (/^([^\) ]+\s*|^\s*)\)/.test(lineTextAfter)) {
+        //         // try to detect if user wants to replace a link (i.e. matching closing paren and )
+        //         // Either: ... <CURSOR> something <whitespace> )
+        //         //     or: ... <CURSOR> <whitespace> )
+        //         //     or: ... <CURSOR> )     (endPosition assignment is a no-op for this case)
 
-                // in every case, we want to remove all characters after the cursor and before that first closing paren
-                endPosition = position.with({ character: + endPosition.character + lineTextAfter.indexOf(')') });
-            } else {
-                // If no closing paren is found, replace all trailing non-white-space chars and add a closing paren
-                // distance to first non-whitespace or EOL
-                const toReplace = (lineTextAfter.search(/(?<=^\S+)(\s|$)/));
-                endPosition = position.with({ character: + endPosition.character + toReplace });
-                if (!isLinkRefDefinition) {
-                    addClosingParen = true;
-                }
-            }
+        //         // in every case, we want to remove all characters after the cursor and before that first closing paren
+        //         endPosition = position.with({ character: + endPosition.character + lineTextAfter.indexOf(')') });
+        //     } else {
+        //         // If no closing paren is found, replace all trailing non-white-space chars and add a closing paren
+        //         // distance to first non-whitespace or EOL
+        //         const toReplace = (lineTextAfter.search(/(?<=^\S+)(\s|$)/));
+        //         endPosition = position.with({ character: + endPosition.character + toReplace });
+        //         if (!isLinkRefDefinition) {
+        //             addClosingParen = true;
+        //         }
+        //     }
 
-            const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
+        //     const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
 
-            return new Promise((res, _) => {
-                //// let linkedDocument: TextDocument;
-                //// let urlString = lineTextBefore.match(/(?<=[\(|\:\s])\S*(?=\#)/)![0];
-                //// if (urlString) {
-                ////     /* If the anchor is in a seperate file then the link is of the form:
-                ////        "[linkLabel](urlString#MyAnchor)" or "[linkLabel]: urlString#MyAnchor"
+        //     return new Promise((res, _) => {
+        //         const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
 
-                ////        If urlString is a ".md" or ".markdown" file and accessible then we should (pseudo code):
+        //         const headingCompletions = toc.map<CompletionItem>(heading => {
+        //             const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
 
-                ////            if (isAccessible(urlString)) {
-                ////                linkedDocument = open(urlString)
-                ////            } else {
-                ////                return []
-                ////            }
+        //             if (addClosingParen) {
+        //                 item.insertText = item.label + ')';
+        //             }
 
-                ////        This has not been implemented yet so instead return with no completion for now. */
+        //             item.documentation = heading.rawContent;
+        //             item.range = range;
+        //             return item;
+        //         });
 
-                ////     res(undefined); // remove when implementing anchor completion fron external file
-                //// } else {
-                ////     /* else the anchor is in the current file and the link is of the form
-                ////        "[linkLabel](#MyAnchor)"" or "[linkLabel]: #MyAnchor"
-                ////        Then we should set linkedDocument = document */
-                ////     linkedDocument = document;
-                //// }
-                const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
+        //         res(headingCompletions);
+        //     });
+        // } else if (/\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/.test(lineTextBefore)) {
+        //     /* ┌────────────┐
+        //        │ File paths │
+        //        └────────────┘ */
+        //     //// Should be after anchor completions
+        //     if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
 
-                const headingCompletions = toc.map<CompletionItem>(heading => {
-                    const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
+        //     const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)![0];
+        //     const basePath = getBasepath(document, typedDir);
+        //     const isRootedPath = typedDir.startsWith('/');
 
-                    if (addClosingParen) {
-                        item.insertText = item.label + ')';
-                    }
+        //     const files = await workspace.findFiles("**/*", this.EXCLUDE_GLOB);
 
-                    item.documentation = heading.rawContent;
-                    item.range = range;
-                    return item;
-                });
+        //     const items: CompletionItem[] = [];
 
-                res(headingCompletions);
-            });
-        } else if (/\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/.test(lineTextBefore)) {
-            /* ┌────────────┐
-               │ File paths │
-               └────────────┘ */
-            //// Should be after anchor completions
-            if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
+        //     for (const uri of files) {
+        //         const label = path.relative(basePath, uri.fsPath).replace(/\\/g, "/").replace(/ /g, "%20");
+        //         if (isRootedPath && label.startsWith("..")) {
+        //             continue;
+        //         }
 
-            const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)![0];
-            const basePath = getBasepath(document, typedDir);
-            const isRootedPath = typedDir.startsWith('/');
+        //         const item = new CompletionItem(label, CompletionItemKind.File);
+        //         item.sortText = label.replace(/\./g, "{");
+        //         items.push(item);
+        //     }
 
-            const files = await workspace.findFiles("**/*", this.EXCLUDE_GLOB);
-
-            const items: CompletionItem[] = [];
-
-            for (const uri of files) {
-                const label = path.relative(basePath, uri.fsPath).replace(/\\/g, "/").replace(/ /g, "%20");
-                if (isRootedPath && label.startsWith("..")) {
-                    continue;
-                }
-
-                const item = new CompletionItem(label, CompletionItemKind.File);
-                item.sortText = label.replace(/\./g, "{");
-                items.push(item);
-            }
-
-            return items;
+        //     return items;
         } else {
             return [];
         }
