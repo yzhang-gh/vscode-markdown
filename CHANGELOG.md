@@ -1,3 +1,21 @@
+## 3.5.1 (2023.03.26)
+
+### Fixes
+
+- Quarto support, [#618](https://github.com/yzhang-gh/vscode-markdown/issues/618) follow-up ([#1199](https://github.com/yzhang-gh/vscode-markdown/pull/1199)). Thanks, [Dongdong Kong (@kongdd)](https://github.com/kongdd).
+- [List renumbering] Incorrect second-level list renumbering on line delete ([#1155](https://github.com/yzhang-gh/vscode-markdown/issues/1155)).
+- [Toggle list] A bug in multi-line case ([#1203](https://github.com/yzhang-gh/vscode-markdown/issues/1203)).
+- [HTML] A bug that generates duplicated heading ids ([#1232](https://github.com/yzhang-gh/vscode-markdown/issues/1232)).
+
+### Others
+
+- Add Russian translations ([#1201](https://github.com/yzhang-gh/vscode-markdown/pull/1201)). Thanks, [Sergey Romanov (@Serhioromano)](https://github.com/Serhioromano).
+- Fix the Shields build status badge ([#1215](https://github.com/yzhang-gh/vscode-markdown/pull/1215)). Thanks, [James H (@hughesjs)](https://github.com/hughesjs).
+- Remove extra spaces when pasting links on selected text ([#1245](https://github.com/yzhang-gh/vscode-markdown/pull/1245)). Thanks, [auh (@fanlushuai)](https://github.com/fanlushuai).
+- [Math] KaTeX v0.16.4
+- [Completion] Disable path completions as VS Code now has built-in support.
+- [Completion] Always exclude `.git` from completions.
+
 ## 3.5.0 (2022.11.20)
 
 ### New
@@ -7,7 +25,7 @@
 - [List] New option `list.toggle.candidate-markers` to custom list markers when you use command `Toggle list` ([#1145](https://github.com/yzhang-gh/vscode-markdown/pull/1145)). Thanks, [@petergithub](https://github.com/petergithub).
 - Add a new option `bold.indicator` so you can use either `**` or `__` for bold text ([#1174](https://github.com/yzhang-gh/vscode-markdown/pull/1174)). Thanks, [@krsche](https://github.com/krsche) and [Samuel Weinhardt (@samuel-weinhardt)](https://github.com/samuel-weinhardt).
 - [R Markdown] Add support for R Markdown and a new option `extraLangIds` which accepts only `rmd` ~~and `qmd`~~ for now. ([#618](https://github.com/yzhang-gh/vscode-markdown/issues/618)). Thank [Dongdong Kong (@kongdd)](https://github.com/kongdd) for [#1198](https://github.com/yzhang-gh/vscode-markdown/pull/1198).
-- [GFM task lists] Checkboxes are now visually enabled but but not clickable([#1189](https://github.com/yzhang-gh/vscode-markdown/pull/1189)). Thanks, [Ian Holst (@ianholst)](https://github.com/ianholst).
+- [GFM task lists] Checkboxes are now visually enabled but but not clickable ([#1189](https://github.com/yzhang-gh/vscode-markdown/pull/1189)). Thanks, [Ian Holst (@ianholst)](https://github.com/ianholst).
 
 ### Fixes
 
