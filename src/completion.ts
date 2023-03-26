@@ -104,7 +104,7 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             });
         }
 
-        const Always_Exclude = ["**/node_modules", "**/bower_components", "**/*.code-search"];
+        const Always_Exclude = ["**/node_modules", "**/bower_components", "**/*.code-search", "**/.git"];
         const excludePatterns = new Set(Always_Exclude);
 
         if (configManager.get("completion.respectVscodeSearchExclude", folder)) {
