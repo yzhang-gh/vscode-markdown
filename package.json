@@ -6,7 +6,7 @@
     "version": "3.5.1",
     "publisher": "yzhang",
     "engines": {
-        "vscode": "^1.63.0"
+        "vscode": "^1.72.0"
     },
     "categories": [
         "Programming Languages",
@@ -251,13 +251,13 @@
                 "command": "markdown.extension.closePreview",
                 "key": "ctrl+shift+v",
                 "mac": "cmd+shift+v",
-                "when": "markdownPreviewFocus"
+                "when": "activeWebviewPanelId == 'markdown.preview'"
             },
             {
                 "command": "markdown.extension.closePreview",
                 "key": "ctrl+k v",
                 "mac": "cmd+k v",
-                "when": "markdownPreviewFocus"
+                "when": "activeWebviewPanelId == 'markdown.preview'"
             },
             {
                 "command": "markdown.extension.editing.paste",
