@@ -161,6 +161,11 @@ class MdCompletionItemProvider implements CompletionItemProvider {
             return this.completeRefLinks(document, lineTextBefore, position, token);
         }
 
+        const enabled = workspace.getConfiguration('markdown.extension.completion', document.uri).get<boolean>('enabled', false);
+        if (!enabled) {
+            return [];
+        }
+
         // Image paths
         // ===========
         if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore) || /<img [^>]*src="[^"]*$/.test(lineTextBefore)) {

@@ -270,6 +270,12 @@
             "type": "object",
             "title": "%config.title%",
             "properties": {
+                "markdown.extension.completion.enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%config.completion.enabled%",
+                    "scope": "resource"
+                },
                 "markdown.extension.completion.respectVscodeSearchExclude": {
                     "type": "boolean",
                     "default": true,

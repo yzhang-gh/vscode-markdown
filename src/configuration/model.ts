@@ -7,6 +7,7 @@ import type { SlugifyMode } from "../contract/SlugifyMode";
  * Should keep in sync with `package.json`.
  */
 export interface IConfigurationKeyTypeMap {
+    "completion.enabled": string;
     "completion.respectVscodeSearchExclude": boolean;
     "completion.root": string;
 
