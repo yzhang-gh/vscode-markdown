@@ -14,11 +14,26 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerCompletionItemProvider(Document_Selector_Markdown, new MdCompletionItemProvider(), '(', '\\', '/', '[', '#'));
 }
 
+interface IReferenceDefinition {
+    label: string;
+    usageCount: number;
+}
+
 class MdCompletionItemProvider implements CompletionItemProvider {
+
+    readonly RXlookbehind = String.raw`(?<=(^[>]? {0,3}\[[ \t\r\n\f\v]*))`; // newline, not quoted, max 3 spaces, open [
+    readonly RXlinklabel = String.raw`(?<linklabel>([^\]]|(\\\]))*)`;       // string for linklabel, allows for /] in linklabel
+    readonly RXlink = String.raw`(?<link>((<[^>]*>)|([^< \t\r\n\f\v]+)))`;  // link either <mylink> or mylink
+    readonly RXlinktitle = String.raw`(?<title>[ \t\r\n\f\v]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$)`; // optional linktitle in "" or ''
+    readonly RXlookahead = String.raw`(?=(\]:[ \t\r\n\f\v]*` // close linklabel with ]:
+        + this.RXlink + this.RXlinktitle + String.raw`)`; // end regex
+    readonly RXflags = String.raw`mg`; // multiline & global
+    // This pattern matches linklabels in link references definitions:  [linklabel]: link "link title"
+    readonly Link_Label_Pattern = new RegExp(this.RXlookbehind + this.RXlinklabel + this.RXlookahead, this.RXflags);
 
     mathCompletions: CompletionItem[];
 
-    EXCLUDE_GLOB: string;
+    readonly EXCLUDE_GLOB: string;
 
     constructor() {
         // \cmd
@@ -125,233 +140,233 @@ class MdCompletionItemProvider implements CompletionItemProvider {
 
         let matches;
         matches = lineTextBefore.match(/\\+$/);
-        if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore) || /<img [^>]*src="[^"]*$/.test(lineTextBefore)) {
-            /* ┌─────────────┐
-               │ Image paths │
-               └─────────────┘ */
-            if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
-
-            //// 🤔 better name?
-            let typedDir: string;
-            if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
-                //// `![](dir_here|)`
-                typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2);
-            } else {
-                //// `<img src="dir_here|">`
-                typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('="') + 2);
-            }
-            const basePath = getBasepath(document, typedDir);
-            const isRootedPath = typedDir.startsWith('/');
-
-            return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif,webp}', this.EXCLUDE_GLOB).then(uris => {
-                const items: CompletionItem[] = [];
-
-                for (const imgUri of uris) {
-                    const label = path.relative(basePath, imgUri.fsPath).replace(/\\/g, '/');
-
-                    if (isRootedPath && label.startsWith("..")) {
-                        continue;
-                    }
-
-                    let item = new CompletionItem(label.replace(/ /g, '%20'), CompletionItemKind.File);
-                    items.push(item);
-
-                    //// Add image preview
-                    let dimensions: { width: number; height: number; };
-                    try {
-                        // @ts-ignore Deprecated.
-                        dimensions = sizeOf(imgUri.fsPath);
-                    } catch (error) {
-                        console.error(error);
-                        continue;
-                    }
-                    const maxWidth = 318;
-                    if (dimensions.width > maxWidth) {
-                        dimensions.height = Number(dimensions.height * maxWidth / dimensions.width);
-                        dimensions.width = maxWidth;
-                    }
-                    item.documentation = new MarkdownString(`![${label}](${imgUri.fsPath.replace(/ /g, '%20')}|width=${dimensions.width},height=${dimensions.height})`);
-
-                    item.sortText = label.replace(/\./g, '{');
-                }
-
-                return items;
-            });
-        } else if (
-            //// ends with an odd number of backslashes
+        // Math functions
+        // ==============
+        if (
+            // ends with an odd number of backslashes
             (matches = lineTextBefore.match(/\\+$/)) !== null
             && matches[0].length % 2 !== 0
         ) {
-            /* ┌────────────────┐
-               │ Math functions │
-               └────────────────┘ */
             if (mathEnvCheck(document, position) === "") {
                 return [];
             } else {
                 return this.mathCompletions;
             }
-        } else if (/\[[^\[\]]*$/.test(lineTextBefore)) {
-            /* ┌───────────────────────┐
-               │ Reference link labels │
-               └───────────────────────┘ */
-            const RXlookbehind = String.raw`(?<=(^[>]? {0,3}\[[ \t\r\n\f\v]*))`; // newline, not quoted, max 3 spaces, open [
-            const RXlinklabel = String.raw`(?<linklabel>([^\]]|(\\\]))*)`;       // string for linklabel, allows for /] in linklabel
-            const RXlink = String.raw`(?<link>((<[^>]*>)|([^< \t\r\n\f\v]+)))`;  // link either <mylink> or mylink
-            const RXlinktitle = String.raw`(?<title>[ \t\r\n\f\v]+(("([^"]|(\\"))*")|('([^']|(\\'))*')))?$)`; // optional linktitle in "" or ''
-            const RXlookahead =
-                String.raw`(?=(\]:[ \t\r\n\f\v]*` + // close linklabel with ]:
-                RXlink + RXlinktitle +
-                String.raw`)`; // end regex
-            const RXflags = String.raw`mg`; // multiline & global
-            // This pattern matches linklabels in link references definitions:  [linklabel]: link "link title"
-            const pattern = new RegExp(RXlookbehind + RXlinklabel + RXlookahead, RXflags);
+        }
 
-            interface IReferenceDefinition {
-                label: string;
-                usageCount: number;
+        // Reference link labels
+        // =====================
+        // e.g. [linklabel]: link "link title"
+        if (/\[[^\[\]]*$/.test(lineTextBefore)) {
+            return this.completeRefLinks(document, lineTextBefore, position, token);
+        }
+
+        // Image paths
+        // ===========
+        if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore) || /<img [^>]*src="[^"]*$/.test(lineTextBefore)) {
+            return this.completeImgPaths(document, lineTextBefore);
+        }
+
+        // Links to heading
+        // ================
+        if (
+            /\[[^\[\]]*?\]\(#[^#\)]*$/.test(lineTextBefore)
+            || /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore)
+            // /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // `[](url#anchor|` Link with anchor.
+            // || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // `[]: url#anchor|` Link reference definition with anchor.
+        ) {
+            return this.completeLinksToHeading(document, position, lineTextBefore, lineTextAfter);
+        }
+
+        // File paths
+        // ==========
+        // should be after `completeLinksToHeading`
+        if (/\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/.test(lineTextBefore)) {
+            return this.completeFilePaths(lineTextBefore, document);
+        }
+
+        return [];
+    }
+
+    private completeImgPaths(document: TextDocument, lineTextBefore: string) {
+        if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
+
+        //// 🤔 better name?
+        let typedDir: string;
+        if (/!\[[^\]]*?\]\([^\)]*$/.test(lineTextBefore)) {
+            //// `![](dir_here|)`
+            typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('](') + 2);
+        } else {
+            //// `<img src="dir_here|">`
+            typedDir = lineTextBefore.substr(lineTextBefore.lastIndexOf('="') + 2);
+        }
+        const basePath = getBasepath(document, typedDir);
+        const isRootedPath = typedDir.startsWith('/');
+
+        return workspace.findFiles('**/*.{png,jpg,jpeg,svg,gif,webp}', this.EXCLUDE_GLOB).then(uris => {
+            const items: CompletionItem[] = [];
+
+            for (const imgUri of uris) {
+                const label = path.relative(basePath, imgUri.fsPath).replace(/\\/g, '/');
+
+                if (isRootedPath && label.startsWith("..")) {
+                    continue;
+                }
+
+                let item = new CompletionItem(label.replace(/ /g, '%20'), CompletionItemKind.File);
+                items.push(item);
+
+                //// Add image preview
+                let dimensions: { width: number; height: number; };
+                try {
+                    // @ts-ignore Deprecated.
+                    dimensions = sizeOf(imgUri.fsPath);
+                } catch (error) {
+                    console.error(error);
+                    continue;
+                }
+                const maxWidth = 318;
+                if (dimensions.width > maxWidth) {
+                    dimensions.height = Number(dimensions.height * maxWidth / dimensions.width);
+                    dimensions.width = maxWidth;
+                }
+                item.documentation = new MarkdownString(`![${label}](${imgUri.fsPath.replace(/ /g, '%20')}|width=${dimensions.width},height=${dimensions.height})`);
+
+                item.sortText = label.replace(/\./g, '{');
             }
 
-            // TODO: may be extracted to a seperate function and used for all completions in the future.
-            const docText = document.getText();
-            /**
-             * NormalizedLabel (upper case) -> IReferenceDefinition
-             */
-            const refDefinitions = new Map<string, IReferenceDefinition>();
+            return items;
+        });
+    }
 
-            for (const match of docText.matchAll(pattern)) {
-                // Remove leading and trailing whitespace characters.
-                const label = match[0].replace(/^[ \t\r\n\f\v]+/, '').replace(/[ \t\r\n\f\v]+$/, '');
-                // For case-insensitive comparison.
-                const normalizedLabel = label.toUpperCase();
+    private completeRefLinks(document: TextDocument, lineTextBefore: string, position: Position, token: CancellationToken) {
+        // TODO: may be extracted to a seperate function and used for all completions in the future.
+        const docText = document.getText();
+        /**
+         * NormalizedLabel (upper case) -> IReferenceDefinition
+         */
+        const refDefinitions = new Map<string, IReferenceDefinition>();
 
-                // The one that comes first in the document is used.
-                if (!refDefinitions.has(normalizedLabel)) {
-                    refDefinitions.set(normalizedLabel, {
-                        label, // Preserve original case in result.
-                        usageCount: 0,
-                    });
+        for (const match of docText.matchAll(this.Link_Label_Pattern)) {
+            // Remove leading and trailing whitespace characters.
+            const label = match[0].replace(/^[ \t\r\n\f\v]+/, '').replace(/[ \t\r\n\f\v]+$/, '');
+            // For case-insensitive comparison.
+            const normalizedLabel = label.toUpperCase();
+
+            // The one that comes first in the document is used.
+            if (!refDefinitions.has(normalizedLabel)) {
+                refDefinitions.set(normalizedLabel, {
+                    label, // Preserve original case in result.
+                    usageCount: 0,
+                });
+            }
+        }
+
+        if (refDefinitions.size === 0 || token.isCancellationRequested) {
+            return;
+        }
+
+        // A confusing feature from #414. Not sure how to get it work.
+        const docLines = docText.split(/\r?\n/);
+        for (const crtLine of docLines) {
+            // Match something that may be a reference link.
+            const pattern = /\[([^\[\]]+?)\](?![(:\[])/g;
+            for (const match of crtLine.matchAll(pattern)) {
+                const label = match[1];
+                const record = refDefinitions.get(label.toUpperCase());
+                if (record) {
+                    record.usageCount++;
                 }
             }
+        }
 
-            if (refDefinitions.size === 0 || token.isCancellationRequested) {
-                return;
+        let startIndex = lineTextBefore.lastIndexOf('[');
+        const range = new Range(position.with({ character: startIndex + 1 }), position);
+
+        if (token.isCancellationRequested) {
+            return;
+        }
+
+        const completionItems = Array.from<IReferenceDefinition, CompletionItem>(refDefinitions.values(), ref => {
+            const label = ref.label;
+            const item = new CompletionItem(label, CompletionItemKind.Reference);
+            const usages = ref.usageCount;
+            item.documentation = new MarkdownString(label);
+            item.detail = usages === 1 ? `1 usage` : `${usages} usages`;
+            // Prefer unused items. <https://github.com/yzhang-gh/vscode-markdown/pull/414#discussion_r272807189>
+            item.sortText = usages === 0 ? `0-${label}` : `1-${label}`;
+            item.range = range;
+            return item;
+        });
+
+        return completionItems
+    }
+
+    private completeLinksToHeading(document: TextDocument, position: Position, lineTextBefore: string, lineTextAfter: string) {
+        let startIndex = lineTextBefore.lastIndexOf('#') - 1;
+        let isLinkRefDefinition = /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore); // The same as the 2nd conditon above.
+        let endPosition = position;
+
+        let addClosingParen = false;
+        if (/^([^\) ]+\s*|^\s*)\)/.test(lineTextAfter)) {
+            // try to detect if user wants to replace a link (i.e. matching closing paren and )
+            // Either: ... <CURSOR> something <whitespace> )
+            //     or: ... <CURSOR> <whitespace> )
+            //     or: ... <CURSOR> )     (endPosition assignment is a no-op for this case)
+
+            // in every case, we want to remove all characters after the cursor and before that first closing paren
+            endPosition = position.with({ character: + endPosition.character + lineTextAfter.indexOf(')') });
+        } else {
+            // If no closing paren is found, replace all trailing non-white-space chars and add a closing paren
+            // distance to first non-whitespace or EOL
+            const toReplace = (lineTextAfter.search(/(?<=^\S+)(\s|$)/));
+            endPosition = position.with({ character: + endPosition.character + toReplace });
+            if (!isLinkRefDefinition) {
+                addClosingParen = true;
             }
+        }
 
-            // A confusing feature from #414. Not sure how to get it work.
-            const docLines = docText.split(/\r?\n/);
-            for (const crtLine of docLines) {
-                // Match something that may be a reference link.
-                const pattern = /\[([^\[\]]+?)\](?![(:\[])/g;
-                for (const match of crtLine.matchAll(pattern)) {
-                    const label = match[1];
-                    const record = refDefinitions.get(label.toUpperCase());
-                    if (record) {
-                        record.usageCount++;
-                    }
+        const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
+
+        return new Promise<CompletionItem[]>((res, _) => {
+            const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
+
+            const headingCompletions = toc.map<CompletionItem>(heading => {
+                const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
+
+                if (addClosingParen) {
+                    item.insertText = item.label + ')';
                 }
-            }
 
-            let startIndex = lineTextBefore.lastIndexOf('[');
-            const range = new Range(position.with({ character: startIndex + 1 }), position);
-
-            if (token.isCancellationRequested) {
-                return;
-            }
-
-            const completionItemList = Array.from<IReferenceDefinition, CompletionItem>(refDefinitions.values(), ref => {
-                const label = ref.label;
-                const item = new CompletionItem(label, CompletionItemKind.Reference);
-                const usages = ref.usageCount;
-                item.documentation = new MarkdownString(label);
-                item.detail = usages === 1 ? `1 usage` : `${usages} usages`;
-                // Prefer unused items. <https://github.com/yzhang-gh/vscode-markdown/pull/414#discussion_r272807189>
-                item.sortText = usages === 0 ? `0-${label}` : `1-${label}`;
+                item.documentation = heading.rawContent;
                 item.range = range;
                 return item;
             });
 
-            return completionItemList;
-        // } else if (
-        //     /\[[^\[\]]*?\]\(#[^#\)]*$/.test(lineTextBefore)
-        //     || /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore)
-        //     // /\[[^\]]*\]\((\S*)#[^\)]*$/.test(lineTextBefore) // `[](url#anchor|` Link with anchor.
-        //     // || /\[[^\]]*\]\:\s?(\S*)#$/.test(lineTextBefore) // `[]: url#anchor|` Link reference definition with anchor.
-        // ) {
-        //     /* ┌───────────────────────────┐
-        //        │ Anchor tags from headings │
-        //        └───────────────────────────┘ */
-        //     let startIndex = lineTextBefore.lastIndexOf('#') - 1;
-        //     let isLinkRefDefinition = /^>? {0,3}\[[^\[\]]+?\]\:[ \t\f\v]*#[^#]*$/.test(lineTextBefore); // The same as the 2nd conditon above.
-        //     let endPosition = position;
+            res(headingCompletions);
+        });
+    }
 
-        //     let addClosingParen = false;
-        //     if (/^([^\) ]+\s*|^\s*)\)/.test(lineTextAfter)) {
-        //         // try to detect if user wants to replace a link (i.e. matching closing paren and )
-        //         // Either: ... <CURSOR> something <whitespace> )
-        //         //     or: ... <CURSOR> <whitespace> )
-        //         //     or: ... <CURSOR> )     (endPosition assignment is a no-op for this case)
+    private async completeFilePaths(lineTextBefore: string, document: TextDocument) {
+        const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)![0];
+        const basePath = getBasepath(document, typedDir);
+        const isRootedPath = typedDir.startsWith('/');
 
-        //         // in every case, we want to remove all characters after the cursor and before that first closing paren
-        //         endPosition = position.with({ character: + endPosition.character + lineTextAfter.indexOf(')') });
-        //     } else {
-        //         // If no closing paren is found, replace all trailing non-white-space chars and add a closing paren
-        //         // distance to first non-whitespace or EOL
-        //         const toReplace = (lineTextAfter.search(/(?<=^\S+)(\s|$)/));
-        //         endPosition = position.with({ character: + endPosition.character + toReplace });
-        //         if (!isLinkRefDefinition) {
-        //             addClosingParen = true;
-        //         }
-        //     }
+        const files = await workspace.findFiles("**/*", this.EXCLUDE_GLOB);
 
-        //     const range = new Range(position.with({ character: startIndex + 1 }), endPosition);
+        const items: CompletionItem[] = [];
 
-        //     return new Promise((res, _) => {
-        //         const toc: readonly Readonly<IHeading>[] = getAllTocEntry(document, { respectMagicCommentOmit: false, respectProjectLevelOmit: false });
+        for (const uri of files) {
+            const label = path.relative(basePath, uri.fsPath).replace(/\\/g, "/").replace(/ /g, "%20");
+            if (isRootedPath && label.startsWith("..")) {
+                continue;
+            }
 
-        //         const headingCompletions = toc.map<CompletionItem>(heading => {
-        //             const item = new CompletionItem('#' + heading.slug, CompletionItemKind.Reference);
-
-        //             if (addClosingParen) {
-        //                 item.insertText = item.label + ')';
-        //             }
-
-        //             item.documentation = heading.rawContent;
-        //             item.range = range;
-        //             return item;
-        //         });
-
-        //         res(headingCompletions);
-        //     });
-        // } else if (/\[[^\[\]]*?\](?:(?:\([^\)]*)|(?:\:[ \t\f\v]*\S*))$/.test(lineTextBefore)) {
-        //     /* ┌────────────┐
-        //        │ File paths │
-        //        └────────────┘ */
-        //     //// Should be after anchor completions
-        //     if (workspace.getWorkspaceFolder(document.uri) === undefined) return [];
-
-        //     const typedDir = lineTextBefore.match(/(?<=((?:\]\()|(?:\]\:))[ \t\f\v]*)\S*$/)![0];
-        //     const basePath = getBasepath(document, typedDir);
-        //     const isRootedPath = typedDir.startsWith('/');
-
-        //     const files = await workspace.findFiles("**/*", this.EXCLUDE_GLOB);
-
-        //     const items: CompletionItem[] = [];
-
-        //     for (const uri of files) {
-        //         const label = path.relative(basePath, uri.fsPath).replace(/\\/g, "/").replace(/ /g, "%20");
-        //         if (isRootedPath && label.startsWith("..")) {
-        //             continue;
-        //         }
-
-        //         const item = new CompletionItem(label, CompletionItemKind.File);
-        //         item.sortText = label.replace(/\./g, "{");
-        //         items.push(item);
-        //     }
-
-        //     return items;
-        } else {
-            return [];
+            const item = new CompletionItem(label, CompletionItemKind.File);
+            item.sortText = label.replace(/\./g, "{");
+            items.push(item);
         }
+        return items;
     }
 }
 
