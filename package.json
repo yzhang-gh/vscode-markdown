@@ -139,6 +139,14 @@
                 "category": "Markdown All in One"
             }
         ],
+        "menus": {
+            "editor/context": [
+                {
+                  "command": "markdown.extension.printToHtml",
+                  "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                }
+            ]
+        },
         "keybindings": [
             {
                 "command": "markdown.extension.editing.toggleBold",
