@@ -143,7 +143,7 @@
             "editor/context": [
                 {
                   "command": "markdown.extension.printToHtml",
-                  "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                  "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/"
                 }
             ]
         },
