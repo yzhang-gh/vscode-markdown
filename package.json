@@ -139,20 +139,6 @@
                 "category": "Markdown All in One"
             }
         ],
-        "menus": {
-            "editor/context": [
-                {
-                    "command": "markdown.extension.printToHtml",
-                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
-                    "group": "markdown.print@1"
-                },
-                {
-                    "command": "markdown.extension.printToHtmlBatch",
-                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/ && workspaceFolderCount >= 1",
-                    "group": "markdown.print@2"
-                }
-            ]
-        },
         "keybindings": [
             {
                 "command": "markdown.extension.editing.toggleBold",
