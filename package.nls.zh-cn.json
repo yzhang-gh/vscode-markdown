@@ -13,6 +13,7 @@
     "command.editing.toggleList.title": "触发列表",
     "command.editing.toggleCodeBlock.title": "触发代码块",
     "config.title": "Markdown All in One",
+    "config.completion.enabled": "是否启用自动补全。"
     "config.completion.respectVscodeSearchExclude": "进行自动补全时是否考虑 VS Code 的 `#search.exclude#` 设置。（`node_modules`，`bower_components` 和 `*.code-search` 将**总是被排除**，不受此选项影响。）",
     "config.completion.root": "路径自动补全的根路径。",
     "config.italic.indicator.description": "使用 `*` 或 `_` 包围斜体文本。",
