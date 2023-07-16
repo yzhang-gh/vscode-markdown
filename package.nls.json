@@ -33,6 +33,7 @@
     "config.print.imgToBase64.description": "Convert images to base64 when printing to HTML.",
     "config.print.includeVscodeStylesheets": "Include VS Code's basic Markdown styles so that the exported HTML looks similar as inside VS Code.",
     "config.print.onFileSave.description": "Print current document to HTML when file is saved.",
+    "config.print.pureHtml.description": "Print current document to pure HTML (without any stylesheets).",
     "config.print.theme": "Theme of the exported HTML. Only affects code blocks.",
     "config.print.validateUrls.description": "Enable/disable URL validation when printing.",
     "config.syntax.decorations.description": "(**Deprecated**) Use `#markdown.extension.theming.decoration.renderCodeSpan#` instead. See <https://github.com/yzhang-gh/vscode-markdown/issues/888> for details.",

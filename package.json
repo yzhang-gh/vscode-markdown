@@ -413,6 +413,12 @@
                     "description": "%config.print.onFileSave.description%",
                     "scope": "resource"
                 },
+                "markdown.extension.print.pureHtml": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%config.print.pureHtml.description%",
+                    "scope": "resource"
+                },
                 "markdown.extension.print.theme": {
                     "type": "string",
                     "default": "light",
