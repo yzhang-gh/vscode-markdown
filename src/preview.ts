@@ -55,6 +55,7 @@ function registerAutoPreview() {
 
 // VS Code dispatches a series of DidChangeActiveTextEditor events when moving tabs between groups, we don't want most of them.
 function triggerAutoPreview(editor: vscode.TextEditor | undefined): void {
+    // GitHub issues #1282, #1342
     const markdownRe = /(\.md|\.markdown)$/i
     if (!(editor && editor.document.uri.scheme === 'file' && markdownRe.test(editor.document.fileName))) {
         return;
