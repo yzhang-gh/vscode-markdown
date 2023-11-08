@@ -131,10 +131,10 @@ async function print(type: string, uri?: Uri, outFolder?: string) {
         });
     }
 
-    //// Convert `.md` links to `.html` by default (#667)
+    //// Convert `.md` links to `.html` by default (#667, #1324, #1347)
     const hrefRegex = /(<a[^>]+href=")([^"]+)("[^>]*>)/g;  // Match '<a...href="..."...>'
     body = body.replace(hrefRegex, function (_, g1, g2, g3) {
-        if (g2.endsWith('.md') && !(g2.includes('github.com') && g2.includes('blob'))) {
+        if ((g2.endsWith('.md') || g2.includes('.md#')) && !(g2.includes('github.com') && g2.includes('blob'))) {
             return `${g1}${g2.replace(/\.md$/, '.html')}${g3}`;
         } else {
             return _;
