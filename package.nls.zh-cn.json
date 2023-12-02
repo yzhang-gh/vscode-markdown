@@ -7,7 +7,7 @@
     "command.toc.removeSecNumbers.title": "删除章节序号",
     "command.printToHtml.title": "将当前文档打印为 HTML",
     "command.printToHtmlBatch.title": "批量打印文档为 HTML（选择文件夹）",
-    "command.editing.toggleCodeSpan.title": "触发代码块",
+    "command.editing.toggleCodeSpan.title": "触发行内代码块",
     "command.editing.toggleMath.title": "触发数学环境",
     "command.editing.toggleMathReverse.title": "触发数学环境（反向）",
     "command.editing.toggleList.title": "触发列表",
