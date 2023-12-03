@@ -31,6 +31,7 @@ const d0 = Object.freeze<vscode.Disposable & { _disposables: vscode.Disposable[]
 const registerFormatter = () => {
     if (configManager.get("tableFormatter.enabled")) {
         d0._disposables.push(vscode.languages.registerDocumentFormattingEditProvider(Document_Selector_Markdown, new MarkdownDocumentFormatter()));
+        d0._disposables.push(vscode.languages.registerDocumentRangeFormattingEditProvider(Document_Selector_Markdown, new MarkdownDocumentRangeFormattingEditProvider()));
     } else {
         d0.dispose();
     }
@@ -69,7 +70,7 @@ class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider
         return edits;
     }
 
-    private detectTables(document: vscode.TextDocument): ITableRange[] | undefined {
+    protected detectTables(document: vscode.TextDocument): ITableRange[] | undefined {
         const text = document.getText();
 
         const lineBreak = String.raw`\r?\n`;
@@ -117,7 +118,7 @@ class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider
         return spaces;
     }
 
-    private formatTable(target: ITableRange, doc: vscode.TextDocument, options: vscode.FormattingOptions) {
+    protected formatTable(target: ITableRange, doc: vscode.TextDocument, options: vscode.FormattingOptions) {
         // The following operations require the Unicode Normalization Form C (NFC).
         const text = target.text.normalize();
 
@@ -238,4 +239,20 @@ class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider
             return (text + ' '.repeat(length)).slice(0, length);
         }
     }
+}
+
+class MarkdownDocumentRangeFormattingEditProvider extends MarkdownDocumentFormatter implements vscode.DocumentRangeFormattingEditProvider {
+    provideDocumentRangeFormattingEdits(document: vscode.TextDocument, _: vscode.Range, options: vscode.FormattingOptions, token: vscode.CancellationToken) {
+        const tables = super.detectTables(document);
+        if (!tables || token.isCancellationRequested) {
+            return;
+        }
+
+        const edits: vscode.TextEdit[] = tables.map(
+            (target) => new vscode.TextEdit(target.range, super.formatTable(target, document, options))
+        );
+
+        return edits;
+    }
+
 }
