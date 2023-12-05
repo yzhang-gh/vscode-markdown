@@ -245,20 +245,20 @@ class MarkdownDocumentRangeFormattingEditProvider extends MarkdownDocumentFormat
     provideDocumentRangeFormattingEdits(document: vscode.TextDocument, range: vscode.Range, options: vscode.FormattingOptions, token: vscode.CancellationToken) {
         const tables = this.detectTables(document);
         if (!tables || token.isCancellationRequested) {
-          return;
+            return;
         }
         const selectedTables = new Array();
         tables.forEach((table) => {
-          if (range.contains(table.range)) {
-            selectedTables.push(table);
-          }
+            if (range.contains(table.range)) {
+                selectedTables.push(table);
+            }
         });
 
         const edits: vscode.TextEdit[] = selectedTables.map((target) => {
-          return new vscode.TextEdit(
-            target.range,
-            this.formatTable(target, document, options)
-          );
+            return new vscode.TextEdit(
+                target.range,
+                this.formatTable(target, document, options)
+            );
         });
 
         return edits;
