@@ -54,8 +54,25 @@ function onEnterKey(modifiers?: IModifier) {
     //// If it's an empty list item, remove it
     if (/^([-+*]|[0-9]+[.)])( +\[[ x]\])?$/.test(textBeforeCursor.trim()) && textAfterCursor.trim().length == 0) {
         return editor.edit(editBuilder => {
-            editBuilder.delete(line.range);
-            editBuilder.insert(line.range.end, '\n');
+            const editor = window.activeTextEditor!;
+            let cursor = editor.selection.active;
+            let document = editor.document;
+            let textBeforeCursor = document.lineAt(cursor.line).text.substr(0, cursor.character);
+        
+            if (/^\s+([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor) || /^\s+([-+*]|[0-9]+[.)]) +(\[[ x]\] )$/.test(textBeforeCursor)) {
+                // e.g. textBeforeCursor === `  - `, `  1. `, `  - [ ]`, `  1. [x]`
+                return outdent(editor).then(() => fixMarker(editor));
+            } else if (/^([-+*]|[0-9]+[.)]) $/.test(textBeforeCursor)) {
+                // e.g. textBeforeCursor === `- `, `1. `
+                return editor.edit(editBuilder => {
+                    editBuilder.replace(new Range(cursor.with({ character: 0 }), cursor), ''.repeat(textBeforeCursor.length))
+                }).then(() => fixMarker(editor));
+            } else if (/^([-+*]|[0-9]+[.)]) +(\[[ x]\] )$/.test(textBeforeCursor)) {
+                // e.g. textBeforeCursor === `- [ ]`, `1. [x]`, `- [x]`, `1. [ ]`
+                return deleteRange(editor, new Range(cursor.with({ character: textBeforeCursor.length - 4 }), cursor)).then(() => fixMarker(editor));
+            } else {
+                return asNormal(editor, 'enter',modifiers);
+            }
         }).then(() => {
             editor.revealRange(editor.selection);
         }).then(() => fixMarker(editor));
