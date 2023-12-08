@@ -137,22 +137,94 @@
                 "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
                 "title": "%command.editing.toggleCodeBlock.title%",
                 "category": "Markdown All in One"
+            },
+            {
+                "command": "markdown.extension.editing.toggleBold",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                "title": "%command.editing.toggleBold%",
+                "category": "Markdown All in One"
+            },
+            {
+                "command": "markdown.extension.editing.toggleItalic",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                "title": "%command.editing.toggleItalic%",
+                "category": "Markdown All in One"
+            },
+            {
+                "command": "markdown.extension.editing.toggleStrikethrough",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                "title": "%command.editing.toggleStrikethrough%",
+                "category": "Markdown All in One"
+            },
+            {
+                "command": "markdown.extension.checkTaskList",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                "title": "%command.checkTaskList%",
+                "category": "Markdown All in One"
             }
         ],
         "menus": {
             "editor/context": [
                 {
+                  "submenu": "markdown.submenu",
+                  "group": "2_markdown_submenu",
+                  "when": "!editorReadonly && editorTextFocus && editorLangId =~ /^markdown$|^rmd$|^quarto$/"
+                }
+              ],
+            "markdown.submenu": [
+                {
+                    "command": "markdown.extension.editing.toggleBold",
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "group": "1_markdown_submenu@1"
+                },
+                {
+                    "command": "markdown.extension.editing.toggleItalic",
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "group": "1_markdown_submenu@2"
+                },
+                {
+                    "command": "markdown.extension.editing.toggleStrikethrough",
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "group": "1_markdown_submenu@3"
+                },
+                {
+                    "command": "markdown.extension.editing.toggleList",
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "group": "1_markdown_submenu@4"
+                },
+                {
+                    "command": "markdown.extension.editing.toggleCodeSpan",
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "group": "1_markdown_submenu@5"
+                },
+                {
+                    "command": "markdown.extension.editing.toggleCodeBlock",
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "group": "1_markdown_submenu@6"
+                },
+                {
+                    "command": "markdown.extension.checkTaskList",
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "group": "1_markdown_submenu@7"
+                },
+                {
                     "command": "markdown.extension.printToHtml",
                     "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
-                    "group": "markdown.print@1"
+                    "group": "2_markdown_submenu@1"
                 },
                 {
                     "command": "markdown.extension.printToHtmlBatch",
                     "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/ && workspaceFolderCount >= 1",
-                    "group": "markdown.print@2"
+                    "group": "2_markdown_submenu@2"
                 }
             ]
         },
+        "submenus": [
+            {
+                "id": "markdown.submenu",
+                "label": "%config.title%"
+            }
+        ],
         "keybindings": [
             {
                 "command": "markdown.extension.editing.toggleBold",
