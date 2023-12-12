@@ -158,7 +158,6 @@
                 "command": "markdown.extension.editing.toggleStrikethrough",
                 "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
                 "title": "%command.editing.toggleStrikethrough%",
-                "icon":"$(question)",
                 "category": "Markdown All in One"
             },
             {
@@ -195,23 +194,18 @@
                 },
                 {
                     "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
-                    "command": "markdown.extension.editing.toggleStrikethrough",
+                    "command": "markdown.extension.checkTaskList",
                     "group": "navigation@1_3"
                 },
                 {
                     "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
-                    "command": "markdown.extension.checkTaskList",
+                    "command": "markdown.extension.editing.toggleCodeSpan",
                     "group": "navigation@1_4"
                 },
                 {
                     "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
-                    "command": "markdown.extension.editing.toggleCodeSpan",
-                    "group": "navigation@1_5"
-                },
-                {
-                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
                     "command": "markdown.extension.editing.toggleList",
-                    "group": "navigation@1_6"
+                    "group": "navigation@1_5"
                 }
             ]
         },
