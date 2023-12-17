@@ -112,6 +112,7 @@
                 "command": "markdown.extension.editing.toggleCodeSpan",
                 "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
                 "title": "%command.editing.toggleCodeSpan.title%",
+                "icon":"$(code)",
                 "category": "Markdown All in One"
             },
             {
@@ -130,12 +131,40 @@
                 "command": "markdown.extension.editing.toggleList",
                 "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
                 "title": "%command.editing.toggleList.title%",
+                "icon":"$(list-unordered)",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.editing.toggleCodeBlock",
                 "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
                 "title": "%command.editing.toggleCodeBlock.title%",
+                "category": "Markdown All in One"
+            },
+            {
+                "command": "markdown.extension.editing.toggleBold",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                "title": "%command.editing.toggleBold%",
+                "icon":"$(bold)",
+                "category": "Markdown All in One"
+            },
+            {
+                "command": "markdown.extension.editing.toggleItalic",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                "title": "%command.editing.toggleItalic%",
+                "icon":"$(italic)",
+                "category": "Markdown All in One"
+            },
+            {
+                "command": "markdown.extension.editing.toggleStrikethrough",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                "title": "%command.editing.toggleStrikethrough%",
+                "category": "Markdown All in One"
+            },
+            {
+                "command": "markdown.extension.checkTaskList",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                "title": "%command.checkTaskList%",
+                "icon":"$(tasklist)",
                 "category": "Markdown All in One"
             }
         ],
@@ -150,6 +179,33 @@
                     "command": "markdown.extension.printToHtmlBatch",
                     "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/ && workspaceFolderCount >= 1",
                     "group": "markdown.print@2"
+                }
+            ],
+            "editor/title": [
+                {
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "command": "markdown.extension.editing.toggleBold",
+                    "group": "navigation@1_1"
+                },
+                {
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "command": "markdown.extension.editing.toggleItalic",
+                    "group": "navigation@1_2"
+                },
+                {
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "command": "markdown.extension.checkTaskList",
+                    "group": "navigation@1_3"
+                },
+                {
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "command": "markdown.extension.editing.toggleCodeSpan",
+                    "group": "navigation@1_4"
+                },
+                {
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "command": "markdown.extension.editing.toggleList",
+                    "group": "navigation@1_5"
                 }
             ]
         },
