@@ -50,12 +50,12 @@ suite("List editing.", () => {
             ],
             new Selection(1, 0, 1, 0));
     });
-    
-    test("Enter key. Outdent list item when there is a space before it, until the front is empty", () => {
+
+    test("Enter key. Outdent empty list item until it is top-level", () => {
         return testCommand('markdown.extension.onEnterKey',
             [
                 '- item1',
-                '    - '
+                '  - '
             ],
             new Selection(1, 6, 1, 6),
             [

@@ -247,6 +247,7 @@ class MarkdownDocumentRangeFormattingEditProvider extends MarkdownDocumentFormat
         if (!tables || token.isCancellationRequested) {
             return;
         }
+
         const selectedTables = new Array();
         tables.forEach((table) => {
             if (range.contains(table.range)) {
