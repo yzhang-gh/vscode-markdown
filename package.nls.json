@@ -40,6 +40,7 @@
     "config.print.pureHtml.description": "Print current document to pure HTML (without any stylesheets).",
     "config.print.theme": "Theme of the exported HTML. Only affects code blocks.",
     "config.print.validateUrls.description": "Enable/disable URL validation when printing.",
+    "config.showActionButtons.description": "Show buttons (e.g. toggle bold, italic) on the editor toolbar.",
     "config.syntax.decorations.description": "(**Deprecated**) Use `#markdown.extension.theming.decoration.renderCodeSpan#` instead. See <https://github.com/yzhang-gh/vscode-markdown/issues/888> for details.",
     "config.syntax.decorationFileSizeLimit.description": "If a file is larger than this size (in byte/B), we won't attempt to render syntax decorations.",
     "config.syntax.plainTheme.description": "(**Experimental**) Report issue at <https://github.com/yzhang-gh/vscode-markdown/issues/185>.",

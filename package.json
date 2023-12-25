@@ -6,7 +6,7 @@
     "version": "3.5.1",
     "publisher": "yzhang",
     "engines": {
-        "vscode": "^1.72.0"
+        "vscode": "^1.77.0"
     },
     "categories": [
         "Programming Languages",
@@ -28,7 +28,6 @@
         "onLanguage:markdown",
         "onLanguage:rmd",
         "onLanguage:quarto",
-        "onCommand:markdown.extension.printToHtmlBatch",
         "workspaceContains:README.md"
     ],
     "main": "./dist/node/main.js",
@@ -183,29 +182,29 @@
             ],
             "editor/title": [
                 {
-                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/ && config.markdown.extension.showActionButtons",
                     "command": "markdown.extension.editing.toggleBold",
-                    "group": "navigation@1_1"
+                    "group": "navigation@1"
                 },
                 {
-                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/ && config.markdown.extension.showActionButtons",
                     "command": "markdown.extension.editing.toggleItalic",
-                    "group": "navigation@1_2"
+                    "group": "navigation@2"
                 },
                 {
-                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
-                    "command": "markdown.extension.checkTaskList",
-                    "group": "navigation@1_3"
-                },
-                {
-                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/ && config.markdown.extension.showActionButtons",
                     "command": "markdown.extension.editing.toggleCodeSpan",
-                    "group": "navigation@1_4"
+                    "group": "navigation@3"
                 },
                 {
-                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/ && config.markdown.extension.showActionButtons",
                     "command": "markdown.extension.editing.toggleList",
-                    "group": "navigation@1_5"
+                    "group": "navigation@4"
+                },
+                {
+                    "when": "editorLangId =~ /^markdown$|^rmd$|^quarto$/ && config.markdown.extension.showActionButtons",
+                    "command": "markdown.extension.checkTaskList",
+                    "group": "navigation@5"
                 }
             ]
         },
@@ -248,18 +247,18 @@
             {
                 "command": "markdown.extension.onEnterKey",
                 "key": "enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^quarto$/ && !suggestWidgetVisible && !editorHasMultipleSelections && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode' && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^quarto$/ && (!suggestWidgetVisible || config.editor.acceptSuggestionOnEnter == 'off') && !editorHasMultipleSelections && vim.mode != 'Normal' && vim.mode != 'Visual' && vim.mode != 'VisualBlock' && vim.mode != 'VisualLine' && vim.mode != 'SearchInProgressMode' && vim.mode != 'CommandlineInProgress' && vim.mode != 'Replace' && vim.mode != 'EasyMotionMode' && vim.mode != 'EasyMotionInputMode' && vim.mode != 'SurroundInputMode' && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onCtrlEnterKey",
                 "key": "ctrl+enter",
                 "mac": "cmd+enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^quarto$/ && !suggestWidgetVisible && !editorHasMultipleSelections && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^quarto$/ && (!suggestWidgetVisible || config.editor.acceptSuggestionOnEnter == 'off') && !editorHasMultipleSelections && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onShiftEnterKey",
                 "key": "shift+enter",
-                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^quarto$/ && !suggestWidgetVisible && !editorHasMultipleSelections && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^quarto$/ && (!suggestWidgetVisible || config.editor.acceptSuggestionOnEnter == 'off') && !editorHasMultipleSelections && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv"
             },
             {
                 "command": "markdown.extension.onTabKey",
@@ -489,6 +488,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "%config.print.validateUrls.description%"
+                },
+                "markdown.extension.showActionButtons": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDeprecationMessage": "%config.showActionButtons.description%"
                 },
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
