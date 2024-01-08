@@ -1,3 +1,28 @@
+## 3.6.0 (2024.01.08)
+
+### New
+
+- [Completion] Add an option `completion.enabled` which allows to re-enable the path completion provided by this extension ([#1258](https://github.com/yzhang-gh/vscode-markdown/issues/1258)).
+- [Export] Add a right-click menu entry for the command `printToHtml` ([#1278](https://github.com/yzhang-gh/vscode-markdown/pull/1278)). Thanks, [Dihong Luo (@Andy-Dihong-Luo)](https://github.com/Andy-Dihong-Luo).
+- [Export] Add an option `print.pureHtml` ([#1310](https://github.com/yzhang-gh/vscode-markdown/issues/1310)).
+- [Table formatter] Add range format support ([#1361](https://github.com/yzhang-gh/vscode-markdown/pull/1361)). Thanks, [PeaceShi (@peaceshi)](https://github.com/peaceshi).
+- [List continuation] New `onEnterKey` logic so as to align with other editors ([#1364](https://github.com/yzhang-gh/vscode-markdown/pull/1364)). Thanks, [@HughLink](https://github.com/HughLink).
+- Add action buttons (e.g. toggle bold, italic) to the editor toolbar, you can enable it with a new option `showActionButtons` ([#1358](https://github.com/yzhang-gh/vscode-markdown/issues/1358)). Thanks, [PeaceShi (@peaceshi)](https://github.com/peaceshi).
+- Support [GFM alerts](https://github.com/orgs/community/discussions/16925) ([#1350](https://github.com/yzhang-gh/vscode-markdown/issues/1350)). Thanks, [PraZ (@prazdevs)](https://github.com/prazdevs).
+
+### Fixes
+
+- Fix `when` conditions of the `closePreview` commands/keybindings ([#1263](https://github.com/yzhang-gh/vscode-markdown/issues/1263)).
+- Remove the default key binding <kbd>Alt</kbd>+<kbd>c</kbd> on Mac ([#1285](https://github.com/yzhang-gh/vscode-markdown/issues/1285)).
+- [Auto preview] Fix conditions (Jupyter Notebook, VS Code comment widget) of the `autoShowPreviewToSide` feature ([#1288](https://github.com/yzhang-gh/vscode-markdown/pull/1288), thanks, [Dihong Luo (@Andy-Dihong-Luo)](https://github.com/Andy-Dihong-Luo)), ([#1342](https://github.com/yzhang-gh/vscode-markdown/issues/1342)).
+- [Export] No long convert `.md` to `.html` if the links are GitHub urls ([#1324](https://github.com/yzhang-gh/vscode-markdown/issues/1324)).
+- [Export] Now correctly convert `.md#anchor` type links ([#1347](https://github.com/yzhang-gh/vscode-markdown/issues/1347)).
+- [List continuation] Check option `editor.acceptSuggestionOnEnter` ([#1367](https://github.com/yzhang-gh/vscode-markdown/issues/1367)).
+
+### Others
+
+- [i18n] Update Chinese translations ([#1286](https://github.com/yzhang-gh/vscode-markdown/pull/1286)). Thanks, [Dihong Luo (@Andy-Dihong-Luo)](https://github.com/Andy-Dihong-Luo).
+
 ## 3.5.1 (2023.03.26)
 
 ### Fixes
@@ -9,7 +34,7 @@
 
 ### Others
 
-- Add Russian translations ([#1201](https://github.com/yzhang-gh/vscode-markdown/pull/1201)). Thanks, [Sergey Romanov (@Serhioromano)](https://github.com/Serhioromano).
+- [i18n] Add Russian translations ([#1201](https://github.com/yzhang-gh/vscode-markdown/pull/1201)). Thanks, [Sergey Romanov (@Serhioromano)](https://github.com/Serhioromano).
 - Fix the Shields build status badge ([#1215](https://github.com/yzhang-gh/vscode-markdown/pull/1215)). Thanks, [James H (@hughesjs)](https://github.com/hughesjs).
 - Remove extra spaces when pasting links on selected text ([#1245](https://github.com/yzhang-gh/vscode-markdown/pull/1245)). Thanks, [auh (@fanlushuai)](https://github.com/fanlushuai).
 - [Math] KaTeX v0.16.4
