@@ -15,6 +15,7 @@ src/
 **/*.ts
 !node_modules/katex/dist/fonts/*.woff2
 !node_modules/katex/dist/katex.min.css
+!node_modules/markdown-it-github-alerts/styles/*.css
 
 # Configuration files
 .github/
