@@ -55,17 +55,24 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
     [SlugifyMode.AzureDevOps]: (slug: string): string => {
         // https://markdown-all-in-one.github.io/docs/specs/slugify/azure-devops.html
         // Encode every character. Although opposed by RFC 3986, it's the only way to solve #802.
-        return Array.from(
-            utf8Encoder.encode(
-                slug
-                    .trim()
+
+        slug =  slug.trim()
                     .toLowerCase()
                     .replace(/\p{Zs}/gu, "-")
-            ),
-            (b) => "%" + b.toString(16)
-        )
-            .join("")
-            .toUpperCase();
+
+        if(/^\d/.test(slug)) {
+            slug = Array.from(
+                utf8Encoder.encode(slug),
+                (b) => "%" + b.toString(16)
+            )
+                .join("")
+                .toUpperCase();
+        }
+        else {
+            slug =  encodeURIComponent(slug)
+        }
+        
+        return slug
     },
 
     [SlugifyMode.BitbucketCloud]: (slug: string, env: object): string => {
