@@ -19,6 +19,10 @@
 - [Export] Now correctly convert `.md#anchor` type links ([#1347](https://github.com/yzhang-gh/vscode-markdown/issues/1347)).
 - [List continuation] Check option `editor.acceptSuggestionOnEnter` ([#1367](https://github.com/yzhang-gh/vscode-markdown/issues/1367)).
 
+<!--  -->
+
+- **v3.6.2 (2024.01.15)** Fix "GFM alerts" exported HTML styles ([#1386](https://github.com/yzhang-gh/vscode-markdown/issues/1386)).
+
 ### Others
 
 - [i18n] Update Chinese translations ([#1286](https://github.com/yzhang-gh/vscode-markdown/pull/1286)). Thanks, [Dihong Luo (@Andy-Dihong-Luo)](https://github.com/Andy-Dihong-Luo).
