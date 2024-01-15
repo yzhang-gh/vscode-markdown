@@ -215,10 +215,6 @@ function hasMathEnv(text: string) {
     return text.includes('$');
 }
 
-function getMediaPath(mediaFile: string): string {
-    return thisContext.asAbsolutePath(path.join('media', mediaFile));
-}
-
 function wrapWithStyleTag(src: string) {
     if (src.startsWith('http')) {
         return `<link rel="stylesheet" href="${src}">`;
@@ -243,7 +239,12 @@ function getStyles(uri: Uri, hasMathEnv: boolean, includeVscodeStyles: boolean) 
     const highlightCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">';
     const copyTeXCss = '<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">';
 
-    const baseCssPaths = ['checkbox.css'].map(s => getMediaPath(s));
+    const baseCssPaths = [
+        'media/checkbox.css',
+        "node_modules/markdown-it-github-alerts/styles/github-colors-light.css",
+        "node_modules/markdown-it-github-alerts/styles/github-colors-dark-media.css",
+        'node_modules/markdown-it-github-alerts/styles/github-base.css'
+    ].map(s => thisContext.asAbsolutePath(s));
     const customCssPaths = getCustomStyleSheets(uri);
 
     return `${hasMathEnv ? katexCss + '\n' + copyTeXCss : ''}
