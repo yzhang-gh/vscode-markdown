@@ -492,7 +492,7 @@
                 "markdown.extension.showActionButtons": {
                     "type": "boolean",
                     "default": false,
-                    "markdownDeprecationMessage": "%config.showActionButtons.description%"
+                    "description": "%config.showActionButtons.description%"
                 },
                 "markdown.extension.syntax.decorations": {
                     "type": "boolean",
