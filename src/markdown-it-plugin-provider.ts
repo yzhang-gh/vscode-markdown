@@ -9,7 +9,7 @@ const katexOptions: KatexOptions = { throwOnError: false };
  */
 export function extendMarkdownIt(md: MarkdownIt): MarkdownIt {
     md.use(require("markdown-it-task-lists"), {enabled: true});
-    md.use(require("markdown-it-github-alerts"))
+    md.use(require("markdown-it-github-alerts"), { matchCaseSensitive: false })
 
     if (configManager.get("math.enabled")) {
         // We need side effects. (#521)
