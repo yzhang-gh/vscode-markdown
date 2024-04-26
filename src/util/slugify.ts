@@ -1,6 +1,7 @@
 import SlugifyMode from "../contract/SlugifyMode";
 import { configManager } from "../configuration/manager";
 import { commonMarkEngine } from "../markdownEngine";
+import * as wasm from "slug-wasm";
 
 const utf8Encoder = new TextEncoder();
 
@@ -143,6 +144,10 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
                 .replace(/^\-+/, "") // Remove leading -
                 .replace(/\-+$/, "") // Remove trailing -
         );
+    },
+
+    [SlugifyMode.Zola]: (slug: string, _env: object): string => {
+        return wasm.slugify(slug);
     }
 };
 
@@ -179,6 +184,9 @@ export function slugify(heading: string, {
 
         case SlugifyMode.BitbucketCloud:
             return Slugify_Methods[SlugifyMode.BitbucketCloud](heading, env);
+
+        case SlugifyMode.Zola:
+            return Slugify_Methods[SlugifyMode.Zola](heading, env);
 
         default:
             return Slugify_Methods[SlugifyMode.GitHub](heading, env);

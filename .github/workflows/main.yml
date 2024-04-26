@@ -34,6 +34,12 @@ jobs:
           node-version: "14"
           cache: "npm"
 
+      - name: Setup Rust Toolchain for GitHub CI
+        uses: actions-rust-lang/setup-rust-toolchain@v1.8.0
+          
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh 
+
       - name: "Install dependencies"
         run: |
           npm ci

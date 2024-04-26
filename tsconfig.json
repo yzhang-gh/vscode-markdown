@@ -9,5 +9,5 @@
         "outDir": "out",
         "sourceMap": true
     },
-    "include": ["src/**/*"]
+    "include": ["src/**/*", "src/slug-wasm/pkg/slug_wasm.d.ts"]
 }

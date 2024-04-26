@@ -1,0 +1,46 @@
+[package]
+name = "slug-wasm"
+version = "0.1.5"
+edition = "2021"
+authors = ["hill <hill@hilll.dev>"]
+description = "expose slug to wasm"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = []
+console_error_panic_hook = ["dep:console_error_panic_hook"]
+mini-alloc = ["dep:mini-alloc"]
+
+[dependencies]
+slug = { version = "0.1.5" }
+console_error_panic_hook = { version = "0.1.6", optional = true }
+mini-alloc = { version = "0.4.2", optional = true }
+wasm-bindgen = { version = "0.2.91" }
+
+[dev-dependencies]
+wasm-bindgen-test = { version = "0.3.41" }
+
+[profile.release]
+codegen-units = 1
+debug = false
+debug-assertions = false
+incremental = true
+lto = true
+opt-level = "s"
+overflow-checks = false
+panic = "unwind"
+rpath = false
+split-debuginfo = "off"
+strip = "symbols"
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ['-Os']
+
+[package.metadata.wasm-pack.profile.release.wasm-bindgen]
+debug-js-glue = false
+demangle-name-section = false
+dwarf-debug-info = false
+omit-default-module-path = false

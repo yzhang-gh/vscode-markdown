@@ -19,6 +19,9 @@ export const enum SlugifyMode {
 
     /** Visual Studio Code */
     VisualStudioCode = "vscode",
+
+    /** Zola */
+    Zola = "zola",
 }
 
 export default SlugifyMode;

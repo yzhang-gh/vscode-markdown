@@ -591,7 +591,8 @@
                         "bitbucket-cloud",
                         "gitea",
                         "gitlab",
-                        "vscode"
+                        "vscode",
+                        "zola"
                     ],
                     "enumDescriptions": [
                         "GitHub",
@@ -599,7 +600,8 @@
                         "Bitbucket Cloud",
                         "Gitea",
                         "GitLab",
-                        "Visual Studio Code"
+                        "Visual Studio Code",
+                        "Zola"
                     ]
                 },
                 "markdown.extension.toc.unorderedList.marker": {
@@ -667,7 +669,7 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run build",
-        "build": "node ./build/build.js",
+        "build": "cd ./src/slug-wasm && wasm-pack build --release && cd ./../.. && node ./build/build.js",
         "dev-build": "webpack --mode development",
         "dev-compile": "tsc --build --watch --verbose",
         "pretest": "tsc --build",
@@ -683,7 +685,8 @@
         "markdown-it": "^13.0.2",
         "markdown-it-github-alerts": "^0.1.2",
         "markdown-it-task-lists": "^2.1.1",
-        "string-similarity": "^4.0.4"
+        "string-similarity": "^4.0.4",
+        "slug-wasm": "file:./src/slug-wasm/pkg"
     },
     "devDependencies": {
         "@types/glob": "^7.2.0",
