@@ -89,7 +89,6 @@ const Config_Node = {
     },
     experiments: {
         syncWebAssembly: true,
-        asyncWebAssembly: true,
     }
 };
 
