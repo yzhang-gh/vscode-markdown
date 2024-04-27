@@ -87,6 +87,10 @@ const Config_Node = {
         // Don't use `absoluteResourcePath`, as it's often not a file system path.
         devtoolModuleFilenameTemplate: (info) => pathToFileURL(path.resolve(__dirname, info.resourcePath)).href,
     },
+    experiments: {
+        syncWebAssembly: true,
+        asyncWebAssembly: true,
+    }
 };
 
 module.exports = [Config_Node];

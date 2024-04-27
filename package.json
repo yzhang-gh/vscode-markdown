@@ -111,7 +111,7 @@
                 "command": "markdown.extension.editing.toggleCodeSpan",
                 "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
                 "title": "%command.editing.toggleCodeSpan.title%",
-                "icon":"$(code)",
+                "icon": "$(code)",
                 "category": "Markdown All in One"
             },
             {
@@ -130,7 +130,7 @@
                 "command": "markdown.extension.editing.toggleList",
                 "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
                 "title": "%command.editing.toggleList.title%",
-                "icon":"$(list-unordered)",
+                "icon": "$(list-unordered)",
                 "category": "Markdown All in One"
             },
             {
@@ -143,14 +143,14 @@
                 "command": "markdown.extension.editing.toggleBold",
                 "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
                 "title": "%command.editing.toggleBold%",
-                "icon":"$(bold)",
+                "icon": "$(bold)",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.editing.toggleItalic",
                 "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
                 "title": "%command.editing.toggleItalic%",
-                "icon":"$(italic)",
+                "icon": "$(italic)",
                 "category": "Markdown All in One"
             },
             {
@@ -163,7 +163,7 @@
                 "command": "markdown.extension.checkTaskList",
                 "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$/",
                 "title": "%command.checkTaskList%",
-                "icon":"$(tasklist)",
+                "icon": "$(tasklist)",
                 "category": "Markdown All in One"
             }
         ],
@@ -669,7 +669,7 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run build",
-        "build": "cd ./src/slug-wasm && wasm-pack build --release && cd ./../.. && node ./build/build.js",
+        "build": "cd ./src/zola-slug && wasm-pack build -t nodejs --release && cd ./../.. && node ./build/build.js",
         "dev-build": "webpack --mode development",
         "dev-compile": "tsc --build --watch --verbose",
         "pretest": "tsc --build",
@@ -686,7 +686,7 @@
         "markdown-it-github-alerts": "^0.1.2",
         "markdown-it-task-lists": "^2.1.1",
         "string-similarity": "^4.0.4",
-        "slug-wasm": "file:./src/slug-wasm/pkg"
+        "zola-slug": "file:./src/zola-slug/pkg"
     },
     "devDependencies": {
         "@types/glob": "^7.2.0",
@@ -697,11 +697,12 @@
         "@types/string-similarity": "^4.0.0",
         "@types/vscode": "~1.63.2",
         "@vscode/test-electron": "^1.6.2",
+        "@vscode/vsce": "^2.26.0",
         "glob": "^7.2.0",
         "mocha": "^9.2.2",
         "ts-loader": "^9.2.8",
         "typescript": "~4.5.5",
-        "webpack": "~5.65.0",
+        "webpack": "^5.91.0",
         "webpack-cli": "^4.9.2"
     }
 }

@@ -1,5 +1,5 @@
 [package]
-name = "slug-wasm"
+name = "zola-slug"
 version = "0.1.5"
 edition = "2021"
 authors = ["hill <hill@hilll.dev>"]
@@ -10,15 +10,13 @@ license = "MIT"
 crate-type = ["cdylib", "rlib"]
 
 [features]
-default = []
-console_error_panic_hook = ["dep:console_error_panic_hook"]
+default = ["mini-alloc"]
 mini-alloc = ["dep:mini-alloc"]
 
 [dependencies]
-slug = { version = "0.1.5" }
-console_error_panic_hook = { version = "0.1.6", optional = true }
+slug = "0.1.0"
 mini-alloc = { version = "0.4.2", optional = true }
-wasm-bindgen = { version = "0.2.91" }
+wasm-bindgen = "0.2.91"
 
 [dev-dependencies]
 wasm-bindgen-test = { version = "0.3.41" }

@@ -9,5 +9,5 @@
         "outDir": "out",
         "sourceMap": true
     },
-    "include": ["src/**/*", "src/slug-wasm/pkg/slug_wasm.d.ts"]
+    "include": ["src/**/*", "src/zola-slug/pkg/slug_wasm.d.ts"]
 }
