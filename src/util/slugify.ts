@@ -1,7 +1,7 @@
 import SlugifyMode from "../contract/SlugifyMode";
 import { configManager } from "../configuration/manager";
 import { commonMarkEngine } from "../markdownEngine";
-import * as zola_slug from "zola-slug";
+import { wasm } from "../extension";
 
 const utf8Encoder = new TextEncoder();
 
@@ -147,7 +147,7 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
     },
 
     [SlugifyMode.Zola]: (slug: string, _env: object): string => {
-        return zola_slug.slugify(slug);
+        return wasm.slugify(slug);
     }
 };
 

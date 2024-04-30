@@ -16,14 +16,20 @@ import * as print from './print';
 import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
 
+export var wasm: any;
+
 export function activate(context: ExtensionContext) {
     configNls({ extensionContext: context });
 
-    context.subscriptions.push(
-        configManager, contextServiceManager, decorationManager, commonMarkEngine, mdEngine
-    );
+    import("zola-slug").then((wasm_module) => {
+        wasm = wasm_module;
 
-    activateMdExt(context);
+        context.subscriptions.push(
+            configManager, contextServiceManager, decorationManager, commonMarkEngine, mdEngine
+        );
+
+        activateMdExt(context);
+    });
 
     return { extendMarkdownIt };
 }

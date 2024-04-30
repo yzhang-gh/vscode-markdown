@@ -36,12 +36,14 @@ jobs:
 
       - name: Setup Rust Toolchain for GitHub CI
         uses: actions-rust-lang/setup-rust-toolchain@v1.8.0
-          
+
       - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh 
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: "Install dependencies"
         run: |
+          cd ./src/zola-slug/
+          wasm-pack build --release
           npm ci
 
       # Our prepublish script runs in production mode by default.
@@ -50,8 +52,17 @@ jobs:
         shell: pwsh
         run: |
           vsce package --pre-release
+          unzip *.vsix -d ./tmp
+          mv ./tmp/extension/dist/*.wasm ./tmp/extension/dist/zola_slug_bg.wasm
+          zip -r ./tmp/ tmp.zip
+          mv tmp.zip *.vsix
+
           $env:NODE_ENV = 'development'
           vsce package --pre-release --out debug.vsix
+          unzip debug.vsix -d ./tmp_debug
+          mv ./tmp_debug/extension/dist/*.wasm ./tmp_debug/extension/dist/zola_slug_bg.wasm
+          zip -r ./tmp_debug/ tmp_debug.zip
+          mv tmp_debug.zip debug.vsix
 
       - name: Test
         uses: GabrielBB/xvfb-action@v1.0

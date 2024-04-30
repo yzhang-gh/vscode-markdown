@@ -88,7 +88,7 @@ const Config_Node = {
         devtoolModuleFilenameTemplate: (info) => pathToFileURL(path.resolve(__dirname, info.resourcePath)).href,
     },
     experiments: {
-        syncWebAssembly: true,
+       asyncWebAssembly: true,
     }
 };
 
