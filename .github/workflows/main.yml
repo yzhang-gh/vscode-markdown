@@ -50,21 +50,21 @@ jobs:
       - name: "Build"
         shell: pwsh
         run: |
-          RELEASE_DIR='tmp_release'  
+          $env:RELEASE_DIR='tmp_release'  
           npx vsce package --pre-release
-          VSIX_FILE=$(ls *.vsix)
+          $env:VSIX_FILE=$(ls *.vsix)
           unzip $VSIX_FILE -d $RELEASE_DIR
-          WASM_FILE=$(ls ${RELEASE_DIR}/extension/dist/*.wasm)
+          $env:WASM_FILE=$(ls ${RELEASE_DIR}/extension/dist/*.wasm)
           mv $WASM_FILE ${RELEASE_DIR}/extension/dist/zola_slug_bg.wasm
           zip -r ${RELEASE_DIR}.zip $RELEASE_DIR
           mv ${RELEASE_DIR}.zip $VSIX_FILE
 
           $env:NODE_ENV = 'development'
-          RELEASE_DIR='tmp_debug'
-          VSIX_FILE='debug.vsix'
+          $env:RELEASE_DIR='tmp_debug'
+          $env:VSIX_FILE='debug.vsix'
           npx vsce package --pre-release --out $VSIX_FILE
           unzip $VSIX_FILE -d $RELEASE_DIR
-          WASM_FILE=$(ls ${RELEASE_DIR}/extension/dist/*.wasm)
+          $env:WASM_FILE=$(ls ${RELEASE_DIR}/extension/dist/*.wasm)
           mv $WASM_FILE ${RELEASE_DIR}/extension/dist/zola_slug_bg.wasm
           zip -r ${RELEASE_DIR}.zip $RELEASE_DIR
           mv ${RELEASE_DIR}.zip $VSIX_FILE
