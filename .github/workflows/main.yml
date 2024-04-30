@@ -51,10 +51,10 @@ jobs:
         shell: pwsh
         run: |
           npx vsce package --pre-release
-          unzip *.vsix -d ./tmp
-          mv ./tmp/extension/dist/*.wasm ./tmp/extension/dist/zola_slug_bg.wasm
-          zip -r ./tmp/ tmp.zip
-          mv tmp.zip *.vsix
+          unzip *.vsix -d ./tmp_release
+          mv ./tmp_release/extension/dist/*.wasm ./tmp_release/extension/dist/zola_slug_bg.wasm
+          zip -r ./tmp_release/ tmp_release.zip
+          mv tmp_release.zip *.vsix
 
           $env:NODE_ENV = 'development'
           npx vsce package --pre-release --out debug.vsix

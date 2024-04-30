@@ -10,3 +10,8 @@ tmp
 # The welcome materials
 /welcome/**
 /changes.md
+
+tmp_release.zip
+tmp_debug.zip
+./tmp_release/
+./tmp_debug/
