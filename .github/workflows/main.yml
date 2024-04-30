@@ -58,7 +58,7 @@ jobs:
           zip -r ${RELEASE_DIR}.zip $RELEASE_DIR
           mv ${RELEASE_DIR}.zip $VSIX_FILE
 
-          export NODE_ENV = 'development'
+          export NODE_ENV='development'
           export RELEASE_DIR='tmp_debug'
           export VSIX_FILE='debug.vsix'
           npx vsce package --pre-release --out $VSIX_FILE
