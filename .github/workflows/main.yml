@@ -47,8 +47,7 @@ jobs:
 
       # Our prepublish script runs in production mode by default.
       # We should run tests against debug build to make error messages as useful as possible.
-      - name: "Build"
-        shell: pwsh
+      - name: "Build release"
         run: |
           export RELEASE_DIR='tmp_release'  
           npx vsce package --pre-release
