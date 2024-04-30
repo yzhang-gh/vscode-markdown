@@ -53,7 +53,7 @@ jobs:
           npx vsce package --pre-release
           export VSIX_FILE=$(ls *.vsix)
           unzip $VSIX_FILE -d $RELEASE_DIR
-          export WASM_FILE=$(find ${RELEASE_DIR}/extension/dist -name "*.wasm" -print -quit)
+          export WASM_FILE=$(ls ${RELEASE_DIR}/extension/dist/*.wasm)
           mv $WASM_FILE ${RELEASE_DIR}/extension/dist/zola_slug_bg.wasm
           zip -r ${RELEASE_DIR}.zip $RELEASE_DIR
           mv ${RELEASE_DIR}.zip $VSIX_FILE
@@ -63,7 +63,7 @@ jobs:
           export VSIX_FILE='debug.vsix'
           npx vsce package --pre-release --out $VSIX_FILE
           unzip $VSIX_FILE -d $RELEASE_DIR
-          export WASM_FILE=$(find ${RELEASE_DIR}/extension/dist -name "*.wasm" -print -quit)
+          export WASM_FILE=$(ls ${RELEASE_DIR}/extension/dist/*.wasm)
           mv $WASM_FILE ${RELEASE_DIR}/extension/dist/zola_slug_bg.wasm
           zip -r ${RELEASE_DIR}.zip $RELEASE_DIR
           mv ${RELEASE_DIR}.zip $VSIX_FILE

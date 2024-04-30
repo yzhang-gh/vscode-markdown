@@ -48,14 +48,16 @@ jobs:
           npm ci
 
       - name: "Build debug"
-        shell: pwsh
         run: |
-          $env:NODE_ENV = 'development'
-          npx vsce package --out debug.vsix
-          unzip debug.vsix -d ./tmp_debug
-          mv ./tmp_debug/extension/dist/*.wasm ./tmp_debug/extension/dist/zola_slug_bg.wasm
-          zip -r ./tmp_debug/ tmp_debug.zip
-          mv tmp_debug.zip debug.vsix
+          export NODE_ENV='development'
+          export RELEASE_DIR='tmp_debug'
+          export VSIX_FILE='debug.vsix'
+          npx vsce package --pre-release --out $VSIX_FILE
+          unzip $VSIX_FILE -d $RELEASE_DIR
+          export WASM_FILE=$(ls ${RELEASE_DIR}/extension/dist/*.wasm)
+          mv $WASM_FILE ${RELEASE_DIR}/extension/dist/zola_slug_bg.wasm
+          zip -r ${RELEASE_DIR}.zip $RELEASE_DIR
+          mv ${RELEASE_DIR}.zip $VSIX_FILE
 
       - name: Test
         uses: GabrielBB/xvfb-action@v1.0

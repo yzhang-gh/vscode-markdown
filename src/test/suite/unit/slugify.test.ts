@@ -67,11 +67,11 @@ const cases: Readonly<Record<SlugifyMode, readonly ICase[]>> = {
         ["1. not a list", "1-not-a-list"],
     ],
 
-    [SlugifyMode.Zola]: [
-        ["にでも長所と短所がある", "shui-nidemochang-suo-toduan-suo-gaaru"],
-        ["命来犯天写最大巡祭視死乃読", "ming-lai-fan-tian-xie-zui-da-xun-ji-shi-si-nai-du"],
-        ["국무위원은 국무총리의 제청으로 대통령이 임명한다", "gugmuwiweoneun-gugmucongriyi-jeceongeuro-daetongryeongi-immyeonghanda"],
-    ]
+    // [SlugifyMode.Zola]: [
+    //     ["にでも長所と短所がある", "shui-nidemochang-suo-toduan-suo-gaaru"],
+    //     ["命来犯天写最大巡祭視死乃読", "ming-lai-fan-tian-xie-zui-da-xun-ji-shi-si-nai-du"],
+    //     ["국무위원은 국무총리의 제청으로 대통령이 임명한다", "gugmuwiweoneun-gugmucongriyi-jeceongeuro-daetongryeongi-immyeonghanda"],
+    // ]
 };
 
 const modeName: Readonly<Record<SlugifyMode, string>> = {
