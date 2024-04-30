@@ -44,8 +44,7 @@ jobs:
 
       - name: "Install dependencies"
         run: |
-          cd ./src/zola-slug/
-          wasm-pack build --release
+          npm run build-wasm
           npm ci
 
       - name: "Build debug"

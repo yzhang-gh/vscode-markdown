@@ -669,7 +669,8 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run build",
-        "build": "cd ./src/zola-slug && wasm-pack build -t nodejs --release && cd ./../.. && node ./build/build.js",
+        "build": "npm run build-wasm && node ./build/build.js",
+        "build-wasm": "cd ./src/zola-slug && wasm-pack build --release",
         "dev-build": "webpack --mode development",
         "dev-compile": "tsc --build --watch --verbose",
         "pretest": "tsc --build",
