@@ -26,12 +26,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: "Setup Node.js environment"
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: "14"
+          node-version: "20"
           cache: "npm"
 
       - name: Setup Rust Toolchain for GitHub CI
@@ -70,7 +70,7 @@ jobs:
           run: npm test
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Markdown-All-in-One-${{ github.sha }}
           path: ./*.vsix
@@ -78,7 +78,7 @@ jobs:
       # If the run failed, npm log may help to diagnose.
       - name: "(debug) Upload npm log"
         if: ${{ !success() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: "npm-debug-log"
           path: "~/.npm/_logs"
