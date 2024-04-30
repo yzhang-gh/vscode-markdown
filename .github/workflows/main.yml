@@ -51,14 +51,14 @@ jobs:
       - name: "Build"
         shell: pwsh
         run: |
-          vsce package --pre-release
+          npx vsce package --pre-release
           unzip *.vsix -d ./tmp
           mv ./tmp/extension/dist/*.wasm ./tmp/extension/dist/zola_slug_bg.wasm
           zip -r ./tmp/ tmp.zip
           mv tmp.zip *.vsix
 
           $env:NODE_ENV = 'development'
-          vsce package --pre-release --out debug.vsix
+          npx vsce package --pre-release --out debug.vsix
           unzip debug.vsix -d ./tmp_debug
           mv ./tmp_debug/extension/dist/*.wasm ./tmp_debug/extension/dist/zola_slug_bg.wasm
           zip -r ./tmp_debug/ tmp_debug.zip

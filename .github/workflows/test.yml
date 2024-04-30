@@ -52,7 +52,7 @@ jobs:
         shell: pwsh
         run: |
           $env:NODE_ENV = 'development'
-          vsce package --out debug.vsix
+          npx vsce package --out debug.vsix
           unzip debug.vsix -d ./tmp_debug
           mv ./tmp_debug/extension/dist/*.wasm ./tmp_debug/extension/dist/zola_slug_bg.wasm
           zip -r ./tmp_debug/ tmp_debug.zip
