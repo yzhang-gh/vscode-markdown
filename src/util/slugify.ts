@@ -1,7 +1,13 @@
 import SlugifyMode from "../contract/SlugifyMode";
 import { configManager } from "../configuration/manager";
 import { commonMarkEngine } from "../markdownEngine";
-import { wasm } from "../extension";
+
+var wasm: any;
+
+// store the wasm module in a global variable so we can use it later
+export function setWasm(w: any) {
+    wasm = w;
+}
 
 const utf8Encoder = new TextEncoder();
 
@@ -57,11 +63,11 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
         // https://markdown-all-in-one.github.io/docs/specs/slugify/azure-devops.html
         // Encode every character. Although opposed by RFC 3986, it's the only way to solve #802.
 
-        slug =  slug.trim()
-                    .toLowerCase()
-                    .replace(/\p{Zs}/gu, "-")
+        slug = slug.trim()
+            .toLowerCase()
+            .replace(/\p{Zs}/gu, "-")
 
-        if(/^\d/.test(slug)) {
+        if (/^\d/.test(slug)) {
             slug = Array.from(
                 utf8Encoder.encode(slug),
                 (b) => "%" + b.toString(16)
@@ -70,9 +76,9 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
                 .toUpperCase();
         }
         else {
-            slug =  encodeURIComponent(slug)
+            slug = encodeURIComponent(slug)
         }
-        
+
         return slug
     },
 
