@@ -13,5 +13,5 @@ tmp
 
 tmp_release.zip
 tmp_debug.zip
-./tmp_release/
-./tmp_debug/
+tmp_release
+tmp_debug
