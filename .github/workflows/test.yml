@@ -60,7 +60,7 @@ jobs:
       - name: "Rust test"
         run: |
           cd ./src/zola-slug/
-          cargo test
+          cargo test --release
 
       - name: "(debug) Upload npm log"
         if: ${{ !success() }}
