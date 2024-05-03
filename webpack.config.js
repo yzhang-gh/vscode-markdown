@@ -84,6 +84,7 @@ const Config_Node = {
         filename: "[name].js",
         path: path.resolve(__dirname, "dist", "node"),
         library: { type: "commonjs2" },
+        webassemblyModuleFilename: "zola_slug_bg.wasm",
         // Don't use `absoluteResourcePath`, as it's often not a file system path.
         devtoolModuleFilenameTemplate: (info) => pathToFileURL(path.resolve(__dirname, info.resourcePath)).href,
     },

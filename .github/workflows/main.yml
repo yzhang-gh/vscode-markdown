@@ -42,35 +42,17 @@ jobs:
 
       - name: "Install dependencies"
         run: |
-          npm run build-wasm  
+          npm run build-wasm
           npm ci
 
       # Our prepublish script runs in production mode by default.
       # We should run tests against debug build to make error messages as useful as possible.
       - name: "Build release"
         run: |
-          export RELEASE_DIR='tmp_release'  
           npx vsce package --pre-release
-          export VSIX_FILE=$(ls *.vsix)
-          unzip $VSIX_FILE -d $RELEASE_DIR
-          export WASM_FILE=$(find ${RELEASE_DIR}/extension/dist -name "*.wasm" -print -quit)
-          mv $WASM_FILE ${RELEASE_DIR}/extension/dist/zola_slug_bg.wasm
-          cd $RELEASE_DIR
-          zip -r ../${RELEASE_DIR}.zip .
-          cd ..
-          mv ${RELEASE_DIR}.zip $VSIX_FILE
 
           export NODE_ENV='development'
-          export RELEASE_DIR='tmp_debug'
-          export VSIX_FILE='debug.vsix'
-          npx vsce package --pre-release --out $VSIX_FILE
-          unzip $VSIX_FILE -d $RELEASE_DIR
-          export WASM_FILE=$(find ${RELEASE_DIR}/extension/dist -name "*.wasm" -print -quit)
-          mv $WASM_FILE ${RELEASE_DIR}/extension/dist/zola_slug_bg.wasm
-          cd $RELEASE_DIR
-          zip -r ../${RELEASE_DIR}.zip .
-          cd ..
-          mv ${RELEASE_DIR}.zip $VSIX_FILE
+          npx vsce package --pre-release --out debug.vsix
 
       - name: Test
         uses: GabrielBB/xvfb-action@v1.0
