@@ -42,7 +42,6 @@ jobs:
 
       - name: "Install dependencies"
         run: |
-          npm run build-wasm
           npm ci
 
       # Our prepublish script runs in production mode by default.

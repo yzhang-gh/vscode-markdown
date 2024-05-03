@@ -44,7 +44,6 @@ jobs:
 
       - name: "Install dependencies"
         run: |
-          npm run build-wasm
           npm ci
 
       - name: "Build debug"
