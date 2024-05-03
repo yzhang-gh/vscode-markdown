@@ -153,7 +153,7 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
     },
 
     [SlugifyMode.Zola]: (slug: string, _env: object): string => {
-        return wasm.slugify(slug);
+        return wasm.slugify_anchors(slug);
     }
 };
 

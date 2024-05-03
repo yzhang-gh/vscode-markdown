@@ -44,6 +44,7 @@ jobs:
 
       - name: "Install dependencies"
         run: |
+          npm run build-wasm
           npm ci
 
       - name: "Build debug"
@@ -55,6 +56,11 @@ jobs:
         uses: GabrielBB/xvfb-action@v1.0
         with:
           run: npm test
+
+      - name: "Rust test"
+        run: |
+          cd ./src/zola-slug/
+          cargo test
 
       - name: "(debug) Upload npm log"
         if: ${{ !success() }}

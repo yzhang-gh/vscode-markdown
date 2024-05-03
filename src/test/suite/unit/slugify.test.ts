@@ -68,10 +68,29 @@ const cases: Readonly<Record<SlugifyMode, readonly ICase[]>> = {
     ],
 
     [SlugifyMode.Zola]: [
-        ["にでも長所と短所がある", "shui-nidemochang-suo-toduan-suo-gaaru"],
-        ["命来犯天写最大巡祭視死乃読", "ming-lai-fan-tian-xie-zui-da-xun-ji-shi-si-nai-du"],
-        ["국무위원은 국무총리의 제청으로 대통령이 임명한다", "gugmuwiweoneun-gugmucongriyi-jeceongeuro-daetongryeongi-immyeonghanda"],
-    ]
+        [
+            "this is some example [text](https://www.url.com) haha [fun](http://another.example)",
+            "this-is-some-example-text-haha-fun",
+        ],
+        [
+            "Check out this [link](http://example.com) and this [another one](https://another.com)!",
+            "check-out-this-link-and-this-another-one",
+        ],
+        ["No links here!", "no-links-here"],
+        [
+            "[Edge cases](https://edge.com) lead to [interesting](http://test.com?query=example) results. 大時代",
+            "edge-cases-lead-to-interesting-results-da-shi-dai",
+        ],
+        ["にでも長所と短所がある", "nidemochang-suo-toduan-suo-gaaru"],
+        [
+            "命来犯天写最大巡祭視死乃読",
+            "ming-lai-fan-tian-xie-zui-da-xun-ji-shi-si-nai-du",
+        ],
+        [
+            "국무위원은 국무총리의 제청으로 대통령이 임명한다",
+            "gugmuwiweoneun-gugmucongriyi-jeceongeuro-daetongryeongi-immyeonghanda",
+        ],
+    ],
 };
 
 const modeName: Readonly<Record<SlugifyMode, string>> = {
