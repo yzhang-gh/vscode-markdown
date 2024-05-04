@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import SlugifyMode from "../../../contract/SlugifyMode";
-import { setWasm, slugify } from "../../../util/slugify";
+import { slugify } from "../../../util/slugify";
 
 type ICase = readonly [string, string];
 

@@ -1,6 +1,6 @@
 [package]
 name = "zola-slug"
-version = "0.1.5"
+version = "0.1.0"
 edition = "2021"
 authors = ["hill <hill@hilll.dev>"]
 description = "expose slug to wasm"
