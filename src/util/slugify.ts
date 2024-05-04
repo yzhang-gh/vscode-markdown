@@ -148,11 +148,7 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
     },
 
     [SlugifyMode.Zola]: (slug: string, _env: object): string => {
-        while (zola_slug === undefined) {
-            // although loading the wasm module should be extremely fast we should still wait for it to be loaded just in case since we just imported it.
-            if (zola_slug !== undefined) break;
-        }
-        return zola_slug.slugify_anchors(slug);
+        return zola_slug.slugify_anchors(slug); // this might fail the first time it's called, it's a race condition
     }
 };
 
@@ -168,9 +164,7 @@ export function slugify(heading: string, {
 }: { env?: object; mode?: SlugifyMode; }) {
 
     if (mode == SlugifyMode.Zola && zola_slug === undefined) {
-        import("zola-slug").then((wasm) => {
-            zola_slug = wasm;
-        });
+        import("zola-slug").then((wasm) => { zola_slug = wasm; });
     }
 
     // Do never twist the input here!
