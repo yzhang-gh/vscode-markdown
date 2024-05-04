@@ -2,12 +2,7 @@ import SlugifyMode from "../contract/SlugifyMode";
 import { configManager } from "../configuration/manager";
 import { commonMarkEngine } from "../markdownEngine";
 
-var wasm: any;
-
-// store the wasm module in a global variable so we can use it later
-export function setWasm(w: any) {
-    wasm = w;
-}
+var zola_slug: typeof import("zola-slug");
 
 const utf8Encoder = new TextEncoder();
 
@@ -153,7 +148,7 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
     },
 
     [SlugifyMode.Zola]: (slug: string, _env: object): string => {
-        return wasm.slugify_anchors(slug);
+        return zola_slug.slugify_anchors(slug);
     }
 };
 
@@ -167,6 +162,12 @@ export function slugify(heading: string, {
     env = Object.create(null),
     mode = configManager.get("toc.slugifyMode"),
 }: { env?: object; mode?: SlugifyMode; }) {
+
+    if (mode == SlugifyMode.Zola && zola_slug === undefined) {
+        await import("zola-slug").then((wasm) => {
+            zola_slug = wasm;
+        });
+    }
 
     // Do never twist the input here!
     // Pass the raw heading content as is to slugify function.

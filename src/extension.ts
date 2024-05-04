@@ -15,22 +15,15 @@ import * as preview from './preview';
 import * as print from './print';
 import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
-import { setWasm } from './util/slugify';
 
 export function activate(context: ExtensionContext) {
     configNls({ extensionContext: context });
 
-    // wasm modules need to be imported asynchronously 
-    // we should wait for it to finish to do the rest of the extension
-    import("zola-slug").then((wasm_module) => {
-        setWasm(wasm_module);
+    context.subscriptions.push(
+        configManager, contextServiceManager, decorationManager, commonMarkEngine, mdEngine
+    );
 
-        context.subscriptions.push(
-            configManager, contextServiceManager, decorationManager, commonMarkEngine, mdEngine
-        );
-
-        activateMdExt(context);
-    });
+    activateMdExt(context);
 
     return { extendMarkdownIt };
 }

@@ -104,14 +104,11 @@ const modeName: Readonly<Record<SlugifyMode, string>> = {
 };
 
 suite("Slugify function.", () => {
-    import("zola-slug").then((wasm_module) => {
-        setWasm(wasm_module);
-        for (const [group, testCase] of Object.entries(cases) as ReadonlyArray<[SlugifyMode, readonly ICase[]]>) {
-            for (const [rawContent, slug] of testCase) {
-                globalThis.test(`(${modeName[group]}) ${rawContent} → ${slug}`, () => {
-                    assert.strictEqual(slugify(rawContent, { mode: group }), slug);
-                });
-            }
+    for (const [group, testCase] of Object.entries(cases) as ReadonlyArray<[SlugifyMode, readonly ICase[]]>) {
+        for (const [rawContent, slug] of testCase) {
+            globalThis.test(`(${modeName[group]}) ${rawContent} → ${slug}`, () => {
+                assert.strictEqual(slugify(rawContent, { mode: group }), slug);
+            });
         }
-    });
+    }
 });
