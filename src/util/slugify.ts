@@ -1,6 +1,7 @@
 import SlugifyMode from "../contract/SlugifyMode";
 import { configManager } from "../configuration/manager";
 import { commonMarkEngine } from "../markdownEngine";
+import { window } from "vscode";
 
 let zolaSlug: typeof import("zola-slug");
 
@@ -152,7 +153,13 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
     },
 
     [SlugifyMode.Zola]: (slug: string, env: object): string => {
-        return zolaSlug.slugify(mdInlineToPlainText(slug, env));
+        if (zolaSlug !== undefined) {
+            return zolaSlug.slugify(mdInlineToPlainText(slug, env));
+        } else {
+            importZolaSlug();
+            window.showErrorMessage("Importing Zola Slug... Please try again.");
+            return slug;
+        }
     }
 };
 
