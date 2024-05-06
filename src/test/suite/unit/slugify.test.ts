@@ -104,7 +104,7 @@ const modeName: Readonly<Record<SlugifyMode, string>> = {
 };
 
 suite("Slugify function.", () => {
-    importZolaSlug().then(() => {
+    importZolaSlug().then(() => { // import the wasm module before running the tests
         for (const [group, testCase] of Object.entries(cases) as ReadonlyArray<[SlugifyMode, readonly ICase[]]>) {
             for (const [rawContent, slug] of testCase) {
                 globalThis.test(`(${modeName[group]}) ${rawContent} → ${slug}`, () => {

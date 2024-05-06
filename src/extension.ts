@@ -24,7 +24,10 @@ export function activate(context: ExtensionContext) {
         configManager, contextServiceManager, decorationManager, commonMarkEngine, mdEngine
     );
 
+    // wasm modules need to be imported asynchronously (or any modules relying on them synchronously need to be imported asynchronously)
     importZolaSlug().then(() => {
+        // we need to wait for the wasm module to be loaded before we can use it, it should only take a few milliseconds
+        // if we move the activateMdExt function outside of this promise, slugify might be called before the wasm module has loaded which will cause it to fail
         activateMdExt(context);
     });
 

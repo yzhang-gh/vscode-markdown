@@ -3,8 +3,15 @@ import { configManager } from "../configuration/manager";
 import { commonMarkEngine } from "../markdownEngine";
 import { window } from "vscode";
 
+/**
+ * the wasm equivalent to just doing `import * as zolaSLug from "zola-slug"`, which we can't do because it's a wasm module
+ */
 let zolaSlug: typeof import("zola-slug");
 
+/**
+ * Ideally this function is called before any code that relies on slugify,
+ * and any code that relies on slugify should be called in the `then` block.
+ */
 export async function importZolaSlug() {
     zolaSlug = await import("zola-slug");
 }
@@ -152,13 +159,13 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
         );
     },
 
-    [SlugifyMode.Zola]: (slug: string, env: object): string => {
+    [SlugifyMode.Zola]: (rawContent: string, env: object): string => {
         if (zolaSlug !== undefined) {
-            return zolaSlug.slugify(mdInlineToPlainText(slug, env));
+            return zolaSlug.slugify(mdInlineToPlainText(rawContent, env));
         } else {
             importZolaSlug();
             window.showErrorMessage("Importing Zola Slug... Please try again.");
-            return slug;
+            return rawContent; //unsure if we should throw an error, let it fail or return the original content
         }
     }
 };
