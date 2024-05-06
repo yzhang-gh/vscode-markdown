@@ -2,7 +2,11 @@ import SlugifyMode from "../contract/SlugifyMode";
 import { configManager } from "../configuration/manager";
 import { commonMarkEngine } from "../markdownEngine";
 
-var zola_slug: typeof import("zola-slug");
+var zolaSlug: typeof import("zola-slug");
+
+export function setZolaSlug(wasm: typeof import("zola-slug")) {
+    zolaSlug = wasm;
+}
 
 const utf8Encoder = new TextEncoder();
 
@@ -148,7 +152,7 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
     },
 
     [SlugifyMode.Zola]: (slug: string, _env: object): string => {
-        return zola_slug.slugify_anchors(slug); // this might fail the first time it's called, it's a race condition
+        return zolaSlug.slugify_anchors(slug); // this might fail the first time it's called, it's a race condition
     }
 };
 
@@ -163,8 +167,8 @@ export function slugify(heading: string, {
     mode = configManager.get("toc.slugifyMode"),
 }: { env?: object; mode?: SlugifyMode; }) {
 
-    if (mode == SlugifyMode.Zola && zola_slug === undefined) {
-        import("zola-slug").then((wasm) => { zola_slug = wasm; });
+    if (mode == SlugifyMode.Zola && zolaSlug === undefined) {
+        import("zola-slug").then((wasm) => { zolaSlug = wasm; });
     }
 
     // Do never twist the input here!

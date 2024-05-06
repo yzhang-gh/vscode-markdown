@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import SlugifyMode from "../../../contract/SlugifyMode";
-import { slugify } from "../../../util/slugify";
+import { setZolaSlug, slugify } from "../../../util/slugify";
 
 type ICase = readonly [string, string];
 
@@ -104,11 +104,14 @@ const modeName: Readonly<Record<SlugifyMode, string>> = {
 };
 
 suite("Slugify function.", () => {
-    for (const [group, testCase] of Object.entries(cases) as ReadonlyArray<[SlugifyMode, readonly ICase[]]>) {
-        for (const [rawContent, slug] of testCase) {
-            globalThis.test(`(${modeName[group]}) ${rawContent} → ${slug}`, () => {
-                assert.strictEqual(slugify(rawContent, { mode: group }), slug);
-            });
+    import("zola-slug").then((wasm) => {
+        setZolaSlug(wasm);
+        for (const [group, testCase] of Object.entries(cases) as ReadonlyArray<[SlugifyMode, readonly ICase[]]>) {
+            for (const [rawContent, slug] of testCase) {
+                globalThis.test(`(${modeName[group]}) ${rawContent} → ${slug}`, () => {
+                    assert.strictEqual(slugify(rawContent, { mode: group }), slug);
+                });
+            }
         }
-    }
+    });
 });
