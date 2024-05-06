@@ -167,10 +167,6 @@ export function slugify(heading: string, {
     mode = configManager.get("toc.slugifyMode"),
 }: { env?: object; mode?: SlugifyMode; }) {
 
-    if (mode == SlugifyMode.Zola && zolaSlug === undefined) {
-        import("zola-slug").then((wasm) => { zolaSlug = wasm; });
-    }
-
     // Do never twist the input here!
     // Pass the raw heading content as is to slugify function.
 
@@ -195,6 +191,9 @@ export function slugify(heading: string, {
             return Slugify_Methods[SlugifyMode.BitbucketCloud](heading, env);
 
         case SlugifyMode.Zola:
+            if (zolaSlug === undefined) {
+                import("zola-slug").then((wasm) => { zolaSlug = wasm; });
+            }
             return Slugify_Methods[SlugifyMode.Zola](heading, env);
 
         default:
