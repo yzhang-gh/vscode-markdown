@@ -15,6 +15,7 @@ import * as preview from './preview';
 import * as print from './print';
 import * as tableFormatter from './tableFormatter';
 import * as toc from './toc';
+import { importZolaSlug } from './util/slugify';
 
 export function activate(context: ExtensionContext) {
     configNls({ extensionContext: context });
@@ -23,7 +24,9 @@ export function activate(context: ExtensionContext) {
         configManager, contextServiceManager, decorationManager, commonMarkEngine, mdEngine
     );
 
-    activateMdExt(context);
+    importZolaSlug().then(() => {
+        activateMdExt(context);
+    });
 
     return { extendMarkdownIt };
 }

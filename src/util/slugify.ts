@@ -2,10 +2,10 @@ import SlugifyMode from "../contract/SlugifyMode";
 import { configManager } from "../configuration/manager";
 import { commonMarkEngine } from "../markdownEngine";
 
-var zolaSlug: typeof import("zola-slug");
+let zolaSlug: typeof import("zola-slug");
 
-export function setZolaSlug(wasm: typeof import("zola-slug")) {
-    zolaSlug = wasm;
+export async function importZolaSlug() {
+    zolaSlug = await import("zola-slug");
 }
 
 const utf8Encoder = new TextEncoder();
@@ -25,7 +25,7 @@ const Regexp_Gitlab_Product_Suffix = /[ \t\r\n\f\v]*\**\((?:core|starter|premium
 /**
  * Converts a string of CommonMark **inline** structures to plain text
  * by removing Markdown syntax in it.
- * This function is only for the `github` and `gitlab` slugify functions.
+ * This function is only for the `github`, `gitlab` and `zola` slugify functions.
  * @see <https://spec.commonmark.org/0.29/#inlines>
  *
  * @param text - The Markdown string.
@@ -151,8 +151,8 @@ const Slugify_Methods: { readonly [mode in SlugifyMode]: (rawContent: string, en
         );
     },
 
-    [SlugifyMode.Zola]: (slug: string, _env: object): string => {
-        return zolaSlug.slugify_anchors(slug); // this might fail the first time it's called, it's a race condition
+    [SlugifyMode.Zola]: (slug: string, env: object): string => {
+        return zolaSlug.slugify(mdInlineToPlainText(slug, env));
     }
 };
 
@@ -191,9 +191,6 @@ export function slugify(heading: string, {
             return Slugify_Methods[SlugifyMode.BitbucketCloud](heading, env);
 
         case SlugifyMode.Zola:
-            if (zolaSlug === undefined) {
-                import("zola-slug").then((wasm) => { zolaSlug = wasm; });
-            }
             return Slugify_Methods[SlugifyMode.Zola](heading, env);
 
         default:
