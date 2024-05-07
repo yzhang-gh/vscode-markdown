@@ -1,0 +1,41 @@
+[package]
+name = "zola-slug"
+version = "0.1.0"
+edition = "2021"
+authors = ["hill <hill@hilll.dev>"]
+description = "expose slug to wasm"
+repository = "https://github.com/yzhang-gh/vscode-markdown/"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["mini-alloc"]
+mini-alloc = ["dep:mini-alloc"]
+
+[dependencies]
+slug = "0.1.0"
+mini-alloc = { version = "0.4.2", optional = true }
+
+[profile.release]
+codegen-units = 1
+debug = false
+debug-assertions = false
+incremental = true
+lto = true
+opt-level = "s"
+overflow-checks = false
+panic = "unwind"
+rpath = false
+split-debuginfo = "off"
+strip = "symbols"
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ['-Os']
+
+[package.metadata.wasm-pack.profile.release.wasm-bindgen]
+debug-js-glue = false
+demangle-name-section = false
+dwarf-debug-info = false
+omit-default-module-path = false

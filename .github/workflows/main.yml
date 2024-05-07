@@ -26,35 +26,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: "Setup Node.js environment"
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: "14"
+          node-version: "20"
           cache: "npm"
+
+      - name: Setup Rust Toolchain for GitHub CI
+        uses: actions-rust-lang/setup-rust-toolchain@v1.8.0
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: "Install dependencies"
         run: |
+          npm run build-wasm
           npm ci
-          npm install -g vsce@"^2.5"
 
       # Our prepublish script runs in production mode by default.
       # We should run tests against debug build to make error messages as useful as possible.
-      - name: "Build"
-        shell: pwsh
+      - name: "Build release"
         run: |
-          vsce package --pre-release
-          $env:NODE_ENV = 'development'
-          vsce package --pre-release --out debug.vsix
+          npx vsce package --pre-release
+
+          export NODE_ENV='development'
+          npx vsce package --pre-release --out debug.vsix
 
       - name: Test
         uses: GabrielBB/xvfb-action@v1.0
         with:
           run: npm test
 
+      - name: "Rust test"
+        run: |
+          cd ./src/zola-slug/
+          cargo test --release
+
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Markdown-All-in-One-${{ github.sha }}
           path: ./*.vsix
@@ -62,7 +73,7 @@ jobs:
       # If the run failed, npm log may help to diagnose.
       - name: "(debug) Upload npm log"
         if: ${{ !success() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: "npm-debug-log"
           path: "~/.npm/_logs"
