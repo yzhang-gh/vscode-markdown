@@ -123,7 +123,12 @@ class MdCompletionItemProvider implements CompletionItemProvider {
         const excludePatterns = new Set(Always_Exclude);
 
         if (configManager.get("completion.respectVscodeSearchExclude", folder)) {
-            const vscodeSearchExclude = configManager.getByAbsolute<object>("search.exclude", folder)!;
+            // `search.exclude` is currently not implemented in Theia IDE (which is mostly compatible with VSCode extensions)
+            // fallback to `files.exclude` (in VSCode, `search.exclude` inherits from `files.exclude`) or an empty list
+            // see https://github.com/eclipse-theia/theia/issues/13823
+            const vscodeSearchExclude = configManager.getByAbsolute<object>("search.exclude", folder)
+                ?? configManager.getByAbsolute<object>("search.exclude", folder)
+                ?? {};
             for (const [pattern, enabled] of Object.entries(vscodeSearchExclude)) {
                 if (enabled) {
                     excludePatterns.add(pattern);
