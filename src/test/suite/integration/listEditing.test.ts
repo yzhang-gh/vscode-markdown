@@ -240,6 +240,66 @@ suite("List editing.", () => {
             new Selection(0, 10, 0, 10));
     });
 
+    test("List/TaskList toggle. 1: Check single line,list to task list", () => {
+        return testCommand('markdown.extension.toggleTaskList',
+            [
+                '- test'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '- [ ] test'
+            ],
+            new Selection(0, 0, 0, 0),
+        );
+    });
+
+    test("List/TaskList toggle. 2: Check single line,task list to list", () => {
+        return testCommand('markdown.extension.toggleTaskList',
+            [
+                '-   [ ]   test'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '- test'
+            ],
+            new Selection(0, 0, 0, 0),
+        );
+    });
+
+    test("List/TaskList toggle. 3: Check multiple lines,list to task list", () => {
+        return testCommand('markdown.extension.toggleTaskList',
+            [
+                '- test',
+                '  -   test',
+                '- test',
+            ],
+            new Selection(1, 0, 2, 1),
+            [
+                '- test',
+                '  - [ ] test',
+                '- [ ] test',
+            ],
+            new Selection(1, 0, 2, 1),
+        );
+    });
+
+    test("List/TaskList toggle. 4: Check multiple lines,task list to list", () => {
+        return testCommand('markdown.extension.toggleTaskList',
+            [
+                '    -   [x] test',
+                '  - test',
+                '- [ ]  test',
+            ],
+            new Selection(0, 0, 2, 1),
+            [
+                '    - test',
+                '  - test',
+                '- test',
+            ],
+            new Selection(0, 0, 2, 1),
+        );
+    });
+
     test("List toggle. 1: Check single line", () => {
         return testCommand('markdown.extension.checkTaskList',
             [

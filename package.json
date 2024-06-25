@@ -312,6 +312,11 @@
                 "when": "editorTextFocus && editorLangId =~ /^markdown$|^rmd$|^quarto$/ && !suggestWidgetVisible"
             },
             {
+                "command": "markdown.extension.toggleTaskList",
+                "key": "shift+alt+c",
+                "when": "editorTextFocus && editorLangId =~ /^markdown$|^rmd$|^quarto$/"
+            },
+            {
                 "command": "markdown.extension.checkTaskList",
                 "key": "alt+c",
                 "when": "editorTextFocus && editorLangId =~ /^markdown$|^rmd$|^quarto$/ && !isMac"
