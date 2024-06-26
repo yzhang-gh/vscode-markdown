@@ -1,0 +1,33 @@
+{
+	"fileTypes": [],
+	"injectionSelector": "L:(text.html.markdown - meta - comment.block - markup.raw)",
+	"patterns": [
+		{
+			"include": "#math-inline-latex"
+		}
+	],
+	"repository": {
+		"math-inline-latex": {
+			"name": "markup.inserted.math.inline.markdown",
+			"begin": "(^|\\G)((?<![^\\\\]\\\\)\\\\\\((?!\\\\\\())",
+			"end": "(?<![^\\\\]\\\\)(?<![^\\\\]\\\\\\))(\\\\\\))([\\s]*)",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.math.inline.markdown"
+				}
+			},
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.math.inline.markdown"
+				}
+			},
+			"contentName": "meta.embedded.block.katex",
+			"patterns": [
+				{
+					"include": "text.katex"
+				}
+			]
+		}
+	},
+	"scopeName": "markdown.math_inline_latex"
+}
