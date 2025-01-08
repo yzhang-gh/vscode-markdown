@@ -1,6 +1,6 @@
 import { Selection } from "vscode";
 import { resetConfiguration, updateConfiguration } from "../util/configuration";
-import { testCommand, Test_Md_File_Path } from "../util/generic";
+import { testCommand, Test_Md_File_Path, Test_Md_File_Regex_Path } from "../util/generic";
 
 suite("TOC.", () => {
     suiteSetup(async () => {
@@ -368,6 +368,79 @@ suite("TOC.", () => {
         await updateConfiguration({
             config: [["markdown.extension.toc.omittedFromToc", {
                 [Test_Md_File_Path.fsPath]: [
+                    // With more than one space between sharps and text.
+                    '#  Introduction',
+                    // With spaces before sharps ans special chars.
+                    '  ## Ignored - with "special" ~ chars',
+                    '## Underlined heading'
+                ],
+                'not-ignored.md': ['# Head 1']
+            }]]
+        });
+        await testCommand(
+            'markdown.extension.toc.create',
+            [
+                '',
+                '',
+                '# Introduction',
+                '## Sub heading (should be ignored, too)',
+                '# Head 1',
+                '',
+                // Underlined heading should be ignored, too.
+                'Underlined heading',
+                '------------------',
+                '',
+                '- [Head 1](#head-1)',
+                '- [Head 2](#head-2)',
+                '- [Head 3](#head-3)',
+                '',
+                '- [Head 1](#head-1)',
+                '- [Head 2](#head-2)',
+                '- [Head 3](#head-3)',
+                '',
+                '# Head 3',
+                '## Ignored - with "special" ~ chars',
+                // Second "Introduction" heading is visible (should have a number suffix in ToC).
+                '## Introduction',
+                '# Head 4'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '- [Head 1](#head-1)',
+                '- [Head 3](#head-3)',
+                '  - [Introduction](#introduction-1)',
+                '- [Head 4](#head-4)',
+                '',
+                '',
+                '# Introduction',
+                '## Sub heading (should be ignored, too)',
+                '# Head 1',
+                '',
+                'Underlined heading',
+                '------------------',
+                '',
+                '- [Head 1](#head-1)',
+                '- [Head 2](#head-2)',
+                '- [Head 3](#head-3)',
+                '',
+                '- [Head 1](#head-1)',
+                '- [Head 2](#head-2)',
+                '- [Head 3](#head-3)',
+                '',
+                '# Head 3',
+                '## Ignored - with "special" ~ chars',
+                '## Introduction',
+                '# Head 4'
+            ],
+            new Selection(4, 0, 4, 0)
+        );
+        await resetConfiguration();
+    });
+
+    test("Exclude omitted headings with regex filename (`toc.omittedFromToc`)", async () => {
+        await updateConfiguration({
+            config: [["markdown.extension.toc.omittedFromToc", {
+                [Test_Md_File_Regex_Path.fsPath]: [
                     // With more than one space between sharps and text.
                     '#  Introduction',
                     // With spaces before sharps ans special chars.

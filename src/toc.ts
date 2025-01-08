@@ -217,6 +217,8 @@ function getProjectExcludedHeadings(doc: TextDocument): readonly Readonly<{ leve
         // Convert file system path to VS Code Uri.
         if (path.isAbsolute(filePath)) {
             entryUri = Uri.file(filePath);
+        } else if (filePath.includes('*')) {
+            entryUri = Uri.file(filePath);
         } else if (workspaceUri !== undefined) {
             entryUri = Uri.joinPath(workspaceUri, filePath);
         } else {
@@ -224,7 +226,13 @@ function getProjectExcludedHeadings(doc: TextDocument): readonly Readonly<{ leve
         }
 
         // If the entry matches the document, read it.
-        if (entryUri.toString() === docUriString) {
+        const pattern = entryUri.toString()
+            .replace('%2A', '*')
+            .replace('/', '\/')
+            .replace('.md', '\.md')
+            .replace('*', '.*');
+
+        if (new RegExp(pattern).test(docUriString)) {
             if (Array.isArray(configObj[filePath])) {
                 omittedHeadings.push(...configObj[filePath]);
             } else {
