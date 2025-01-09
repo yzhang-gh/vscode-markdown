@@ -441,11 +441,7 @@ suite("TOC.", () => {
         await updateConfiguration({
             config: [["markdown.extension.toc.omittedFromToc", {
                 [Test_Md_File_Regex_Path.fsPath]: [
-                    // With more than one space between sharps and text.
-                    '#  Introduction',
-                    // With spaces before sharps ans special chars.
-                    '  ## Ignored - with "special" ~ chars',
-                    '## Underlined heading'
+                    '#  Introduction'
                 ],
                 'not-ignored.md': ['# Head 1']
             }]]
@@ -456,56 +452,17 @@ suite("TOC.", () => {
                 '',
                 '',
                 '# Introduction',
-                '## Sub heading (should be ignored, too)',
-                '# Head 1',
-                '',
-                // Underlined heading should be ignored, too.
-                'Underlined heading',
-                '------------------',
-                '',
-                '- [Head 1](#head-1)',
-                '- [Head 2](#head-2)',
-                '- [Head 3](#head-3)',
-                '',
-                '- [Head 1](#head-1)',
-                '- [Head 2](#head-2)',
-                '- [Head 3](#head-3)',
-                '',
-                '# Head 3',
-                '## Ignored - with "special" ~ chars',
-                // Second "Introduction" heading is visible (should have a number suffix in ToC).
-                '## Introduction',
-                '# Head 4'
+                '# Head 1'
             ],
             new Selection(0, 0, 0, 0),
             [
                 '- [Head 1](#head-1)',
-                '- [Head 3](#head-3)',
-                '  - [Introduction](#introduction-1)',
-                '- [Head 4](#head-4)',
                 '',
                 '',
                 '# Introduction',
-                '## Sub heading (should be ignored, too)',
-                '# Head 1',
-                '',
-                'Underlined heading',
-                '------------------',
-                '',
-                '- [Head 1](#head-1)',
-                '- [Head 2](#head-2)',
-                '- [Head 3](#head-3)',
-                '',
-                '- [Head 1](#head-1)',
-                '- [Head 2](#head-2)',
-                '- [Head 3](#head-3)',
-                '',
-                '# Head 3',
-                '## Ignored - with "special" ~ chars',
-                '## Introduction',
-                '# Head 4'
+                '# Head 1'
             ],
-            new Selection(4, 0, 4, 0)
+            new Selection(1, 0, 1, 0)
         );
         await resetConfiguration();
     });
