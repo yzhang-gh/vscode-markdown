@@ -151,8 +151,8 @@ function addSectionNumbers() {
         const secNumStr = [...Array(level - startDepth + 1).keys()].map(num => `${secNumbers[num + startDepth - 1]}.`).join('');
 
         const lineText = doc.lineAt(lineNum).text;
-        const newText = lineText.includes('#')
-            ? lineText.replace(/^(\s{0,3}#+ +)((?:\d{1,9}\.)* )?(.*)/, (_, g1, _g2, g3) => `${g1}${secNumStr} ${g3}`)
+        const newText = lineText.includes('=') || lineText.includes('#')
+            ? lineText.replace(/^(\s{0,3}[=#]+ +)((?:\d{1,9}\.)* )?(.*)/, (_, g1, _g2, g3) => `${g1}${secNumStr} ${g3}`)
             : lineText.replace(/^(\s{0,3})((?:\d{1,9}\.)* )?(.*)/, (_, g1, _g2, g3) => `${g1}${secNumStr} ${g3}`);
         edit.replace(doc.uri, doc.lineAt(lineNum).range, newText);
     });
@@ -171,8 +171,8 @@ function removeSectionNumbers() {
     toc.forEach(entry => {
         const lineNum = entry.lineIndex;
         const lineText = doc.lineAt(lineNum).text;
-        const newText = lineText.includes('#')
-            ? lineText.replace(/^(\s{0,3}#+ +)((?:\d{1,9}\.)* )?(.*)/, (_, g1, _g2, g3) => `${g1}${g3}`)
+        const newText = lineText.includes('=') || lineText.includes('#')
+            ? lineText.replace(/^(\s{0,3}[=#]+ +)((?:\d{1,9}\.)* )?(.*)/, (_, g1, _g2, g3) => `${g1}${g3}`)
             : lineText.replace(/^(\s{0,3})((?:\d{1,9}\.)* )?(.*)/, (_, g1, _g2, g3) => `${g1}${g3}`);
         edit.replace(doc.uri, doc.lineAt(lineNum).range, newText);
     });
