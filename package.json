@@ -28,6 +28,7 @@
         "onLanguage:markdown",
         "onLanguage:rmd",
         "onLanguage:quarto",
+        "onLanguage:typst",
         "workspaceContains:README.md"
     ],
     "main": "./dist/node/main.js",
@@ -73,25 +74,25 @@
         "commands": [
             {
                 "command": "markdown.extension.toc.create",
-                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$|^typ$/",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$|^typst$/",
                 "title": "%command.toc.create.title%",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.toc.update",
-                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto|^typ$/",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto|^typst$/",
                 "title": "%command.toc.update.title%",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.toc.addSecNumbers",
-                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$|^typ$/",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$|^typst$/",
                 "title": "%command.toc.addSecNumbers.title%",
                 "category": "Markdown All in One"
             },
             {
                 "command": "markdown.extension.toc.removeSecNumbers",
-                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$|^typ/",
+                "enablement": "editorLangId =~ /^markdown$|^rmd$|^quarto$|^typst$/",
                 "title": "%command.toc.removeSecNumbers.title%",
                 "category": "Markdown All in One"
             },
@@ -625,7 +626,8 @@
                     "items": {
                         "enum": [
                             "rmd",
-                            "quarto"
+                            "quarto", 
+                            "typst"
                         ]
                     },
                     "description": "%config.extraLangIds.description%"
