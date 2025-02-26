@@ -185,7 +185,7 @@ function onWillSave(e: TextDocumentWillSaveEvent): void {
         return;
     }
     if (isMdDocument(e.document)) {
-      e.waitUntil(updateToc());
+        e.waitUntil(updateToc());
     }
 }
 
@@ -583,16 +583,14 @@ export function getAllRootHeading(doc: TextDocument, respectMagicCommentOmit: bo
     for (let i: number = 0; i < lines.length; i++) {
         const crtLineText = lines[i];
 
+        // <https://spec.commonmark.org/0.29/#atx-headings>
+        var ishead = /^(?:\/\/|) {0,3}[#=]{1,6}(?: |\t|$)/.test(crtLineText);
+
         // Skip non-ATX heading lines.
-        if (
-            // <https://spec.commonmark.org/0.29/#atx-headings>
-            !/^ {0,3}[#=]{1,6}(?: |\t|$)/.test(crtLineText)
-        ) {
-            continue;
-        }
+        if (!ishead) continue;
 
         // Extract heading info.
-        const matches = /^ {0,3}([#=]{1,6})(.*)$/.exec(crtLineText)!;
+        const matches = /^(?:\/\/|) {0,3}([#=]{1,6})(.*)$/.exec(crtLineText)!;
         const entry: IHeadingBase = {
             level: matches[1].length as MarkdownSpec.MarkdownHeadingLevel,
             rawContent: matches[2].replace(/^[ \t]+/, '').replace(/[ \t]+#+[ \t]*$/, ''),
