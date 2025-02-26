@@ -148,7 +148,8 @@ function addSectionNumbers() {
 
         secNumbers[level - 1] += 1;
         secNumbers.fill(0, level);
-        const secNumStr = [...Array(level - startDepth + 1).keys()].map(num => `${secNumbers[num + startDepth - 1]}.`).join('');
+        // const secNumStr = [...Array(level - startDepth + 1).keys()].map(num => `${secNumbers[num + startDepth - 1]}.`).join('');
+        const secNumStr = [...Array(level - startDepth + 1).keys()].map(num => `${secNumbers[num + startDepth - 1]}`).join('.');
 
         const lineText = doc.lineAt(lineNum).text;
         const newText = lineText.includes('=') || lineText.includes('#')
