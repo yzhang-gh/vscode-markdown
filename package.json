@@ -655,6 +655,20 @@
                     "text.html.markdown"
                 ]
             },
+		{
+                "scopeName": "markdown.math_display_latex",
+                "path": "./syntaxes/math_display_latex.markdown.tmLanguage.json",
+                "injectTo": [
+                    "text.html.markdown"
+                ]
+            },
+            {
+                "scopeName": "markdown.math_inline_latex",
+                "path": "./syntaxes/math_inline_latex.markdown.tmLanguage.json",
+                "injectTo": [
+                    "text.html.markdown"
+                ]
+            },
             {
                 "scopeName": "text.katex",
                 "path": "./syntaxes/katex.tmLanguage.json"
