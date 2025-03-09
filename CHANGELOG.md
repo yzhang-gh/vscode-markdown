@@ -1,4 +1,21 @@
-## 3.6.0/3.6.1 (2024.01.08)
+## 3.6.3 (2025.03.09)
+
+### New
+
+- [TOC] Add a new slugify method for Zola ([#1419](https://github.com/yzhang-gh/vscode-markdown/pull/1419)). Thanks, [hill (@float3)](https://github.com/float3).
+- [i18n] Add zh-tw translations ([#1499](https://github.com/yzhang-gh/vscode-markdown/pull/1499)). Thanks, [Will 保哥 (@doggy8088)](https://github.com/doggy8088).
+
+### Fixes
+
+- Fix keybinding conflict with GitHub Copilot NES ([#1498](https://github.com/yzhang-gh/vscode-markdown/pull/1498)). Thanks, [Will 保哥 (@doggy8088)](https://github.com/doggy8088).
+
+### Others
+
+- [TOC] Update slugify method for Azure DevOps ([#1383](https://github.com/yzhang-gh/vscode-markdown/pull/1383)). Thanks, [Levi Richards (@PHLUNK)](https://github.com/PHLUNK).
+- [GFM] Make `markdown-it-github-alerts` case insensitive ([#1389](https://github.com/yzhang-gh/vscode-markdown/pull/1389)). Thanks, [PraZ (@prazdevs)](https://github.com/prazdevs).
+- Support the Eclipse Theia IDE ([#1442](https://github.com/yzhang-gh/vscode-markdown/pull/1442)). Thanks, [Max Jakobitsch (@madmini)](https://github.com/madmini).
+
+## 3.6.0/3.6.1/3.6.2 (2024.01.08)
 
 ### New
 
