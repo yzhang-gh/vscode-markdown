@@ -300,6 +300,12 @@
                 "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^quarto$/ && !suggestWidgetVisible"
             },
             {
+                "command": "markdown.extension.onDeleteLines",
+                "key": "ctrl+shift+k",
+                "mac": "cmd+shift+k",
+                "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^quarto$/ && !suggestWidgetVisible"
+            },
+            {
                 "command": "markdown.extension.onIndentLines",
                 "key": "ctrl+]",
                 "mac": "cmd+]",

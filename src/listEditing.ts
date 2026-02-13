@@ -17,7 +17,8 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('markdown.extension.onCopyLineDown', onCopyLineDown),
         commands.registerCommand('markdown.extension.onCopyLineUp', onCopyLineUp),
         commands.registerCommand('markdown.extension.onIndentLines', onIndentLines),
-        commands.registerCommand('markdown.extension.onOutdentLines', onOutdentLines)
+        commands.registerCommand('markdown.extension.onOutdentLines', onOutdentLines),
+        commands.registerCommand('markdown.extension.onDeleteLines', onDeleteLines)
     );
 }
 
@@ -545,6 +546,12 @@ function onIndentLines() {
 function onOutdentLines() {
     const editor = window.activeTextEditor!;
     return outdent(editor).then(() => fixMarker(editor));
+}
+
+function onDeleteLines() {
+    const editor = window.activeTextEditor!;
+    return commands.executeCommand('editor.action.deleteLines')
+        .then(() => fixMarker(editor));
 }
 
 export function deactivate() { }
