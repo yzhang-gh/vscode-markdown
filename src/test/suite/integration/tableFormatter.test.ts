@@ -326,7 +326,7 @@ suite("Table formatter.", () => {
                 '|---|:---|---:|:---:|',
                 '| w | x  |  y |  z  |'
             ],
-            new Selection(0,0,0,0));
+            new Selection(0, 0, 0, 0));
         await resetConfiguration();
     });
 
@@ -344,7 +344,131 @@ suite("Table formatter.", () => {
                 '|---|:-------|---------:|:---------:|',
                 '| w | x      | y-longer |     z     |'
             ],
-            new Selection(0,0,0,0));
+            new Selection(0, 0, 0, 0));
         await resetConfiguration();
+    });
+
+    test("Emoji in table cells", () => {
+        return testCommand('editor.action.formatDocument',
+            [
+                '| Value |',
+                '| ----- |',
+                '| ✅✅✅ |',
+                '| ⚠️⚠️ |',
+                '| ❌ |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| Value  |',
+                '| ------ |',
+                '| ✅✅✅ |',
+                '| ⚠️⚠️   |',
+                '| ❌     |'
+            ],
+            new Selection(0, 0, 0, 0));
+    });
+
+    test("Emoji with text in table cells", () => {
+        return testCommand('editor.action.formatDocument',
+            [
+                '| Status | Description |',
+                '| ------ | ----------- |',
+                '| ✅ OK | Everything is fine |',
+                '| ⚠️ Warn | Be careful |',
+                '| ❌ Error | Something went wrong |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| Status   | Description          |',
+                '| -------- | -------------------- |',
+                '| ✅ OK    | Everything is fine   |',
+                '| ⚠️ Warn  | Be careful           |',
+                '| ❌ Error | Something went wrong |',
+            ],
+            new Selection(0, 0, 0, 0));
+    });
+
+    test("Mixed emoji and other symbols", () => {
+        return testCommand('editor.action.formatDocument',
+            [
+                '| Value |',
+                '| ----- |',
+                '| + |',
+                '| ✅ |',
+                '| ! |',
+                '| ⚠️ |',
+                '| x |',
+                '| ❌ |'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| Value |',
+                '| ----- |',
+                '| +     |',
+                '| ✅    |',
+                '| !     |',
+                '| ⚠️    |',
+                '| x     |',
+                '| ❌    |'
+            ],
+            new Selection(0, 0, 0, 0));
+    });
+
+    test("Extended_Pictographic emoji", () => {
+        return testCommand('editor.action.formatDocument',
+            [
+                '| Status | Icon',
+                '| ------ | ----',
+                '| Done   | ✨   ',
+                '| Fire   | 🔥   ',
+                '| Target | 🎯   ',
+                '| Spark  | 🌟   '
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| Status | Icon |',
+                '| ------ | ---- |',
+                '| Done   | ✨   |',
+                '| Fire   | 🔥   |',
+                '| Target | 🎯   |',
+                '| Spark  | 🌟   |'
+            ],
+            new Selection(0, 0, 0, 0));
+    });
+
+    test("Mixed CJK and emoji", () => {
+        return testCommand('editor.action.formatDocument',
+            [
+                '| 中文 | 日本語 | 状态',
+                '| ---- | ------ | ----',
+                '| 测试 | テスト | ⏳   ',
+                '| 完成 | 完了   | ✅   '
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| 中文 | 日本語 | 状态 |',
+                '| ---- | ------ | ---- |',
+                '| 测试 | テスト | ⏳   |',
+                '| 完成 | 完了   | ✅   |'
+            ],
+            new Selection(0, 0, 0, 0));
+    });
+
+    test("CheckMarks: normal text vs emoji", () => {
+        return testCommand('editor.action.formatDocument',
+            [
+                '| Normal | Emoji | Mixed',
+                '| ------ | ----- | -----',
+                '| ✓      | ✅    | ✅✓   ',
+                '| ✗      | ❌    | ❌✗   '
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '| Normal | Emoji | Mixed |',
+                '| ------ | ----- | ----- |',
+                '| ✓      | ✅    | ✅✓   |',
+                '| ✗      | ❌    | ❌✗   |'
+            ],
+            new Selection(0, 0, 0, 0));
     });
 });

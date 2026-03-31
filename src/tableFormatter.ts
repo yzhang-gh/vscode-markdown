@@ -136,8 +136,11 @@ class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider
         // Regex to extract cell content.
         // GitHub #24
         const fieldRegExp = new RegExp(/((\\\||[^\|])*)\|/gu);
+        // Emoji and CJK characters with double visual width (width 2)
         // https://www.ling.upenn.edu/courses/Spring_2003/ling538/UnicodeRanges.html
-        const cjkRegex = /[\u3000-\u9fff\uac00-\ud7af\uff01-\uff60]/g;
+        // Extended_Pictographic includes all graphical emoji chars
+        // CJK ranges: U+3000-U+9FFF, U+AC00-U+D7AF, U+FF01-U+FF60
+        const doubleWidthRegex = /\p{Extended_Pictographic}|[\u3000-\u9fff\uac00-\ud7af\uff01-\uff60]/gu;
 
         const lines = rows.map((row, iRow) => {
             // Normalize
@@ -165,13 +168,14 @@ class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider
                 // They don't reflect how text layout engines really work.
                 // For more information, please consult UAX #11.
                 // A grapheme cluster may comprise multiple Unicode code points.
-                // One CJK grapheme consists of one CJK code point, in NFC.
                 // In typical fixed-width typesetting without ligature, one grapheme is finally mapped to one glyph.
-                // Such a glyph is usually the same width as an ASCII letter, but a CJK glyph is twice.
+                // Such a glyph is usually the same width as an ASCII letter.
+                // However, emoji symbols and CJK characters have double width in most fonts.
+                // We add the count of double-width characters to the grapheme count to get visual width.
 
                 const graphemeCount = splitter.countGraphemes(cell);
-                const cjkPoints = cell.match(cjkRegex);
-                const width = graphemeCount + (cjkPoints?.length ?? 0);
+                const doubleWidthChars = cell.match(doubleWidthRegex);
+                const width = graphemeCount + (doubleWidthChars?.length ?? 0);
                 colWidth[iCol] = Math.max(colWidth[iCol] || 0, width);
 
                 iCol++;
@@ -219,10 +223,8 @@ class MarkdownDocumentFormatter implements vscode.DocumentFormattingEditProvider
                 const visualWidth = colWidth[iCol];
                 let jsLength = splitter.splitGraphemes(cell + ' '.repeat(visualWidth)).slice(0, visualWidth).join('').length;
 
-                const cjkPoints = cell.match(cjkRegex);
-                if (cjkPoints) {
-                    jsLength -= cjkPoints.length;
-                }
+                // Subtract double-width characters (emoji and CJK)
+                jsLength -= cell.match(doubleWidthRegex)?.length ?? 0;
 
                 return this.alignText(cell, colAlign[iCol], jsLength);
             });
