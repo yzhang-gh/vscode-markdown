@@ -264,6 +264,26 @@ For other Markdown syntax, you need to install the corresponding extensions from
 
 You can easily manage key bindings with [VS Code's **Keyboard Shortcuts** editor](https://code.visualstudio.com/docs/getstarted/keybindings). (Commands provided by this extension have prefix `markdown.extension`.)
 
+#### Q: Can I use only the Table of Contents feature and disable everything else?
+
+Yes, you can selectively enable/disable features through VS Code settings. To use only the TOC feature while disabling other behaviors:
+
+1. Keep `markdown.extension.toc.updateOnSave` enabled (default: `true`)
+2. Disable other features as needed in your `settings.json`:
+
+   ```json
+   {
+     "markdown.extension.tableFormatter.enabled": false,
+     "markdown.extension.math.enabled": false,
+     "markdown.extension.syntax.plainTheme": true,
+     "markdown.extension.completion.enabled": false,
+     "markdown.extension.preview.autoShowPreviewToSide": false,
+     "markdown.extension.print.onFileSave": false
+   }
+   ```
+
+**Note**: Keyboard shortcuts can be managed through VS Code's [Keyboard Shortcuts editor](https://code.visualstudio.com/docs/getstarted/keybindings) if you need to disable specific key bindings.
+
 #### Q: The extension is unresponsive, causing lag etc. (performance issues)
 
 From experience, there is *a good chance* that the performance issues are caused by *other extensions* (e.g., some spell checker extensions).
