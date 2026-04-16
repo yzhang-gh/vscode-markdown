@@ -24,6 +24,7 @@ export function activate(context: ExtensionContext) {
  * Here we store Regexp to check if the text is the single link.
  */
 const singleLinkRegex: RegExp = createLinkRegex();
+const MAX_LINE_BREAK_LENGTH = 2;
 
 // Return Promise because need to chain operations in unit tests
 
@@ -448,7 +449,11 @@ function styleByWrapping(startPattern: string, endPattern = startPattern) {
             }
         } else {
             // Text selected
-            wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, selection, true, startPattern, endPattern);
+            const rangeToWrap = trimTrailingLineBreak(editor, selection);
+            if (!rangeToWrap.end.isEqual(selection.end)) {
+                newSelections[i] = new Selection(selection.start, rangeToWrap.end);
+            }
+            wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, rangeToWrap, true, startPattern, endPattern);
         }
     }
 
@@ -525,6 +530,30 @@ function wrapRange(editor: TextEditor, wsEdit: WorkspaceEdit, shifts: [Position,
     }
 
     newSelections[i] = newSelection;
+}
+
+function trimTrailingLineBreak(editor: TextEditor, range: Range): Range {
+    const doc = editor.document;
+    const startOffset = doc.offsetAt(range.start);
+    const endOffset = doc.offsetAt(range.end);
+    if (endOffset <= startOffset) {
+        return range;
+    }
+
+    const tailStartOffset = endOffset - startOffset < MAX_LINE_BREAK_LENGTH ? startOffset : endOffset - MAX_LINE_BREAK_LENGTH;
+    const tail = doc.getText(new Range(doc.positionAt(tailStartOffset), range.end));
+    let trimmedLength = 0;
+    if (tail.endsWith('\r\n')) {
+        trimmedLength = 2;
+    } else if (tail.endsWith('\n')) {
+        trimmedLength = 1;
+    }
+
+    if (trimmedLength === 0) {
+        return range;
+    }
+
+    return new Range(range.start, doc.positionAt(endOffset - trimmedLength));
 }
 
 function isWrapped(text: string, startPattern: string, endPattern: string): boolean {
