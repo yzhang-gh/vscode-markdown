@@ -27,7 +27,7 @@ All you need for Markdown (keyboard shortcuts, table of contents, auto preview a
 - [FAQ](#faq)
     - [Q: Error "command 'markdown.extension.onXXXKey' not found"](#q-error-command-markdownextensiononxxxkey-not-found)
     - [Q: Which Markdown syntax is supported?](#q-which-markdown-syntax-is-supported)
-    - [Q: This extension has overridden some of my key bindings (e.g. <kbd>Ctrl</kbd> + <kbd>B</kbd>, <kbd>Alt</kbd> + <kbd>C</kbd>)](#q-this-extension-has-overridden-some-of-my-key-bindings-eg-ctrl--b-alt--c)
+    - [Q: This extension has overridden some of my key bindings (e.g. Ctrl + B, Alt + C)](#q-this-extension-has-overridden-some-of-my-key-bindings-eg-ctrl--b-alt--c)
     - [Q: The extension is unresponsive, causing lag etc. (performance issues)](#q-the-extension-is-unresponsive-causing-lag-etc-performance-issues)
 - [Changelog](#changelog)
 - [Latest Development Build](#latest-development-build)
@@ -59,7 +59,7 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
 - To make TOC **compatible with GitHub or GitLab**, set option `slugifyMode` accordingly
 
-- Three ways to **control which headings are present** in the TOC:
+- Four ways to **control which headings are present** in the TOC:
 
   <details>
   <summary>Click to expand</summary>
@@ -69,7 +69,10 @@ See full key binding list in the [keyboard shortcuts](#keyboard-shortcuts-1) sec
 
   2. Use `toc.levels` setting.
 
-  3. You can also use the `toc.omittedFromToc` setting to omit some headings (and their subheadings) from TOC:
+  3. Add `<!-- levels="x..y" -->` directly above a TOC\
+     (where `x..y` will include heading levels `x` to `y` in that TOC, see the `toc.levels` setting).
+
+  4. You can also use the `toc.omittedFromToc` setting to omit some headings (and their subheadings) from TOC:
 
      ```js
      // In your settings.json

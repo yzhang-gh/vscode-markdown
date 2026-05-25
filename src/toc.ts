@@ -54,6 +54,15 @@ export interface IHeading extends IHeadingBase {
 }
 
 /**
+ * Represents a TOC header level range comment.
+ * Eg. `<-- levels="x..y" -->`, where x is startDepth and y is endDepth.
+ */
+interface TOCLevelRangeComment {
+    startDepth: number;
+    endDepth: number;
+}
+
+/**
  * Workspace config
  */
 const docConfig = { tab: '  ', eol: '\r\n' };
@@ -99,11 +108,9 @@ async function updateToc() {
 
     const doc = editor.document;
     const tocRangesAndText = await detectTocRanges(doc);
-    const tocRanges = tocRangesAndText[0];
-    const newToc = tocRangesAndText[1];
 
     await editor.edit(editBuilder => {
-        for (const tocRange of tocRanges) {
+        for (const [tocRange, newToc] of tocRangesAndText) {
             if (tocRange !== null) {
                 const oldToc = doc.getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol);
                 if (oldToc !== newToc) {
@@ -251,12 +258,20 @@ function getProjectExcludedHeadings(doc: TextDocument): readonly Readonly<{ leve
  * Generates the Markdown text representation of the TOC.
  */
 // TODO: Redesign data structure to solve another bunch of bugs.
-async function generateTocText(doc: TextDocument): Promise<string> {
+async function generateTocText(
+    doc: TextDocument,
+    levelRangeComment: TOCLevelRangeComment | null = null
+): Promise<string> {
+    // Get the depth from the TOC's level range comment if it exists.
+    // Otherwise, fallback to the workspace settings.
+    const configStartDepth = levelRangeComment?.startDepth ?? tocConfig.startDepth;
+    const configEndDepth = levelRangeComment?.endDepth ?? tocConfig.endDepth;
+
     const orderedListMarkerIsOne: boolean = workspace.getConfiguration('markdown.extension.orderedList').get<string>('marker') === 'one';
 
     const toc: string[] = [];
     const tocEntries: readonly Readonly<IHeading>[] = getAllTocEntry(doc, { respectMagicCommentOmit: true, respectProjectLevelOmit: true })
-        .filter(i => i.canInToc && i.level >= tocConfig.startDepth && i.level <= tocConfig.endDepth); // Filter out excluded headings.
+        .filter(i => i.canInToc && i.level >= configStartDepth && i.level <= configEndDepth); // Filter out excluded headings.
 
     if (tocEntries.length === 0) {
         return '';
@@ -265,7 +280,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
     // The actual level range of a document can be smaller than settings. So we need to calculate the real start level.
     const startDepth = Math.max(tocConfig.startDepth, Math.min(...tocEntries.map(h => h.level)));
     // Order counter for each heading level (from startDepth to endDepth), used only for ordered list
-    const orderCounter: number[] = new Array(tocConfig.endDepth - startDepth + 1).fill(0);
+    const orderCounter: number[] = new Array(configEndDepth - startDepth + 1).fill(0);
 
     tocEntries.forEach(entry => {
         const relativeLevel = entry.level - startDepth;
@@ -300,7 +315,7 @@ async function generateTocText(doc: TextDocument): Promise<string> {
  * If no TOC is found, returns an empty array.
  * @param doc a TextDocument
  */
-async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string]> {
+async function detectTocRanges(doc: TextDocument): Promise<Array<[Range, string]>> {
     const docTokens = (await mdEngine.getDocumentToken(doc)).tokens;
     /**
      * `[beginLineIndex, endLineIndex, openingTokenIndex]`
@@ -318,8 +333,7 @@ async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string
         return result;
     }, []);
 
-    const tocRanges: Range[] = [];
-    const newTocText = await generateTocText(doc);
+    const tocRanges: [Range, string][] = [];
 
     for (const item of candidateLists) {
         const beginLineIndex = item[0];
@@ -332,6 +346,24 @@ async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string
             && doc.lineAt(beginLineIndex - 1).text === '<!-- no toc -->'
         ) {
             continue;
+        }
+
+        // <!-- levels="x..y" --> comment
+
+        function parseLevelRangeComment(input: string): TOCLevelRangeComment | null {
+            // See loadTocConfig(editor:)
+            const match = input.match(/^<!--\s*levels="(?<x>[1-6])\.\.(?<y>[1-6])"\s*-->$/);
+            if (!match) return null;
+
+            const { x, y } = match.groups as { x: string; y: string };
+            return { startDepth: Number(x), endDepth: Number(y) };
+        }
+
+        let levelRangeComment: TOCLevelRangeComment | null = null;
+
+        if (beginLineIndex > 0) {
+            const previousLine = doc.lineAt(beginLineIndex - 1).text;
+            levelRangeComment = parseLevelRangeComment(previousLine);
         }
 
         // Check the first list item to see if it could be a TOC.
@@ -379,14 +411,17 @@ async function detectTocRanges(doc: TextDocument): Promise<[Array<Range>, string
             endLineIndex--;
         }
 
+        // generate TOC text, considering the TOC's level range comment if exists
+        const newTocText = await generateTocText(doc, levelRangeComment);
+
         const finalRange = new Range(new Position(beginLineIndex, 0), new Position(endLineIndex, 0));
         const listText = doc.getText(finalRange);
         if (radioOfCommonPrefix(newTocText, listText) + stringSimilarity.compareTwoStrings(newTocText, listText) > 0.5) {
-            tocRanges.push(finalRange);
+            tocRanges.push([finalRange, newTocText]);
         }
     }
 
-    return [tocRanges, newTocText];
+    return tocRanges;
 }
 
 function commonPrefixLength(s1: string, s2: string): number {
@@ -704,9 +739,7 @@ class TocCodeLensProvider implements CodeLensProvider {
 
         const lenses: CodeLens[] = [];
         return detectTocRanges(document).then(tocRangesAndText => {
-            const tocRanges = tocRangesAndText[0];
-            const newToc = tocRangesAndText[1];
-            for (let tocRange of tocRanges) {
+            for (let [tocRange, newToc] of tocRangesAndText) {
                 let status = document.getText(tocRange).replace(/\r?\n|\r/g, docConfig.eol) === newToc ? 'up to date' : 'out of date';
                 lenses.push(new CodeLens(tocRange, {
                     arguments: [],
