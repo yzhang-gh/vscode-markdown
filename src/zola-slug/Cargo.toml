@@ -32,7 +32,8 @@ split-debuginfo = "off"
 strip = "symbols"
 
 [package.metadata.wasm-pack.profile.release]
-wasm-opt = ['-Os']
+# Rust's wasm32 target now emits bulk memory ops by default
+wasm-opt = ['-Os', '--enable-bulk-memory']
 
 [package.metadata.wasm-pack.profile.release.wasm-bindgen]
 debug-js-glue = false

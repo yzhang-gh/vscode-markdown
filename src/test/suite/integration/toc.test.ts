@@ -203,7 +203,51 @@ suite("TOC.", () => {
             new Selection(0, 0, 0, 0)
         );
         await resetConfiguration();
+    });
 
+    test("Update (levels 2..3 with levels comment)", async () => {
+        await testCommand("markdown.extension.toc.update",
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1',
+                '',
+                '### Section 1.1.1',
+                '',
+                '#### Section 1.1.1.1',
+                '',
+                '# Section 2',
+                '',
+                '## Section 2.1',
+                '',
+                '<!-- levels="2..3" -->',
+                '- [Section 1.1](#section-11)',
+                '  - [Section 1.1.1](#section-111)',
+                '- [Section 2.1](#section-21)',
+                '  - [Section 2.1.1](#section-211)',
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '# Section 1',
+                '',
+                '## Section 1.1',
+                '',
+                '### Section 1.1.1',
+                '',
+                '#### Section 1.1.1.1',
+                '',
+                '# Section 2',
+                '',
+                '## Section 2.1',
+                '',
+                '<!-- levels="2..3" -->',
+                '- [Section 1.1](#section-11)',
+                '  - [Section 1.1.1](#section-111)',
+                '- [Section 2.1](#section-21)',
+                '',
+            ],
+            new Selection(0, 0, 0, 0)
+        );
     });
 
     test("Ordered list (list markers larger than 9)", async () => {
