@@ -1,7 +1,7 @@
 # Markdown Support for Visual Studio Code <!-- omit in toc -->
 
-[![version](https://img.shields.io/vscode-marketplace/v/yzhang.markdown-all-in-one.svg?style=flat-square&label=vscode%20marketplace)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
-[![installs](https://img.shields.io/vscode-marketplace/d/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
+[![version](https://flat.badgen.net/vs-marketplace/v/yzhang.markdown-all-in-one)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
+[![installs](https://flat.badgen.net/vs-marketplace/d/yzhang.markdown-all-in-one)](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/yzhang-gh/vscode-markdown/main.yml?style=flat-square&branch=master)](https://github.com/yzhang-gh/vscode-markdown/actions)
 [![GitHub stars](https://img.shields.io/github/stars/yzhang-gh/vscode-markdown.svg?style=flat-square&label=github%20stars)](https://github.com/yzhang-gh/vscode-markdown)
 [![GitHub Contributors](https://img.shields.io/github/contributors/yzhang-gh/vscode-markdown.svg?style=flat-square)](https://github.com/yzhang-gh/vscode-markdown/graphs/contributors)
@@ -292,7 +292,7 @@ To install, execute `Extensions: Install from VSIX...` in the VS Code Command Pa
 
 Special thanks to the collaborator [@Lemmingh](https://github.com/Lemmingh) and all other [contributors](https://github.com/yzhang-gh/vscode-markdown/graphs/contributors).
 
-[![](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/images/0)](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/links/0)[![](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/images/1)](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/links/1)[![](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/images/2)](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/links/2)[![](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/images/3)](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/links/3)[![](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/images/4)](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/links/4)[![](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/images/5)](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/links/5)[![](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/images/6)](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/links/6)[![](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/images/7)](https://sourcerer.io/fame/yzhang-gh/yzhang-gh/vscode-markdown/links/7)
+
 
 ---
 
