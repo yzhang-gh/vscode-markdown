@@ -41,6 +41,8 @@ export interface IConfigurationKeyTypeMap {
     /** To be superseded. */
     "syntax.plainTheme": boolean;
 
+    "editor.formatting.enabled": boolean;
+
     "tableFormatter.enabled": boolean;
     "tableFormatter.normalizeIndentation": boolean;
     "tableFormatter.delimiterRowNoPadding": boolean;

@@ -30,7 +30,9 @@ const d0 = Object.freeze<vscode.Disposable & { _disposables: vscode.Disposable[]
 
 const registerFormatter = () => {
     if (configManager.get("tableFormatter.enabled")) {
-        d0._disposables.push(vscode.languages.registerDocumentFormattingEditProvider(Document_Selector_Markdown, new MarkdownDocumentFormatter()));
+        if (configManager.get("editor.formatting.enabled")) {
+            d0._disposables.push(vscode.languages.registerDocumentFormattingEditProvider(Document_Selector_Markdown, new MarkdownDocumentFormatter()));
+        }
         d0._disposables.push(vscode.languages.registerDocumentRangeFormattingEditProvider(Document_Selector_Markdown, new MarkdownDocumentRangeFormattingEditProvider()));
     } else {
         d0.dispose();
@@ -39,7 +41,7 @@ const registerFormatter = () => {
 
 export function activate(context: vscode.ExtensionContext) {
     const d1 = vscode.workspace.onDidChangeConfiguration((event) => {
-        if (event.affectsConfiguration("markdown.extension.tableFormatter.enabled")) {
+        if (event.affectsConfiguration("markdown.extension.tableFormatter.enabled") || event.affectsConfiguration("markdown.extension.editor.formatting.enabled")) {
             registerFormatter();
         }
     });
