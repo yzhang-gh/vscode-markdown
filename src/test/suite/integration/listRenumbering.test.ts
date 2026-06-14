@@ -492,4 +492,53 @@ suite("Ordered list renumbering.", () => {
             ],
             new Selection(1, 0, 3, 0));
     });
+
+    test("Delete Line. Fix ordered marker. Delete middle item", () => {
+        return testCommand('markdown.extension.onDeleteLines',
+            [
+                '1. one',
+                '2. two',
+                '3. three'
+            ],
+            new Selection(1, 0, 1, 0),
+            [
+                '1. one',
+                '2. three'
+            ],
+            new Selection(1, 0, 1, 0));
+    });
+
+    test("Delete Line. Fix ordered marker. Delete first item", () => {
+        return testCommand('markdown.extension.onDeleteLines',
+            [
+                '1. one',
+                '2. two',
+                '3. three'
+            ],
+            new Selection(0, 0, 0, 0),
+            [
+                '1. two',
+                '2. three'
+            ],
+            new Selection(0, 0, 0, 0));
+    });
+
+    test("Delete Line. Fix ordered marker. Delete in nested list", () => {
+        return testCommand('markdown.extension.onDeleteLines',
+            [
+                '1. one',
+                '   1. nested1',
+                '   2. nested2',
+                '   3. nested3',
+                '2. two'
+            ],
+            new Selection(2, 0, 2, 0),
+            [
+                '1. one',
+                '   1. nested1',
+                '   2. nested3',
+                '2. two'
+            ],
+            new Selection(2, 0, 2, 0));
+    });
 });
