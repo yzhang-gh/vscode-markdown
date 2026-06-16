@@ -74,6 +74,27 @@ suite("Formatting.", () => {
         );
     });
 
+    test("Toggle bold. With selection. Excludes trailing newline", () => {
+        return testCommand('markdown.extension.editing.toggleBold',
+            ['text', 'next'], new Selection(0, 0, 1, 0),
+            ['**text**', 'next'], new Selection(0, 0, 0, 8)
+        );
+    });
+
+    test("Toggle bold. With selection. Excludes only final trailing newline in multiline selection", () => {
+        return testCommand('markdown.extension.editing.toggleBold',
+            ['a', 'b', 'c'], new Selection(0, 0, 2, 0),
+            ['**a', 'b**', 'c'], new Selection(0, 0, 1, 5)
+        );
+    });
+
+    test("Toggle bold. With multiline selection without trailing line break. Keeps old behavior", () => {
+        return testCommand('markdown.extension.editing.toggleBold',
+            ['a', 'b'], new Selection(0, 0, 1, 1),
+            ['**a', 'b**'], new Selection(0, 0, 1, 5)
+        );
+    });
+
     test("Toggle bold. With selection. Toggle off", () => {
         return testCommand('markdown.extension.editing.toggleBold',
             ['**text**'], new Selection(0, 0, 0, 8),

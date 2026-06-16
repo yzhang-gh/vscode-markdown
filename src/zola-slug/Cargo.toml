@@ -32,7 +32,7 @@ split-debuginfo = "off"
 strip = "symbols"
 
 [package.metadata.wasm-pack.profile.release]
-wasm-opt = ['-Os']
+wasm-opt = ['-Os', '--enable-bulk-memory']
 
 [package.metadata.wasm-pack.profile.release.wasm-bindgen]
 debug-js-glue = false
