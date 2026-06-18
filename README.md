@@ -190,6 +190,7 @@ Tip: also support the option `completion.root`
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>]</kbd>                | Toggle heading (uplevel)         |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>[</kbd>                | Toggle heading (downlevel)       |
 | <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>M</kbd>                    | Toggle math environment          |
+| <kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>C</kbd>                 | Toggle list <--> task list       |
 | <kbd>Alt</kbd> + <kbd>C</kbd>                                    | Check/Uncheck task list item     |
 | <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> | Toggle preview                   |
 | <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> <kbd>V</kbd>       | Toggle preview to side           |
