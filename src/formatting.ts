@@ -24,6 +24,7 @@ export function activate(context: ExtensionContext) {
  * Here we store Regexp to check if the text is the single link.
  */
 const singleLinkRegex: RegExp = createLinkRegex();
+let customLinkRegex: RegExp;
 
 // Return Promise because need to chain operations in unit tests
 
@@ -397,7 +398,21 @@ function createLinkRegex(): RegExp {
  * @return boolean
  */
 export function isSingleLink(text: string): boolean {
-    return singleLinkRegex.test(text);
+    // Check default regex
+    if (singleLinkRegex.test(text)) {
+        return true;
+    }
+    
+    // Check custom regex if configured
+    const customPattern = workspace.getConfiguration('markdown.extension.paste').get<string>('linkPattern');
+    if (customPattern && customPattern.trim() !== '') {
+        customLinkRegex = new RegExp(customPattern);
+        if (customLinkRegex) {
+            return customLinkRegex.test(text);
+        }
+    }
+    
+    return false;
 }
 
 // Read PR #1052 before touching this please!

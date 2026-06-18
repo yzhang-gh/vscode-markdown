@@ -32,6 +32,7 @@
     "config.orderedList.marker.description": "Ordered list marker.",
     "config.orderedList.marker.enumDescriptions.one": "Always use `1.` as ordered list marker.",
     "config.orderedList.marker.enumDescriptions.ordered": "Use increasing numbers as ordered list marker.",
+    "config.paste.linkPattern.description": "Custom additional regex pattern to recognize text as links when pasting.\nExample (to also recognize text starting with /docs):\n^/docs",
     "config.preview.autoShowPreviewToSide.description": "Auto show preview to side.",
     "config.print.absoluteImgPath.description": "Convert image path to absolute path.",
     "config.print.imgToBase64.description": "Convert images to base64 when printing to HTML.",

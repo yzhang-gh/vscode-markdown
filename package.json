@@ -440,6 +440,11 @@
                         "%config.orderedList.marker.enumDescriptions.ordered%"
                     ]
                 },
+                "markdown.extension.paste.linkPattern": {
+                    "type": "string",
+                    "default": "",
+                    "description": "%config.paste.linkPattern.description%"
+                },
                 "markdown.extension.preview.autoShowPreviewToSide": {
                     "type": "boolean",
                     "default": false,
